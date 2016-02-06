@@ -64,12 +64,12 @@ namespace Vox {
 						map[j, i] = ((pix.r + pix.g + pix.b) / 3.0f) * dimension;
 					}
 				}
-				head.setToHeightmap(maxDetail, 0, 0, 0, ref map, heightmapSubstances[index], this);
+				head.setToHeightmap(maximumDetail, 0, 0, 0, ref map, heightmapSubstances[index], this);
 			}
 		}
 		
 		public void setToHeight() {
-			int dimension = 1 << maxDetail;
+			int dimension = 1 << maximumDetail;
 			float height = heightPercentage / 100f * dimension;
 			float[,] map = new float[dimension, dimension];
 			for (int i = 0; i < dimension; i++) {
@@ -77,14 +77,14 @@ namespace Vox {
 					map[j, i] = height;
 				}
 			}
-			head.setToHeightmap(maxDetail, 0, 0, 0, ref map, 0, this);
+			head.setToHeightmap(maximumDetail, 0, 0, 0, ref map, 0, this);
 		}
 		
 		public void setToSphere() {
 			VoxelMask[] masks = this.masks;
 			this.masks = new VoxelMask[0];
-			float radius = spherePercentage / 200f * baseSize;
-			float center = baseSize /2f;
+			float radius = spherePercentage / 200f * width;
+			float center = width /2f;
 			new SphereMutator(transform.TransformPoint(center, center, center), radius, new Voxel(0, byte.MaxValue)).apply(this);
 			this.masks = masks;
 		}
@@ -96,7 +96,7 @@ namespace Vox {
 
 			// the following generates terrain from a height map
 			UnityEngine.Random.seed = proceduralSeed;
-			int dimension = 1 << maxDetail;
+			int dimension = 1 << maximumDetail;
 			float acceleration = 0;
 			float height = dimension * 0.6f;
 			float[,] heightMap = new float[dimension, dimension];
@@ -131,7 +131,7 @@ namespace Vox {
 					accelMap[x, z] = acceleration;
 				}
 			}
-			head.setToHeightmap(maxDetail, 0, 0, 0, ref heightMap, matMap, this);
+			head.setToHeightmap(maximumDetail, 0, 0, 0, ref heightMap, matMap, this);
 
 			// generate trees
 			//for (int x = 0; x < dimension; ++x) {
@@ -296,7 +296,7 @@ namespace Vox {
 				foreach (VoxelMask mask in masks) {
 					if (!mask.active)
 						continue;
-					Gizmos.DrawMesh(generateRectangleMesh(new Vector3(baseSize, 0, baseSize)), transform.TransformPoint(baseSize / 2, mask.yPosition * voxelSize(), baseSize / 2));
+					Gizmos.DrawMesh(generateRectangleMesh(new Vector3(width, 0, width)), transform.TransformPoint(width / 2, mask.yPosition * voxelSize(), width / 2));
 				}
 				Gizmos.color = Color.gray;
 			}

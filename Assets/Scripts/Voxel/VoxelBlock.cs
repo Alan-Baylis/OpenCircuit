@@ -292,21 +292,24 @@ namespace Vox {
 		}
 
 		public static bool isRenderSize(float size, Tree control) {
-			return control.sizes[control.maxDetail - VoxelRenderer.VOXEL_COUNT_POWER] == size;
+			return control.sizes[control.maximumDetail - VoxelRenderer.VOXEL_COUNT_POWER] == size;
 		}
 
 		public static bool isRenderLod(float x, float y, float z, float size, Tree control) {
 			if (!control.useLod)
-				return size == control.sizes[control.maxDetail];
+				return size == control.sizes[control.maximumDetail];
 			return getDistSquare(control.getLocalCamPosition(), new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), size) >= size * size * control.getLodDetail();
 		}
 
-		public override void putInArray(byte level, ref Voxel[,,] array, int x, int y, int z, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+		public override void putInArray(byte level, ref Voxel[,,] array, uint x, uint y, uint z, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
 			int size = 1 << (CHILD_COUNT_POWER *level -CHILD_COUNT_POWER);
 			for(int xi=0; xi<CHILD_DIMENSION; ++xi) {
 				for(int yi=0; yi<CHILD_DIMENSION; ++yi) {
 					for(int zi=0; zi<CHILD_DIMENSION; ++zi) {
-						children[xi, yi, zi].putInArray((byte)(level -CHILD_COUNT_POWER), ref array, x +xi *size, y +yi *size, z +zi *size, xMin, yMin, zMin, xMax, yMax, zMax);
+						if (x +xi *size > xMax || y +yi *size > yMax || z +zi *size > zMax ||
+							x +xi *size +size < xMin || z +zi *size +size < zMin || z +zi *size +size < zMin)
+							continue;
+						children[xi, yi, zi].putInArray((byte)(level -CHILD_COUNT_POWER), ref array, (uint)(x +xi *size), (uint)(y +yi *size), (uint)(z +zi *size), xMin, yMin, zMin, xMax, yMax, zMax);
 					}
 				}
 			}
@@ -333,12 +336,26 @@ namespace Vox {
                     }
 				}
 			}
-			//if (canSimplify)
-			//	MonoBehaviour.print("Reduced Voxel Block.");
 			if (canSimplify)
 				++count;
 			else
 				simplification = null;
+			return count;
+		}
+		public override int cleanArtifacts(out Voxel simplified, VoxelHolder head, byte level, byte maxLevel, int x, int y, int z) {
+			int size = 1 << (CHILD_COUNT_POWER *level -CHILD_COUNT_POWER);
+			int count = 0;
+			for (int xi = 0; xi<CHILD_DIMENSION; ++xi) {
+				for (int yi = 0; yi<CHILD_DIMENSION; ++yi) {
+					for (int zi = 0; zi<CHILD_DIMENSION; ++zi) {
+						Voxel newChild = null;
+						count += children[xi, yi, zi].cleanArtifacts(out newChild, head, (byte)(level +CHILD_COUNT_POWER), maxLevel, x +xi *size, y +yi *size, z +zi *size);
+						if (newChild != null)
+							children[xi, yi, zi] = newChild;
+					}
+				}
+			}
+			simplified = null;
 			return count;
 		}
 

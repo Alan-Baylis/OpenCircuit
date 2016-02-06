@@ -25,8 +25,8 @@ namespace Vox {
 			Vector3 exactMax = center + radiusCube;
 			BlurApp app = new BlurApp();
 			app.tree = target;
-			app.min = new Index(target.maxDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+			app.min = new Index(target.maximumDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(target.maximumDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.minRadius = radius - 1;
 			app.maxRadius = radius + 1;
 			app.position = center;
@@ -68,7 +68,7 @@ namespace Vox {
 			public float radius;
 
 			public void setOriginal(Tree target) {
-				original = target.getArray((int)min.x, (int)min.y, (int)min.z, (int)max.x + 1, (int)max.y + 1, (int)max.z + 1);
+				original = target.getArray(min.x, min.y, min.z, max.x + 1, max.y + 1, max.z + 1);
 			}
 		}
 

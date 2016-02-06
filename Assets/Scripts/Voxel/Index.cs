@@ -39,6 +39,10 @@ namespace Vox {
 			return new Index(depth, (uint)(x +((i &4) >> 2)), (uint)(y +((i &2) >> 1)), (uint)(z +(i &1)));
 		}
 
+		public Index getNeighbor(int xOffset, int yOffset, int zOffset) {
+			return new Index(depth, (uint)(x +xOffset), (uint)(y +yOffset), (uint)(z +zOffset));
+		}
+
 		public Index getParent(byte pDepth) {
 			byte diff = (byte)(depth - pDepth);
 			return new Index(pDepth, x >> diff, y >> diff, z >> diff);

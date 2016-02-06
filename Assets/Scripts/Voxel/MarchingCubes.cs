@@ -6,12 +6,12 @@ namespace Vox {
 
 	public static class MarchingCubes {
 
-		static Dictionary<int, object> vertices;
+		static Dictionary<int, Vector3> vertices;
 		static Dictionary<int, byte> materials;
 		static float voxelSize;
 		static int[] vertlist = new int[12];
 		static byte isolevel;
-		static Voxel[, ,] voxels;
+		static Voxel[,,] voxels;
 		static Vector3 offset;
 		static Vector3[] meshVerts;
 		public const byte MIDDLE_LEVEL = 128;
@@ -19,7 +19,7 @@ namespace Vox {
 		/*
 		 * MUST BE CALLED BEFORE polygonize!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		 */
-		public static void setup(float voxelSize, byte isolevel, ref Dictionary<int, object> vertices, ref Dictionary<int, byte> materials, ref Voxel[, ,] voxels, Vector3 offset, Vector3[] meshVerts) {
+		public static void setup(float voxelSize, byte isolevel, ref Dictionary<int, Vector3> vertices, ref Dictionary<int, byte> materials, ref Voxel[,,] voxels, Vector3 offset, Vector3[] meshVerts) {
 			MarchingCubes.isolevel = isolevel;
 			MarchingCubes.vertices = vertices;
 			MarchingCubes.materials = materials;
@@ -43,6 +43,14 @@ namespace Vox {
 				tells us which vertices are inside of the surface
 			*/
 			int cubeindex = 0;
+			if (voxels.GetLength(0) <= x1 ||
+				voxels.GetLength(1) <= y1 ||
+				voxels.GetLength(2) <= z1 ||
+				voxels[x1, y1, z1] == null) {
+				MonoBehaviour.print("EXCEPTION!");
+				return null;
+			}
+
 			if (voxels[x, y, z].opacity < isolevel) cubeindex |= 1;
 			if (voxels[x1, y, z].opacity < isolevel) cubeindex |= 2;
 			if (voxels[x1, y, z1].opacity < isolevel) cubeindex |= 4;
@@ -125,17 +133,11 @@ namespace Vox {
 			float mu = (isolevel - valp1.opacity) / ((float)(valp2.opacity - valp1.opacity));
 			//float mu = 0.5f;
 			Vector3 pos = new Vector3(x1 + mu * (x2 - x1), y1 + mu * (y2 - y1), z1 + mu * (z2 - z1)) * voxelSize + offset;
-			if (vertices.ContainsKey(vox) && vertices[vox].GetType() == typeof(int))
-				meshVerts[(int)vertices[vox]] = pos;
-			else
-				vertices[vox] = pos;
+			vertices[vox] = pos;
 			if (valp1.opacity > valp2.opacity)
 				materials[vox] = valp1.matType;
 			else
 				materials[vox] = valp2.matType;
-			//vertices[vox] = new Vector3(x1, y1, z1) *voxelSize +offset;
-			//float mu = (valp1) / ((float)(byte.MaxValue));
-			//vertices[vox] = new Vector3(x1 + mu * (x2 - x1), y1 + mu * (y2 - y1), z1 + mu * (z2 - z1)) * voxelSize;
 		}
 
 		static int[] edgeTable = {

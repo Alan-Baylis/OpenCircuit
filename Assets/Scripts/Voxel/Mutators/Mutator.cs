@@ -22,19 +22,19 @@ namespace Vox {
 				Action maskAction = checkMasks(app.tree, childPos);
 				if (!maskAction.modify)
 					continue;
-				if (childPos.depth < app.tree.maxDetail && (maskAction.doTraverse || action.doTraverse))
+				if (childPos.depth < app.tree.maximumDetail && (maskAction.doTraverse || action.doTraverse))
 					apply(app, block.expand(childPos.xLocal, childPos.yLocal, childPos.zLocal), childPos);
 				else
 					block.children[childPos.xLocal, childPos.yLocal, childPos.zLocal] =
 						mutate(app, childPos, action, block.children[childPos.xLocal, childPos.yLocal, childPos.zLocal].toVoxel());
-				if (childPos.depth == app.tree.maxDetail - VoxelRenderer.VOXEL_COUNT_POWER && (action.modify))
+				if (childPos.depth == app.tree.maximumDetail - VoxelRenderer.VOXEL_COUNT_POWER && (action.modify))
 					block.updateAll(childPos.x, childPos.y, childPos.z, childPos.depth, app.tree, true);
 			}
 		}
 
 		public virtual Application setup(Tree target) {
 			Application app = new Application();
-			uint width = (uint) (1 << (target.maxDetail)) - 1;
+			uint width = (uint) (1 << (target.maximumDetail)) - 1;
 			app.tree = target;
 			//app.min = new Index(target.maxDetail);
 			//app.max = new Index(target.maxDetail, width, width, width);
@@ -48,7 +48,7 @@ namespace Vox {
 		protected Action checkMasks(Tree tree, Index p) {
 			if (tree.masks == null)
 				return new Action(false, true);
-			int voxelSize = 1 << (tree.maxDetail - p.depth);
+			int voxelSize = 1 << (tree.maximumDetail - p.depth);
 			Action action = new Action(false, true);
 			foreach (VoxelMask mask in tree.masks) {
 				if (mask.active) {
