@@ -7,12 +7,19 @@ using System.IO;
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
 public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 
+
 	[SerializeField]
 	public byte[] serializedData;
 
 	private HashSet<Endeavour> availableEndeavours = new HashSet<Endeavour> (new EndeavourComparer());
 	private List<LabelHandle> trackedTargets = new List<LabelHandle> ();
 	private AudioSource soundEmitter;
+
+	public AudioClip destructionSound;
+
+
+	public float health = 100;
+	public float maxHealth = 100f;
 
 #if UNITY_EDITOR
 	public bool debug = false;
@@ -54,6 +61,7 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 
 
 	void Start() {
+		health = maxHealth;
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         foreach(Goal goal in goals) {
             if(!goalMap.ContainsKey(goal.type)) {
@@ -79,7 +87,10 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 
 	// Update is called once per frame
 	void Update () {
-
+		if(health <= 0) {
+			dispose();
+			return;
+		}
 //Leave this here, very useful!!
 //#if UNITY_EDITOR
 
@@ -345,6 +356,22 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 		} else {
 			return externalMentalModel; 
 		}
+	}
+
+	public void dispose() {
+		CancelInvoke();
+		soundEmitter.PlayOneShot(destructionSound);
+		foreach(Endeavour e in currentEndeavours) {
+			e.stopExecution();
+		}
+		this.enabled = false;
+		//Destroy(GetComponentInChildren<HoverJet>().gameObject);
+
+		Destroy(GetComponent<NavMeshAgent>());
+		Destroy(GetComponentInChildren<HoverJet>().gameObject);
+		GetComponent<Rigidbody>().isKinematic = false;
+		GetComponent<Rigidbody>().useGravity = true;
+		//Destroy(this.gameObject);
 	}
 
 #if UNITY_EDITOR

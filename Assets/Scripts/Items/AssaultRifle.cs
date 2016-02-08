@@ -54,15 +54,29 @@ public class AssaultRifle : Item {
 
 	protected void shoot() {
 		Transform cam = inventory.getPlayer().cam.transform;
-		
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(cam.position, cam.forward, out hitInfo, range);
 		if (hit) {
-			Rigidbody rb = hitInfo.collider.GetComponent<Rigidbody>();
+
+			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
+			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
+			if(controller != null) {
+
+				controller.health -= 10f;
+			}
 			if (rb != null) {
 				rb.AddForceAtPosition(cam.forward * impulse, hitInfo.point);
 			}
 		}
 		cycleTime += fireDelay;
+	}
+
+	protected T getParentComponent<T>(Transform trans) where T:UnityEngine.Object {
+		T comp = trans.GetComponent<T>();
+		if(comp != null)
+			return comp;
+		if(trans.parent != null)
+			return getParentComponent<T>(trans.parent);
+		return null;
 	}
 }

@@ -120,10 +120,6 @@ public class ZappyArms : AbstractArms {
 			target.transform.parent = transform;
 			target.transform.localPosition = HOLD_POSITION;
 			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
-			Player player = target.GetComponent<Player>();
-			if(player != null) {
-				player.inventory.pushContext(typeof(PocketEMP));
-			}
 			roboController.addEndeavour(new ScanAction(roboController, new List<Goal>(), target));
 		}
 	}

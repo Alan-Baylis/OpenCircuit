@@ -12,11 +12,13 @@ public class RobotSpawner : MonoBehaviour {
 	private int robotCount;
 
 	void Update() {
-		if(active && robotCount < maxRobots && timeSinceLastSpawn > delay) {
-			spawnRobot();
-			timeSinceLastSpawn = 0f;
+		if(active) {
+			timeSinceLastSpawn += Time.deltaTime;
+			if(robotCount < maxRobots && timeSinceLastSpawn > delay) {
+				spawnRobot();
+				timeSinceLastSpawn = 0f;
+			}
 		}
-		timeSinceLastSpawn += Time.deltaTime;
 	}
 
 	public void OnTriggerEnter(Collider other) {
