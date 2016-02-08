@@ -7,6 +7,7 @@ using System.IO;
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
 public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 
+	public static int controllerCount = 0;
 
 	[SerializeField]
 	public byte[] serializedData;
@@ -58,9 +59,8 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	[System.NonSerialized]
 	private float timeoutSeconds = 10;
 
-
-
 	void Start() {
+		controllerCount++;
 		health = maxHealth;
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         foreach(Goal goal in goals) {
@@ -359,6 +359,7 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	}
 
 	public void dispose() {
+		--controllerCount;
 		CancelInvoke();
 		soundEmitter.PlayOneShot(destructionSound);
 		foreach(Endeavour e in currentEndeavours) {

@@ -9,12 +9,11 @@ public class RobotSpawner : MonoBehaviour {
 	public float delay = 5f;
 	public bool debug = false;
 	private float timeSinceLastSpawn = 0f;
-	private int robotCount;
 
 	void Update() {
-		if(active) {
+		if(active && RobotController.controllerCount < maxRobots) {
 			timeSinceLastSpawn += Time.deltaTime;
-			if(robotCount < maxRobots && timeSinceLastSpawn > delay) {
+			if(timeSinceLastSpawn > delay) {
 				spawnRobot();
 				timeSinceLastSpawn = 0f;
 			}
@@ -50,9 +49,15 @@ public class RobotSpawner : MonoBehaviour {
 			body.SetActive(true);
 			hoverPack.SetActive(true);
 			arms.SetActive(true);
-			robotCount++;
 		} else {
 			print("Null");
 		}
+	}
+
+	void OnDrawGizmos() {
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(transform.position, 1f);
+		BoxCollider box = GetComponent<BoxCollider>();
+		Gizmos.DrawWireCube(transform.TransformPoint( box.center), box.size);
 	}
 }
