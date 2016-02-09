@@ -10,6 +10,9 @@ public class AssaultRifle : Item {
 	public float damage = 10;
 	public float impulse = 1;
 
+	public Transform hitEffect;
+	public float hitEffectLifetime = 3;
+
 	protected Inventory inventory;
 	protected bool shooting = false;
 	protected float cycleTime = 0;
@@ -57,6 +60,11 @@ public class AssaultRifle : Item {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(cam.position, cam.forward, out hitInfo, range);
 		if (hit) {
+
+			if (hitEffect != null) {
+				Transform effect = (Transform)Instantiate(hitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, Vector3.up));
+				Destroy(effect.gameObject, hitEffectLifetime);
+			}
 
 			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
 			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
