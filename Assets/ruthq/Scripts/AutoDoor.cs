@@ -30,6 +30,10 @@ public class AutoDoor : MonoBehaviour {
 		}
 	}
 
+	public void toggle() {
+		isMovingUp = !isMovingUp;
+	}
+
     void moveDown() {
         Vector3 stopVector = door.transform.position - downPosition;
         float length = stopVector.magnitude;

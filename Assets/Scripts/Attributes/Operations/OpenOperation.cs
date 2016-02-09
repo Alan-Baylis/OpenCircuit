@@ -7,20 +7,32 @@ public class OpenOperation : Operation {
 		typeof(InteractTrigger),
 	};
 
-	public bool locked;
+	[System.NonSerialized]
+	public AutoDoor door;
+	private string doorPath; 
 
 	public override System.Type[] getTriggers() {
 		return triggers;
 	}
 
 	public override void perform(GameObject instigator, Trigger trig) {
-        AutoDoor door = parent.GetComponent<AutoDoor>();
-        //door.switchDoor();
+		if(getDoor() != null) {
+			getDoor().toggle();
+		}
     }
+
+	public AutoDoor getDoor() {
+		if (door == null) {
+			door = ObjectReferenceManager.get().fetchReference<AutoDoor>(doorPath);
+		}
+		return door;
+	}
 
 #if UNITY_EDITOR
     public override void doGUI() {
-		locked = UnityEditor.EditorGUILayout.Toggle("Locked", locked);
+		door = (AutoDoor)UnityEditor.EditorGUILayout.ObjectField(door, typeof(AutoDoor), null);
+		ObjectReferenceManager.get().deleteReference(doorPath);
+		doorPath = ObjectReferenceManager.get().addReference(door);
 	}
 #endif
 }
