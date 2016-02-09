@@ -8,10 +8,12 @@ public class RobotSpawner : MonoBehaviour {
 	public bool active = false;
 	public float delay = 5f;
 	public bool debug = false;
-	private float timeSinceLastSpawn = 0f;
+	
+	private static float timeSinceLastSpawn = 0f;
+	private static RobotSpawner activeSpawner;
 
 	void Update() {
-		if(active && RobotController.controllerCount < maxRobots) {
+		if((active || this == activeSpawner) && RobotController.controllerCount < maxRobots) {
 			timeSinceLastSpawn += Time.deltaTime;
 			if(timeSinceLastSpawn > delay) {
 				spawnRobot();
@@ -23,7 +25,7 @@ public class RobotSpawner : MonoBehaviour {
 	public void OnTriggerEnter(Collider other) {
 		Player player = other.gameObject.GetComponent<Player>();
 		if(player != null) {
-			active = true;
+			activeSpawner = this;
 		}
 	}
 
@@ -55,7 +57,11 @@ public class RobotSpawner : MonoBehaviour {
 	}
 
 	void OnDrawGizmos() {
-		Gizmos.color = Color.red;
+		if(activeSpawner == this || active) {
+			Gizmos.color = Color.green;
+		} else {
+			Gizmos.color = Color.red;
+		}
 		Gizmos.DrawWireSphere(transform.position, 1f);
 		BoxCollider box = GetComponent<BoxCollider>();
 		Gizmos.DrawWireCube(transform.TransformPoint( box.center), box.size);
