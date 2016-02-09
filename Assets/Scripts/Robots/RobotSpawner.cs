@@ -4,15 +4,26 @@ using System.Collections;
 
 public class RobotSpawner : MonoBehaviour {
 
-	public int maxRobots = 0;
-	public bool active = false;
-	public float delay = 5f;
-	public bool debug = false;
-	
+	private static int maxRobots = 5;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
 
+	public bool active = false;
+	public float delay = 5f;
+	public bool debug = false;
+
+	private bool triggered = false;
+
+	void Start() {
+		if(active) {
+			activeSpawner = this;
+		}
+	}
+
 	void Update() {
+		if(this != activeSpawner) {
+			active = false;
+		}
 		if((active || this == activeSpawner) && RobotController.controllerCount < maxRobots) {
 			timeSinceLastSpawn += Time.deltaTime;
 			if(timeSinceLastSpawn > delay) {
@@ -23,9 +34,12 @@ public class RobotSpawner : MonoBehaviour {
 	}
 
 	public void OnTriggerEnter(Collider other) {
-		Player player = other.gameObject.GetComponent<Player>();
-		if(player != null) {
-			activeSpawner = this;
+		if(!triggered) {
+			RobotController robot = other.gameObject.GetComponent<RobotController>();
+			if(robot != null) {
+				triggered = true;
+				activeSpawner = this;
+			}
 		}
 	}
 
