@@ -159,6 +159,7 @@ MonoBehaviour:
   doorHeight: 5
   toggleTime: .25
   door: {fileID: 110944}
+  endSound: {fileID: 8300000, guid: ec5f46d914f96bf4d9056a7f8f649868, type: 3}
 --- !u!114 &11434222
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -191,7 +192,11 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: endSound
+      value: 
+      objectReference: {fileID: 8300000, guid: ec5f46d914f96bf4d9056a7f8f649868, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 152472}

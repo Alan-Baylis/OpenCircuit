@@ -11,9 +11,15 @@ public class AutoDoor : MonoBehaviour {
     private Vector3 downPosition;
     private Vector3 upPosition;
     private bool isMovingUp = true;
+	private bool atEnd = false;
+
+	private AudioSource soundEmitter;
+
+	public AudioClip endSound;
 
     // Use this for initialization
     void Start () {
+		soundEmitter = gameObject.AddComponent<AudioSource>();
         downPosition = door.transform.position - new Vector3 (0,doorHeight,0);
         upPosition = door.transform.position;
 	}
@@ -21,17 +27,20 @@ public class AutoDoor : MonoBehaviour {
 	public void open() {
 		if(isMovingUp) {
 			isMovingUp = false;
+			atEnd = false;
 		}
 	}
 
 	public void close() {
 		if(!isMovingUp) {
 			isMovingUp = true;
+			atEnd = false;
 		}
 	}
 
 	public void toggle() {
 		isMovingUp = !isMovingUp;
+		atEnd = false;
 	}
 
     void moveDown() {
@@ -43,6 +52,10 @@ public class AutoDoor : MonoBehaviour {
         if (length > distanceToMove){ 
 			door.transform.position = door.transform.position - new Vector3(0, distanceToMove, 0);
 		} else {
+			if(endSound != null && !atEnd) {
+				soundEmitter.PlayOneShot(endSound);
+				atEnd = true;
+			}
 			door.transform.position = downPosition;
 		}
 
@@ -57,6 +70,10 @@ public class AutoDoor : MonoBehaviour {
         if (upLength > distanceToMove) {
 			door.transform.position = door.transform.position + new Vector3(0, distanceToMove, 0);
 		} else {
+			if(endSound != null && !atEnd) {
+				soundEmitter.PlayOneShot(endSound);
+				atEnd = true;
+			}
 			door.transform.position = upPosition;
 		}
 
