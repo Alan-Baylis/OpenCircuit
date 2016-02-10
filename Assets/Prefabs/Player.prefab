@@ -335,8 +335,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   axes: 0
-  sensitivityX: 15
-  sensitivityY: 15
+  sensitivityX: 1
+  sensitivityY: 1
   minimumX: -360
   maximumX: 360
   minimumY: -60
@@ -352,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86b37a7829c771743a353622ac5085db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: .100000001
+  mouseSensitivity: 1
   invertLook: 0
   enableMousePadHacking: 0
 --- !u!114 &11400006
@@ -372,7 +372,7 @@ MonoBehaviour:
   oxygenRecoveryRate: 10
   oxygen: 60
   maxSuffering: 100
-  recoveryRate: 25
+  recoveryRate: 20
   sufferingOverlay: {fileID: 2800000, guid: fbd0cf77b9eb98f4aab7231dd4effd24, type: 3}
   heavyBreathingSound: {fileID: 8300000, guid: 93cc1f44eb856894187e8d711f429b62, type: 3}
   teleportSound: {fileID: 0}
@@ -523,7 +523,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: blackOutDuration
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: sufferingOverlay
@@ -531,7 +531,7 @@ Prefab:
       objectReference: {fileID: 2800000, guid: fbd0cf77b9eb98f4aab7231dd4effd24, type: 3}
     - target: {fileID: 0}
       propertyPath: recoveryRate
-      value: 25
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: minimumFoostepOccurence
@@ -597,6 +597,18 @@ Prefab:
       propertyPath: footsteps.Array.data[0]
       value: 
       objectReference: {fileID: 8300000, guid: 81829dd7877a9b54face23754adbd789, type: 3}
+    - target: {fileID: 0}
+      propertyPath: mouseSensitivity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sensitivityX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sensitivityY
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 100002}

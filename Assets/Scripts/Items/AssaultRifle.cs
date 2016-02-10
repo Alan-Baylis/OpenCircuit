@@ -74,7 +74,7 @@ public class AssaultRifle : Item {
 				controller.health -= 5f;
 			}
 			if(navAgent != null) {
-				navAgent.speed -= 1f;
+				navAgent.speed -= 2f;
 				if(navAgent.speed < 1f) {
 					navAgent.speed = 1;
 				}
