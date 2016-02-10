@@ -23,6 +23,8 @@ public class HoverJet : AbstractRobotComponent {
 	public float regularSpeed = 5f;
 	public float pursueSpeed = 7f;
 
+	public float speedRegenRate = 5f;
+
 #if UNITY_EDITOR
 	private GameObject dest;
 #endif
@@ -64,6 +66,13 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	void Update () {
+		if(nav.speed < regularSpeed) {
+			nav.speed = nav.speed + speedRegenRate * Time.deltaTime;
+
+			if(nav.speed > regularSpeed) {
+				nav.speed = regularSpeed;
+			}
+		}
 		if (powerSource == null) {
 			Debug.LogWarning(roboController.name + " is missing a power source.");
 			return;
@@ -175,7 +184,7 @@ public class HoverJet : AbstractRobotComponent {
 			}
 
 			if(nav.enabled) {
-				nav.speed = regularSpeed;
+				//nav.speed = regularSpeed;
 				nav.SetDestination(target.getPosition());
 
 #if UNITY_EDITOR
@@ -206,7 +215,7 @@ public class HoverJet : AbstractRobotComponent {
 			}
 
 			if(nav.enabled) {
-				nav.speed = pursueSpeed;
+				//nav.speed = pursueSpeed;
 				if(target.getDirection().HasValue && Vector3.Distance(roboController.transform.position, target.getPosition()) > target.getDirection().Value.magnitude) {
 					nav.SetDestination((target.getPosition()));// + 
 						//target.getDirection().Value

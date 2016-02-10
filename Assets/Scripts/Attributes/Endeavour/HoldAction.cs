@@ -8,10 +8,10 @@ public class HoldAction : Endeavour {
 
 	bool hasComplained = false;
 
-	public HoldAction(RobotController controller, Label target, LabelHandle source) : base(controller, new List<Goal>{new Goal(GoalEnum.Offense, 3), new Goal(GoalEnum.Protection, 3)}, source ) {
+	public HoldAction(RobotController controller, Label target, LabelHandle source) : base(controller, new List<Goal>{new Goal(GoalEnum.Offense, 10), new Goal(GoalEnum.Protection, 3)}, source ) {
 		this.target = target;
 		this.name = "grab";
-		requiredComponents = new System.Type[] {typeof(AbstractArms)};
+		requiredComponents = new System.Type[] {typeof(AbstractArms), typeof(HoverJet)};
 	}
 
 	public override bool canExecute () {

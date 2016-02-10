@@ -68,9 +68,16 @@ public class AssaultRifle : Item {
 
 			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
 			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
+			NavMeshAgent navAgent = null;
 			if(controller != null) {
-
-				controller.health -= 10f;
+				navAgent = controller.GetComponent<NavMeshAgent>();
+				controller.health -= 5f;
+			}
+			if(navAgent != null) {
+				navAgent.speed -= 1f;
+				if(navAgent.speed < 1f) {
+					navAgent.speed = 1;
+				}
 			}
 			if (rb != null) {
 				rb.AddForceAtPosition(cam.forward * impulse, hitInfo.point);

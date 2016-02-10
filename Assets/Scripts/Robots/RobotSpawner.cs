@@ -4,7 +4,7 @@ using System.Collections;
 
 public class RobotSpawner : MonoBehaviour {
 
-	private static int maxRobots = 5;
+	private static int maxRobots = 10;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
 
@@ -60,7 +60,7 @@ public class RobotSpawner : MonoBehaviour {
 			arms.transform.parent = body.transform;
 			hoverPack.transform.parent = body.transform;
 
-			body.GetComponent<RobotController>().locations = new Label[1] { FindObjectOfType<Player>().GetComponent<Label>() };
+			body.GetComponent<RobotController>().locations = new Label[2] { FindObjectOfType<Player>().GetComponent<Label>(), FindObjectOfType<WinZone>().GetComponent<Label>() };
 			body.GetComponent<RobotController>().debug = debug;
 			body.SetActive(true);
 			hoverPack.SetActive(true);
