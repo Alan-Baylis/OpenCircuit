@@ -13,9 +13,13 @@ public class AssaultRifle : Item {
 	public Transform hitEffect;
 	public float hitEffectLifetime = 3;
 
+	public AudioClip fireSound;
+	public float fireSoundVolume = 1;
+
 	protected Inventory inventory;
 	protected bool shooting = false;
 	protected float cycleTime = 0;
+	protected AudioSource audioSource;
 
 	public override void beginInvoke(Inventory invoker) {
 		this.inventory = invoker;
@@ -25,12 +29,17 @@ public class AssaultRifle : Item {
 	public override void onEquip(Inventory equipper) {
 		base.onEquip(equipper);
 		equipper.StartCoroutine(this.cycle());
-	}
+		audioSource = equipper.gameObject.AddComponent<AudioSource>();
+		audioSource.clip = fireSound;
+		audioSource.volume = fireSoundVolume;
+    }
 
 	public override void onUnequip(Inventory equipper) {
 		base.onUnequip(equipper);
 		equipper.StopCoroutine(this.cycle());
-	}
+		if (audioSource != null)
+			Destroy(audioSource);
+    }
 
 	public override void endInvoke(Inventory invoker) {
 		base.endInvoke(invoker);
@@ -56,6 +65,8 @@ public class AssaultRifle : Item {
 	}
 
 	protected void shoot() {
+		audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+		audioSource.Play();
 		Transform cam = inventory.getPlayer().cam.transform;
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(cam.position, cam.forward, out hitInfo, range);
