@@ -32,10 +32,12 @@ public class RoboEyes : AbstractRobotComponent {
 
 	void Update() {
 		clearCircle();
+#if UNITY_EDITOR
 		if(roboController.debug) {
 			lineRenderer.SetVertexCount(size);
 			drawCircle();
 		}
+#endif
 	}
 
 	public GameObject lookAt(Vector3 position) {
@@ -44,13 +46,17 @@ public class RoboEyes : AbstractRobotComponent {
 			RaycastHit hitInfo;
 
 			if(Physics.Raycast(transform.position, direction, out hitInfo, direction.magnitude)) {
+#if UNITY_EDITOR
 				if(roboController.debug)
 					drawLine(transform.position, hitInfo.point, Color.green);
+#endif				
 				return hitInfo.collider.gameObject;
 			}
 		}
+#if UNITY_EDITOR
 		if(roboController.debug)
 			drawLine(transform.position, position, Color.red);
+#endif		
 		return null;
 	}
 
@@ -76,14 +82,17 @@ public class RoboEyes : AbstractRobotComponent {
 				Physics.Raycast (transform.position, dir, out hit, sightDistance);
 				if (hit.transform == obj ) {//&& Vector3.Dot (transform.forward.normalized, (objPos - transform.position).normalized) > 0) {
 					result = true;
+#if UNITY_EDITOR
 					if(roboController.debug)
 						drawLine(transform.position, hit.point, Color.green);
+#endif
 				} else {
 					//print("looking for: " + obj.gameObject.name);
 					//print("blocked by: " + hit.collider.gameObject.name);
-
+#if UNITY_EDITOR
 					if(roboController.debug)
 						drawLine(transform.position, hit.point, Color.red);
+#endif
 					//print("lost: " + obj.gameObject.name + "obscured by: " + hit.transform.gameObject.name);
 				}
 			}

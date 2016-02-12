@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 
 public class RobotSpawner : MonoBehaviour {
@@ -7,6 +6,12 @@ public class RobotSpawner : MonoBehaviour {
 	private static int maxRobots = 10;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
+
+	public GameObject bodyPrefab;//AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/Robot.prefab", typeof(GameObject)) as GameObject;
+	public GameObject armsPrefab;//AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/ZappyArms.prefab", typeof(GameObject)) as GameObject;
+	public GameObject generatorPrefab;//AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/Generator.prefab", typeof(GameObject)) as GameObject;
+	public GameObject hoverPackPrefab;//AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/HoverPack.prefab", typeof(GameObject)) as GameObject;
+
 
 	public bool active = false;
 	public float delay = 5f;
@@ -44,11 +49,6 @@ public class RobotSpawner : MonoBehaviour {
 	}
 
 	private void spawnRobot() {
-		GameObject bodyPrefab = AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/Robot.prefab", typeof(GameObject)) as GameObject;
-		GameObject armsPrefab = AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/ZappyArms.prefab", typeof(GameObject)) as GameObject;
-		GameObject generatorPrefab = AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/Generator.prefab", typeof(GameObject)) as GameObject;
-		GameObject hoverPackPrefab = AssetDatabase.LoadAssetAtPath("Assets/Prefabs/Robots/HoverPack.prefab", typeof(GameObject)) as GameObject;
-
 
 		if(bodyPrefab != null && armsPrefab != null && generatorPrefab != null && hoverPackPrefab != null) {
 			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as GameObject;
@@ -61,7 +61,9 @@ public class RobotSpawner : MonoBehaviour {
 			hoverPack.transform.parent = body.transform;
 
 			body.GetComponent<RobotController>().locations = new Label[2] { FindObjectOfType<Player>().GetComponent<Label>(), FindObjectOfType<WinZone>().GetComponent<Label>() };
+#if UNITY_EDITOR			
 			body.GetComponent<RobotController>().debug = debug;
+#endif			
 			body.SetActive(true);
 			hoverPack.SetActive(true);
 			arms.SetActive(true);
