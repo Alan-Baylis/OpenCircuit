@@ -8,6 +8,7 @@ public class RobotSpawner : MonoBehaviour {
 	private static RobotSpawner activeSpawner;
 
 	public bool active = false;
+	public bool playerActivates = false;
 	public float delay = 5f;
 	public bool debug = false;
 
@@ -39,8 +40,13 @@ public class RobotSpawner : MonoBehaviour {
 
 	public void OnTriggerEnter(Collider other) {
 		if(!triggered) {
-			RobotController robot = other.gameObject.GetComponent<RobotController>();
-			if(robot != null) {
+			Object activator;
+			if (playerActivates) {
+				activator = other.gameObject.GetComponent<Player>();
+			} else {
+				activator = other.gameObject.GetComponent<RobotController>();
+			}
+			if (activator != null) {
 				triggered = true;
 				activeSpawner = this;
 			}
