@@ -95,10 +95,12 @@ MonoBehaviour:
   fireDelay: 0.1
   inaccuracy: 0.1
   range: 1000
-  damage: 10
+  damage: 2
   impulse: 200
   hitEffect: {fileID: 414120, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
-  hitEffectLifetime: 3
+  hitEffectLifetime: 2
+  robotHitEffect: {fileID: 444912, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
+  robotHitEffectLifetime: 2
   fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
   fireSoundVolume: 0.8
 --- !u!136 &13670216
@@ -148,6 +150,22 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: fireSoundVolume
       value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: robotHitEffect
+      value: 
+      objectReference: {fileID: 444912, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
+    - target: {fileID: 0}
+      propertyPath: robotHitEffectLifetime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: hitEffectLifetime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: damage
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

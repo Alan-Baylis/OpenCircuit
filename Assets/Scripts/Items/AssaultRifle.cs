@@ -13,6 +13,9 @@ public class AssaultRifle : Item {
 	public Transform hitEffect;
 	public float hitEffectLifetime = 3;
 
+	public Transform robotHitEffect;
+	public float robotHitEffectLifetime = 3;
+
 	public AudioClip fireSound;
 	public float fireSoundVolume = 1;
 
@@ -68,33 +71,54 @@ public class AssaultRifle : Item {
 		audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 		audioSource.Play();
 		Transform cam = inventory.getPlayer().cam.transform;
+		doBullet(cam.position, cam.forward, 1);
+		cycleTime += fireDelay;
+	}
+
+	protected void doBullet(Vector3 position, Vector3 direction, float power) {
+		if (power <= 0)
+			return;
 		RaycastHit hitInfo;
-		bool hit = Physics.Raycast(cam.position, cam.forward, out hitInfo, range);
+		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
 
-			if (hitEffect != null) {
+			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
+			if (rb != null) {
+				rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+			}
+
+			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
+			if(controller != null) {
+				NavMeshAgent navAgent = controller.GetComponent<NavMeshAgent>();
+				if (navAgent != null) {
+					navAgent.speed -= 2f;
+					if (navAgent.speed < 1f) {
+						navAgent.speed = 1;
+					}
+				}
+				controller.health -= calculateDamage(direction, hitInfo);
+
+				// do ricochet
+				if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
+					doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
+				}
+
+				if (robotHitEffect != null) {
+					Transform robotEffect = (Transform)Instantiate(robotHitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, Vector3.up));
+					Destroy(robotEffect.gameObject, robotHitEffectLifetime);
+				}
+			} else if (hitEffect != null) {
 				Transform effect = (Transform)Instantiate(hitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, Vector3.up));
 				Destroy(effect.gameObject, hitEffectLifetime);
 			}
-
-			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
-			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
-			NavMeshAgent navAgent = null;
-			if(controller != null) {
-				navAgent = controller.GetComponent<NavMeshAgent>();
-				controller.health -= 5f;
-			}
-			if(navAgent != null) {
-				navAgent.speed -= 2f;
-				if(navAgent.speed < 1f) {
-					navAgent.speed = 1;
-				}
-			}
-			if (rb != null) {
-				rb.AddForceAtPosition(cam.forward * impulse, hitInfo.point);
-			}
 		}
-		cycleTime += fireDelay;
+	}
+
+	protected float calculateDamage(Vector3 trajectory, RaycastHit hitInfo) {
+		float multiplier = Mathf.Pow(Mathf.Max(-Vector3.Dot(trajectory, hitInfo.normal), 0), 20) *5;
+        float calculatedDamage = damage *(1 +multiplier);
+		print("Calculated Damage: " +calculatedDamage);
+		return calculatedDamage;
 	}
 
 	protected T getParentComponent<T>(Transform trans) where T:UnityEngine.Object {
@@ -104,5 +128,11 @@ public class AssaultRifle : Item {
 		if(trans.parent != null)
 			return getParentComponent<T>(trans.parent);
 		return null;
+	}
+
+	protected void createHitEffect(Transform hitEffectPrefab, float lifetime, Vector3 location, Vector3 direction) {
+		Transform effect = (Transform)Instantiate(hitEffectPrefab, location, Quaternion.LookRotation(direction, Vector3.up));
+		effect.hideFlags |= HideFlags.HideInHierarchy;
+		Destroy(effect.gameObject, lifetime);
 	}
 }
