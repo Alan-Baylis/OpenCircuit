@@ -172,6 +172,8 @@ public class RobotControllerGUI : Editor {
         EditorGUILayout.PropertyField(serializedObject.FindProperty("locations"), true);
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("targetSightedSound"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionSound"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionEffect"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionEffectDuration"));
 		doEndeavourList(robot);
 		//robot.OnBeforeSerialize();
 

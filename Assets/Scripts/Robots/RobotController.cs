@@ -17,6 +17,8 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	private AudioSource soundEmitter;
 
 	public AudioClip destructionSound;
+	public Transform destructionEffect;
+	public float destructionEffectDuration = 3;
 
 
 	public float health = 100;
@@ -366,13 +368,50 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 			e.stopExecution();
 		}
 		this.enabled = false;
-		//Destroy(GetComponentInChildren<HoverJet>().gameObject);
 
 		Destroy(GetComponent<NavMeshAgent>());
-		Destroy(GetComponentInChildren<HoverJet>().gameObject);
-		GetComponent<Rigidbody>().isKinematic = false;
-		GetComponent<Rigidbody>().useGravity = true;
-		//Destroy(this.gameObject);
+		dismantle(transform);
+
+		if (destructionEffect != null) {
+			Transform effect = (Transform)Instantiate(destructionEffect, transform.position, Quaternion.LookRotation(transform.forward));
+			effect.hideFlags |= HideFlags.HideInHierarchy;
+			Destroy(effect.gameObject, destructionEffectDuration);
+		}
+	}
+
+	protected static void dismantle(Transform trans) {
+		const float maxForce = 200;
+		const float lingerTime = 30;
+
+		trans.parent = null;
+		trans.gameObject.hideFlags |= HideFlags.HideInHierarchy;
+		while (trans.childCount > 0)
+			dismantle(trans.GetChild(0));
+		Collider col = trans.GetComponent<Collider>();
+        if (col == null) {
+			Destroy(trans.gameObject);
+		} else {
+			foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
+				Destroy(script);
+			}
+			if (col as MeshCollider != null)
+				((MeshCollider)col).convex = true;
+			col.enabled = true;
+			Rigidbody rb = trans.GetComponent<Rigidbody>();
+			if (rb == null)
+				rb = trans.gameObject.AddComponent<Rigidbody>();
+			rb.isKinematic = false;
+			rb.useGravity = true;
+			rb.AddForce(randomRange(Vector3.one * -maxForce, Vector3.one * maxForce));
+			Destroy(trans.gameObject, lingerTime);
+		}
+	}
+
+	protected static Vector3 randomRange(Vector3 min, Vector3 max) {
+		return new Vector3(
+			UnityEngine.Random.Range(min.x, max.x),
+			UnityEngine.Random.Range(min.y, max.y),
+			UnityEngine.Random.Range(min.z, max.z));
 	}
 
 #if UNITY_EDITOR

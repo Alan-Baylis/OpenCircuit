@@ -102,14 +102,9 @@ public class AssaultRifle : Item {
 				if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
 					doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
 				}
-
-				if (robotHitEffect != null) {
-					Transform robotEffect = (Transform)Instantiate(robotHitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, Vector3.up));
-					Destroy(robotEffect.gameObject, robotHitEffectLifetime);
-				}
-			} else if (hitEffect != null) {
-				Transform effect = (Transform)Instantiate(hitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal, Vector3.up));
-				Destroy(effect.gameObject, hitEffectLifetime);
+				createHitEffect(robotHitEffect, robotHitEffectLifetime, hitInfo.point, hitInfo.normal);
+			} else {
+				createHitEffect(hitEffect, hitEffectLifetime, hitInfo.point, hitInfo.normal);
 			}
 		}
 	}
@@ -117,7 +112,7 @@ public class AssaultRifle : Item {
 	protected float calculateDamage(Vector3 trajectory, RaycastHit hitInfo) {
 		float multiplier = Mathf.Pow(Mathf.Max(-Vector3.Dot(trajectory, hitInfo.normal), 0), 20) *5;
         float calculatedDamage = damage *(1 +multiplier);
-		print("Calculated Damage: " +calculatedDamage);
+		//print("Calculated Damage: " +calculatedDamage);
 		return calculatedDamage;
 	}
 
@@ -131,6 +126,8 @@ public class AssaultRifle : Item {
 	}
 
 	protected void createHitEffect(Transform hitEffectPrefab, float lifetime, Vector3 location, Vector3 direction) {
+		if (hitEffectPrefab == null)
+			return;
 		Transform effect = (Transform)Instantiate(hitEffectPrefab, location, Quaternion.LookRotation(direction, Vector3.up));
 		effect.hideFlags |= HideFlags.HideInHierarchy;
 		Destroy(effect.gameObject, lifetime);
