@@ -54,7 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 0
   playerActivates: 0
-  delay: 2.25
+  delay: 2.75
   debug: 0
   bodyPrefab: {fileID: 433500, guid: b045fdefde2f47f4ebee19cf703fffa6, type: 2}
   armsPrefab: {fileID: 492174, guid: 966432c7228a46841803a8c201645281, type: 2}
@@ -85,7 +85,7 @@ Prefab:
       objectReference: {fileID: 417332, guid: f26cb59a57e7fdd4ca975aab4043a6f4, type: 2}
     - target: {fileID: 0}
       propertyPath: delay
-      value: 2.25
+      value: 2.75
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
