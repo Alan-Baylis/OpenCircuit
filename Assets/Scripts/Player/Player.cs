@@ -3,7 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Player")]
-public class Player : MonoBehaviour {
+public class Player : NetworkBehaviour {
 
 //	public Texture2D coldTex;
 //	public float coldStart;
@@ -93,6 +93,12 @@ public class Player : MonoBehaviour {
 		breathingSource.loop = true;
 		whiteOutTexture = new Texture2D (1, 1, TextureFormat.RGB24, false);
 		whiteOutTexture.SetPixel (0, 0, Color.white);
+	}
+
+	void Start() {
+		if (isLocalPlayer) {
+			cam.enabled = true;
+		}
 	}
 
 	void Update () {

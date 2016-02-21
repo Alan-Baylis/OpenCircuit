@@ -13,10 +13,36 @@ public class Controls : NetworkBehaviour {
 	public bool invertLook = false;
 	public bool enableMousePadHacking = false;
 
+	//[SyncVar]
+	//protected Vector3 serverPosition;
+	//[SyncVar]
+	//protected bool didSync;
+
+
+	public override int GetNetworkChannel() {
+		return 0;
+	}
+
 	void Awake () {
 		myPlayer = this.GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
+		//serverPosition = transform.position;
+		//didSync = false;
 	}
+
+	//void FixedUpdate() {
+	//	if (isServer)
+	//		return;
+	//	if (isLocalPlayer) {
+	//		//if (didSync)
+	//		//	return;
+	//		transform.position += (serverPosition -transform.position) /20f;
+	//		didSync = true;
+	//	} else {
+	//		didSync = false;
+	//		serverPosition = transform.position;
+	//	}
+	//}
 
 	void Update () {
 		if(!isLocalPlayer) {
@@ -46,12 +72,17 @@ public class Controls : NetworkBehaviour {
 
 
 		if (Input.GetButtonDown("Jump")) {
+			myPlayer.mover.jump();
 			CmdJump();
 		}
 
-		CmdSetSprint(Input.GetButton("Sprint"));
+		bool sprinting = Input.GetButton("Sprint");
+		myPlayer.mover.setSprinting(sprinting);
+        CmdSetSprint(sprinting);
 
-		CmdSetCrouch(Input.GetButton("Crouch"));
+		bool crouching = Input.GetButton("Crouch");
+		myPlayer.mover.setCrouching(crouching);
+        CmdSetCrouch(crouching);
 
 		/****************INVENTORY***************/
 		if (!myPlayer.inventory.inContext()) {
@@ -98,9 +129,11 @@ public class Controls : NetworkBehaviour {
 
 		if (Input.GetButtonDown("Use")) {
 			myPlayer.inventory.useEquipped();
+			CmdUseEquipped();
 		}
 		if (Input.GetButtonUp("Use")) {
 			myPlayer.inventory.stopUsingEquiped();
+			CmdStopUsingEquipped();
 		}
 		if (Input.GetButtonDown ("Interact")) {
 			myPlayer.interactor.interact();
@@ -146,6 +179,16 @@ public class Controls : NetworkBehaviour {
 	[Command]
 	protected void CmdSetSprint(bool sprint) {
 		myPlayer.mover.setSprinting(sprint);
+	}
+
+	[Command]
+	protected void CmdUseEquipped() {
+		myPlayer.inventory.useEquipped();
+	}
+
+	[Command]
+	protected void CmdStopUsingEquipped() {
+		myPlayer.inventory.stopUsingEquiped();
 	}
 
 	public void disablePlayerControls() {
