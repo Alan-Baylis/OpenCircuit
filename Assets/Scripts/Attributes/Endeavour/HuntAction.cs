@@ -22,7 +22,7 @@ public class HuntAction : Endeavour {
 	public override void execute() {
 		base.execute();
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
+		if(jet != null && target != null) {
 			jet.pursueTarget(target.labelHandle, false);
 			jet.setAvailability(false);
 		}
@@ -38,7 +38,7 @@ public class HuntAction : Endeavour {
 	}
 
 	public override bool isStale() {
-		return !controller.knowsTarget(target.labelHandle);
+		return target == null || !controller.knowsTarget(target.labelHandle);
 	}
 
 	public override void onMessage(RobotMessage message) {
@@ -46,6 +46,9 @@ public class HuntAction : Endeavour {
 	}
 
 	protected override float getCost() {
+        if (target == null) {
+            return float.PositiveInfinity;
+        }
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
 			return jet.calculatePathCost(target);
