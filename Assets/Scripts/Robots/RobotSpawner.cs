@@ -66,7 +66,16 @@ public class RobotSpawner : MonoBehaviour {
 			arms.transform.parent = body;
 			hoverPack.transform.parent = body;
 
-			body.GetComponent<RobotController>().locations = new Label[2] { FindObjectOfType<Player>().GetComponent<Label>(), FindObjectOfType<WinZone>().GetComponent<Label>() };
+			WinZone winZone = FindObjectOfType<WinZone>();
+			Player player = FindObjectOfType<Player>();
+			if(player != null && winZone != null) {
+				body.GetComponent<RobotController>().locations = new Label[2] { player.GetComponent<Label>(), winZone.GetComponent<Label>() };
+			} else if(player == null) {
+				Debug.LogWarning("Scene contains no player!!!");
+			} else if(winZone == null) {
+				Debug.LogWarning("Scene contains no win zone!!!");
+			}
+
 #if UNITY_EDITOR
 			body.GetComponent<RobotController>().debug = debug;
 #endif
