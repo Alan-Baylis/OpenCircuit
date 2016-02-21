@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Controls")]
-public class Controls : MonoBehaviour {
+public class Controls : NetworkBehaviour {
 
 	private Player myPlayer;
 	private bool playerControlsEnabled = true;
@@ -18,6 +19,9 @@ public class Controls : MonoBehaviour {
 	}
 
 	void Update () {
+		if(!isLocalPlayer) {
+			return;
+		}
 
 		/****************MENU****************/
 		if (Input.GetButtonDown("Menu")) {
@@ -31,17 +35,23 @@ public class Controls : MonoBehaviour {
 			return;
 
 		/****************MOVEMENT****************/
-		myPlayer.mover.setForward(Input.GetAxis("Vertical"));
+		float amount = Input.GetAxis("Vertical");
+		myPlayer.mover.setForward(amount);
+		CmdSetForward(amount);
 
-		myPlayer.mover.setRight(Input.GetAxis("Horizontal"));
+		amount = Input.GetAxis("Horizontal");
+		myPlayer.mover.setRight(amount);
+		CmdSetRight(amount);
+
+
 
 		if (Input.GetButtonDown("Jump")) {
-			myPlayer.mover.jump();
+			CmdJump();
 		}
 
-		myPlayer.mover.setSprinting(Input.GetButton("Sprint"));
+		CmdSetSprint(Input.GetButton("Sprint"));
 
-		myPlayer.mover.setCrouching(Input.GetButton("Crouch"));
+		CmdSetCrouch(Input.GetButton("Crouch"));
 
 		/****************INVENTORY***************/
 		if (!myPlayer.inventory.inContext()) {
@@ -111,7 +121,33 @@ public class Controls : MonoBehaviour {
 //			myPlayer.focus.unfocus();
 //		}
 	}
-	
+
+	[Command]
+	protected void CmdSetRight(float amount) {
+		myPlayer.mover.setRight(amount);
+	}
+
+	[Command]
+	protected void CmdSetForward(float amount) {
+		//print("Forward: " +amount);
+		myPlayer.mover.setForward(amount);
+	}
+
+	[Command]
+	protected void CmdJump() {
+		myPlayer.mover.jump();
+	}
+
+	[Command]
+	protected void CmdSetCrouch(bool crouch) {
+		myPlayer.mover.setCrouching(crouch);
+	}
+
+	[Command]
+	protected void CmdSetSprint(bool sprint) {
+		myPlayer.mover.setSprinting(sprint);
+	}
+
 	public void disablePlayerControls() {
 		playerControlsEnabled = false;
 		myPlayer.mover.setForward(0);

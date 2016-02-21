@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Player")]
 public class Player : MonoBehaviour {
-
 
 //	public Texture2D coldTex;
 //	public float coldStart;
@@ -76,7 +76,7 @@ public class Player : MonoBehaviour {
 		inventory = GetComponent<Inventory>();
 		mover = GetComponent<MovementController>();
 		cam = GetComponentInChildren<Camera>();
-		looker = GetComponentInChildren<MouseLook>();
+		looker = GetComponent<MouseLook>();
 		/*heat = GetComponent<Heat>();
 		hunger = GetComponent<Hunger>();
 		mapViewer = GetComponent<MapViewer>();*/
@@ -96,7 +96,6 @@ public class Player : MonoBehaviour {
 	}
 
 	void Update () {
-
 		if (oxygen < maxOxygen - oxygenRecoveryRate *Time.deltaTime) {
 			oxygen += oxygenRecoveryRate *Time.deltaTime;
 			if (!breathingSource.isPlaying) {
