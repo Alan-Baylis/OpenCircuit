@@ -255,6 +255,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 417332}
   - 114: {fileID: 11460476}
+  - 114: {fileID: 11476926}
   m_Layer: 0
   m_Name: HoverPack
   m_TagString: Untagged
@@ -1322,6 +1323,7 @@ MonoBehaviour:
   powerDrawRate: 5
   regularSpeed: 5
   pursueSpeed: 5
+  speedRegenRate: 5
 --- !u!114 &11467540
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1368,6 +1370,38 @@ MonoBehaviour:
   lowerLegLength: 2.0999999
   lowerMinRotation: -180
   lowerMaxRotation: 0
+--- !u!114 &11476926
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 167118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 242
+    i1: 108
+    i2: 181
+    i3: 154
+    i4: 87
+    i5: 231
+    i6: 253
+    i7: 212
+    i8: 202
+    i9: 151
+    i10: 90
+    i11: 171
+    i12: 64
+    i13: 67
+    i14: 166
+    i15: 244
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &11481032
 MonoBehaviour:
   m_ObjectHideFlags: 1

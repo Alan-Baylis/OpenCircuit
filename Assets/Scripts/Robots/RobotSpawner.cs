@@ -4,7 +4,7 @@ using System.Collections;
 
 public class RobotSpawner : NetworkBehaviour {
 
-	private static int maxRobots = 8;
+	private static int maxRobots = 1;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
 
@@ -20,12 +20,14 @@ public class RobotSpawner : NetworkBehaviour {
 
 	private bool triggered = false;
 
+	[ServerCallback]
 	void Start() {
 		if(active) {
 			activeSpawner = this;
 		}
 	}
 
+	[ServerCallback]
 	void Update() {
 		if(this != activeSpawner) {
 			active = false;
@@ -39,6 +41,7 @@ public class RobotSpawner : NetworkBehaviour {
 		}
 	}
 
+	[ServerCallback]
 	public void OnTriggerEnter(Collider other) {
 		if(!triggered) {
 			Object activator;
@@ -54,6 +57,7 @@ public class RobotSpawner : NetworkBehaviour {
 		}
 	}
 
+	[Server]
 	private void spawnRobot() {
 
 
@@ -94,6 +98,12 @@ public class RobotSpawner : NetworkBehaviour {
 			body.gameObject.SetActive(true);
 			hoverPack.gameObject.SetActive(true);
 			arms.gameObject.SetActive(true);
+
+			NetworkServer.Spawn(body.gameObject);
+			//NetworkServer.Spawn(arms.gameObject);
+			//NetworkServer.Spawn(generator.gameObject);
+			//NetworkServer.Spawn(hoverPack.gameObject);
+			body.GetComponent<NavMeshAgent>().enabled = true;
 		} else {
 			print("Null");
 		}

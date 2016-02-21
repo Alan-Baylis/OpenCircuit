@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
-public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
+public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver {
 
 	public static int controllerCount = 0;
 
@@ -61,6 +62,7 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	[System.NonSerialized]
 	private float timeoutSeconds = 10;
 
+	[ServerCallback]
 	void Start() {
 		controllerCount++;
 		health = maxHealth;
@@ -88,6 +90,7 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	}
 
 	// Update is called once per frame
+	[ServerCallback]
 	void Update () {
 		if(health <= 0) {
 			dispose();
@@ -360,6 +363,7 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 		}
 	}
 
+	[Server]
 	public void dispose() {
 		--controllerCount;
 		CancelInvoke();

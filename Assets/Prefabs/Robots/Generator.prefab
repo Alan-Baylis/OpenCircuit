@@ -47,6 +47,7 @@ GameObject:
   - 23: {fileID: 2320656}
   - 114: {fileID: 11423706}
   - 114: {fileID: 11443422}
+  - 114: {fileID: 11488354}
   m_Layer: 0
   m_Name: Generator
   m_TagString: Untagged
@@ -210,6 +211,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e02000000090300000005030000000a53687574646f776e4f7000000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
   isVisible: 1
+--- !u!114 &11488354
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 170158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 244
+    i1: 98
+    i2: 237
+    i3: 31
+    i4: 227
+    i5: 149
+    i6: 51
+    i7: 116
+    i8: 73
+    i9: 253
+    i10: 19
+    i11: 144
+    i12: 213
+    i13: 90
+    i14: 248
+    i15: 67
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!136 &13600892
 CapsuleCollider:
   m_ObjectHideFlags: 1
