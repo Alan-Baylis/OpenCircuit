@@ -9,6 +9,7 @@ public class Inventory : MonoBehaviour {
     public float iconSpacing;
     public float itemCircleRadius;
     public Texture2D itemBackground;
+	public Transform[] startingItemPrefabs;
 
 	protected Player player;
     protected Dictionary<System.Type, List<Item>> items;
@@ -21,6 +22,10 @@ public class Inventory : MonoBehaviour {
 	protected List<System.Type> contextStack;
 
     void Start () {
+		foreach(Transform trans in startingItemPrefabs) {
+			((Transform)Instantiate(trans)).parent = transform;
+		}
+
         items = new Dictionary<System.Type, List<Item>>();
 		slots = new System.Type[3];
 		contextStack = new List<System.Type>();

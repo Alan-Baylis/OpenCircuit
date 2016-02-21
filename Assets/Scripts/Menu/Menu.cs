@@ -54,7 +54,7 @@ public class Menu : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		activeAtStart = true;
 		timeScale = Time.timeScale;
-		Time.timeScale = 0;
+		//Time.timeScale = 0;
 	}
 
 	public void unpause() {
@@ -62,7 +62,7 @@ public class Menu : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		activeAtStart = false;
 		menuHistory.Clear();
-		Time.timeScale = timeScale;
+		//Time.timeScale = timeScale;
 	}
 
 	// Use this for initialization

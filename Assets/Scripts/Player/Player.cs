@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Player")]
-public class Player : MonoBehaviour {
-
+public class Player : NetworkBehaviour {
 
 //	public Texture2D coldTex;
 //	public float coldStart;
@@ -38,11 +38,11 @@ public class Player : MonoBehaviour {
 	private MapViewer myMapViewer;*/
 	private Controls myControls;
 
-	private static Player instance;
 	private AudioSource breathingSource;
 	private float whiteOutTime;
 	private float blackOutTime = 0;
 	private Texture2D whiteOutTexture;
+	[SyncVar]
 	private float suffering = 0;
 	private bool alive = true;
 
@@ -61,12 +61,7 @@ public class Player : MonoBehaviour {
 	public MapViewer mapViewer { get { return myMapViewer; } set { myMapViewer = value; } }*/
 	public Controls controls { get { return myControls; } set { myControls = value; } }
 
-	public static Player getInstance() {
-		return Player.instance;
-	}
-
 	void Awake() {
-		Player.instance = this;
 //		attacher = GetComponent<Attacher>();
 		attacker = GetComponent<Attack> ();
 //		equipper = GetComponent<Equip>();
@@ -76,7 +71,7 @@ public class Player : MonoBehaviour {
 		inventory = GetComponent<Inventory>();
 		mover = GetComponent<MovementController>();
 		cam = GetComponentInChildren<Camera>();
-		looker = GetComponentInChildren<MouseLook>();
+		looker = GetComponent<MouseLook>();
 		/*heat = GetComponent<Heat>();
 		hunger = GetComponent<Hunger>();
 		mapViewer = GetComponent<MapViewer>();*/
@@ -95,8 +90,13 @@ public class Player : MonoBehaviour {
 		whiteOutTexture.SetPixel (0, 0, Color.white);
 	}
 
-	void Update () {
+	void Start() {
+		if (isLocalPlayer) {
+			cam.enabled = true;
+		}
+	}
 
+	void Update () {
 		if (oxygen < maxOxygen - oxygenRecoveryRate *Time.deltaTime) {
 			oxygen += oxygenRecoveryRate *Time.deltaTime;
 			if (!breathingSource.isPlaying) {
@@ -110,11 +110,11 @@ public class Player : MonoBehaviour {
 			}
 		}
 
-		if (suffering > maxSuffering) {
-			// He's dead, Jim.
-			die();
-			//Application.Quit();
-			//UnityEditor.EditorApplication.isPlaying = false;
+		if(isLocalPlayer) {
+			if(suffering > maxSuffering) {
+				// He's dead, Jim.
+				die();
+			}
 		}
 		if (suffering > 0)
 			suffering = Mathf.Max(suffering -recoveryRate *Time.deltaTime, 0f);
@@ -140,9 +140,16 @@ public class Player : MonoBehaviour {
 	public void die() {
 		if (!alive)
 			return;
-		alive = false;
-		blackOutTime = blackOutDuration;
-		Menu.menu.lose();
+		//alive = false;
+		//blackOutTime = blackOutDuration;
+		//Menu.menu.lose();
+		Destroy(this.gameObject);
+		CmdKill();
+	}
+
+	[Command]
+	protected void CmdKill() {
+		Destroy(this.gameObject);
 	}
 
 	public void teleport(Vector3 position) {
@@ -152,6 +159,7 @@ public class Player : MonoBehaviour {
 		whiteOutTime = whiteOutDuration;
 	}
 
+	[Client]
 	void OnGUI () {
 		// draw the reticle
 		if (drawReticle) {

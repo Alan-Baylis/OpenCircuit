@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class RobotSpawner : MonoBehaviour {
+public class RobotSpawner : NetworkBehaviour {
 
-	private static int maxRobots = 10;
+	private static int maxRobots = 8;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
 
@@ -66,9 +67,29 @@ public class RobotSpawner : MonoBehaviour {
 			arms.transform.parent = body;
 			hoverPack.transform.parent = body;
 
-			body.GetComponent<RobotController>().locations = new Label[2] { FindObjectOfType<Player>().GetComponent<Label>(), FindObjectOfType<WinZone>().GetComponent<Label>() };
+			WinZone winZone = FindObjectOfType<WinZone>();
+			Player[] players = FindObjectsOfType<Player>();
+            //body.GetComponent<RobotController>().locations = new Label[players.Length];
+            Label[] labels = new Label[players.Length+1];
+            for (int i = 0; i < players.Length; ++i) {
+                Player player = players[i];
+                if (player != null) {
+                    labels[i] = player.GetComponent<Label>();
+                } else if (player == null) {
+                    Debug.LogWarning("Scene contains no player!!!");
+                }
+
+            }
+            if (winZone != null) {
+                labels[labels.Length - 1] = winZone.GetComponent<Label>();
+                }
+            else if (winZone == null) {
+                Debug.LogWarning("Scene contains no win zone!!!");
+            }
+            body.GetComponent<RobotController>().locations = labels;
+
 #if UNITY_EDITOR
-			body.GetComponent<RobotController>().debug = debug;
+        body.GetComponent<RobotController>().debug = debug;
 #endif
 			body.gameObject.SetActive(true);
 			hoverPack.gameObject.SetActive(true);
