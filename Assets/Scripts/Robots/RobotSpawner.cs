@@ -4,7 +4,7 @@ using System.Collections;
 
 public class RobotSpawner : NetworkBehaviour {
 
-	private static int maxRobots = 10;
+	private static int maxRobots = 8;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
 

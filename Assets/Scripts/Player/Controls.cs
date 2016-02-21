@@ -53,11 +53,8 @@ public class Controls : NetworkBehaviour {
 		if (Input.GetButtonDown("Menu")) {
 			menu.toggleInGameMenu();
 		}
-		if (menu.paused()) {
-			return;
-		}
 
-		if (inGUI() || Time.timeScale == 0 || !playerControlsEnabled)
+		if (Time.timeScale == 0 || !playerControlsEnabled)
 			return;
 
 		/****************MOVEMENT****************/
@@ -72,7 +69,7 @@ public class Controls : NetworkBehaviour {
 
 
 		if (Input.GetButtonDown("Jump")) {
-			myPlayer.mover.jump();
+			//myPlayer.mover.jump();
 			CmdJump();
 		}
 
@@ -114,6 +111,11 @@ public class Controls : NetworkBehaviour {
 					myPlayer.inventory.doSelect(-1);
 				}
 			}
+		}
+
+		// nothing after this point is done while in menu
+		if(menu.paused()) {
+			return;
 		}
 
 		if (myPlayer.inventory.isSelecting()) {
@@ -199,9 +201,5 @@ public class Controls : NetworkBehaviour {
 	
 	public void enablePlayerControls() {
 		playerControlsEnabled = true;
-	}
-
-	bool inGUI() {
-		return false;
 	}
 }
