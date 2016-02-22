@@ -147,7 +147,6 @@ public class Player : NetworkBehaviour {
 		foreach(Camera cam in cams) {
 			if(cam != null && !cam.enabled) {
 				cam.enabled = true;
-				break;
 			}
 		}
 
