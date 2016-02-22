@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -59,12 +60,14 @@ public class HoverJet : AbstractRobotComponent {
 		return target != null;
 	}
 
+	[ServerCallback]
 	void Start() {
 		myAnimator = GetComponent<Animation> ();
 		nav = roboController.GetComponent<NavMeshAgent> ();
 		nav.speed = regularSpeed;
 	}
 
+	[ServerCallback]
 	void Update () {
 		if(nav.speed < regularSpeed) {
 			nav.speed = nav.speed + speedRegenRate * Time.deltaTime;

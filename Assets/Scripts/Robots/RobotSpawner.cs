@@ -90,19 +90,28 @@ public class RobotSpawner : NetworkBehaviour {
             else if (winZone == null) {
                 Debug.LogWarning("Scene contains no win zone!!!");
             }
-            body.GetComponent<RobotController>().locations = labels;
+			RobotController robotController = body.GetComponent<RobotController>();
+            robotController.locations = labels;
 
 #if UNITY_EDITOR
-        body.GetComponent<RobotController>().debug = debug;
+			robotController.debug = debug;
 #endif
+
 			body.gameObject.SetActive(true);
 			hoverPack.gameObject.SetActive(true);
 			arms.gameObject.SetActive(true);
+			generator.gameObject.SetActive(true);
 
 			NetworkServer.Spawn(body.gameObject);
-			//NetworkServer.Spawn(arms.gameObject);
-			//NetworkServer.Spawn(generator.gameObject);
-			//NetworkServer.Spawn(hoverPack.gameObject);
+			NetworkServer.Spawn(arms.gameObject);
+			NetworkServer.Spawn(generator.gameObject);
+			NetworkServer.Spawn(hoverPack.gameObject);
+
+			NetworkInstanceId robotId = robotController.netId;
+			hoverPack.GetComponent<AbstractRobotComponent>().setControllerId(robotId);
+			//generator.GetComponent<AbstractRobotComponent>().setControllerId(robotId);
+			arms.GetComponent<AbstractRobotComponent>().setControllerId(robotId);
+
 			body.GetComponent<NavMeshAgent>().enabled = true;
 		} else {
 			print("Null");
