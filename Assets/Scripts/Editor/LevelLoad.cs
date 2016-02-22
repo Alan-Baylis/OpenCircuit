@@ -24,8 +24,11 @@ public class LevelLoad {
 		foreach(GameObject ob in gameObjects)
 			GameObject.DestroyImmediate(ob);
 
-		// create player
-		createPrefab("Assets/Prefabs/Player.prefab");
+		// create network manager
+		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab");
+
+		// create start point
+		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab");
 
 		// create empty voxel object
 		Vox.VoxelEditor.createEmpty();
