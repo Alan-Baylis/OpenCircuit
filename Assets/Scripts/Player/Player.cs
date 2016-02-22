@@ -143,8 +143,18 @@ public class Player : NetworkBehaviour {
 		//alive = false;
 		//blackOutTime = blackOutDuration;
 		//Menu.menu.lose();
+		Camera[] cams = FindObjectsOfType<Camera>();
+		foreach(Camera cam in cams) {
+			if(cam != null && !cam.enabled) {
+				cam.enabled = true;
+				break;
+			}
+		}
+
 		Destroy(this.gameObject);
 		CmdKill();
+
+
 	}
 
 	[Command]
