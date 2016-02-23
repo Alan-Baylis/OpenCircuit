@@ -93,6 +93,7 @@ public class Player : NetworkBehaviour {
 	void Start() {
 		if (isLocalPlayer) {
 			cam.enabled = true;
+			cam.GetComponent<AudioListener>().enabled = true;
 		}
 	}
 

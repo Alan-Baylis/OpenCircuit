@@ -73,7 +73,6 @@ public class RobotSpawner : NetworkBehaviour {
 
 			WinZone winZone = FindObjectOfType<WinZone>();
 			Player[] players = FindObjectsOfType<Player>();
-            //body.GetComponent<RobotController>().locations = new Label[players.Length];
             Label[] labels = new Label[players.Length+1];
             for (int i = 0; i < players.Length; ++i) {
                 Player player = players[i];
@@ -108,9 +107,9 @@ public class RobotSpawner : NetworkBehaviour {
 			NetworkServer.Spawn(hoverPack.gameObject);
 
 			NetworkInstanceId robotId = robotController.netId;
-			hoverPack.GetComponent<AbstractRobotComponent>().setControllerId(robotId);
-			//generator.GetComponent<AbstractRobotComponent>().setControllerId(robotId);
-			arms.GetComponent<AbstractRobotComponent>().setControllerId(robotId);
+			hoverPack.GetComponent<NetworkParenter>().setParentId(robotId);
+			generator.GetComponent<NetworkParenter>().setParentId(robotId);
+			arms.GetComponent<NetworkParenter>().setParentId(robotId);
 
 			body.GetComponent<NavMeshAgent>().enabled = true;
 		} else {
