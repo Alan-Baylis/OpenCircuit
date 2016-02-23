@@ -43,7 +43,6 @@ GameObject:
   - 114: {fileID: 11429406}
   - 114: {fileID: 11499038}
   - 114: {fileID: 11405568}
-  - 114: {fileID: 11488246}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -372,6 +371,7 @@ MonoBehaviour:
   teleportSound: {fileID: 0}
   whiteOutDuration: 0
   blackOutDuration: 20
+  controller: {fileID: 0}
 --- !u!114 &11405568
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -498,26 +498,6 @@ MonoBehaviour:
   itemBackground: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
   startingItemPrefabs:
   - {fileID: 454504, guid: 7e8c870f26308b64c823f321e29c3aa4, type: 2}
---- !u!114 &11488246
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1768714887, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TransformSyncMode: 3
-  m_SendInterval: 0.033333335
-  m_SyncRotationAxis: 0
-  m_RotationSyncCompression: 0
-  m_SyncSpin: 0
-  m_MovementTheshold: 0.001
-  m_SnapThreshold: 2
-  m_InterpolateRotation: 1
-  m_InterpolateMovement: 1.5
 --- !u!114 &11499038
 MonoBehaviour:
   m_ObjectHideFlags: 1

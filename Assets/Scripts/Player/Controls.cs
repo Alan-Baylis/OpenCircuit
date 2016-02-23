@@ -13,10 +13,8 @@ public class Controls : NetworkBehaviour {
 	public bool invertLook = false;
 	public bool enableMousePadHacking = false;
 
-	//[SyncVar]
-	//protected Vector3 serverPosition;
-	//[SyncVar]
-	//protected bool didSync;
+	[SyncVar]
+	protected Vector3 serverPosition;
 
 
 	public override int GetNetworkChannel() {
@@ -26,23 +24,17 @@ public class Controls : NetworkBehaviour {
 	void Awake () {
 		myPlayer = this.GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
-		//serverPosition = transform.position;
-		//didSync = false;
+		serverPosition = transform.position;
 	}
 
-	//void FixedUpdate() {
-	//	if (isServer)
-	//		return;
-	//	if (isLocalPlayer) {
-	//		//if (didSync)
-	//		//	return;
-	//		transform.position += (serverPosition -transform.position) /20f;
-	//		didSync = true;
-	//	} else {
-	//		didSync = false;
-	//		serverPosition = transform.position;
-	//	}
-	//}
+	void FixedUpdate() {
+		if (isServer) {
+			serverPosition = transform.position;
+		} else {
+			Vector3 diff = serverPosition -transform.position;
+            transform.position += Vector3.ClampMagnitude(diff *0.1f, 2);
+		}
+	}
 
 	void Update () {
 		if(!isLocalPlayer) {
@@ -69,7 +61,8 @@ public class Controls : NetworkBehaviour {
 
 
 		if (Input.GetButtonDown("Jump")) {
-			//myPlayer.mover.jump();
+			if (!isServer)
+				myPlayer.mover.jump();
 			CmdJump();
 		}
 
