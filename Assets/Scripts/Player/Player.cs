@@ -23,6 +23,8 @@ public class Player : NetworkBehaviour {
 	public float whiteOutDuration;
 	public float blackOutDuration;
 
+	public ClientController controller;
+
 //	private Attacher myAttacher;
 	private Attack myAttacker;
 //	private Equip myEquipper;
@@ -150,15 +152,18 @@ public class Player : NetworkBehaviour {
 				cam.enabled = true;
 			}
 		}
+		controller.setPlayerDead();
 
 		Destroy(this.gameObject);
-		CmdKill();
+		CmdKill(controller.gameObject);
 
 
 	}
 
 	[Command]
-	protected void CmdKill() {
+	protected void CmdKill(GameObject client) {
+		controller.setPlayerDead();
+		NetworkServer.ReplacePlayerForConnection(connectionToClient, client, playerControllerId);
 		Destroy(this.gameObject);
 	}
 
