@@ -395,6 +395,16 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
         if (col == null) {
 			Destroy(trans.gameObject);
 		} else {
+			NetworkParenter parenter = trans.GetComponent<NetworkParenter>();
+			if(parenter != null) {
+				Destroy(parenter);
+			}
+			NetworkTransform netTrans = trans.GetComponent<NetworkTransform>();
+			if(netTrans != null) {
+				Destroy(netTrans);
+			}
+
+
 			foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
 				Destroy(script);
 			}
