@@ -73,6 +73,8 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcEnableOtherPlayerCameras() {
+		if(!isLocalPlayer)
+			return;
 		Camera[] cams = FindObjectsOfType<Camera>();
 		foreach(Camera cam in cams) {
 			if(cam != null && !cam.enabled) {
