@@ -8,9 +8,16 @@ public class ClientController : NetworkBehaviour {
 
 	[SyncVar]
 	private bool isAlive = true;
-	[SyncVar]
+	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
 	private GameObject player = null;
+	private bool spawnPending = false;
+
+	private short clientId;
+
+	void Start() {
+		clientId = playerControllerId;
+	}
 
 	[ClientCallback]
 	void Update() {
@@ -18,13 +25,16 @@ public class ClientController : NetworkBehaviour {
 			return;
 		}
 		if(isAlive && player == null) {
+			if(!spawnPending) {
 				disableOtherPlayerCameras();
 				spawnPlayer();
+				spawnPending = true;
+			}
 		}
 	}
 	
 	[Command]
-	private void CmdSetPlayer(short playerId) {
+	private void CmdSetPlayer() {
 		GameObject newPlayer = Instantiate(playerPrefab, transform.position, Quaternion.identity) as GameObject;
 		newPlayer.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
 		NetworkServer.SpawnWithClientAuthority(newPlayer, connectionToClient);
@@ -34,10 +44,11 @@ public class ClientController : NetworkBehaviour {
 
 	public void setPlayerDead() {
 		isAlive = false;
+		RpcEnableOtherPlayerCameras();
 	}
 
-	[Command]
-	public void CmdSetRespawned() {
+	
+	public void setRespawned() {
 		isAlive = true;
 	}
 
@@ -46,14 +57,30 @@ public class ClientController : NetworkBehaviour {
 	}
 
 	private void spawnPlayer() {
-		CmdSetPlayer(playerControllerId);
-		player = ClientScene.FindLocalObject(id);
-		player.GetComponentInChildren<Camera>().enabled = true;
-		player.GetComponentInChildren<AudioListener>().enabled = true;
-		player.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
-		player.GetComponent<Player>().controller = this;
+		CmdSetPlayer();
 	}
 
+	private void setPlayerId(NetworkInstanceId id) {
+		this.id = id;
+		player = ClientScene.FindLocalObject(id);
+		player.GetComponent<Player>().controller = this;
+		spawnPending = false;
+		if(player.GetComponent<Player>().isLocalPlayer) {
+			player.GetComponentInChildren<Camera>().enabled = true;
+			player.GetComponentInChildren<AudioListener>().enabled = true;
+		}
+	}
+
+	[ClientRpc]
+	private void RpcEnableOtherPlayerCameras() {
+		Camera[] cams = FindObjectsOfType<Camera>();
+		foreach(Camera cam in cams) {
+			if(cam != null && !cam.enabled) {
+				cam.enabled = true;
+			}
+		}
+	}
+	
 	private void disableOtherPlayerCameras() {
 		Camera[] cameras = FindObjectsOfType<Camera>();
 		foreach(Camera cam in cameras) {

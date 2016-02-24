@@ -92,13 +92,6 @@ public class Player : NetworkBehaviour {
 		whiteOutTexture.SetPixel (0, 0, Color.white);
 	}
 
-	void Start() {
-		if (isLocalPlayer) {
-			cam.enabled = true;
-			cam.GetComponent<AudioListener>().enabled = true;
-		}
-	}
-
 	void Update () {
 		if (oxygen < maxOxygen - oxygenRecoveryRate *Time.deltaTime) {
 			oxygen += oxygenRecoveryRate *Time.deltaTime;
@@ -113,7 +106,7 @@ public class Player : NetworkBehaviour {
 			}
 		}
 
-		if(isLocalPlayer) {
+		if(isServer) {
 			if(suffering > maxSuffering) {
 				// He's dead, Jim.
 				die();
@@ -146,25 +139,14 @@ public class Player : NetworkBehaviour {
 		//alive = false;
 		//blackOutTime = blackOutDuration;
 		//Menu.menu.lose();
-		Camera[] cams = FindObjectsOfType<Camera>();
-		foreach(Camera cam in cams) {
-			if(cam != null && !cam.enabled) {
-				cam.enabled = true;
-			}
+		if(controller != null) {
+			controller.setPlayerDead();
 		}
-		controller.setPlayerDead();
 
+		NetworkServer.ReplacePlayerForConnection(connectionToClient, controller.gameObject, playerControllerId);
 		Destroy(this.gameObject);
-		CmdKill(controller.gameObject);
 
 
-	}
-
-	[Command]
-	protected void CmdKill(GameObject client) {
-		controller.setPlayerDead();
-		NetworkServer.ReplacePlayerForConnection(connectionToClient, client, playerControllerId);
-		Destroy(this.gameObject);
 	}
 
 	public void teleport(Vector3 position) {

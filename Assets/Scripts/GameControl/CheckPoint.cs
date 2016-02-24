@@ -8,7 +8,7 @@ public class CheckPoint : MonoBehaviour {
 			ClientController [] controllers = FindObjectsOfType<ClientController>();
 			foreach(ClientController controller in controllers) {
 				print("respawn player");
-				controller.CmdSetRespawned();
+				controller.setRespawned();
 			}
 		}
 	}
