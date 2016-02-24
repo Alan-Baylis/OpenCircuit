@@ -71,7 +71,7 @@ public class RobotSpawner : NetworkBehaviour {
 			arms.transform.parent = body;
 			hoverPack.transform.parent = body;
 
-			WinZone winZone = FindObjectOfType<WinZone>();
+			//WinZone winZone = FindObjectOfType<WinZone>();
 			Player[] players = FindObjectsOfType<Player>();
             Label[] labels = new Label[players.Length+1];
             for (int i = 0; i < players.Length; ++i) {
@@ -83,12 +83,12 @@ public class RobotSpawner : NetworkBehaviour {
                 }
 
             }
-            if (winZone != null) {
-                labels[labels.Length - 1] = winZone.GetComponent<Label>();
-                }
-            else if (winZone == null) {
-                Debug.LogWarning("Scene contains no win zone!!!");
-            }
+			//if (winZone != null) {
+			//	labels[labels.Length - 1] = winZone.GetComponent<Label>();
+			//}
+			//else if (winZone == null) {
+			//	Debug.LogWarning("Scene contains no win zone!!!");
+			//}
 			RobotController robotController = body.GetComponent<RobotController>();
             robotController.locations = labels;
 
