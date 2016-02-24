@@ -156,8 +156,11 @@ public class Player : NetworkBehaviour {
 		whiteOutTime = whiteOutDuration;
 	}
 
-	[Client]
-	void OnGUI () {
+	[ClientCallback]
+	public void OnGUI () {
+		if (!isLocalPlayer)
+			return;
+
 		// draw the reticle
 		if (drawReticle) {
 			Rect reticleShape = new Rect(Screen.width/2 -10, Screen.height/2 -8, 16f,16f);

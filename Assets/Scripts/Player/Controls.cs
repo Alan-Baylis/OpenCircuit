@@ -13,9 +13,6 @@ public class Controls : NetworkBehaviour {
 	public bool invertLook = false;
 	public bool enableMousePadHacking = false;
 
-	[SyncVar]
-	protected Vector3 serverPosition;
-
 
 	public override int GetNetworkChannel() {
 		return 0;
@@ -24,16 +21,6 @@ public class Controls : NetworkBehaviour {
 	void Awake () {
 		myPlayer = this.GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
-		serverPosition = transform.position;
-	}
-
-	void FixedUpdate() {
-		if (isServer) {
-			serverPosition = transform.position;
-		} else {
-			Vector3 diff = serverPosition -transform.position;
-            transform.position += Vector3.ClampMagnitude(diff *0.1f, 2);
-		}
 	}
 
 	void Update () {
