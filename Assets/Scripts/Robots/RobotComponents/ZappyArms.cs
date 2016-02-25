@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -87,41 +88,61 @@ public class ZappyArms : AbstractArms {
 	public override void dropTarget() {
 		if(target != null) {
 			target.clearTag(TagEnum.Grabbed);
-			Rigidbody rigidbody = target.GetComponent<Rigidbody>();
-			if(rigidbody != null) {
-				rigidbody.isKinematic = false;
-				rigidbody.useGravity = true;
-				rigidbody.AddForce(transform.forward * throwForce.z);
-				rigidbody.AddForce(transform.up * throwForce.y);
-			}
-			target.transform.parent = null;
 			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
 			footstepEmitter.PlayOneShot(drop, 1);
-			Player player = target.GetComponent<Player>();
-			if(player != null) {
-				player.inventory.popContext(typeof(PocketEMP));
-			}
+
+			dropRigidbody(target.gameObject);
+			NetworkIdentity netId = target.GetComponent<NetworkIdentity>();
+			if (netId != null)
+				RpcDropTarget(netId.netId);
 
 			target = null;
 		}
+	}
+
+	[ClientRpc]
+	protected void RpcDropTarget(NetworkInstanceId netId) {
+		dropRigidbody(ClientScene.FindLocalObject(netId));
+	}
+
+	protected void dropRigidbody(GameObject obj) {
+		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+		if (rigidbody != null) {
+			rigidbody.isKinematic = false;
+			rigidbody.useGravity = true;
+			rigidbody.AddForce(transform.forward * throwForce.z + transform.up * throwForce.y);
+		}
+		obj.transform.parent = null;
 	}
 
 	public override void attachTarget(Label obj) {
 		if(target == null) {
 			target = obj;
 			target.setTag(new Tag(TagEnum.Grabbed, 0));
-			Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
-			if(rigidbody != null) {
-				rigidbody.isKinematic = true;
-				rigidbody.useGravity = false;
-				rigidbody.velocity = new Vector3(0, 0, 0);
-			}
-
-			target.transform.parent = transform;
-			target.transform.localPosition = HOLD_POSITION;
+			attachRigidbody(obj.gameObject);
+			NetworkIdentity netId = obj.GetComponent<NetworkIdentity>();
+			if (netId != null)
+				RpcAttachTarget(netId.netId);
 			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
 			roboController.addEndeavour(new ScanAction(roboController, new List<Goal>(), target));
 		}
+	}
+
+	[ClientRpc]
+	protected void RpcAttachTarget(NetworkInstanceId netId) {
+		attachRigidbody(ClientScene.FindLocalObject(netId));
+	}
+
+	protected void attachRigidbody(GameObject obj) {
+		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+		if (rigidbody != null) {
+			rigidbody.isKinematic = true;
+			rigidbody.useGravity = false;
+			rigidbody.velocity = new Vector3(0, 0, 0);
+		}
+
+		obj.transform.parent = transform;
+		obj.transform.localPosition = HOLD_POSITION;
 	}
 
 	public void electrifyTarget() {
