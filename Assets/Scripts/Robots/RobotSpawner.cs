@@ -73,7 +73,7 @@ public class RobotSpawner : NetworkBehaviour {
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			Player[] players = FindObjectsOfType<Player>();
-            Label[] labels = new Label[players.Length+1];
+            Label[] labels = new Label[players.Length];
             for (int i = 0; i < players.Length; ++i) {
                 Player player = players[i];
                 if (player != null) {
