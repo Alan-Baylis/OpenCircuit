@@ -374,6 +374,15 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		this.enabled = false;
 
 		Destroy(GetComponent<NavMeshAgent>());
+		int randomSeed = UnityEngine.Random.seed;
+
+		RpcDismantle(randomSeed);
+		//dismantle(transform);
+	}
+
+	[ClientRpc]
+	protected void RpcDismantle(int randomSeed) {
+		UnityEngine.Random.seed = randomSeed;
 		dismantle(transform);
 
 		if (destructionEffect != null) {
@@ -401,7 +410,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 
 			foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
-				Destroy(script);
+				if (script as NetworkIdentity == null) {
+					Destroy(script);
+				}
 			}
 			if (col as MeshCollider != null)
 				((MeshCollider)col).convex = true;
