@@ -36,6 +36,9 @@ public class LevelLoad {
 		// create sun
 		createPrefab("Assets/Prefabs/Sun.prefab");
 
+		// create scene camera
+		createPrefab("Assets/Prefabs/GameControl/SceneCamera.prefab");
+
 		// create menu
 		createPrefab("Assets/Prefabs/Main Menu.prefab");
 

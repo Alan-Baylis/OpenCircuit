@@ -133,6 +133,7 @@ public class Player : NetworkBehaviour {
 		// play sound or whatever here
 	}
 
+	[Server]
 	public void die() {
 		if (!alive)
 			return;
@@ -143,7 +144,6 @@ public class Player : NetworkBehaviour {
 			controller.setPlayerDead();
 		}
 
-		NetworkServer.ReplacePlayerForConnection(connectionToClient, controller.gameObject, playerControllerId);
 		Destroy(this.gameObject);
 
 

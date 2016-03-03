@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class CheckPoint : MonoBehaviour {
+public class CheckPoint : NetworkBehaviour {
+
+	[ServerCallback]
 	public void OnTriggerEnter(Collider other) {
 		Player player = other.GetComponent<Player>();
 		if(player != null) {
