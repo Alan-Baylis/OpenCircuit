@@ -11,7 +11,7 @@ public class CheckPoint : NetworkBehaviour {
 			ClientController [] controllers = FindObjectsOfType<ClientController>();
 			foreach(ClientController controller in controllers) {
 				print("respawn player");
-				controller.setRespawned();
+				controller.respawnPlayer();
 			}
 		}
 	}

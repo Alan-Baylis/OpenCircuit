@@ -9,12 +9,9 @@ public class ClientController : NetworkBehaviour {
 
 	public GameObject playerPrefab;
 
-	[SyncVar(hook="setIsAlive")]
-	private bool shouldSpawn = true;
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
 	private GameObject player = null;
-	private bool spawnPending = false;
 
 	[SyncVar]
 	private bool isDead = false;
@@ -37,22 +34,13 @@ public class ClientController : NetworkBehaviour {
 				cameras.Add(player.netId);
 			}
 		}
+		disableSceneCam();
+		CmdSpawnPlayer();
 	}
 
 	[ClientCallback]
 	void Update() {
-		//if(isLocalPlayer || (player != null && player.GetComponent<Player>().isLocalPlayer)) {
-		//	print("num cameras: " + cameras.Count);
-		//}
 		if(isLocalPlayer) {
-
-			if(shouldSpawn) {
-				if(!spawnPending) {
-					spawnPending = true;
-					spawnPlayer();
-				}
-			}
-
 			if(isDead && Input.GetButtonDown("Use")) {
 				switchCamera();
 			}
@@ -62,9 +50,14 @@ public class ClientController : NetworkBehaviour {
 			}
 		}
 	}
-	
+
 	[Command]
-	private void CmdSetPlayer() {
+	private void CmdSpawnPlayer() {
+		spawnPlayer();
+	}
+	
+	[Server]
+	private void spawnPlayer() {
 		GameObject newPlayer = Instantiate(playerPrefab, transform.position, Quaternion.identity) as GameObject;
 		newPlayer.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
 		NetworkServer.SpawnWithClientAuthority(newPlayer, connectionToClient);
@@ -74,35 +67,34 @@ public class ClientController : NetworkBehaviour {
 
 	[Server]
 	public void setPlayerDead() {
-		shouldSpawn = false;
 		isDead = true;
 		NetworkServer.ReplacePlayerForConnection(connectionToClient, gameObject, playerControllerId);
 		RpcSwitchCam();
 	}
 
 	[Server]
-	public void setRespawned() {
-		shouldSpawn = true;
-		isDead = false;
+	public void respawnPlayer() {
+		if(isDead) {
+			isDead = false;
+			RpcResetCamera();
+			spawnPlayer();
+		}
 	}
 
-	[Client]
-	private void spawnPlayer() {
+	[ClientRpc]
+	private void RpcResetCamera() {
 		if(currentCamera >= 0) {
 			disableCurrentCam();
 			disableSceneCam();
 			currentCamera = -1;
 		}
-		CmdSetPlayer();
 	}
 
 	[Client]
 	private void setPlayerId(NetworkInstanceId id) {
 		this.id = id;
-		shouldSpawn = false;
 		player = ClientScene.FindLocalObject(id);
 		player.GetComponent<Player>().controller = this;
-		spawnPending = false;
 		if(player.GetComponent<Player>().isLocalPlayer) {
 			disableSceneCam();
 			player.GetComponentInChildren<Camera>().enabled = true;
@@ -110,11 +102,6 @@ public class ClientController : NetworkBehaviour {
 		} else {
 			cameras.Add(id);
 		}
-	}
-
-	[Client]
-	private void setIsAlive(bool isAlive) {
-		this.shouldSpawn = isAlive;
 	}
 
 	[ClientRpc]
@@ -126,8 +113,6 @@ public class ClientController : NetworkBehaviour {
 	private void switchCamera() {
 		if(!isLocalPlayer)
 			return;
-		print("switch cam: " + currentCamera);
-		print("num cams: " + cameras.Count);
 		if(currentCamera >= 0) {
 			disableCurrentCam();
 			incrementCamera();
@@ -171,12 +156,9 @@ public class ClientController : NetworkBehaviour {
 	private void enableCurrentCam() {
 		if(!isLocalPlayer)
 			return;
-		print("we are the local player");
 		if(currentCamera < cameras.Count) {
-			print("cameras in bounds");
 			Camera nextCam = ClientScene.FindLocalObject(cameras[currentCamera]).GetComponentInChildren<Camera>();
 			if(nextCam != null) {
-				print("enabling cam");
 				nextCam.enabled = true;
 				nextCam.GetComponent<AudioListener>().enabled = true;
 			}
