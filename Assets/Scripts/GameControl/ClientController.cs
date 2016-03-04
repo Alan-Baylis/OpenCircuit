@@ -35,7 +35,7 @@ public class ClientController : NetworkBehaviour {
 			}
 		}
 		disableSceneCam();
-		CmdSpawnPlayer();
+		CmdSpawnPlayerAt(transform.position);
 	}
 
 	[ClientCallback]
@@ -51,14 +51,19 @@ public class ClientController : NetworkBehaviour {
 		}
 	}
 
+	//anyone can call!!
+	public bool isAlive() {
+		return !isDead;
+	}
+
 	[Command]
-	private void CmdSpawnPlayer() {
-		spawnPlayer();
+	private void CmdSpawnPlayerAt(Vector3 position) {
+		spawnPlayerAt(position);
 	}
 	
 	[Server]
-	private void spawnPlayer() {
-		GameObject newPlayer = Instantiate(playerPrefab, transform.position, Quaternion.identity) as GameObject;
+	private void spawnPlayerAt(Vector3 position) {
+		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
 		newPlayer.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
 		NetworkServer.SpawnWithClientAuthority(newPlayer, connectionToClient);
 		NetworkServer.ReplacePlayerForConnection(connectionToClient, newPlayer, playerControllerId);
@@ -73,11 +78,11 @@ public class ClientController : NetworkBehaviour {
 	}
 
 	[Server]
-	public void respawnPlayer() {
+	public void respawnPlayerAt(Vector3 position) {
 		if(isDead) {
 			isDead = false;
 			RpcResetCamera();
-			spawnPlayer();
+			spawnPlayerAt(position);
 		}
 	}
 
