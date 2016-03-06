@@ -118,7 +118,7 @@ public class Controls : NetworkBehaviour {
 			CmdStopUsingEquipped();
 		}
 		if (Input.GetButtonDown ("Interact")) {
-			myPlayer.interactor.interact();
+			CmdInteract();
 		}
 
 //		if (Input.GetButton ("Fire2")) {
@@ -135,6 +135,11 @@ public class Controls : NetworkBehaviour {
 //		else {
 //			myPlayer.focus.unfocus();
 //		}
+	}
+
+	[Command]
+	protected void CmdInteract() {
+		myPlayer.interactor.interact();
 	}
 
 	[Command]

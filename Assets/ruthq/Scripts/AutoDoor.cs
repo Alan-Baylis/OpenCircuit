@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class AutoDoor : MonoBehaviour {
+public class AutoDoor : NetworkBehaviour {
 
     public float doorHeight = 3.5f;
 	public float toggleTime = .25f;
@@ -18,12 +19,27 @@ public class AutoDoor : MonoBehaviour {
 	public AudioClip endSound;
 
     // Use this for initialization
+	[ServerCallback]
     void Start () {
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         downPosition = door.transform.position - new Vector3 (0,doorHeight,0);
         upPosition = door.transform.position;
 	}
 
+	// Update is called once per frame
+	[ServerCallback]
+	void Update() {
+
+		if(isMovingUp) {
+			//print("moving up");
+			moveUp();
+		} else {
+			moveDown();
+		}
+
+	}
+
+	[Server]
 	public void open() {
 		if(isMovingUp) {
 			isMovingUp = false;
@@ -31,6 +47,7 @@ public class AutoDoor : MonoBehaviour {
 		}
 	}
 
+	[Server]
 	public void close() {
 		if(!isMovingUp) {
 			isMovingUp = true;
@@ -38,12 +55,15 @@ public class AutoDoor : MonoBehaviour {
 		}
 	}
 
+
+	[Server]
 	public void toggle() {
 		isMovingUp = !isMovingUp;
 		atEnd = false;
 	}
 
-    void moveDown() {
+	[Server]
+   private void moveDown() {
         Vector3 stopVector = door.transform.position - downPosition;
         float length = stopVector.magnitude;
 
@@ -61,7 +81,8 @@ public class AutoDoor : MonoBehaviour {
 
     }
 
-    void moveUp() {
+	[Server]
+    private void moveUp() {
         Vector3 upVector = door.transform.position - upPosition;
         float upLength = upVector.magnitude;
 
@@ -78,15 +99,4 @@ public class AutoDoor : MonoBehaviour {
 		}
 
     }
-	// Update is called once per frame
-	void Update () {
-
-    if (isMovingUp) {
-            moveUp();
-        }
-     else {
-            moveDown();
-        }
-
-	}
 }
