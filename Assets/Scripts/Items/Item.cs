@@ -1,20 +1,46 @@
 using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public abstract class Item : MonoBehaviour {
+public abstract class Item : NetworkBehaviour {
 
     public Texture2D icon;
+	public Vector3 holdPosition;
+	public Vector3 holdRotation;
+	public Vector3 sprintPosition;
+	public Vector3 sprintRotation;
+	public float responsiveness = 0.5f;
+	public float positionalResponsiveness = 0.5f;
 
-    protected float reachDistance = 3f;
+	protected float reachDistance = 3f;
 
-	// void Awake() {
-	// 	gameObject.AddComponent<pickupEvent>().item = this;
-	// }
+	protected Inventory holder;
+	protected Collider col;
+	protected Transform followingCamera;
 
-	// public virtual void onPickup(InteractTrigger e) {
-	// 	Player.getInstance().carryPickup(gameObject, e.getPoint());
-	// }
+	public void Awake() {
+		col = GetComponent<Collider>();
+	}
+
+	public void FixedUpdate() {
+		if (followingCamera != null) {
+			Vector3 newPosition;
+			Quaternion newRotation;
+            if (holder.sprinting) {
+				Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
+				newPosition = transform.parent.TransformPoint(rotation *sprintPosition);
+				newRotation = transform.parent.rotation * Quaternion.Euler(sprintRotation);
+				newRotation = rotation * newRotation;
+			} else {
+				newPosition = followingCamera.TransformPoint(holdPosition);
+				newRotation = followingCamera.rotation * Quaternion.Euler(holdRotation);
+			}
+
+			transform.position = Vector3.Lerp(transform.position, newPosition, positionalResponsiveness);
+			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness);
+		}
+	}
 
 	public abstract void beginInvoke(Inventory invoker);
 
@@ -22,31 +48,29 @@ public abstract class Item : MonoBehaviour {
 
     public virtual void onTake(Inventory taker) {
         transform.SetParent(taker.transform);
+		followingCamera = taker.getPlayer().cam.transform;
+		holder = taker;
         gameObject.SetActive(false);
     }
 
     public virtual void onDrop(Inventory taker) {
         transform.SetParent(null);
-        gameObject.SetActive(true);
+		followingCamera = null;
+		gameObject.SetActive(true);
 		endInvoke(taker);
     }
 
     public virtual void onEquip(Inventory equipper) {
+		transform.localPosition = holdPosition;
+		col.enabled = false;
+		gameObject.SetActive(true);
     }
 
     public virtual void onUnequip(Inventory equipper) {
+		gameObject.SetActive(false);
 		endInvoke(equipper);
-    }
-
-    // protected virtual void trigger() {
-	// 	RaycastHit col = reach();
-	// 	if (col.collider != null) {
-	// 		Label evH = col.collider.GetComponent<Label>();
-	// 		if (evH != null) {
-	// 			evH.sendTrigger(gameObject, buildTrigger());
-	// 		}
-	// 	}
-	// }
+		col.enabled = true;
+	}
 
 	protected RaycastHit reach() { Vector3 fake; return reach(out fake); }
 	protected RaycastHit reach(out Vector3 position) {
@@ -66,22 +90,3 @@ public abstract class Item : MonoBehaviour {
 		return finalHit;
 	}
 }
-
-// [System.Serializable]
-// public class PickupOperation : Operation {
-//
-// 	private static System.Type[] triggers = new System.Type[] {
-// 		typeof(InteractTrigger),
-// 	};
-//
-// 	public Item item;
-//
-// 	public override System.Type[] getTriggers() {
-// 		return triggers;
-// 	}
-//
-// 	public override void perform(GameObject instigator, Trigger trig) {
-// 		InteractTrigger trigger = (InteractTrigger)trig;
-// 		item.onPickup(trigger);
-// 	}
-// }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System;
 
@@ -24,9 +25,9 @@ public class AssaultRifle : Item {
 	protected float cycleTime = 0;
 	protected AudioSource audioSource;
 
-	public override void beginInvoke(Inventory invoker) {
-		this.inventory = invoker;
-		shooting = true;
+	public override void onTake(Inventory taker) {
+		base.onTake(taker);
+		taker.equip(this);
 	}
 
 	public override void onEquip(Inventory equipper) {
@@ -42,16 +43,16 @@ public class AssaultRifle : Item {
 		equipper.StopCoroutine(this.cycle());
 		if (audioSource != null)
 			Destroy(audioSource);
-    }
+	}
+
+	public override void beginInvoke(Inventory invoker) {
+		this.inventory = invoker;
+		shooting = true;
+	}
 
 	public override void endInvoke(Inventory invoker) {
 		base.endInvoke(invoker);
 		shooting = false;
-	}
-
-	public override void onTake(Inventory taker) {
-		base.onTake(taker);
-		taker.equip(this);
 	}
 
 	protected IEnumerator cycle() {
@@ -61,20 +62,26 @@ public class AssaultRifle : Item {
 			if (cycleTime <= 0) {
 				while(!shooting)
 					yield return new WaitForFixedUpdate();
-				shoot();
+				Transform cam = inventory.getPlayer().cam.transform;
+				RpcShoot(cam.position, cam.forward);
+				shoot(cam.position, cam.forward);
 			}
 			yield return new WaitForFixedUpdate();
 		}
 	}
 
-	protected void shoot() {
-		audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-		audioSource.Play();
-		Transform cam = inventory.getPlayer().cam.transform;
-		doBullet(cam.position, cam.forward, 1);
-		cycleTime += fireDelay;
+	[ClientRpc]
+	protected void RpcShoot(Vector3 position, Vector3 direction) {
+		shoot(position, direction);
 	}
 
+	protected void shoot(Vector3 position, Vector3 direction) {
+		audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+		audioSource.Play();
+		doBullet(position, direction, 1);
+		cycleTime += fireDelay;
+	}
+	
 	protected void doBullet(Vector3 position, Vector3 direction, float power) {
 		if (power <= 0)
 			return;

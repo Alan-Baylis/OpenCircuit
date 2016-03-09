@@ -23,7 +23,7 @@ public class Controls : NetworkBehaviour {
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
-	void Update () {
+	void FixedUpdate () {
 		if(!isLocalPlayer) {
 			return;
 		}
@@ -54,7 +54,7 @@ public class Controls : NetworkBehaviour {
 		}
 
 		bool sprinting = Input.GetButton("Sprint");
-		myPlayer.mover.setSprinting(sprinting);
+		setSprinting(sprinting);
         CmdSetSprint(sprinting);
 
 		bool crouching = Input.GetButton("Crouch");
@@ -120,21 +120,6 @@ public class Controls : NetworkBehaviour {
 		if (Input.GetButtonDown ("Interact")) {
 			CmdInteract();
 		}
-
-//		if (Input.GetButton ("Fire2")) {
-//			if (inGUI()) {
-//				myPlayer.focus.unfocus ();
-//			} else {
-//				myPlayer.focus.focus ();
-//				if (Input.GetButtonDown("Fire1")) {
-//					//myPlayer.attacher.attach ();
-//                    myPlayer.focus.invoke();
-//				}
-//			}
-//		}
-//		else {
-//			myPlayer.focus.unfocus();
-//		}
 	}
 
 	[Command]
@@ -165,7 +150,12 @@ public class Controls : NetworkBehaviour {
 
 	[Command]
 	protected void CmdSetSprint(bool sprint) {
+		setSprinting(sprint);
+	}
+
+	protected void setSprinting(bool sprint) {
 		myPlayer.mover.setSprinting(sprint);
+		myPlayer.inventory.setSprinting(sprint);
 	}
 
 	[Command]

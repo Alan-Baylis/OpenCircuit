@@ -20,6 +20,8 @@ public class Inventory : MonoBehaviour {
     protected List<System.Type> unselectedItems;
     protected Vector2 mousePos;
 	protected List<System.Type> contextStack;
+	[HideInInspector]
+	public bool sprinting = false;
 
     void Start () {
 		foreach(Transform trans in startingItemPrefabs) {
@@ -48,6 +50,10 @@ public class Inventory : MonoBehaviour {
 
 	public Player getPlayer() {
 		return player;
+	}
+
+	public void setSprinting(bool sprint) {
+		sprinting = sprint;
 	}
 
     public bool take(GameObject itemObject) {
