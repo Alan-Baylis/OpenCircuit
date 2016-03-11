@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Player/Inventory")]
-public class Inventory : MonoBehaviour {
+public class Inventory : NetworkBehaviour {
 
     public Vector2 iconDimensions;
     public float iconSpacing;
@@ -12,33 +13,39 @@ public class Inventory : MonoBehaviour {
 	public Transform[] startingItemPrefabs;
 
 	protected Player player;
-    protected Dictionary<System.Type, List<Item>> items;
+	protected Dictionary<System.Type, List<Item>> items = new Dictionary<System.Type, List<Item>>();
 	protected Item equipped;
-    protected System.Type[] slots;
+    protected System.Type[] slots = new System.Type[3];
     protected int selecting;
     protected int highlighted;
     protected List<System.Type> unselectedItems;
     protected Vector2 mousePos;
-	protected List<System.Type> contextStack;
+	protected List<System.Type> contextStack = new List<System.Type>();
 	[HideInInspector]
 	public bool sprinting = false;
 
-    void Start () {
+	[ServerCallback]
+	void Awake() {
 		foreach(Transform trans in startingItemPrefabs) {
-			((Transform)Instantiate(trans)).parent = transform;
+			Transform newItem = Instantiate(trans);
+			newItem.transform.parent = transform;
+			NetworkServer.Spawn(newItem.gameObject);
 		}
+	}
 
-        items = new Dictionary<System.Type, List<Item>>();
-		slots = new System.Type[3];
-		contextStack = new List<System.Type>();
+    void Start () {
 		equipped = null;
         selecting = -1;
         unselectedItems = new List<System.Type>();
 		player = GetComponent<Player>();
 
-		foreach (Item item in GetComponentsInChildren<Item>())
-			if (!contains(item))
-				take(item);
+		if(isServer) {
+			foreach(Item item in GetComponentsInChildren<Item>())
+				if(!contains(item)) {
+					RpcTake(item.netId);
+					take(item);
+				}
+		}
     }
 
     public void OnGUI() {
@@ -68,6 +75,11 @@ public class Inventory : MonoBehaviour {
         item.onTake(this);
         return true;
     }
+
+	[ClientRpc]
+	public void RpcTake(NetworkInstanceId item) {
+		take(ClientScene.FindLocalObject(item));
+	}
 
 	public bool canTake(GameObject itemObject) {
 		return itemObject.GetComponent<Item>() != null;
