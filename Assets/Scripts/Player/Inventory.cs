@@ -37,7 +37,6 @@ public class Inventory : NetworkBehaviour {
 		equipped = null;
         selecting = -1;
         unselectedItems = new List<System.Type>();
-		player = GetComponent<Player>();
 
 		if(isServer) {
 			foreach(Item item in GetComponentsInChildren<Item>())
@@ -56,6 +55,9 @@ public class Inventory : NetworkBehaviour {
     }
 
 	public Player getPlayer() {
+		if(player == null) {
+			player = GetComponent<Player>();
+		}
 		return player;
 	}
 
