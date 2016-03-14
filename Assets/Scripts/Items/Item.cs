@@ -12,6 +12,7 @@ public abstract class Item : NetworkBehaviour {
 	public Vector3 sprintRotation;
 	public float responsiveness = 0.5f;
 	public float positionalResponsiveness = 0.5f;
+	public float maxResponsiveness = 0.5f;
 
 	protected float reachDistance = 3f;
 
@@ -37,7 +38,7 @@ public abstract class Item : NetworkBehaviour {
 				newRotation = followingCamera.rotation * Quaternion.Euler(holdRotation);
 			}
 
-			transform.position = Vector3.Lerp(transform.position, newPosition, positionalResponsiveness);
+			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness, maxResponsiveness);
 			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness);
 		}
 	}
