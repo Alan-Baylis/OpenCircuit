@@ -3,9 +3,8 @@ using UnityEngine.Networking;
 using System.Collections;
 using System;
 
-public class AssaultRifle : Item {
+public class AssaultRifle : AbstractGun {
 
-	public float fireDelay = 0.1f;
 	public float inaccuracy = 0.1f;
 	public float range = 1000;
 	public float damage = 10;
@@ -17,13 +16,8 @@ public class AssaultRifle : Item {
 	public Transform robotHitEffect;
 	public float robotHitEffectLifetime = 3;
 
-	public AudioClip fireSound;
 	public float fireSoundVolume = 1;
 
-	protected Inventory inventory;
-	protected bool shooting = false;
-	protected float cycleTime = 0;
-	protected AudioSource audioSource;
 
 	public override void onTake(Inventory taker) {
 		base.onTake(taker);
@@ -43,11 +37,6 @@ public class AssaultRifle : Item {
 		equipper.StopCoroutine(this.cycle());
 		if (audioSource != null)
 			Destroy(audioSource);
-	}
-
-	public override void beginInvoke(Inventory invoker) {
-		this.inventory = invoker;
-		shooting = true;
 	}
 
 	public override void endInvoke(Inventory invoker) {
@@ -74,15 +63,8 @@ public class AssaultRifle : Item {
 	protected void RpcShoot(Vector3 position, Vector3 direction) {
 		shoot(position, direction);
 	}
-
-	protected void shoot(Vector3 position, Vector3 direction) {
-		audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-		audioSource.Play();
-		doBullet(position, direction, 1);
-		cycleTime += fireDelay;
-	}
 	
-	protected void doBullet(Vector3 position, Vector3 direction, float power) {
+	protected override void doBullet(Vector3 position, Vector3 direction, float power) {
 		if (power <= 0)
 			return;
 		RaycastHit hitInfo;
@@ -103,7 +85,9 @@ public class AssaultRifle : Item {
 						navAgent.speed = 1;
 					}
 				}
-				controller.health -= calculateDamage(direction, hitInfo);
+				if(isServer) {
+					controller.health -= calculateDamage(direction, hitInfo);
+				}
 
 				// do ricochet
 				if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
@@ -116,6 +100,11 @@ public class AssaultRifle : Item {
 		}
 	}
 
+	protected void doBulletEffects() {
+
+	}
+
+	[Server]
 	protected float calculateDamage(Vector3 trajectory, RaycastHit hitInfo) {
 		float multiplier = Mathf.Pow(Mathf.Max(-Vector3.Dot(trajectory, hitInfo.normal), 0), 20) *5;
         float calculatedDamage = damage *(1 +multiplier);
