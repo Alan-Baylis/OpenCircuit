@@ -23,7 +23,7 @@ public class Controls : NetworkBehaviour {
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
-	void FixedUpdate () {
+	void Update () {
 		if(!isLocalPlayer) {
 			return;
 		}
