@@ -16,54 +16,23 @@ public class AssaultRifle : AbstractGun {
 	public Transform robotHitEffect;
 	public float robotHitEffectLifetime = 3;
 
-	public float fireSoundVolume = 1;
-
-
 	public override void onTake(Inventory taker) {
 		base.onTake(taker);
 		taker.equip(this);
 	}
 
-	public override void onEquip(Inventory equipper) {
-		base.onEquip(equipper);
-		equipper.StartCoroutine(this.cycle());
-		audioSource = equipper.gameObject.AddComponent<AudioSource>();
-		audioSource.clip = fireSound;
-		audioSource.volume = fireSoundVolume;
-    }
-
-	public override void onUnequip(Inventory equipper) {
-		base.onUnequip(equipper);
-		equipper.StopCoroutine(this.cycle());
-		if (audioSource != null)
-			Destroy(audioSource);
-	}
-
-	public override void endInvoke(Inventory invoker) {
-		base.endInvoke(invoker);
-		shooting = false;
-	}
-
-	protected IEnumerator cycle() {
-		while (true) {
-			if (cycleTime > 0)
-				cycleTime -= Time.deltaTime;
-			if (cycleTime <= 0) {
-				while(!shooting)
-					yield return new WaitForFixedUpdate();
-				Transform cam = inventory.getPlayer().cam.transform;
-				RpcShoot(cam.position, cam.forward);
-				shoot(cam.position, cam.forward);
-			}
-			yield return new WaitForFixedUpdate();
+	[ClientCallback]
+	void Update() {
+		base.Update();
+		if(cycleTime > 0)
+			cycleTime -= Time.deltaTime;
+		if(cycleTime <= 0 && shooting) {
+			Transform cam = inventory.getPlayer().cam.transform;
+			shoot(cam.position, cam.forward);
 		}
 	}
 
-	[ClientRpc]
-	protected void RpcShoot(Vector3 position, Vector3 direction) {
-		shoot(position, direction);
-	}
-	
+	[Client]
 	protected override void doBullet(Vector3 position, Vector3 direction, float power) {
 		if (power <= 0)
 			return;
@@ -78,21 +47,12 @@ public class AssaultRifle : AbstractGun {
 
 			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
 			if(controller != null) {
-				NavMeshAgent navAgent = controller.GetComponent<NavMeshAgent>();
-				if (navAgent != null) {
-					navAgent.speed -= 2f;
-					if (navAgent.speed < 1f) {
-						navAgent.speed = 1;
-					}
-				}
-				if(isServer) {
-					controller.health -= calculateDamage(direction, hitInfo);
-				}
+				CmdApplyDamage(controller.netId, direction, hitInfo);
 
 				// do ricochet
-				if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
-					doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
-				}
+				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
+				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
+				//}
 				createHitEffect(robotHitEffect, robotHitEffectLifetime, hitInfo.point, hitInfo.normal);
 			} else {
 				createHitEffect(hitEffect, hitEffectLifetime, hitInfo.point, hitInfo.normal);
@@ -100,15 +60,24 @@ public class AssaultRifle : AbstractGun {
 		}
 	}
 
-	protected void doBulletEffects() {
-
+	[Command]
+	protected void CmdApplyDamage(NetworkInstanceId hit, Vector3 direction, RaycastHit hitInfo) {
+		GameObject robot = ClientScene.FindLocalObject(hit);
+		RobotController robotController = robot.GetComponent<RobotController>();
+		NavMeshAgent navAgent = robotController.GetComponent<NavMeshAgent>();
+		if(navAgent != null) {
+			navAgent.speed -= 2f;
+			if(navAgent.speed < 1f) {
+				navAgent.speed = 1;
+			}
+		}
+		robotController.health -= calculateDamage(direction, hitInfo);
 	}
 
 	[Server]
 	protected float calculateDamage(Vector3 trajectory, RaycastHit hitInfo) {
 		float multiplier = Mathf.Pow(Mathf.Max(-Vector3.Dot(trajectory, hitInfo.normal), 0), 20) *5;
         float calculatedDamage = damage *(1 +multiplier);
-		//print("Calculated Damage: " +calculatedDamage);
 		return calculatedDamage;
 	}
 

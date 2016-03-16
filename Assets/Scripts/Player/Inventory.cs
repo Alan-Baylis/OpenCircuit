@@ -38,13 +38,10 @@ public class Inventory : NetworkBehaviour {
         selecting = -1;
         unselectedItems = new List<System.Type>();
 
-		if(isServer) {
 			foreach(Item item in GetComponentsInChildren<Item>())
 				if(!contains(item)) {
-					RpcTake(item.netId);
 					take(item);
 				}
-		}
     }
 
     public void OnGUI() {
@@ -77,11 +74,6 @@ public class Inventory : NetworkBehaviour {
         item.onTake(this);
         return true;
     }
-
-	[ClientRpc]
-	public void RpcTake(NetworkInstanceId item) {
-		take(ClientScene.FindLocalObject(item));
-	}
 
 	public bool canTake(GameObject itemObject) {
 		return itemObject.GetComponent<Item>() != null;
