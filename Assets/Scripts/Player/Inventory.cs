@@ -189,6 +189,11 @@ public class Inventory : NetworkBehaviour {
 		return contextStack.Count > 0;
     }
 
+	public void doStep(float strength) {
+		if (equipped != null)
+			equipped.doStep(strength);
+	}
+
 	public List<T> getItemsExtending<T>() where T : Item {
 		List<T> results = new List<T>();
 		foreach (List<Item> itemList in items.Values) {

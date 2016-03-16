@@ -111,11 +111,13 @@ public class Controls : NetworkBehaviour {
 
 		if (Input.GetButtonDown("Use")) {
 			myPlayer.inventory.useEquipped();
-			CmdUseEquipped();
+			if (!isServer)
+				CmdUseEquipped();
 		}
 		if (Input.GetButtonUp("Use")) {
 			myPlayer.inventory.stopUsingEquiped();
-			CmdStopUsingEquipped();
+			if (!isServer)
+				CmdStopUsingEquipped();
 		}
 		if (Input.GetButtonDown ("Interact")) {
 			CmdInteract();
@@ -134,7 +136,6 @@ public class Controls : NetworkBehaviour {
 
 	[Command]
 	protected void CmdSetForward(float amount) {
-		//print("Forward: " +amount);
 		myPlayer.mover.setForward(amount);
 	}
 

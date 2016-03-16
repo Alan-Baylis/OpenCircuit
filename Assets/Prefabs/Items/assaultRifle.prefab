@@ -1508,9 +1508,14 @@ MonoBehaviour:
   sprintPosition: {x: 0.1, y: 0.55, z: 0.15}
   sprintRotation: {x: -30, y: 160, z: 0}
   responsiveness: 0.5
-  positionalResponsiveness: 0.5
+  positionalResponsiveness: 0.3
   maxResponsiveness: 0.1
+  stepBump: {x: 0.1, y: -0.1, z: 0}
   fireDelay: 0.1
+  fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
+  magazineSize: 200
+  maxMagazines: 5
+  recoilDistance: {x: 0, y: -0.01, z: -0.03}
   inaccuracy: 0.1
   range: 1000
   damage: 5
@@ -1519,7 +1524,6 @@ MonoBehaviour:
   hitEffectLifetime: 2
   robotHitEffect: {fileID: 444912, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
   robotHitEffectLifetime: 2
-  fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
   fireSoundVolume: 0.3
 --- !u!114 &11493642
 MonoBehaviour:

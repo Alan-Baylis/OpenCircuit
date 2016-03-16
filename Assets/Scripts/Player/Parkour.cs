@@ -174,6 +174,7 @@ public class Parkour : MovementController {
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f));
 				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
 				footStepsEvent.broadcast(volume);
+				myPlayer.inventory.doStep(volume);
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);
 		}

@@ -491,7 +491,7 @@ MonoBehaviour:
   oxygenSprintUsage: 30
   footsteps:
   - {fileID: 8300000, guid: 81829dd7877a9b54face23754adbd789, type: 3}
-  minimumFoostepOccurence: 0.6
+  minimumFoostepOccurence: 0.45
   foostepSpeedScale: 0.03
   fallHurtSpeed: 12
   fallDeathSpeed: 25

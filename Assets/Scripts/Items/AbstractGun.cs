@@ -8,6 +8,7 @@ public abstract class AbstractGun : Item {
 
 	public int magazineSize = 20;
 	public int maxMagazines = 5;
+	public Vector3 recoilDistance = new Vector3(0, 0, 0.2f);
 
 	protected int maxBullets;
 	protected int bulletsRemaining = 5 * 20;
@@ -46,6 +47,7 @@ public abstract class AbstractGun : Item {
 			doBullet(position, direction, 1);
 			cycleTime += fireDelay;
 			--bulletsRemaining;
+			transform.position -= transform.TransformVector(recoilDistance);
 		}
 	}
 

@@ -13,19 +13,23 @@ public abstract class Item : NetworkBehaviour {
 	public float responsiveness = 0.5f;
 	public float positionalResponsiveness = 0.5f;
 	public float maxResponsiveness = 0.5f;
+	public Vector3 stepBump = new Vector3(0, -0.1f, 0.05f);
 
 	protected float reachDistance = 3f;
 
 	protected Inventory holder;
 	protected Collider col;
 	protected Transform followingCamera;
+	protected bool rightStepNext;
 
 	public void Awake() {
 		col = GetComponent<Collider>();
 	}
 
-	public void FixedUpdate() {
+	public virtual void Update() {
 		if (followingCamera != null) {
+
+			// determine desired position
 			Vector3 newPosition;
 			Quaternion newRotation;
             if (holder.sprinting) {
@@ -38,9 +42,18 @@ public abstract class Item : NetworkBehaviour {
 				newRotation = followingCamera.rotation * Quaternion.Euler(holdRotation);
 			}
 
+			// track to desired position
 			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness, maxResponsiveness);
 			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness);
 		}
+	}
+
+	public virtual void doStep(float strength) {
+		Vector3 nextStepBump = stepBump *strength;
+		if (!rightStepNext)
+			nextStepBump.x = -nextStepBump.x;
+		transform.position += transform.TransformVector(nextStepBump);
+		rightStepNext = !rightStepNext;
 	}
 
 	public abstract void beginInvoke(Inventory invoker);
