@@ -43,8 +43,8 @@ public abstract class Item : NetworkBehaviour {
 			}
 
 			// track to desired position
-			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness, maxResponsiveness);
-			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness);
+			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness *Time.deltaTime, maxResponsiveness);
+			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness *Time.deltaTime);
 		}
 	}
 

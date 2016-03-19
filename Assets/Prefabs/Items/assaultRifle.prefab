@@ -1507,8 +1507,8 @@ MonoBehaviour:
   holdRotation: {x: 0, y: 180, z: 0}
   sprintPosition: {x: 0.1, y: 0.55, z: 0.15}
   sprintRotation: {x: -30, y: 160, z: 0}
-  responsiveness: 0.5
-  positionalResponsiveness: 0.3
+  responsiveness: 30
+  positionalResponsiveness: 18
   maxResponsiveness: 0.1
   stepBump: {x: 0.1, y: -0.1, z: 0}
   fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
@@ -1517,14 +1517,29 @@ MonoBehaviour:
   magazineSize: 200
   maxMagazines: 5
   recoilDistance: {x: 0, y: -0.01, z: -0.03}
+  fireEffectLocation: {x: 0, y: 0, z: -0.4}
+  fireEffect:
+    prefab: {fileID: 431126, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
+    lifetime: 2
+  fireEffectSideways:
+    prefab: {fileID: 408568, guid: cd74836e1ee0e7a4ba343f10a1441965, type: 2}
+    lifetime: 2
+  fireEffectFlash:
+    prefab: {fileID: 464574, guid: a0a8c8742a11459409296e4fbd655d35, type: 2}
+    lifetime: 1
+  fireEffectLight:
+    prefab: {fileID: 415622, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
+    lifetime: 0.03
   inaccuracy: 0.1
   range: 1000
   damage: 5
   impulse: 200
-  hitEffect: {fileID: 414120, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
-  hitEffectLifetime: 2
-  robotHitEffect: {fileID: 444912, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
-  robotHitEffectLifetime: 2
+  hitEffect:
+    prefab: {fileID: 414120, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
+    lifetime: 30
+  robotHitEffect:
+    prefab: {fileID: 444912, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
+    lifetime: 2
 --- !u!114 &11493642
 MonoBehaviour:
   m_ObjectHideFlags: 1

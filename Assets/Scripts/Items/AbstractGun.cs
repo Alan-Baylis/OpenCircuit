@@ -13,6 +13,11 @@ public abstract class AbstractGun : Item {
 	public int magazineSize = 20;
 	public int maxMagazines = 5;
 	public Vector3 recoilDistance = new Vector3(0, 0, 0.2f);
+	
+	public Vector3 fireEffectLocation;
+	public EffectSpec fireEffect;
+	public EffectSpec fireEffectSideways;
+	public EffectSpec fireEffectLight;
 
 
 	protected int maxBullets;
@@ -84,6 +89,13 @@ public abstract class AbstractGun : Item {
 			cycleTime += fireDelay;
 			--currentMagazineFill;
 			transform.position -= transform.TransformVector(recoilDistance);
+			
+			// do fire effects
+			Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
+			fireEffect.spawn(effectPosition, -transform.forward);
+			fireEffectSideways.spawn(effectPosition, -transform.right -transform.forward);
+			fireEffectSideways.spawn(effectPosition, transform.right -transform.forward);
+			fireEffectLight.spawn(effectPosition);
 		} else {
 			reloading = true;
 			int bulletsNeeded = magazineSize - currentMagazineFill;

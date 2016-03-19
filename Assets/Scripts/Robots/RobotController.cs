@@ -18,8 +18,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	private AudioSource soundEmitter;
 
 	public AudioClip destructionSound;
-	public Transform destructionEffect;
-	public float destructionEffectDuration = 3;
+	public EffectSpec destructionEffect;
 
 
 	public float health = 100;
@@ -384,12 +383,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	protected void RpcDismantle(int randomSeed) {
 		UnityEngine.Random.seed = randomSeed;
 		dismantle(transform);
-
-		if (destructionEffect != null) {
-			Transform effect = (Transform)Instantiate(destructionEffect, transform.position, Quaternion.LookRotation(transform.forward));
-			effect.hideFlags |= HideFlags.HideInHierarchy;
-			Destroy(effect.gameObject, destructionEffectDuration);
-		}
+		destructionEffect.spawn(transform.position);
 	}
 
 	protected static void dismantle(Transform trans) {
