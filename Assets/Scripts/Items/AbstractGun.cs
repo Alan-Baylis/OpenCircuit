@@ -21,7 +21,9 @@ public abstract class AbstractGun : Item {
 
 
 	protected int maxBullets;
+	[SyncVar]
 	protected int bulletsRemaining = 5 * 20;
+	[SyncVar]
 	protected int currentMagazineFill;
 	
 	protected AudioSource audioSource;
@@ -77,6 +79,18 @@ public abstract class AbstractGun : Item {
 		base.onUnequip(equipper);
 		if(audioSource != null)
 			Destroy(audioSource);
+	}
+
+	public bool addMags(int number) {
+		int currentAmmo = bulletsRemaining + currentMagazineFill;
+		if(currentAmmo < maxBullets) {
+			int bulletsNeeded = maxBullets - currentAmmo;
+			bulletsRemaining += (bulletsNeeded < magazineSize * number) ? bulletsNeeded : magazineSize * number;
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 	protected void shoot(Vector3 position, Vector3 direction) {

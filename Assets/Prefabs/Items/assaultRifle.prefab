@@ -1514,7 +1514,8 @@ MonoBehaviour:
   fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
   fireSoundVolume: 0.3
   fireDelay: 0.1
-  magazineSize: 200
+  reloadTime: 1
+  magazineSize: 20
   maxMagazines: 5
   recoilDistance: {x: 0, y: -0.01, z: -0.03}
   fireEffectLocation: {x: 0, y: 0, z: -0.4}
