@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using UnityEngine.Networking;
+
 public abstract class AbstractGun : Item {
 
 	public AudioClip fireSound;
 	public float fireSoundVolume = 1;
 	public float fireDelay = 0.1f;
+	public float reloadTime = 1f;
 
 	public int magazineSize = 20;
 	public int maxMagazines = 5;
@@ -21,13 +24,32 @@ public abstract class AbstractGun : Item {
 
 
 	protected bool shooting = false;
+	protected bool reloading = false;
 
 	protected float cycleTime = 0;
+	protected float reloadTimeRemaining = 0;
 
 	void Start() {
 		maxBullets = magazineSize * maxMagazines;
 		currentMagazineFill = magazineSize; //one mag loaded
 		bulletsRemaining = (maxMagazines - 1) * magazineSize; //the rest in reserve
+	}
+
+	[ClientCallback]
+	void Update() {
+		base.Update();
+		if(cycleTime > 0)
+			cycleTime -= Time.deltaTime;
+		if(cycleTime <= 0 && shooting && !reloading) {
+			Transform cam = inventory.getPlayer().cam.transform;
+			shoot(cam.position, cam.forward);
+		} else if(reloading) {
+			print("reloading");
+			reloadTimeRemaining -= Time.deltaTime;
+			if(reloadTimeRemaining <= 0) {
+				reloading = false;
+			}
+		}
 	}
 
 	public override void beginInvoke(Inventory invoker) {
@@ -54,13 +76,25 @@ public abstract class AbstractGun : Item {
 	}
 
 	protected void shoot(Vector3 position, Vector3 direction) {
-		if(bulletsRemaining > 0) {
+		print(currentMagazineFill + " bullets in mag");
+		if(currentMagazineFill > 0) {
 			audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 			audioSource.Play();
 			doBullet(position, direction, 1);
 			cycleTime += fireDelay;
-			--bulletsRemaining;
+			--currentMagazineFill;
 			transform.position -= transform.TransformVector(recoilDistance);
+		} else {
+			reloading = true;
+			int bulletsNeeded = magazineSize - currentMagazineFill;
+			if(bulletsRemaining > bulletsNeeded) {
+				currentMagazineFill += bulletsNeeded;
+				bulletsRemaining -= bulletsNeeded;
+			} else {
+				currentMagazineFill += bulletsRemaining;
+				bulletsRemaining = 0;
+			}
+			reloadTimeRemaining += reloadTime; 
 		}
 	}
 

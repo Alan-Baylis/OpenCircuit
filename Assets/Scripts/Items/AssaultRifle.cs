@@ -21,17 +21,6 @@ public class AssaultRifle : AbstractGun {
 		taker.equip(this);
 	}
 
-	[ClientCallback]
-	void Update() {
-		base.Update();
-		if(cycleTime > 0)
-			cycleTime -= Time.deltaTime;
-		if(cycleTime <= 0 && shooting) {
-			Transform cam = inventory.getPlayer().cam.transform;
-			shoot(cam.position, cam.forward);
-		}
-	}
-
 	[Client]
 	protected override void doBullet(Vector3 position, Vector3 direction, float power) {
 		if (power <= 0)
