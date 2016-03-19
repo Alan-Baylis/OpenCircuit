@@ -13,7 +13,6 @@ public class CheckPoint : NetworkBehaviour {
 		if(player != null) {
 			ClientController [] controllers = FindObjectsOfType<ClientController>();
 			foreach(ClientController controller in controllers) {
-				print("respawn player");
 				if(pads != null) {
 					if(pads[nextPad] != null) {
 						if(!controller.isAlive()) {

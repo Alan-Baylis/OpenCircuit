@@ -35,7 +35,9 @@ public class ClientController : NetworkBehaviour {
 			}
 		}
 		disableSceneCam();
-		CmdSpawnPlayerAt(transform.position);
+		if(isLocalPlayer) {
+			CmdSpawnPlayerAt(transform.position);
+		}
 	}
 
 	[ClientCallback]
@@ -64,8 +66,8 @@ public class ClientController : NetworkBehaviour {
 	[Server]
 	private void spawnPlayerAt(Vector3 position) {
 		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
-		newPlayer.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
-		NetworkServer.SpawnWithClientAuthority(newPlayer, connectionToClient);
+		newPlayer.name = "player" + Random.Range(1, 20);
+		NetworkServer.Spawn(newPlayer);
 		NetworkServer.ReplacePlayerForConnection(connectionToClient, newPlayer, playerControllerId);
 		id = newPlayer.GetComponent<NetworkIdentity>().netId;
 	}

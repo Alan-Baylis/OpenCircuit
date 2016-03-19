@@ -90,6 +90,7 @@ public class AssaultRifle : AbstractGun {
 		return null;
 	}
 
+	[Client]
 	protected void createHitEffect(Transform hitEffectPrefab, float lifetime, Vector3 location, Vector3 direction) {
 		if (hitEffectPrefab == null)
 			return;
