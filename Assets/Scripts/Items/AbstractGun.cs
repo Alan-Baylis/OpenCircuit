@@ -49,7 +49,6 @@ public abstract class AbstractGun : Item {
 			Transform cam = inventory.getPlayer().cam.transform;
 			shoot(cam.position, cam.forward);
 		} else if(reloading) {
-			print("reloading");
 			reloadTimeRemaining -= Time.deltaTime;
 			if(reloadTimeRemaining <= 0) {
 				reloading = false;
@@ -81,7 +80,6 @@ public abstract class AbstractGun : Item {
 	}
 
 	protected void shoot(Vector3 position, Vector3 direction) {
-		print(currentMagazineFill + " bullets in mag");
 		if(currentMagazineFill > 0) {
 			audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 			audioSource.Play();
