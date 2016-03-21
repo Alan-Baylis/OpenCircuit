@@ -45,8 +45,6 @@ public class Controls : NetworkBehaviour {
 		myPlayer.mover.setRight(amount);
 		CmdSetRight(amount);
 
-
-
 		if (Input.GetButtonDown("Jump")) {
 			if (!isServer)
 				myPlayer.mover.jump();
@@ -91,6 +89,10 @@ public class Controls : NetworkBehaviour {
 					myPlayer.inventory.doSelect(-1);
 				}
 			}
+		}
+
+		if(Input.GetButtonDown("Reload")) {
+			GetComponentInChildren<AbstractGun>().reload();
 		}
 
 		// nothing after this point is done while in menu

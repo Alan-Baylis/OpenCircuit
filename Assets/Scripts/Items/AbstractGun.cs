@@ -93,6 +93,19 @@ public abstract class AbstractGun : Item {
 
 	}
 
+	public void reload() {
+		reloading = true;
+		int bulletsNeeded = magazineSize - currentMagazineFill;
+		if(bulletsRemaining > bulletsNeeded) {
+			currentMagazineFill += bulletsNeeded;
+			bulletsRemaining -= bulletsNeeded;
+		} else {
+			currentMagazineFill += bulletsRemaining;
+			bulletsRemaining = 0;
+		}
+		reloadTimeRemaining += reloadTime; 
+	}
+
 	protected void shoot(Vector3 position, Vector3 direction) {
 		if(currentMagazineFill > 0) {
 			audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
@@ -109,16 +122,7 @@ public abstract class AbstractGun : Item {
 			fireEffectSideways.spawn(effectPosition, transform.right -transform.forward);
 			fireEffectLight.spawn(effectPosition);
 		} else {
-			reloading = true;
-			int bulletsNeeded = magazineSize - currentMagazineFill;
-			if(bulletsRemaining > bulletsNeeded) {
-				currentMagazineFill += bulletsNeeded;
-				bulletsRemaining -= bulletsNeeded;
-			} else {
-				currentMagazineFill += bulletsRemaining;
-				bulletsRemaining = 0;
-			}
-			reloadTimeRemaining += reloadTime; 
+			reload();
 		}
 	}
 
