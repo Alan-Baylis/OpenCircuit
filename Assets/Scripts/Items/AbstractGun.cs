@@ -19,6 +19,7 @@ public abstract class AbstractGun : Item {
 	public EffectSpec fireEffectSideways;
 	public EffectSpec fireEffectLight;
 
+	public AudioClip reloadSound;
 
 	protected int maxBullets;
 	[SyncVar]
@@ -36,7 +37,10 @@ public abstract class AbstractGun : Item {
 	protected float cycleTime = 0;
 	protected float reloadTimeRemaining = 0;
 
+	private AudioSource soundEmitter;
+
 	void Start() {
+		soundEmitter = gameObject.AddComponent<AudioSource>();
 		maxBullets = magazineSize * maxMagazines;
 		currentMagazineFill = magazineSize; //one mag loaded
 		bulletsRemaining = (maxMagazines - 1) * magazineSize; //the rest in reserve
@@ -95,6 +99,7 @@ public abstract class AbstractGun : Item {
 
 	public void reload() {
 		reloading = true;
+		soundEmitter.PlayOneShot(reloadSound);
 		int bulletsNeeded = magazineSize - currentMagazineFill;
 		if(bulletsRemaining > bulletsNeeded) {
 			currentMagazineFill += bulletsNeeded;

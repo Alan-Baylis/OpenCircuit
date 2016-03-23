@@ -117,10 +117,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 184424}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67e5aef9e91ac164abb0f9561e46b0a3, type: 3}
+  m_Script: {fileID: 11500000, guid: 994ae3774081a6b46a9d86138e3d4034, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   magazines: 1
+  pickupSound: {fileID: 8300000, guid: f7fbf7011ead9d141ab50bb39ac7e211, type: 3}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

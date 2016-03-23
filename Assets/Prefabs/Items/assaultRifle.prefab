@@ -1525,12 +1525,10 @@ MonoBehaviour:
   fireEffectSideways:
     prefab: {fileID: 408568, guid: cd74836e1ee0e7a4ba343f10a1441965, type: 2}
     lifetime: 2
-  fireEffectFlash:
-    prefab: {fileID: 464574, guid: a0a8c8742a11459409296e4fbd655d35, type: 2}
-    lifetime: 1
   fireEffectLight:
     prefab: {fileID: 415622, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
     lifetime: 0.03
+  reloadSound: {fileID: 8300000, guid: 6ade20a0736a43449a90cf3faa3eee88, type: 3}
   inaccuracy: 0.1
   range: 1000
   damage: 5
