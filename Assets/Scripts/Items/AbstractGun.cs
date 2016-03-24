@@ -8,12 +8,18 @@ public abstract class AbstractGun : Item {
 	public AudioClip fireSound;
 	public float fireSoundVolume = 1;
 	public float fireDelay = 0.1f;
-	public float reloadTime = 1f;
 
+	public float reloadTime = 1f;
 	public int magazineSize = 20;
 	public int maxMagazines = 5;
-	public Vector3 recoilDistance = new Vector3(0, 0, 0.2f);
-	
+
+	public float baseInaccuracy = 0.1f;
+	public float maximumMovementInaccuracy = 0.1f;
+	public float movementInaccuracySoftness = 10f;
+	public Vector3 recoilAnimationDistance = new Vector3(0, 0, 0.2f);
+	public Vector2 recoilMinRotation = new Vector3(-0.1f, 0.1f);
+	public Vector2 recoilMaxRotation = new Vector3(0.1f, 0.2f);
+
 	public Vector3 fireEffectLocation;
 	public EffectSpec fireEffect;
 	public EffectSpec fireEffectSideways;
@@ -47,13 +53,17 @@ public abstract class AbstractGun : Item {
 	}
 
 	[ClientCallback]
-	void Update() {
+	public override void Update() {
 		base.Update();
 		if(cycleTime > 0)
 			cycleTime -= Time.deltaTime;
 		if(cycleTime <= 0 && shooting && !reloading) {
 			Transform cam = inventory.getPlayer().cam.transform;
 			shoot(cam.position, cam.forward);
+			MouseLook looker = inventory.getPlayer().looker;
+			looker.rotate(
+				Random.Range(recoilMinRotation.x, recoilMaxRotation.x),
+				Random.Range(recoilMinRotation.y, recoilMaxRotation.y));
 		} else if(reloading) {
 			reloadTimeRemaining -= Time.deltaTime;
 			if(reloadTimeRemaining <= 0) {
@@ -115,10 +125,12 @@ public abstract class AbstractGun : Item {
 		if(currentMagazineFill > 0) {
 			audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 			audioSource.Play();
-			doBullet(position, direction, 1);
+			direction = inaccurateDirection(direction, getMovementInaccuracy());
+            direction = inaccurateDirection(direction, baseInaccuracy);
+            doBullet(position, direction, 1);
 			cycleTime += fireDelay;
 			--currentMagazineFill;
-			transform.position -= transform.TransformVector(recoilDistance);
+			transform.position -= transform.TransformVector(recoilAnimationDistance);
 			
 			// do fire effects
 			Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
@@ -131,6 +143,20 @@ public abstract class AbstractGun : Item {
 		}
 	}
 
+	protected virtual float getMovementInaccuracy() {
+		// here we use a rational function to get the desired behaviour
+		const float arbitraryValue = 0.2f; // the larger this value is, the faster the player must be moving before it affects his accuracy
+		float speed = inventory.GetComponent<Rigidbody>().velocity.magnitude;
+		float inaccuracy = (maximumMovementInaccuracy * speed -arbitraryValue) / (speed +movementInaccuracySoftness);
+		return Mathf.Max(inaccuracy, 0);
+	}
+
 	protected abstract void doBullet(Vector3 position, Vector3 direction, float power);
+
+	public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
+		Vector3 randomAngle = Random.onUnitSphere;
+		float angle = Vector3.Angle(direction, randomAngle) /360;
+		return Vector3.RotateTowards(direction, Random.onUnitSphere, Mathf.PI *angle *inaccuracy, 0);
+	}
 
 }

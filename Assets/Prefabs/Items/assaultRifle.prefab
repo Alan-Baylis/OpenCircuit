@@ -1517,7 +1517,12 @@ MonoBehaviour:
   reloadTime: 1
   magazineSize: 20
   maxMagazines: 5
-  recoilDistance: {x: 0, y: -0.01, z: -0.03}
+  baseInaccuracy: 0.005
+  maximumMovementInaccuracy: 0.2
+  movementInaccuracySoftness: 10
+  recoilAnimationDistance: {x: 0, y: -0.01, z: -0.03}
+  recoilMinRotation: {x: -0.1, y: 0.1}
+  recoilMaxRotation: {x: 0.1, y: 0.2}
   fireEffectLocation: {x: 0, y: 0, z: -0.4}
   fireEffect:
     prefab: {fileID: 431126, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
