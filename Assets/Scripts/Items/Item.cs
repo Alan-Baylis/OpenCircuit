@@ -6,10 +6,9 @@ using System.Collections.Generic;
 public abstract class Item : NetworkBehaviour {
 
     public Texture2D icon;
-	public Vector3 holdPosition;
-	public Vector3 holdRotation;
-	public Vector3 sprintPosition;
-	public Vector3 sprintRotation;
+	public HoldPosition normalPosition;
+	public HoldPosition sprintPosition;
+	public HoldPosition zoomPosition;
 	public float responsiveness = 0.5f;
 	public float positionalResponsiveness = 0.5f;
 	public float maxResponsiveness = 0.5f;
@@ -34,12 +33,15 @@ public abstract class Item : NetworkBehaviour {
 			Quaternion newRotation;
             if (holder.sprinting) {
 				Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
-				newPosition = transform.parent.TransformPoint(rotation *sprintPosition);
-				newRotation = transform.parent.rotation * Quaternion.Euler(sprintRotation);
+				newPosition = transform.parent.TransformPoint(rotation *sprintPosition.position);
+				newRotation = transform.parent.rotation * Quaternion.Euler(sprintPosition.rotation);
 				newRotation = rotation * newRotation;
+			} else if (holder.getPlayer().zooming) {
+				newPosition = followingCamera.TransformPoint(zoomPosition.position);
+				newRotation = followingCamera.rotation * Quaternion.Euler(zoomPosition.rotation);
 			} else {
-				newPosition = followingCamera.TransformPoint(holdPosition);
-				newRotation = followingCamera.rotation * Quaternion.Euler(holdRotation);
+				newPosition = followingCamera.TransformPoint(normalPosition.position);
+				newRotation = followingCamera.rotation * Quaternion.Euler(normalPosition.rotation);
 			}
 
 			// track to desired position
@@ -75,7 +77,7 @@ public abstract class Item : NetworkBehaviour {
     }
 
     public virtual void onEquip(Inventory equipper) {
-		transform.localPosition = holdPosition;
+		transform.localPosition = normalPosition.position;
 		col.enabled = false;
 		gameObject.SetActive(true);
     }
@@ -102,5 +104,12 @@ public abstract class Item : NetworkBehaviour {
 			position = hit.point;
 		}
 		return finalHit;
+	}
+
+	[System.Serializable]
+	public struct HoldPosition {
+		public Vector3 position;
+		public Vector3 rotation;
+		public bool cameraRelative;
 	}
 }

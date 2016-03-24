@@ -4,12 +4,7 @@ using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Player")]
 public class Player : NetworkBehaviour {
-
-//	public Texture2D coldTex;
-//	public float coldStart;
-//	public float coldExtra;
-//	public Color coldColor;
-//	public float freezeTemp;
+	
 	public bool drawReticle;
 	public Texture2D reticle;
 	public float maxOxygen = 60;
@@ -23,21 +18,18 @@ public class Player : NetworkBehaviour {
 	public float whiteOutDuration;
 	public float blackOutDuration;
 
+	[HideInInspector]
 	public ClientController controller;
-
-//	private Attacher myAttacher;
+	[HideInInspector]
+	public bool zooming = false;
+	
 	private Attack myAttacker;
-//	private Equip myEquipper;
-//	private Focus myFocus;
 	private Grab myGrabber;
 	private Interact myInteractor;
 	private Inventory myInventory;
 	private MovementController myMover;
 	private Camera myCam;
 	private MouseLook myLooker;
-	/*private Heat myHeat;
-	private Hunger myHunger;
-	private MapViewer myMapViewer;*/
 	private Controls myControls;
 
 	private AudioSource breathingSource;
@@ -47,42 +39,26 @@ public class Player : NetworkBehaviour {
 	[SyncVar]
 	private float suffering = 0;
 	private bool alive = true;
-
-//	public Attacher attacher { get { return myAttacher; } set { myAttacher = value; } }
+	
 	public Attack attacker { get { return myAttacker; } set { myAttacker = value; } }
-//	public Equip equipper { get { return myEquipper; } set { myEquipper = value; } }
-//	public Focus focus { get { return myFocus; } set { myFocus = value; } }
 	public Grab grabber { get { return myGrabber; } set { myGrabber = value; } }
 	public Interact interactor { get { return myInteractor; } set { myInteractor = value; } }
 	public Inventory inventory { get { return myInventory; } set { myInventory = value; } }
 	public MovementController mover { get { return myMover; } set { myMover = value; } }
 	public Camera cam { get { return myCam; } set { myCam = value; } }
 	public MouseLook looker { get { return myLooker; } set { myLooker = value; } }
-	/*public Heat heat { get { return myHeat; } set { myHeat = value; } }
-	public Hunger hunger { get { return myHunger; } set { myHunger = value; } }
-	public MapViewer mapViewer { get { return myMapViewer; } set { myMapViewer = value; } }*/
 	public Controls controls { get { return myControls; } set { myControls = value; } }
 
 	void Awake() {
-//		attacher = GetComponent<Attacher>();
 		attacker = GetComponent<Attack> ();
-//		equipper = GetComponent<Equip>();
-//		focus = GetComponent<Focus>();
 		grabber = GetComponent<Grab>();
 		interactor = GetComponent<Interact>();
 		inventory = GetComponent<Inventory>();
 		mover = GetComponent<MovementController>();
 		cam = GetComponentInChildren<Camera>();
 		looker = GetComponent<MouseLook>();
-		/*heat = GetComponent<Heat>();
-		hunger = GetComponent<Hunger>();
-		mapViewer = GetComponent<MapViewer>();*/
 		controls = GetComponent<Controls>();
-
-//		coldStart = 80;
-//		coldExtra = 0.1f;
-//		coldColor = new Color(0.25f, 0.5f, 1);
-//		freezeTemp = -20;
+		
 		whiteOutTime = 0;
 		breathingSource = gameObject.AddComponent<AudioSource>();
 		breathingSource.clip = heavyBreathingSound;

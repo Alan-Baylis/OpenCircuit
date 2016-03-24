@@ -121,6 +121,18 @@ public class Controls : NetworkBehaviour {
 			if (!isServer)
 				CmdStopUsingEquipped();
 		}
+
+		if (Input.GetButtonDown("Zoom")) {
+			myPlayer.zooming = true;
+			if (!isServer)
+				CmdSetZooming(true);
+		}
+		if (Input.GetButtonUp("Zoom")) {
+			myPlayer.zooming = false;
+			if (!isServer)
+				CmdSetZooming(false);
+		}
+
 		if (Input.GetButtonDown ("Interact")) {
 			CmdInteract();
 		}
@@ -169,6 +181,11 @@ public class Controls : NetworkBehaviour {
 	[Command]
 	protected void CmdStopUsingEquipped() {
 		myPlayer.inventory.stopUsingEquiped();
+	}
+
+	[Command]
+	protected void CmdSetZooming(bool zooming) {
+		myPlayer.zooming = zooming;
 	}
 
 	public void disablePlayerControls() {
