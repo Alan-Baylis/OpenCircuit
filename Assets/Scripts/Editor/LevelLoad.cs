@@ -27,6 +27,9 @@ public class LevelLoad {
 		// create network manager
 		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab");
 
+		// create game controller
+		createPrefab("Assets/Prefabs/GameControl/GameController.prefab");
+
 		// create start point
 		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab");
 

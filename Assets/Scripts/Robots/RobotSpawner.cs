@@ -4,7 +4,6 @@ using System.Collections;
 
 public class RobotSpawner : NetworkBehaviour {
 
-	private static int maxRobots = 1;
 	private static float timeSinceLastSpawn = 0f;
 	private static RobotSpawner activeSpawner;
 
@@ -19,6 +18,7 @@ public class RobotSpawner : NetworkBehaviour {
 	public Transform hoverPackPrefab;
 
 	private bool triggered = false;
+	private GlobalConfig config;
 
 	[ServerCallback]
 	void Start() {
@@ -32,7 +32,7 @@ public class RobotSpawner : NetworkBehaviour {
 		if(this != activeSpawner) {
 			active = false;
 		}
-		if((active || this == activeSpawner) && RobotController.controllerCount < maxRobots) {
+		if((active || this == activeSpawner) && RobotController.controllerCount < getConfig().getMaxRobots()) {
 			timeSinceLastSpawn += Time.deltaTime;
 			if(timeSinceLastSpawn > delay) {
 				spawnRobot();
@@ -126,5 +126,12 @@ public class RobotSpawner : NetworkBehaviour {
 		Gizmos.DrawWireSphere(transform.position, 1f);
 		BoxCollider box = GetComponent<BoxCollider>();
 		Gizmos.DrawWireCube(transform.TransformPoint( box.center), box.size);
+	}
+
+	private GlobalConfig getConfig() {
+		if(config == null) {
+			config = FindObjectOfType<GlobalConfig>();
+		}
+		return config;
 	}
 }
