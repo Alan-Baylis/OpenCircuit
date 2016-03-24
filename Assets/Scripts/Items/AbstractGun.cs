@@ -108,17 +108,19 @@ public abstract class AbstractGun : Item {
 	}
 
 	public void reload() {
-		reloading = true;
-		soundEmitter.PlayOneShot(reloadSound);
-		int bulletsNeeded = magazineSize - currentMagazineFill;
-		if(bulletsRemaining > bulletsNeeded) {
-			currentMagazineFill += bulletsNeeded;
-			bulletsRemaining -= bulletsNeeded;
-		} else {
-			currentMagazineFill += bulletsRemaining;
-			bulletsRemaining = 0;
+		if(currentMagazineFill < magazineSize) {
+			reloading = true;
+			soundEmitter.PlayOneShot(reloadSound);
+			int bulletsNeeded = magazineSize - currentMagazineFill;
+			if(bulletsRemaining > bulletsNeeded) {
+				currentMagazineFill += bulletsNeeded;
+				bulletsRemaining -= bulletsNeeded;
+			} else {
+				currentMagazineFill += bulletsRemaining;
+				bulletsRemaining = 0;
+			}
+			reloadTimeRemaining += reloadTime;
 		}
-		reloadTimeRemaining += reloadTime; 
 	}
 
 	protected void shoot(Vector3 position, Vector3 direction) {
