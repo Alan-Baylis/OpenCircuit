@@ -26,6 +26,7 @@ public abstract class AbstractGun : Item {
 	public EffectSpec fireEffectLight;
 
 	public AudioClip reloadSound;
+	public Texture bulletIcon;
 
 	protected int maxBullets;
 	[SyncVar]
@@ -70,6 +71,27 @@ public abstract class AbstractGun : Item {
 				reloading = false;
 			}
 		}
+	}
+
+	[ClientCallback]
+	void OnGUI() {
+		//GUI.Window(0, new Rect(GUI., 5, 50, 50), windowFunction, GUIContent.none);
+		int boxWidth = 100;
+		int boxHeight = 80;
+		int padding = 10;
+		int boxCornerX = Screen.width - boxWidth - padding;
+		int boxCornerY = Screen.height - boxHeight - padding;
+		GUI.Box(new Rect(boxCornerX, boxCornerY, boxWidth, boxHeight), GUIContent.none);
+
+		int imageWidth = 50;
+		int imageHeight = 50;
+		GUI.DrawTexture(new Rect(boxCornerX + padding, boxCornerY + padding*2 + 20, imageWidth, imageHeight), bulletIcon);
+		GUI.TextArea(new Rect(imageWidth + boxCornerX + padding, boxCornerY + padding, 30, 20), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize));
+		GUI.TextArea(new Rect(imageWidth + boxCornerX + padding, boxCornerY + padding*2 + 20, 30, 20), "" + currentMagazineFill);
+	}
+
+	void windowFunction(int myWindow) {
+
 	}
 
 	public override void beginInvoke(Inventory invoker) {
@@ -160,5 +182,4 @@ public abstract class AbstractGun : Item {
 		float angle = Vector3.Angle(direction, randomAngle) /360;
 		return Vector3.RotateTowards(direction, Random.onUnitSphere, Mathf.PI *angle *inaccuracy, 0);
 	}
-
 }
