@@ -9,7 +9,6 @@ public class RobotSpawner : NetworkBehaviour {
 
 	public bool active = false;
 	public bool playerActivates = false;
-	public float delay = 5f;
 	public bool debug = false;
 
 	public Transform bodyPrefab;
@@ -34,7 +33,7 @@ public class RobotSpawner : NetworkBehaviour {
 		}
 		if((active || this == activeSpawner) && RobotController.controllerCount < getConfig().getMaxRobots()) {
 			timeSinceLastSpawn += Time.deltaTime;
-			if(timeSinceLastSpawn > delay) {
+			if(timeSinceLastSpawn > getConfig().getDelay()) {
 				spawnRobot();
 				timeSinceLastSpawn = 0f;
 			}
