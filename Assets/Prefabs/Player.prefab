@@ -92,7 +92,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.05
+  near clip plane: 0.02
   far clip plane: 5000
   field of view: 60
   orthographic: 0
@@ -436,6 +436,7 @@ MonoBehaviour:
   maximumX: 360
   minimumY: -60
   maximumY: 60
+  zoomRate: 0.2
 --- !u!114 &11451698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -785,7 +786,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: near clip plane
-      value: 0.05
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: zoomRate
+      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

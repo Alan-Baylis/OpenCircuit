@@ -26,17 +26,24 @@ public class MouseLook : NetworkBehaviour {
 
 	public float minimumY = -60F;
 	public float maximumY = 60F;
+	public float zoomRate = 0.5f;
 
 	private Vector3 lookPoint;
 	private bool isAuto = false;
 	private float autoLookSpeed = 1f;
+	private float defaultFov;
+	private float currentZoom = 1;
 
-	float rotationY = 0F;
+	private float rotationY = 0F;
 
-	private Transform cam;
+	private Transform trans;
+	private Camera cam;
 
 	void Start() {
-		cam = GetComponentInChildren<Camera>().transform;
+		cam = GetComponentInChildren<Camera>();
+        trans = cam.transform;
+
+		defaultFov = cam.fieldOfView;
 
 		// Make the rigid body not change rotation
 		if(GetComponent<Rigidbody>())
@@ -44,22 +51,25 @@ public class MouseLook : NetworkBehaviour {
 	}
 
 	void Update() {
+		// do zooming
+		cam.fieldOfView += (defaultFov /currentZoom -cam.fieldOfView) *zoomRate;
+
 		if(isAuto) {
-			cam.rotation = Quaternion.Lerp(cam.rotation, Quaternion.LookRotation(lookPoint - cam.position), Time.deltaTime * autoLookSpeed);
-			if(1 - Mathf.Abs(Vector3.Dot(cam.forward, (lookPoint - cam.position).normalized)) < .05f) {
+			trans.rotation = Quaternion.Lerp(trans.rotation, Quaternion.LookRotation(lookPoint - trans.position), Time.deltaTime * autoLookSpeed);
+			if(1 - Mathf.Abs(Vector3.Dot(trans.forward, (lookPoint - trans.position).normalized)) < .05f) {
 				isAuto = false;
 			}
 		}
 	}
 
 	public void rotate(float xRotate, float yRotate) {
-		float rotationX = cam.localEulerAngles.y + xRotate *sensitivityX;
+		float rotationX = trans.localEulerAngles.y + xRotate *sensitivityX;
 
 		rotationY += yRotate *sensitivityY;
 		rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 
 		Vector3 angle = new Vector3(-rotationY, rotationX, 0);
-		cam.localEulerAngles = angle;
+		trans.localEulerAngles = angle;
 		CmdSetRotation(angle);
 
 	}
@@ -70,9 +80,17 @@ public class MouseLook : NetworkBehaviour {
 		autoLookSpeed = lookSpeed;
 	}
 
+	public void resetCameraZoom() {
+		setCameraZoom(-1);
+	}
+
+	public void setCameraZoom(float zoom) {
+		this.currentZoom = zoom <= 0? 1 : zoom;
+	}
+
 	[Command]
 	protected void CmdSetRotation(Vector3 eulerAngles) {
-		cam.localEulerAngles = eulerAngles;
+		trans.localEulerAngles = eulerAngles;
 	}
 
 	public bool isAutoMode() {

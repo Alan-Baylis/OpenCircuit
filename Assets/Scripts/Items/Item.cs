@@ -13,6 +13,7 @@ public abstract class Item : NetworkBehaviour {
 	public float positionalResponsiveness = 0.5f;
 	public float maxResponsiveness = 0.5f;
 	public Vector3 stepBump = new Vector3(0, -0.1f, 0.05f);
+	public float zoomLevel = 1.5f;
 
 	protected float reachDistance = 3f;
 
@@ -31,7 +32,8 @@ public abstract class Item : NetworkBehaviour {
 			// determine desired position
 			Vector3 newPosition;
 			Quaternion newRotation;
-            if (holder.sprinting) {
+			holder.getPlayer().looker.resetCameraZoom();
+			if (holder.sprinting) {
 				Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
 				newPosition = transform.parent.TransformPoint(rotation *sprintPosition.position);
 				newRotation = transform.parent.rotation * Quaternion.Euler(sprintPosition.rotation);
@@ -39,14 +41,16 @@ public abstract class Item : NetworkBehaviour {
 			} else if (holder.getPlayer().zooming) {
 				newPosition = followingCamera.TransformPoint(zoomPosition.position);
 				newRotation = followingCamera.rotation * Quaternion.Euler(zoomPosition.rotation);
+				holder.getPlayer().looker.setCameraZoom(zoomLevel);
 			} else {
 				newPosition = followingCamera.TransformPoint(normalPosition.position);
 				newRotation = followingCamera.rotation * Quaternion.Euler(normalPosition.rotation);
 			}
 
 			// track to desired position
-			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness *Time.deltaTime, maxResponsiveness);
-			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness *Time.deltaTime);
+			float multiplier = holder.getPlayer().zooming ? 1.5f : 1;
+			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness *Time.deltaTime *multiplier, maxResponsiveness);
+			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness *Time.deltaTime *multiplier);
 		}
 	}
 
