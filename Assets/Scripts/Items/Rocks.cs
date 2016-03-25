@@ -18,9 +18,6 @@ public class Rocks : Item {
 		rock.transform.localScale *= 0.2f;
 		rock.AddComponent<MeshFilter>().sharedMesh = rockMesh;
 		rock.AddComponent<MeshRenderer>().sharedMaterial = rockMaterial;
-		SphereCollider col = rock.AddComponent<SphereCollider>();
-		//col.radius
-		//col.convex = true;
 		Rigidbody rb = rock.AddComponent<Rigidbody>();
 		rb.velocity = cam.TransformVector(throwVelocity);
 		rb.collisionDetectionMode = CollisionDetectionMode.Continuous;

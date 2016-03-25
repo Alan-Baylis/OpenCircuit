@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -30,8 +31,7 @@ public class Menu : MonoBehaviour {
 				myMenu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 			return myMenu;
 	}}
-
-	private float timeScale;
+	
 	private enum state {
 		MainMenu, InGameMenu, Options, Load, Win, Lose
 	};
@@ -53,8 +53,6 @@ public class Menu : MonoBehaviour {
 		if (paused()) return;
 		Cursor.lockState = CursorLockMode.None;
 		activeAtStart = true;
-		timeScale = Time.timeScale;
-		//Time.timeScale = 0;
 	}
 
 	public void unpause() {
@@ -62,7 +60,6 @@ public class Menu : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		activeAtStart = false;
 		menuHistory.Clear();
-		//Time.timeScale = timeScale;
 	}
 
 	// Use this for initialization
@@ -70,7 +67,6 @@ public class Menu : MonoBehaviour {
 		myPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 		if (activeAtStart && !didWin) {
 			myPlayer.gameObject.SetActive(false);
-			Time.timeScale = 0;
 		//} else {
 		//	begin();
 		}
@@ -124,7 +120,7 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, startRect.height);
 		if (GUI.Button(convertRect(startRect, false), "Restart", skin.button)) {
 			currentMenu = state.MainMenu;
-			Application.LoadLevel(0);
+			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
@@ -140,7 +136,7 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, startRect.height);
 		if (GUI.Button(convertRect(startRect, false), "Play Again", skin.button)) {
 			currentMenu = state.MainMenu;
-			Application.LoadLevel(0);
+			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		}
 		adjustFontSize(skin.button, optionsRect.height);
 		if (GUI.Button(convertRect(optionsRect,false), "Options", skin.button)) {
@@ -165,7 +161,7 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, loadRect.height);
 		if (GUI.Button(convertRect(loadRect, false), "Restart Game", skin.button)) {
 			currentMenu = state.MainMenu;
-			Application.LoadLevel(0);
+			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
@@ -241,7 +237,6 @@ public class Menu : MonoBehaviour {
 		GetComponent<AudioListener>().enabled = false;
 		menuHistory.Clear();
 		activeAtStart = false;
-		Time.timeScale = 1;
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 

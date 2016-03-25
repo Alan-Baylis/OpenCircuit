@@ -30,7 +30,7 @@ public class OpenOperation : Operation {
 
 #if UNITY_EDITOR
     public override void doGUI() {
-		door = (AutoDoor)UnityEditor.EditorGUILayout.ObjectField(door, typeof(AutoDoor), null);
+		door = (AutoDoor)UnityEditor.EditorGUILayout.ObjectField(door, typeof(AutoDoor), true, null);
 		ObjectReferenceManager.get().deleteReference(doorPath);
 		doorPath = ObjectReferenceManager.get().addReference(door);
 	}

@@ -10,7 +10,6 @@ public class VantagePoint : MonoBehaviour {
 
 
 	private bool triggered = false;
-	private float timeout = 5f;
 	private float timeSincePause = 0f;
 	private int currentLookAt = 0;
 	private bool isPaused = false;
@@ -43,9 +42,6 @@ public class VantagePoint : MonoBehaviour {
 					}
 				}
 			}
-			//if(timeSinceTrigger > timeout) {
-			//	victim.controls.enablePlayerControls();
-			//}
 			if(isPaused) {
 				timeSincePause += Time.deltaTime;
 			}

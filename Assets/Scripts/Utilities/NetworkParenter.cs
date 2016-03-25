@@ -14,9 +14,6 @@ public class NetworkParenter : NetworkBehaviour {
 
 	[Client]
 	protected void updateParentId(NetworkInstanceId id) {
-		if(id == null) {
-			return;
-		}
 		this.parentId = id;
 		GameObject parentObject = ClientScene.FindLocalObject(id);
 		transform.parent = parentObject.transform;
