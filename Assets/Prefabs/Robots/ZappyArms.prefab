@@ -865,8 +865,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6, y: 0.1, z: 0.1}
-  m_Center: {x: 0, y: -0.13, z: 0.4}
+  m_Size: {x: 0.6, y: 2, z: 1.2}
+  m_Center: {x: 0, y: 0.2, z: -0.15}
 --- !u!114 &11400260
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -882,7 +882,7 @@ MonoBehaviour:
   pickUp: {fileID: 8300000, guid: 2bdff90b90901024abd17cb55589c24d, type: 3}
   drop: {fileID: 0}
   zap: {fileID: 8300000, guid: 8d152311467a8f84bbf3479424322460, type: 3}
-  throwForce: {x: 0, y: 120, z: 200}
+  throwForce: {x: 0, y: -50, z: -100}
 --- !u!114 &11456788
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1092,6 +1092,30 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: damagePerSecond
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Center.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Center.z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Size.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: throwForce.y
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: throwForce.z
+      value: -100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
