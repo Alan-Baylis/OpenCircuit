@@ -8,6 +8,8 @@ public class AmmoPickup : NetworkBehaviour {
 	public AudioClip pickupSound;
 
 	private AudioSource soundEmitter;
+
+	[SyncVar]
 	private bool pickedUp = false;
 
 	void Start() {
@@ -24,14 +26,24 @@ public class AmmoPickup : NetworkBehaviour {
 				AbstractGun gun = player.GetComponentInChildren<AbstractGun>();
 				if(gun != null) {
 					if(gun.addMags(magazines)) {
-						soundEmitter.PlayOneShot(pickupSound);
 						//gameObject.SetActive(false);
 						pickedUp = true;
-						Destroy(GetComponent<MeshRenderer>());
+						handlePickupEffects();
+						RpcHandlePickupEffects();
 						Destroy(gameObject, 5);
 					}
 				}
 			}
 		}
+	}
+
+	[ClientRpc]
+	private void RpcHandlePickupEffects() {
+		handlePickupEffects();
+	}
+
+	private void handlePickupEffects() {
+		soundEmitter.PlayOneShot(pickupSound);
+		Destroy(GetComponent<MeshRenderer>());
 	}
 }
