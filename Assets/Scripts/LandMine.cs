@@ -6,7 +6,8 @@ public class LandMine : NetworkBehaviour {
 
 	public float knockBack = 5f;
 	public float damage = 70f;
-	public AudioClip explosionSound;
+	public float blackoutTime = 2;
+    public AudioClip explosionSound;
 
 	private AudioSource soundEmitter;
 	private bool triggered = false;
@@ -24,11 +25,14 @@ public class LandMine : NetworkBehaviour {
 				triggered = true;
 
 				player.GetComponent<Label>().sendTrigger(this.gameObject, new DamageTrigger(damage));
+
+				// move player
 				Vector3 horizontalDirection = (player.transform.position - transform.position);
 				Vector3 verticalDirection = new Vector3(0, 1, 0);
 				horizontalDirection.y = 0;
 				horizontalDirection.Normalize();
 				player.GetComponent<Rigidbody>().AddForce(horizontalDirection * knockBack + verticalDirection * (knockBack * .3f));
+
 				handleEffects(player);
 				RpcHandleEffects(player.netId);
 				Destroy(gameObject, 3f);
@@ -46,6 +50,11 @@ public class LandMine : NetworkBehaviour {
 		if(explosionSound != null) {
 			soundEmitter.PlayOneShot(explosionSound);
 		}
+
+		// move player screen and do blackout
+		player.looker.rotate(Random.Range(-90, 90), Random.Range(-30, 30));
+		player.blackout(blackoutTime);
+
 		Destroy(GetComponent<MeshRenderer>());
 		Destroy(GetComponent<MeshFilter>());
 	}
