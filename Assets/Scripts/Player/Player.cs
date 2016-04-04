@@ -39,6 +39,7 @@ public class Player : NetworkBehaviour {
 	[SyncVar]
 	private float suffering = 0;
 	private bool alive = true;
+	private float deltaTime;
 	
 	public Attack attacker { get { return myAttacker; } set { myAttacker = value; } }
 	public Grab grabber { get { return myGrabber; } set { myGrabber = value; } }
@@ -90,6 +91,8 @@ public class Player : NetworkBehaviour {
 		}
 		if (suffering > 0)
 			suffering = Mathf.Max(suffering -recoveryRate *Time.deltaTime, 0f);
+
+		deltaTime += (Time.deltaTime -deltaTime) *0.1f;
 	}
 
 	public void physicsPickup(GameObject item) {
@@ -102,6 +105,10 @@ public class Player : NetworkBehaviour {
 
 	public void fadeIn() {
 		blackOutTime = blackOutDuration;
+	}
+
+	public void blackout(float seconds) {
+		blackOutTime = Mathf.Max(seconds, blackOutTime);
 	}
 
 	public void hurt(float pain) {
@@ -178,6 +185,11 @@ public class Player : NetworkBehaviour {
 				"Paused", style);
 			GUI.color = Color.white;
 		}
+
+		float msec = deltaTime *1000;
+		float fps = 1f /deltaTime;
+		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+		//GUI.Label(new Rect(0, 0, 100, 20), text);
 
 		//// draw the player's oxygen level
 		//GUI.Label(new Rect(10, 30, 100, 20), oxygen.ToString());
