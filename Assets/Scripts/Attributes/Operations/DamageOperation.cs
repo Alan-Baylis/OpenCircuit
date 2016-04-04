@@ -16,9 +16,9 @@ public class DamageOperation : Operation {
 	
 	public override void perform(GameObject instigator, Trigger trig) {
 		DamageTrigger trigger = (DamageTrigger)trig;
-		Player player = parent.GetComponent<Player>();
-		if(player != null) {
-			player.hurt(trigger.getAmount());
+		Health health = parent.GetComponent<Health>();
+		if(health != null) {
+			health.hurt(trigger.getAmount());
 		}
 
 	}

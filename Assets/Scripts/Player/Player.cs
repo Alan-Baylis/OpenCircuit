@@ -10,8 +10,6 @@ public class Player : NetworkBehaviour {
 	public float maxOxygen = 60;
 	public float oxygenRecoveryRate = 2;
 	public float oxygen = 60;
-	public float maxSuffering = 100;
-	public float recoveryRate = 25;
 	public Texture2D sufferingOverlay;
 	public AudioClip heavyBreathingSound;
 	public AudioClip teleportSound;
@@ -31,13 +29,13 @@ public class Player : NetworkBehaviour {
 	private Camera myCam;
 	private MouseLook myLooker;
 	private Controls myControls;
+	private Health myHealth;
 
 	private AudioSource breathingSource;
 	private float whiteOutTime;
 	private float blackOutTime = 0;
 	private Texture2D whiteOutTexture;
-	[SyncVar]
-	private float suffering = 0;
+
 	private bool alive = true;
 	private float deltaTime;
 	
@@ -49,6 +47,7 @@ public class Player : NetworkBehaviour {
 	public Camera cam { get { return myCam; } set { myCam = value; } }
 	public MouseLook looker { get { return myLooker; } set { myLooker = value; } }
 	public Controls controls { get { return myControls; } set { myControls = value; } }
+	public Health health { get { return myHealth; } set { myHealth = value; } }
 
 	void Awake() {
 		attacker = GetComponent<Attack> ();
@@ -59,6 +58,7 @@ public class Player : NetworkBehaviour {
 		cam = GetComponentInChildren<Camera>();
 		looker = GetComponent<MouseLook>();
 		controls = GetComponent<Controls>();
+		myHealth = GetComponent<Health>();
 		
 		whiteOutTime = 0;
 		breathingSource = gameObject.AddComponent<AudioSource>();
@@ -83,15 +83,6 @@ public class Player : NetworkBehaviour {
 			}
 		}
 
-		if(isServer) {
-			if(suffering > maxSuffering) {
-				// He's dead, Jim.
-				die();
-			}
-		}
-		if (suffering > 0)
-			suffering = Mathf.Max(suffering -recoveryRate *Time.deltaTime, 0f);
-
 		deltaTime += (Time.deltaTime -deltaTime) *0.1f;
 	}
 
@@ -109,11 +100,6 @@ public class Player : NetworkBehaviour {
 
 	public void blackout(float seconds) {
 		blackOutTime = Mathf.Max(seconds, blackOutTime);
-	}
-
-	public void hurt(float pain) {
-		suffering += pain;
-		// play sound or whatever here
 	}
 
 	[Server]
@@ -161,8 +147,8 @@ public class Player : NetworkBehaviour {
 				whiteOutTime = 0;
 		}
 
-		if (suffering > 0) {
-			GUI.color = new Color(1, 0.2f, 0.2f, Mathf.Min(suffering, maxSuffering) / maxSuffering * 0.5f);
+		if (myHealth.getDamage() > 0) {
+			GUI.color = new Color(1, 0.2f, 0.2f, myHealth.getDamagePercent() * 0.5f);
 			GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), sufferingOverlay);
 			GUI.color = Color.white;
 		}
