@@ -52,7 +52,7 @@ public class LandMine : NetworkBehaviour {
 		}
 
 		// move player screen and do blackout
-		player.looker.rotate(Random.Range(-90, 90), Random.Range(-30, 30));
+		player.looker.rotate(Random.Range(-45, 45), Random.Range(-30, 30));
 		player.blackout(blackoutTime);
 
 		Destroy(GetComponent<MeshRenderer>());
