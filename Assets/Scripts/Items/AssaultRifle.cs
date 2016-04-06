@@ -31,9 +31,9 @@ public class AssaultRifle : AbstractGun {
 				rb.AddForceAtPosition(direction * impulse, hitInfo.point);
 			}
 
-			RobotController controller = getParentComponent<RobotController>(hitInfo.transform);
-			if(controller != null) {
-				CmdApplyDamage(controller.netId, direction, hitInfo);
+			Health health = getParentComponent<Health>(hitInfo.transform);
+			if(health != null) {
+				CmdApplyDamage(health.netId, direction, hitInfo);
 
 				// do ricochet
 				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
@@ -48,16 +48,18 @@ public class AssaultRifle : AbstractGun {
 
 	[Command]
 	protected void CmdApplyDamage(NetworkInstanceId hit, Vector3 direction, RaycastHit hitInfo) {
-		GameObject robot = ClientScene.FindLocalObject(hit);
-		RobotController robotController = robot.GetComponent<RobotController>();
-		NavMeshAgent navAgent = robotController.GetComponent<NavMeshAgent>();
+		GameObject hitObject = ClientScene.FindLocalObject(hit);
+		Health health = hitObject.GetComponent<Health>();
+		NavMeshAgent navAgent = hitObject.GetComponent<NavMeshAgent>();
 		if(navAgent != null) {
 			navAgent.speed -= 2f;
 			if(navAgent.speed < 1f) {
 				navAgent.speed = 1;
 			}
 		}
-		robotController.health -= calculateDamage(direction, hitInfo);
+		if(health != null) {
+			health.hurt(calculateDamage(direction, hitInfo));
+		}
 	}
 
 	[Server]

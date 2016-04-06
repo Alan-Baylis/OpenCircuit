@@ -16,13 +16,12 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	private HashSet<Endeavour> availableEndeavours = new HashSet<Endeavour> (new EndeavourComparer());
 	private List<LabelHandle> trackedTargets = new List<LabelHandle> ();
 	private AudioSource soundEmitter;
+	private Health myHealth;
+
+	public Health health { get { return myHealth; } }
 
 	public AudioClip destructionSound;
 	public EffectSpec destructionEffect;
-
-
-	public float health = 100;
-	public float maxHealth = 100f;
 
 #if UNITY_EDITOR
 	public bool debug = false;
@@ -64,7 +63,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	[ServerCallback]
 	void Start() {
 		controllerCount++;
-		health = maxHealth;
+		myHealth = GetComponent<Health>();
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         foreach(Goal goal in goals) {
             if(!goalMap.ContainsKey(goal.type)) {
@@ -91,10 +90,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	// Update is called once per frame
 	[ServerCallback]
 	void Update () {
-		if(health <= 0) {
-			dispose();
-			return;
-		}
 //Leave this here, very useful!!
 //#if UNITY_EDITOR
 

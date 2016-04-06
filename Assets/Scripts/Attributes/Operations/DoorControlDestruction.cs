@@ -6,7 +6,7 @@ public class DoorControlDestruction : Operation {
 
 	[System.NonSerialized]
 	public AutoDoor door;
-	private string autoDoorRef;
+	private string autoDoorRef = null;
 
 	private static System.Type[] triggers = new System.Type[] {
 		typeof(DestructTrigger),
@@ -38,7 +38,7 @@ public class DoorControlDestruction : Operation {
 
 #if UNITY_EDITOR
 	public override void doGUI() {
-		door = (AutoDoor)UnityEditor.EditorGUILayout.ObjectField(door, typeof(AutoDoor), true);
+		door = (AutoDoor)UnityEditor.EditorGUILayout.ObjectField(getDoor(), typeof(AutoDoor), true);
 		ObjectReferenceManager.get().deleteReference(autoDoorRef);
 		autoDoorRef = ObjectReferenceManager.get().addReference(door);
 		//damageType = UnityEditor.EditorGUILayout.TextField("Type", damageType);
