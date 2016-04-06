@@ -12,11 +12,13 @@ GameObject:
   - 135: {fileID: 13588166}
   - 23: {fileID: 2397646}
   - 114: {fileID: 11499298}
+  - 114: {fileID: 11495642}
   - 195: {fileID: 19506382}
   - 54: {fileID: 5491912}
   - 114: {fileID: 11415158}
   - 114: {fileID: 11454488}
   - 114: {fileID: 11454592}
+  - 114: {fileID: 11482574}
   m_Layer: 0
   m_Name: Robot
   m_TagString: Untagged
@@ -150,6 +152,33 @@ MonoBehaviour:
   mode: 2
   interpolationRate: 0.2
   networkChannel: 1
+--- !u!114 &11482574
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 135778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e020000000903000000050300000019526f626f744465737472756374696f6e4f7065726174696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
+  isVisible: 1
+--- !u!114 &11495642
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 135778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba74ec35107dc041826b44adf893850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSuffering: 100
+  recoveryRate: 0
+  sufferingDisplay: 0
 --- !u!114 &11499298
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -166,8 +195,6 @@ MonoBehaviour:
   destructionEffect:
     prefab: {fileID: 415520, guid: 3f9ed27588432d74eacd8fa5d41f4f23, type: 2}
     lifetime: 2
-  health: 100
-  maxHealth: 100
   debug: 0
   shouldAlphabetize: 0
   locations: []

@@ -6,7 +6,7 @@ using System.Collections;
 public class DoorTrigger : NetworkBehaviour {
 
 	private AutoDoor control = null;
-	private int robotCount = 0;
+	//private int robotCount = 0;
 
 	void Awake() {
 		control = GetComponentInParent<AutoDoor> ();
@@ -16,19 +16,19 @@ public class DoorTrigger : NetworkBehaviour {
 	void OnTriggerEnter(Collider collision) {
 		RobotController controller = collision.GetComponent<RobotController> ();
 		if (controller != null) {
-			robotCount++;
+			//robotCount++;
 			control.open();
 		}
 	}
 
-	[ServerCallback]
-	void OnTriggerExit(Collider other) {
-		RobotController controller = other.GetComponent<RobotController> ();
-		if(controller != null) {
-			--robotCount;
-			if(robotCount == 0) {
-				control.close();
-			}
-		}
-	}
+	//[ServerCallback]
+	//void OnTriggerExit(Collider other) {
+	//	RobotController controller = other.GetComponent<RobotController> ();
+	//	if(controller != null) {
+	//		--robotCount;
+	//		if(robotCount == 0) {
+	//			control.close();
+	//		}
+	//	}
+	//}
 }
