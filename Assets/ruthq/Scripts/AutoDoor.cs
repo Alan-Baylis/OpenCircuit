@@ -1,13 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 
 public class AutoDoor : NetworkBehaviour {
+
+	public List<Label> doorLocks;
 
     public float doorHeight = 3.5f;
 	public float toggleTime = .25f;
 
 	public GameObject door;
+
+	public AudioClip endSound;
+
+	private List<Label> activeDoorLocks = new List<Label>();
 
     private Vector3 downPosition;
     private Vector3 upPosition;
@@ -16,11 +23,20 @@ public class AutoDoor : NetworkBehaviour {
 
 	private AudioSource soundEmitter;
 
-	public AudioClip endSound;
 
     // Use this for initialization
 	[ServerCallback]
     void Start () {
+		if(doorLocks != null && doorLocks.Count > 0) {
+			foreach (Label lockLable in doorLocks) {
+				if(lockLable != null) {
+					DoorControlDestruction operation = new DoorControlDestruction();
+					operation.setDoor(this);
+					lockLable.addOperation(operation, new System.Type [] {typeof(DestructTrigger)});
+					activeDoorLocks.Add(lockLable);
+				}
+			}
+		} 
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         downPosition = door.transform.position - new Vector3 (0,doorHeight,0);
         upPosition = door.transform.position;
@@ -37,6 +53,14 @@ public class AutoDoor : NetworkBehaviour {
 			moveDown();
 		}
 
+	}
+
+	[Server]
+	public void removeDoorLock(Label doorLock) {
+		activeDoorLocks.Remove(doorLock);
+		if(activeDoorLocks.Count < 1) {
+			open();
+		}
 	}
 
 	[Server]
