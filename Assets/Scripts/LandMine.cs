@@ -43,17 +43,18 @@ public class LandMine : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcHandleEffects(NetworkInstanceId id) {
-		handleEffects(ClientScene.FindLocalObject(id).GetComponent<Player>());
+		Player player = ClientScene.FindLocalObject(id).GetComponent<Player>();
+		handleEffects(player);
+
+		// move player screen and do blackout
+		player.looker.rotate(Random.Range(-45, 45), Random.Range(-30, 30));
+		player.blackout(blackoutTime);
 	}
 
 	private void handleEffects(Player player) {
 		if(explosionSound != null) {
 			soundEmitter.PlayOneShot(explosionSound);
 		}
-
-		// move player screen and do blackout
-		player.looker.rotate(Random.Range(-45, 45), Random.Range(-30, 30));
-		player.blackout(blackoutTime);
 
 		Destroy(GetComponent<MeshRenderer>());
 		Destroy(GetComponent<MeshFilter>());

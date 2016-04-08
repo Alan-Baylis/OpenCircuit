@@ -13,6 +13,7 @@ GameObject:
   - 23: {fileID: 2352220}
   - 114: {fileID: 11441838}
   - 114: {fileID: 11422170}
+  - 205: {fileID: 20582644}
   m_Layer: 0
   m_Name: LandMine
   m_TagString: Untagged
@@ -79,22 +80,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 0
-    i1: 0
-    i2: 0
-    i3: 0
-    i4: 0
-    i5: 0
-    i6: 0
-    i7: 0
-    i8: 0
-    i9: 0
-    i10: 0
-    i11: 0
-    i12: 0
-    i13: 0
-    i14: 0
-    i15: 0
+    i0: 98
+    i1: 118
+    i2: 243
+    i3: 29
+    i4: 36
+    i5: 48
+    i6: 251
+    i7: 132
+    i8: 8
+    i9: 223
+    i10: 11
+    i11: 203
+    i12: 93
+    i13: 35
+    i14: 212
+    i15: 26
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
 --- !u!114 &11441838
@@ -109,8 +110,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knockBack: 300
-  damage: 35
-  blackoutTime: 8
+  damage: 40
+  blackoutTime: 10
   explosionSound: {fileID: 8300000, guid: fadd3aaca8ee0b94db4d2fa7328b1d6c, type: 3}
 --- !u!136 &13649404
 CapsuleCollider:
@@ -124,7 +125,24 @@ CapsuleCollider:
   m_Radius: 1
   m_Height: 20
   m_Direction: 1
-  m_Center: {x: 0, y: 2, z: 0}
+  m_Center: {x: 0, y: 5, z: 0}
+--- !u!205 &20582644
+LODGroup:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 174678}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.000000059604645, y: 0, z: -0.00000011920929}
+  m_Size: 2
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LODs:
+  - screenRelativeHeight: 0.014963257
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2352220}
+  m_Enabled: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -132,6 +150,10 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_LODs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -142,11 +164,31 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: damage
-      value: 35
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: blackoutTime
-      value: 8
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: knockBack
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Center.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LODs.Array.data[2].screenRelativeHeight
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LODs.Array.data[1].screenRelativeHeight
+      value: 0.011863472
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.014963257
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
