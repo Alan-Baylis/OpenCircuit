@@ -17,7 +17,8 @@ public abstract class Operation: InspectorListElement {
 		typeof(RechargeOperation),
 		typeof(PlayerDeathOperation),
 		typeof(DoorControlDestruction),
-		typeof(RobotDestructionOperation)
+		typeof(RobotDestructionOperation),
+		typeof(MineDestruction)
 	};
 
 	[System.NonSerialized]

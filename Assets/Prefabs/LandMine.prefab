@@ -14,6 +14,9 @@ GameObject:
   - 114: {fileID: 11441838}
   - 114: {fileID: 11422170}
   - 205: {fileID: 20582644}
+  - 114: {fileID: 11430976}
+  - 114: {fileID: 11440160}
+  - 64: {fileID: 6467274}
   m_Layer: 0
   m_Name: LandMine
   m_TagString: Untagged
@@ -66,6 +69,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 174678}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!64 &6467274
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 174678}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 1
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &11422170
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -98,6 +113,33 @@ MonoBehaviour:
     i15: 26
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &11430976
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 174678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e02000000090300000005030000000f4d696e654465737472756374696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
+  isVisible: 1
+--- !u!114 &11440160
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 174678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba74ec35107dc041826b44adf893850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSuffering: 30
+  recoveryRate: 0
+  sufferingDisplay: 0
 --- !u!114 &11441838
 MonoBehaviour:
   m_ObjectHideFlags: 1

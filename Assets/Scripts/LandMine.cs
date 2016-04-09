@@ -21,10 +21,21 @@ public class LandMine : NetworkBehaviour {
 
 	[ServerCallback]
 	public void OnTriggerEnter(Collider other) {
+		Player player = other.GetComponent<Player>();
+		if (player != null)
+			detonate(player);
+	}
+
+	[Server]
+	public void detonate() {
+		detonate(null);
+	}
+
+	[Server]
+	public void detonate(Player player) {
 		if(!triggered) {
-			Player player = other.GetComponent<Player>();
-			if(player != null) {
-				triggered = true;
+			triggered = true;
+			if (player != null) {
 
 				player.GetComponent<Label>().sendTrigger(this.gameObject, new DamageTrigger(damage));
 
@@ -34,32 +45,32 @@ public class LandMine : NetworkBehaviour {
 				horizontalDirection.y = 0;
 				horizontalDirection.Normalize();
 				player.GetComponent<Rigidbody>().AddForce(horizontalDirection * knockBack + verticalDirection * (knockBack * .3f));
-
-				handleEffects(player);
 				RpcHandleEffects(player.netId);
-				Destroy(gameObject, 3f);
-
+			} else {
+				RpcHandleEffects(NetworkInstanceId.Invalid);
 			}
+			
+			Destroy(gameObject, 3f);
 		}
 	}
 
 	[ClientRpc]
 	private void RpcHandleEffects(NetworkInstanceId id) {
-		Player player = ClientScene.FindLocalObject(id).GetComponent<Player>();
-		handleEffects(player);
+		Destroy(GetComponent<MeshRenderer>());
+		Destroy(GetComponent<MeshFilter>());
 
 		// move player screen and do blackout
-		player.looker.rotate(Random.Range(-45, 45), Random.Range(-30, 30));
-		player.blackout(blackoutTime);
+		if (id != NetworkInstanceId.Invalid) {
+			Player player = ClientScene.FindLocalObject(id).GetComponent<Player>();
+			player.looker.rotate(Random.Range(-45, 45), Random.Range(-30, 30));
+			player.blackout(blackoutTime);
+		}
+
+		// do effects
 		if (explosionSound != null) {
 			soundEmitter.PlayOneShot(explosionSound);
 		}
 		explosion.spawn(transform.position);
 		explosionLight.spawn(transform.position +Vector3.up);
-	}
-
-	private void handleEffects(Player player) {
-		Destroy(GetComponent<MeshRenderer>());
-		Destroy(GetComponent<MeshFilter>());
 	}
 }
