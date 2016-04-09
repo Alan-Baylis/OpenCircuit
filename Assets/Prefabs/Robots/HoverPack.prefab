@@ -1348,7 +1348,7 @@ MonoBehaviour:
   stepHeight: 0.3
   maxStepHeight: 0.8
   minMoveSpeed: 0.01
-  minimumFramesPerSwitch: 2
+  minimumFramesPerSwitch: 3
   footstep: {fileID: 8289408}
   debug: 0
 --- !u!114 &11460476

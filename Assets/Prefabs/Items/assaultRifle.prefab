@@ -1519,11 +1519,12 @@ MonoBehaviour:
   positionalResponsiveness: 18
   maxResponsiveness: 0.1
   stepBump: {x: 0.1, y: -0.1, z: 0}
+  zoomLevel: 1.5
   fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
   fireSoundVolume: 0.3
   fireDelay: 0.1
-  reloadTime: 1
-  magazineSize: 20
+  reloadTime: 1.5
+  magazineSize: 30
   maxMagazines: 5
   baseInaccuracy: 0.005
   maximumMovementInaccuracy: 0.2

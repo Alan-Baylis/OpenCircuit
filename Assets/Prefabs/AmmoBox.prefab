@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 994ae3774081a6b46a9d86138e3d4034, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magazines: 1
+  magazines: 2
   pickupSound: {fileID: 8300000, guid: f7fbf7011ead9d141ab50bb39ac7e211, type: 3}
 --- !u!1001 &100100000
 Prefab:
