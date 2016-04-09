@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Dust
-  m_Shader: {fileID: 203, guid: 0000000000000000f000000000000000, type: 0}
+  m_Name: ExplosionFlash
+  m_Shader: {fileID: 202, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: 3000
@@ -93,10 +93,6 @@ Material:
         second: 0.5
       data:
         first:
-          name: PixelSnap
-        second: 0
-      data:
-        first:
           name: _Parallax
         second: 0.02
       data:
@@ -147,8 +143,4 @@ Material:
       data:
         first:
           name: _TintColor
-        second: {r: 0.63529414, g: 0.63529414, b: 0.63529414, a: 0.509}
-      data:
-        first:
-          name: _EmisColor
-        second: {r: 0.63529414, g: 0.63529414, b: 0.63529414, a: 1}
+        second: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}

@@ -7,7 +7,9 @@ public struct EffectSpec {
 	public float lifetime;
 
 	public Transform spawn(Vector3 location) {
-		return spawn(location, Quaternion.identity);
+		if (prefab == null)
+			return spawn(location, Quaternion.identity);
+		return spawn(location, prefab.rotation);
 	}
 
 	public Transform spawn(Vector3 location, Vector3 direction) {

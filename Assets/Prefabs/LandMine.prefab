@@ -113,6 +113,12 @@ MonoBehaviour:
   damage: 40
   blackoutTime: 10
   explosionSound: {fileID: 8300000, guid: fadd3aaca8ee0b94db4d2fa7328b1d6c, type: 3}
+  explosion:
+    prefab: {fileID: 470356, guid: ad20454c39f277043979cb781a34b4d9, type: 2}
+    lifetime: 20
+  explosionLight:
+    prefab: {fileID: 491746, guid: a82260ec06af080448d273f8ea6ffdbf, type: 2}
+    lifetime: 0.05
 --- !u!136 &13649404
 CapsuleCollider:
   m_ObjectHideFlags: 1

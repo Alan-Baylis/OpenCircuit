@@ -8,6 +8,8 @@ public class LandMine : NetworkBehaviour {
 	public float damage = 70f;
 	public float blackoutTime = 2;
     public AudioClip explosionSound;
+	public EffectSpec explosion;
+	public EffectSpec explosionLight;
 
 	private AudioSource soundEmitter;
 	private bool triggered = false;
@@ -49,13 +51,14 @@ public class LandMine : NetworkBehaviour {
 		// move player screen and do blackout
 		player.looker.rotate(Random.Range(-45, 45), Random.Range(-30, 30));
 		player.blackout(blackoutTime);
+		if (explosionSound != null) {
+			soundEmitter.PlayOneShot(explosionSound);
+		}
+		explosion.spawn(transform.position);
+		explosionLight.spawn(transform.position +Vector3.up);
 	}
 
 	private void handleEffects(Player player) {
-		if(explosionSound != null) {
-			soundEmitter.PlayOneShot(explosionSound);
-		}
-
 		Destroy(GetComponent<MeshRenderer>());
 		Destroy(GetComponent<MeshFilter>());
 	}
