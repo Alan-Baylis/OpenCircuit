@@ -397,6 +397,8 @@ namespace Vox {
 		}
 
 		public void pauseForGeneration() {
+			if (!Application.isPlaying)
+				return;
 			generationPaused = true;
 			rebakedLighting = false;
 			Time.timeScale = 0;

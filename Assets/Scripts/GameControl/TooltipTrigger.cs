@@ -35,7 +35,7 @@ public class TooltipTrigger : MonoBehaviour {
 			} else {
 				break;
 			}
-			yield return new WaitForEndOfFrame();
+			yield return null;
 		}
 	}
 
