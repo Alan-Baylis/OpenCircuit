@@ -28,12 +28,12 @@ public class AutoDoor : NetworkBehaviour {
 	[ServerCallback]
     void Start () {
 		if(doorLocks != null && doorLocks.Count > 0) {
-			foreach (Label lockLable in doorLocks) {
-				if(lockLable != null) {
+			foreach (Label lockLabel in doorLocks) {
+				if (lockLabel != null) {
 					DoorControlDestruction operation = new DoorControlDestruction();
 					operation.setDoor(this);
-					lockLable.addOperation(operation, new System.Type [] {typeof(DestructTrigger)});
-					activeDoorLocks.Add(lockLable);
+					lockLabel.addOperation(operation, new System.Type [] {typeof(DestructTrigger)});
+					activeDoorLocks.Add(lockLabel);
 				}
 			}
 		} 

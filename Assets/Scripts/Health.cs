@@ -16,7 +16,7 @@ public class Health : NetworkBehaviour {
 		if(isServer) {
 			if(suffering > maxSuffering) {
 				// He's dead, Jim.
-				GetComponent<Label>().sendTrigger(gameObject, new DestructTrigger());
+				destruct();
 			}
 		}
 
@@ -32,7 +32,11 @@ public class Health : NetworkBehaviour {
 		return suffering;
 	}
 
-	public void hurt(float pain) {
+	public virtual void destruct() {
+		GetComponent<Label>().sendTrigger(gameObject, new DestructTrigger());
+	}
+
+	public virtual void hurt(float pain) {
 		suffering += pain;
 		// play sound or whatever here
 	}

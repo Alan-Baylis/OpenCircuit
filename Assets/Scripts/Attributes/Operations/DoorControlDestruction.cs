@@ -18,8 +18,6 @@ public class DoorControlDestruction : Operation {
 	public override void perform(GameObject instigator, Trigger trig) {
 		if(door != null) {
 			door.removeDoorLock(parent);
-			//TODO play a destruction sound here
-			MonoBehaviour.Destroy(parent.gameObject);
 		}
 	}
 
