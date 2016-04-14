@@ -141,6 +141,8 @@ public class RobotControllerGUI : Editor {
         serializedObject.Update();
 		RobotController robot = (RobotController)target;
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("debug"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("health"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("maxHealth"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("reliability"));
         SerializedProperty goals = serializedObject.FindProperty("goals");
         status = UnityEditor.EditorGUILayout.Foldout(status, "Goals");
@@ -169,6 +171,8 @@ public class RobotControllerGUI : Editor {
 		}
         EditorGUILayout.PropertyField(serializedObject.FindProperty("locations"), true);
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("targetSightedSound"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionSound"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionEffect"), true);
 		doEndeavourList(robot);
 		//robot.OnBeforeSerialize();
 

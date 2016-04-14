@@ -11,7 +11,7 @@ public class Flashlight : Item {
 
 	protected Light lightComp = null;
 
-	public override void invoke(Inventory invoker) {
+	public override void beginInvoke(Inventory invoker) {
 		if (lightComp == null || lightComp.enabled)
 			turnOff();
 		else

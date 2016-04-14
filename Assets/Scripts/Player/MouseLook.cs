@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
 /// MouseLook rotates the transform based on the mouse delta.
 /// Minimum and Maximum values can be used to constrain the possible rotation
@@ -15,41 +16,62 @@ using System.Collections;
 /// - Add a MouseLook script to the camera.
 ///   -> Set the mouse look to use LookY. (You want the camera to tilt up and down like a head. The character already turns.)
 [AddComponentMenu("Scripts/Player/MouseLook")]
-public class MouseLook : MonoBehaviour {
+public class MouseLook : NetworkBehaviour {
 
-	public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
-	public RotationAxes axes = RotationAxes.MouseXAndY;
-	public float sensitivityX = 15F;
-	public float sensitivityY = 15F;
+	public float sensitivityX = 1f;
+	public float sensitivityY = 1f;
 
 	public float minimumX = -360F;
 	public float maximumX = 360F;
 
 	public float minimumY = -60F;
 	public float maximumY = 60F;
+	public float zoomRate = 0.5f;
 
 	private Vector3 lookPoint;
 	private bool isAuto = false;
 	private float autoLookSpeed = 1f;
+	private float defaultFov;
+	private float currentZoom = 1;
 
-	float rotationY = 0F;
+	private float rotationY = 0F;
+
+	private Transform trans;
+	private Camera cam;
+
+	void Start() {
+		cam = GetComponentInChildren<Camera>();
+        trans = cam.transform;
+
+		defaultFov = cam.fieldOfView;
+
+		// Make the rigid body not change rotation
+		if(GetComponent<Rigidbody>())
+			GetComponent<Rigidbody>().freezeRotation = true;
+	}
+
+	void Update() {
+		// do zooming
+		cam.fieldOfView += (defaultFov /currentZoom -cam.fieldOfView) *zoomRate;
+
+		if(isAuto) {
+			trans.rotation = Quaternion.Lerp(trans.rotation, Quaternion.LookRotation(lookPoint - trans.position), Time.deltaTime * autoLookSpeed);
+			if(1 - Mathf.Abs(Vector3.Dot(trans.forward, (lookPoint - trans.position).normalized)) < .05f) {
+				isAuto = false;
+			}
+		}
+	}
 
 	public void rotate(float xRotate, float yRotate) {
-		if (axes == RotationAxes.MouseXAndY) {
-			float rotationX = transform.localEulerAngles.y + xRotate *sensitivityX;
+		float rotationX = trans.localEulerAngles.y + xRotate *sensitivityX;
 
-			rotationY += yRotate *sensitivityY;
-			rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
+		rotationY += yRotate *sensitivityY;
+		rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 
-			transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
-		} else if (axes == RotationAxes.MouseX) {
-			transform.Rotate(0, xRotate *sensitivityX, 0);
-		} else {
-			rotationY += yRotate *sensitivityY;
-			rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
+		Vector3 angle = new Vector3(-rotationY, rotationX, 0);
+		trans.localEulerAngles = angle;
+		CmdSetRotation(angle);
 
-			transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
-		}
 	}
 
 	public void lookAtPoint(Vector3 point, float lookSpeed) {
@@ -57,21 +79,18 @@ public class MouseLook : MonoBehaviour {
 		isAuto = true;
 		autoLookSpeed = lookSpeed;
 	}
-	
-	void Start ()
-	{
-		// Make the rigid body not change rotation
-		if (GetComponent<Rigidbody>())
-			GetComponent<Rigidbody>().freezeRotation = true;
+
+	public void resetCameraZoom() {
+		setCameraZoom(-1);
 	}
 
-	void Update() {
-		if(isAuto) {
-			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookPoint - transform.position), Time.deltaTime*autoLookSpeed);
-			if(1-Mathf.Abs(Vector3.Dot(transform.forward, (lookPoint - transform.position).normalized)) < .05f) {
-				isAuto = false;
-			}
-		}
+	public void setCameraZoom(float zoom) {
+		this.currentZoom = zoom <= 0? 1 : zoom;
+	}
+
+	[Command]
+	protected void CmdSetRotation(Vector3 eulerAngles) {
+		trans.localEulerAngles = eulerAngles;
 	}
 
 	public bool isAutoMode() {

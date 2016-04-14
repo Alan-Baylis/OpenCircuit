@@ -1,0 +1,191 @@
+fileFormatVersion: 2
+guid: c1837d70db7efd144a82ae772451c123
+timeCreated: 1457746205
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Barrel
+    100004: Butt Plate
+    100006: Foregrip
+    100008: Front Sight Base
+    100010: Front Sight Post
+    100012: Grip
+    100014: Gront Sight Adjuster
+    100016: Magazine
+    100018: Magazine Catch
+    100020: Muzzle Break
+    100022: Rail
+    100024: Rail Cap
+    100026: Rail Cap.001
+    100028: Rail Fitter Tube
+    100030: Rail Fitter Tube.001
+    100032: RailFitter
+    100034: RailFitter.001
+    100036: Rear Sight Base
+    100038: Rear Sight Dial
+    100040: Rear Sight Posts
+    100042: Receiver
+    100044: Stock Rails
+    100046: Trigger
+    400000: //RootNode
+    400002: Barrel
+    400004: Butt Plate
+    400006: Foregrip
+    400008: Front Sight Base
+    400010: Front Sight Post
+    400012: Grip
+    400014: Gront Sight Adjuster
+    400016: Magazine
+    400018: Magazine Catch
+    400020: Muzzle Break
+    400022: Rail
+    400024: Rail Cap
+    400026: Rail Cap.001
+    400028: Rail Fitter Tube
+    400030: Rail Fitter Tube.001
+    400032: RailFitter
+    400034: RailFitter.001
+    400036: Rear Sight Base
+    400038: Rear Sight Dial
+    400040: Rear Sight Posts
+    400042: Receiver
+    400044: Stock Rails
+    400046: Trigger
+    2300000: Barrel
+    2300002: Butt Plate
+    2300004: Foregrip
+    2300006: Front Sight Base
+    2300008: Front Sight Post
+    2300010: Grip
+    2300012: Gront Sight Adjuster
+    2300014: Magazine
+    2300016: Magazine Catch
+    2300018: Muzzle Break
+    2300020: Rail
+    2300022: Rail Cap
+    2300024: Rail Cap.001
+    2300026: Rail Fitter Tube
+    2300028: Rail Fitter Tube.001
+    2300030: RailFitter
+    2300032: RailFitter.001
+    2300034: Rear Sight Base
+    2300036: Rear Sight Dial
+    2300038: Rear Sight Posts
+    2300040: Receiver
+    2300042: Stock Rails
+    2300044: Trigger
+    3300000: Barrel
+    3300002: Butt Plate
+    3300004: Foregrip
+    3300006: Front Sight Base
+    3300008: Front Sight Post
+    3300010: Grip
+    3300012: Gront Sight Adjuster
+    3300014: Magazine
+    3300016: Magazine Catch
+    3300018: Muzzle Break
+    3300020: Rail
+    3300022: Rail Cap
+    3300024: Rail Cap.001
+    3300026: Rail Fitter Tube
+    3300028: Rail Fitter Tube.001
+    3300030: RailFitter
+    3300032: RailFitter.001
+    3300034: Rear Sight Base
+    3300036: Rear Sight Dial
+    3300038: Rear Sight Posts
+    3300040: Receiver
+    3300042: Stock Rails
+    3300044: Trigger
+    4300000: Rear Sight Base
+    4300002: Rear Sight Posts
+    4300004: Rear Sight Dial
+    4300006: RailFitter
+    4300008: Rail Fitter Tube.001
+    4300010: Muzzle Break
+    4300012: Rail Cap
+    4300014: Magazine Catch
+    4300016: Barrel
+    4300018: Foregrip
+    4300020: Stock Rails
+    4300022: Butt Plate
+    4300024: Trigger
+    4300026: Magazine
+    4300028: Grip
+    4300030: Receiver
+    4300032: Rail
+    4300034: Front Sight Base
+    4300036: Front Sight Post
+    4300038: Gront Sight Adjuster
+    4300040: Rail Cap.001
+    4300042: RailFitter.001
+    4300044: Rail Fitter Tube
+    7400000: Rail Cap|Cube.004Action
+    7400002: Rail Cap.001|Cube.004Action.002
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 0
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

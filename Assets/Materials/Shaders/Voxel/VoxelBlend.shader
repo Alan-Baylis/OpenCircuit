@@ -56,19 +56,19 @@ Shader "Voxel/NormalBlend" {
 		
 		fixed4 computeDiffuse(Input i, float blendMag) {
 			return (
-				i.b.x *tex2D(_TexWallDif, i.pos.zy *_TexWallDif_ST.xy) +
-				i.b.z *tex2D(_TexWallDif, i.pos.xy *_TexWallDif_ST.xy) +
-				((i.b.y > 0)?i.b.y *tex2D(_TexFlrDif, i.pos.xz *_TexFlrDif_ST.xy):
-				-i.b.y *tex2D(_TexCeilDif, i.pos.zx *_TexCeilDif_ST.xy))
+				i.b.x *tex2D(_TexWallDif, i.pos.zy *_TexWallDif_ST.xy + _TexWallDif_ST.zw) +
+				i.b.z *tex2D(_TexWallDif, i.pos.xy *_TexWallDif_ST.xy + _TexWallDif_ST.zw) +
+				((i.b.y > 0)?i.b.y *tex2D(_TexFlrDif, i.pos.xz *_TexFlrDif_ST.xy + _TexFlrDif_ST.zw):
+				-i.b.y *tex2D(_TexCeilDif, i.pos.zx *_TexCeilDif_ST.xy + _TexCeilDif_ST.zw))
 				) /blendMag;
 		}
 		
 		fixed4 computeHeight(Input i, float blendMag) {
 			return (
-				i.b.x *tex2D(_TexWallNorm, i.pos.zy *_TexWallNorm_ST.xy) +
-				i.b.z *tex2D(_TexWallNorm, i.pos.xy *_TexWallNorm_ST.xy) +
-				((i.b.y > 0)?i.b.y *tex2D(_TexFlrNorm, i.pos.xz *_TexFlrNorm_ST.xy):
-				-i.b.y *tex2D(_TexCeilNorm, i.pos.zx *_TexCeilNorm_ST.xy))
+				i.b.x *tex2D(_TexWallNorm, i.pos.zy *_TexWallNorm_ST.xy + _TexWallDif_ST.zw) +
+				i.b.z *tex2D(_TexWallNorm, i.pos.xy *_TexWallNorm_ST.xy + _TexWallDif_ST.zw) +
+				((i.b.y > 0)?i.b.y *tex2D(_TexFlrNorm, i.pos.xz *_TexFlrNorm_ST.xy + _TexFlrNorm_ST.zw):
+				-i.b.y *tex2D(_TexCeilNorm, i.pos.zx *_TexCeilNorm_ST.xy + _TexCeilNorm_ST.zw))
 				) /blendMag;
 		}
 		

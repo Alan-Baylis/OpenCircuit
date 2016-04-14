@@ -4,7 +4,7 @@ using System.Collections;
 [AddComponentMenu("Scripts/Items/EMP")]
 public class EMP : Item {
 
-	public override void invoke(Inventory invoker) {
+	public override void beginInvoke(Inventory invoker) {
 		print ("EMP invoked");
 	}
 

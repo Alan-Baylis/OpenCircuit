@@ -221,7 +221,7 @@ namespace Vox {
 				gameObject.hideFlags |= HideFlags.DontSave;
 			Transform t = gameObject.transform;
 			t.parent = control.transform;
-			t.localPosition = this.position;
+			t.localPosition = Vector3.zero;
 			t.hideFlags |= HideFlags.HideInHierarchy;
 			MeshRenderer rend = gameObject.AddComponent<MeshRenderer>();
 			rend.enabled = false;
@@ -248,7 +248,7 @@ namespace Vox {
 			foreach (int index in vertices.Keys) {
 				int i = vertices[index];
 				norms[i] = NORMS[index];
-				verts[i] = VERTS[index] -position;
+				verts[i] = VERTS[index];
 				switch(substances.getSubstanceRelativeIndex(MATS[index])) {
 				case 0:
 					uvs[i] = Vector2.zero;

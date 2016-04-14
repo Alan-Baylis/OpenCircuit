@@ -8,10 +8,10 @@ public class HoldAction : Endeavour {
 
 	bool hasComplained = false;
 
-	public HoldAction(RobotController controller, Label target, LabelHandle source) : base(controller, new List<Goal>{new Goal(GoalEnum.Offense, 3), new Goal(GoalEnum.Protection, 3)}, source ) {
+	public HoldAction(RobotController controller, Label target, LabelHandle source) : base(controller, new List<Goal>{new Goal(GoalEnum.Offense, 10), new Goal(GoalEnum.Protection, 3)}, source ) {
 		this.target = target;
 		this.name = "grab";
-		requiredComponents = new System.Type[] {typeof(RobotArms)};
+		requiredComponents = new System.Type[] {typeof(AbstractArms), typeof(HoverJet)};
 	}
 
 	public override bool canExecute () {
@@ -20,7 +20,7 @@ public class HoldAction : Endeavour {
 
 	public override void execute (){
         base.execute();
-		RobotArms arms = controller.GetComponentInChildren<RobotArms> ();
+		AbstractArms arms = controller.GetComponentInChildren<AbstractArms>();
 		if (arms != null) {
 			arms.attachTarget(target);
 			arms.setAvailability(false);
@@ -29,7 +29,7 @@ public class HoldAction : Endeavour {
 
 	public override void stopExecution(){
         base.stopExecution();
-		RobotArms arms = controller.GetComponentInChildren<RobotArms> ();
+		AbstractArms arms = controller.GetComponentInChildren<AbstractArms>();
 		if (arms != null) {
 			arms.setAvailability(true);
 			arms.dropTarget();
@@ -37,7 +37,7 @@ public class HoldAction : Endeavour {
 	}
 
 	public override bool isStale() {
-        RobotArms arms = controller.GetComponentInChildren<RobotArms>();
+		AbstractArms arms = controller.GetComponentInChildren<AbstractArms>();
 
         return target == null || arms == null || (arms.getProposedTarget() != target && !arms.hasTarget());
 	}

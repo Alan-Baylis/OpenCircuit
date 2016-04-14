@@ -174,6 +174,7 @@ public class Parkour : MovementController {
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f));
 				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
 				footStepsEvent.broadcast(volume);
+				myPlayer.inventory.doStep(volume);
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);
 		}
@@ -266,7 +267,7 @@ public class Parkour : MovementController {
 				//print("Force: " + averageForce);
 				if (averageForce > fallHurtSpeed && collisionSpeed > fallHurtSpeed / 2f) {
 					float damage = (averageForce - fallHurtSpeed) / (fallDeathSpeed - fallHurtSpeed);
-					myPlayer.hurt(damage * myPlayer.maxSuffering);
+					myPlayer.health.hurt(damage * myPlayer.health.maxSuffering);
 					//pastForces[pastForces.Count - 1] *= 0.5f;
 				}
 		}

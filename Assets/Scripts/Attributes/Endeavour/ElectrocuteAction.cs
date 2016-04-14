@@ -3,12 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class ElectrocuteAction : Endeavour {
-	private Label target;
 
 	public ElectrocuteAction(RobotController controller, List<Goal> goals, Label target)
 		: base(controller, goals, target.labelHandle) {
 		this.name = "electrocute";
-		this.target = target;
 		requiredComponents = new System.Type[] { };
 
 	}

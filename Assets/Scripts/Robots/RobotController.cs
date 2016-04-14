@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
-public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
+public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver {
+
+	public static int controllerCount = 0;
 
 	[SerializeField]
 	public byte[] serializedData;
@@ -13,6 +16,12 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	private HashSet<Endeavour> availableEndeavours = new HashSet<Endeavour> (new EndeavourComparer());
 	private List<LabelHandle> trackedTargets = new List<LabelHandle> ();
 	private AudioSource soundEmitter;
+	private Health myHealth;
+
+	public Health health { get { return myHealth; } }
+
+	public AudioClip destructionSound;
+	public EffectSpec destructionEffect;
 
 #if UNITY_EDITOR
 	public bool debug = false;
@@ -51,9 +60,10 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	[System.NonSerialized]
 	private float timeoutSeconds = 10;
 
-
-
+	[ServerCallback]
 	void Start() {
+		controllerCount++;
+		myHealth = GetComponent<Health>();
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         foreach(Goal goal in goals) {
             if(!goalMap.ContainsKey(goal.type)) {
@@ -63,7 +73,7 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 		AbstractRobotComponent [] compenents = GetComponentsInChildren<AbstractRobotComponent> ();
 
 		foreach (AbstractRobotComponent component in compenents) {
-			componentMap[component.GetType()] = component;
+			componentMap[component.getComponentArchetype()] = component;
 		}
 
 		foreach (Label location in locations) {
@@ -78,8 +88,8 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	}
 
 	// Update is called once per frame
+	[ServerCallback]
 	void Update () {
-
 //Leave this here, very useful!!
 //#if UNITY_EDITOR
 
@@ -313,13 +323,13 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 	private Dictionary<System.Type, int> getComponentUsageMap() {
 		Dictionary<System.Type, int> componentUsageMap = new Dictionary<System.Type, int>();
 		foreach (AbstractRobotComponent component in componentMap.Values) {
-			if (componentUsageMap.ContainsKey(component.GetType())) {
-				int count = componentUsageMap[component.GetType()];
+			if (componentUsageMap.ContainsKey(component.getComponentArchetype())) {
+				int count = componentUsageMap[component.getComponentArchetype()];
 				++count;
-				componentUsageMap[component.GetType()] = count;
+				componentUsageMap[component.getComponentArchetype()] = count;
 			}
 			else {
-				componentUsageMap[component.GetType()] = 1;
+				componentUsageMap[component.getComponentArchetype()] = 1;
 			}
 		}
 		return componentUsageMap;
@@ -345,6 +355,72 @@ public class RobotController : MonoBehaviour, ISerializationCallbackReceiver {
 		} else {
 			return externalMentalModel; 
 		}
+	}
+
+	[Server]
+	public void dispose() {
+		--controllerCount;
+		CancelInvoke();
+		soundEmitter.PlayOneShot(destructionSound);
+		foreach(Endeavour e in currentEndeavours) {
+			e.stopExecution();
+		}
+		this.enabled = false;
+
+		Destroy(GetComponent<NavMeshAgent>());
+		int randomSeed = UnityEngine.Random.seed;
+
+		RpcDismantle(randomSeed);
+		//dismantle(transform);
+	}
+
+	[ClientRpc]
+	protected void RpcDismantle(int randomSeed) {
+		UnityEngine.Random.seed = randomSeed;
+		dismantle(transform);
+		destructionEffect.spawn(transform.position);
+	}
+
+	protected static void dismantle(Transform trans) {
+		const float maxForce = 200;
+		const float lingerTime = 30;
+
+		trans.parent = null;
+		trans.gameObject.hideFlags |= HideFlags.HideInHierarchy;
+		while (trans.childCount > 0)
+			dismantle(trans.GetChild(0));
+		Collider col = trans.GetComponent<Collider>();
+        if (col == null) {
+			Destroy(trans.gameObject);
+		} else {
+			foreach(NetworkBehaviour net in trans.GetComponents<NetworkBehaviour>()) {
+				Destroy(net);
+			}
+
+
+			foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
+				if (script as NetworkIdentity == null) {
+					Destroy(script);
+				}
+			}
+			if (col as MeshCollider != null)
+				((MeshCollider)col).convex = true;
+			col.enabled = true;
+			Rigidbody rb = trans.GetComponent<Rigidbody>();
+			if (rb == null)
+				rb = trans.gameObject.AddComponent<Rigidbody>();
+			rb.isKinematic = false;
+			rb.useGravity = true;
+			rb.AddForce(randomRange(Vector3.one * -maxForce, Vector3.one * maxForce));
+			Destroy(trans.gameObject, lingerTime);
+		}
+	}
+
+	protected static Vector3 randomRange(Vector3 min, Vector3 max) {
+		return new Vector3(
+			UnityEngine.Random.Range(min.x, max.x),
+			UnityEngine.Random.Range(min.y, max.y),
+			UnityEngine.Random.Range(min.z, max.z));
 	}
 
 #if UNITY_EDITOR

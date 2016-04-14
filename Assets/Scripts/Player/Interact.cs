@@ -83,7 +83,10 @@ public class Interact : MonoBehaviour {
 	private bool canInteract(GameObject obj) {
 		Grab grabber = myPlayer.grabber;
 		if (grabber.hasObject())
-			return false;;
+			return false;
+
+		if (obj.GetComponent<Player>() != null)
+			return false;
 		if (myPlayer.inventory.canTake(obj))
             return true;
 		Label output;

@@ -17,7 +17,7 @@ public class PocketEMP : RechargableItem {
 		}
     }
 
-	public override void invoke(Inventory invoker) {
+	public override void beginInvoke(Inventory invoker) {
 		//audioSource.Play();
 		if(useCharge()) {
 			foreach(AbstractPowerSource source in AbstractPowerSource.powerSources) {

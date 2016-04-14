@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Robot/Robot Arms")]
-public class RobotArms : AbstractRobotComponent {
+public class RobotArms : AbstractArms {
 
     public static Vector3 HOLD_POSITION = new Vector3(0, .5f, .85f);
 
@@ -31,8 +31,7 @@ public class RobotArms : AbstractRobotComponent {
 		if (powerSource == null || !powerSource.hasPower (Time.deltaTime)) {
 			collider.enabled = false;
 			dropTarget ();
-		}
-		else {
+		} else {
 			collider.enabled = true;
 		}
 	}
@@ -75,11 +74,11 @@ public class RobotArms : AbstractRobotComponent {
         }
     }
 
-	public bool hasTarget() {
+	public override bool hasTarget() {
 		return target != null;
 	}
 
-	public void dropTarget() {
+	public override void dropTarget() {
 		if (target != null) {
 			target.clearTag(TagEnum.Grabbed);
 			Rigidbody rigidbody = target.GetComponent<Rigidbody> ();
@@ -101,7 +100,7 @@ public class RobotArms : AbstractRobotComponent {
 		}
 	}
 
-    public void attachTarget(Label obj) {
+    public override void attachTarget(Label obj) {
         if (target == null) {
             target = obj;
 			target.setTag(new Tag(TagEnum.Grabbed, 0));
@@ -130,7 +129,7 @@ public class RobotArms : AbstractRobotComponent {
 		}
 	}
 
-    public Label getProposedTarget() {
+    public override Label getProposedTarget() {
         return proposedTarget;
     }
 

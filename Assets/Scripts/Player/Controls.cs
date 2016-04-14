@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Controls")]
-public class Controls : MonoBehaviour {
+public class Controls : NetworkBehaviour {
 
 	private Player myPlayer;
 	private bool playerControlsEnabled = true;
@@ -12,36 +13,51 @@ public class Controls : MonoBehaviour {
 	public bool invertLook = false;
 	public bool enableMousePadHacking = false;
 
+
+	public override int GetNetworkChannel() {
+		return 0;
+	}
+
 	void Awake () {
 		myPlayer = this.GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
 	void Update () {
+		if(!isLocalPlayer) {
+			return;
+		}
 
 		/****************MENU****************/
 		if (Input.GetButtonDown("Menu")) {
 			menu.toggleInGameMenu();
 		}
-		if (menu.paused()) {
-			return;
-		}
 
-		if (inGUI() || Time.timeScale == 0 || !playerControlsEnabled)
+		if (Time.timeScale == 0 || !playerControlsEnabled)
 			return;
 
 		/****************MOVEMENT****************/
-		myPlayer.mover.setForward(Input.GetAxis("Vertical"));
+		float amount = Input.GetAxis("Vertical");
+		myPlayer.mover.setForward(amount);
+		CmdSetForward(amount);
 
-		myPlayer.mover.setRight(Input.GetAxis("Horizontal"));
+		amount = Input.GetAxis("Horizontal");
+		myPlayer.mover.setRight(amount);
+		CmdSetRight(amount);
 
 		if (Input.GetButtonDown("Jump")) {
-			myPlayer.mover.jump();
+			if (!isServer)
+				myPlayer.mover.jump();
+			CmdJump();
 		}
 
-		myPlayer.mover.setSprinting(Input.GetButton("Sprint"));
+		bool sprinting = Input.GetButton("Sprint");
+		setSprinting(sprinting);
+        CmdSetSprint(sprinting);
 
-		myPlayer.mover.setCrouching(Input.GetButton("Crouch"));
+		bool crouching = Input.GetButton("Crouch");
+		myPlayer.mover.setCrouching(crouching);
+        CmdSetCrouch(crouching);
 
 		/****************INVENTORY***************/
 		if (!myPlayer.inventory.inContext()) {
@@ -75,6 +91,15 @@ public class Controls : MonoBehaviour {
 			}
 		}
 
+		if(Input.GetButtonDown("Reload")) {
+			GetComponentInChildren<AbstractGun>().reload();
+		}
+
+		// nothing after this point is done while in menu
+		if(menu.paused()) {
+			return;
+		}
+
 		if (myPlayer.inventory.isSelecting()) {
 			myPlayer.inventory.moveMouse(new Vector2(Input.GetAxis("Look Horizontal"), Input.GetAxis("Look Vertical")));
 		} else {
@@ -88,27 +113,81 @@ public class Controls : MonoBehaviour {
 
 		if (Input.GetButtonDown("Use")) {
 			myPlayer.inventory.useEquipped();
+			if (!isServer)
+				CmdUseEquipped();
 		}
-		if (Input.GetButtonDown ("Interact")) {
-			myPlayer.interactor.interact();
+		if (Input.GetButtonUp("Use")) {
+			myPlayer.inventory.stopUsingEquiped();
+			if (!isServer)
+				CmdStopUsingEquipped();
 		}
 
-//		if (Input.GetButton ("Fire2")) {
-//			if (inGUI()) {
-//				myPlayer.focus.unfocus ();
-//			} else {
-//				myPlayer.focus.focus ();
-//				if (Input.GetButtonDown("Fire1")) {
-//					//myPlayer.attacher.attach ();
-//                    myPlayer.focus.invoke();
-//				}
-//			}
-//		}
-//		else {
-//			myPlayer.focus.unfocus();
-//		}
+		if (Input.GetButtonDown("Zoom")) {
+			myPlayer.zooming = true;
+			if (!isServer)
+				CmdSetZooming(true);
+		}
+		if (Input.GetButtonUp("Zoom")) {
+			myPlayer.zooming = false;
+			if (!isServer)
+				CmdSetZooming(false);
+		}
+
+		if (Input.GetButtonDown ("Interact")) {
+			CmdInteract();
+		}
 	}
-	
+
+	[Command]
+	protected void CmdInteract() {
+		myPlayer.interactor.interact();
+	}
+
+	[Command]
+	protected void CmdSetRight(float amount) {
+		myPlayer.mover.setRight(amount);
+	}
+
+	[Command]
+	protected void CmdSetForward(float amount) {
+		myPlayer.mover.setForward(amount);
+	}
+
+	[Command]
+	protected void CmdJump() {
+		myPlayer.mover.jump();
+	}
+
+	[Command]
+	protected void CmdSetCrouch(bool crouch) {
+		myPlayer.mover.setCrouching(crouch);
+	}
+
+	[Command]
+	protected void CmdSetSprint(bool sprint) {
+		setSprinting(sprint);
+	}
+
+	protected void setSprinting(bool sprint) {
+		myPlayer.mover.setSprinting(sprint);
+		myPlayer.inventory.setSprinting(sprint);
+	}
+
+	[Command]
+	protected void CmdUseEquipped() {
+		myPlayer.inventory.useEquipped();
+	}
+
+	[Command]
+	protected void CmdStopUsingEquipped() {
+		myPlayer.inventory.stopUsingEquiped();
+	}
+
+	[Command]
+	protected void CmdSetZooming(bool zooming) {
+		myPlayer.zooming = zooming;
+	}
+
 	public void disablePlayerControls() {
 		playerControlsEnabled = false;
 		myPlayer.mover.setForward(0);
@@ -117,9 +196,5 @@ public class Controls : MonoBehaviour {
 	
 	public void enablePlayerControls() {
 		playerControlsEnabled = true;
-	}
-
-	bool inGUI() {
-		return false;
 	}
 }

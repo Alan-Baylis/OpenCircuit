@@ -15,7 +15,7 @@ public class Hookshot : Item {
 	protected Vector3 attachPoint;
 	protected bool targetReached;
 
-    public override void invoke(Inventory invoker) {
+    public override void beginInvoke(Inventory invoker) {
 		if (reelingIn()) {
 			breakConnection();
 			return;
@@ -34,28 +34,12 @@ public class Hookshot : Item {
 		//playerRigidbody.velocity = desiredVel;
 		targetReached = false;
 
-		StartCoroutine(reelIn());
+		invoker.StartCoroutine(this.reelIn());
     }
-
-	public override void onEquip(Inventory equipper) {
-		base.onEquip(equipper);
-		gameObject.SetActive(true);
-		Rigidbody rigidbody = GetComponent<Rigidbody>();
-		if (rigidbody != null)
-			rigidbody.useGravity = false;
-		foreach(Collider col in GetComponents<Collider>())
-			col.enabled = false;
-	}
 
 	public override void onUnequip(Inventory equipper) {
 		base.onUnequip(equipper);
 		breakConnection();
-		gameObject.SetActive(false);
-		Rigidbody rigidbody = GetComponent<Rigidbody>();
-		if (rigidbody != null)
-			rigidbody.useGravity = true;
-		foreach(Collider col in GetComponents<Collider>())
-			col.enabled = true;
 	}
 
 	public bool reelingIn() {
