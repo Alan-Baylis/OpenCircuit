@@ -88,6 +88,7 @@ namespace Vox {
 
 		public byte xOff, yOff, zOff;
 		public byte detailLevel;
+		public bool force = false;
 		private VoxelBlock block;
 		private Tree control;
 		
@@ -100,7 +101,7 @@ namespace Vox {
 
 		public override void execute() {
 			lock (control) {
-				block.updateAll(xOff, yOff, zOff, detailLevel, control);
+				block.updateAll(xOff, yOff, zOff, detailLevel, control, force);
 				control.removeUpdateCheckJob();
 			}
 		}
@@ -109,6 +110,10 @@ namespace Vox {
 			this.xOff = xOff;
 			this.yOff = yOff;
 			this.zOff = zOff;
+		}
+
+		public void setForce(bool force) {
+			this.force = force;
 		}
 	}
 

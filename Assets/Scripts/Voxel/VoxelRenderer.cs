@@ -21,22 +21,16 @@ namespace Vox {
 		public Dictionary<int, byte> vertexSubstances;
 		[System.NonSerialized]
 		public Tree control;
-//		public MeshCollider collider;
 		public float size;
 		public Vector3 position;
-//		public byte xDim, yDim, zDim;
-//		public byte xExtend, yExtend, zExtend;
 		public GameObject[] obs;
 		public Vector3[] VERTS, NORMS;
 		public int[] TRIS;
 		public bool applied = false;
-		public bool old = false;
 		public Index index;
 
 
 		public void clear() {
-			//			lock (this) {
-			//MonoBehaviour.print("Deleted Renderer");
 				if (control != null) {
 					lock(control) {
 						control.renderers.Remove(index);
@@ -47,9 +41,6 @@ namespace Vox {
 					foreach (GameObject ob in obs) {
 						GameObject.DestroyImmediate(ob);
 					}
-//				if (collider != null)
-//					GameObject.DestroyImmediate(collider);
-//			}
 		}
 
 		public VoxelRenderer(Index index, Tree control):
@@ -84,7 +75,6 @@ namespace Vox {
 			Dictionary<int, Vector3> actualVertices = new Dictionary<int, Vector3>();
 			vertexSubstances = new Dictionary<int, byte>();
 			lock (control) {
-			//lock (typeof(MarchingCubes)) {
 				MarchingCubes.setup(size / VOXEL_DIMENSION, control.isoLevel, ref actualVertices, ref vertexSubstances, ref voxels, position + new Vector3(0.5f, 0.5f, 0.5f) * size / VOXEL_DIMENSION, null);
 				int totalTris = 0;
 				uint xDim = (uint)voxels.GetLength(0) -1;
@@ -204,13 +194,6 @@ namespace Vox {
 				assignMesh(obs[obIndex], substances, substanceVertices[substances], substanceTriangles[substances], substanceToVertices);
 				++obIndex;
 			}
-
-			//			// refresh collider
-			//			if (control.createColliders) {
-			//				collider.enabled = false;
-			//				if (VoxelBlock.isRenderSize(size, control))
-			//					collider.enabled = true;
-			//			}
 			addPolyCount();
 		}
 
@@ -432,124 +415,6 @@ namespace Vox {
 			return (normal2 +normal1).normalized;
 		}
 
-//		public void addEdge(VoxelUpdateInfo info, byte x, byte y, byte z) {
-//			if (vertices == null) return;
-//			bool recalculate = false;
-//			Voxel[, ,] voxels = new Voxel[VERTEX_DIMENSION, VERTEX_DIMENSION, VERTEX_DIMENSION];
-//			if (x == 0/* && xExtend == 0*/) {
-//				recalculate = true;
-//				xExtend = 1;
-//				for (byte yi = (byte)(1 - yExtend); yi < yDim; ++yi) {
-//					for (byte zi = (byte)(1 - zExtend); zi < zDim; ++zi) {
-//						voxels[0, yi, zi] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - xExtend), (uint)(VOXEL_DIMENSION - 1 + yi), (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//						voxels[1, yi, zi] = info.getSub(VOXEL_COUNT_POWER, VOXEL_DIMENSION, (uint)(VOXEL_DIMENSION - 1 + yi), (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//					}
-//				}
-//			} else if (x == 2/* && xDim < VERTEX_DIMENSION*/) {
-//				recalculate = true;
-//				xDim = VERTEX_DIMENSION;
-//				for (byte yi = (byte)(1 - yExtend); yi < yDim; ++yi) {
-//					for (byte zi = (byte)(1 - zExtend); zi < zDim; ++zi) {
-//						voxels[VOXEL_DIMENSION + 1, yi, zi] = info.getSub(VOXEL_COUNT_POWER, VOXEL_DIMENSION * 2, (uint)(VOXEL_DIMENSION - 1 + yi), (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//						voxels[VOXEL_DIMENSION, yi, zi] = info.getSub(VOXEL_COUNT_POWER, VOXEL_DIMENSION * 2 - 1, (uint)(VOXEL_DIMENSION - 1 + yi), (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//					}
-//				}
-//			} else if (y == 0/* && yExtend == 0*/) {
-//				recalculate = true;
-//				yExtend = 1;
-//				for (byte xi = (byte)(1 - xExtend); xi < xDim; ++xi) {
-//					for (byte zi = (byte)(1 - zExtend); zi < zDim; ++zi) {
-//						voxels[xi, 0, zi] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), (uint)(VOXEL_DIMENSION - yExtend), (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//						voxels[xi, 1, zi] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), VOXEL_DIMENSION, (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//					}
-//				}
-//			} else if (y == 2/* && yDim < VERTEX_DIMENSION*/) {
-//				recalculate = true;
-//				yDim = VERTEX_DIMENSION;
-//				for (byte xi = (byte)(1 - xExtend); xi < xDim; ++xi) {
-//					for (byte zi = (byte)(1 - zExtend); zi < zDim; ++zi) {
-//						voxels[xi, VOXEL_DIMENSION + 1, zi] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), VOXEL_DIMENSION * 2, (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//						voxels[xi, VOXEL_DIMENSION, zi] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), VOXEL_DIMENSION * 2 - 1, (uint)(VOXEL_DIMENSION - 1 + zi)).toVoxel();
-//					}
-//				}
-//			} else if (z == 0/* && zExtend == 0*/) {
-//				recalculate = true;
-//				zExtend = 1;
-//				for (byte xi = (byte)(1 - xExtend); xi < xDim; ++xi) {
-//					for (byte yi = (byte)(1 - yExtend); yi < yDim; ++yi) {
-//						voxels[xi, yi, 0] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), (uint)(VOXEL_DIMENSION - 1 + yi), (uint)(VOXEL_DIMENSION - zExtend)).toVoxel();
-//						voxels[xi, yi, 1] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), (uint)(VOXEL_DIMENSION - 1 + yi), VOXEL_DIMENSION).toVoxel();
-//					}
-//				}
-//			} else if (z == 2/* && zDim < VERTEX_DIMENSION*/) {
-//				recalculate = true;
-//				zDim = VERTEX_DIMENSION;
-//				for (byte xi = (byte)(1 - xExtend); xi < xDim; ++xi) {
-//					for (byte yi = (byte)(1 - yExtend); yi < yDim; ++yi) {
-//						voxels[xi, yi, VOXEL_DIMENSION + 1] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), (uint)(VOXEL_DIMENSION - 1 + yi), VOXEL_DIMENSION * 2).toVoxel();
-//						voxels[xi, yi, VOXEL_DIMENSION] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + xi), (uint)(VOXEL_DIMENSION - 1 + yi), VOXEL_DIMENSION * 2 - 1).toVoxel();
-//					}
-//				}
-//			}
-//
-//			if (recalculate) {
-//
-//
-//				Queue<int[]> triangleSet = new Queue<int[]>();
-//				MarchingCubes.setup(info.size / VOXEL_DIMENSION, control.isoLevel, ref vertices, ref vertexSubstances, ref voxels, position - new Vector3(0.5f, 0.5f, 0.5f) * size / VOXEL_DIMENSION, VERTS);
-//
-//				byte xStart = (byte)(1 - xExtend + (VOXEL_DIMENSION + xExtend - 1) * (x / 2));
-//				byte xEnd = (byte)(2 + (xDim - 2) * ((x + 1) / 2));
-//				byte yStart = (byte)(1 - yExtend + (VOXEL_DIMENSION + yExtend - 1) * (y / 2));
-//				byte yEnd = (byte)(2 + (yDim - 2) * ((y + 1) / 2));
-//				byte zStart = (byte)(1 - zExtend + (VOXEL_DIMENSION + zExtend - 1) * (z / 2));
-//				byte zEnd = (byte)(2 + (zDim - 2) * ((z + 1) / 2));
-//
-//				for (byte xi = xStart, x1 = (byte)(xi + 1); x1 < xEnd; xi = x1++) {
-//					for (byte yi = yStart, y1 = (byte)(yi + 1); y1 < yEnd; yi = y1++) {
-//						for (byte zi = zStart, z1 = (byte)(zi + 1); z1 < zEnd; zi = z1++) {
-//							int[] tris = MarchingCubes.lookupTriangles(xi, yi, zi, x1, y1, z1);
-//							if (tris == null) continue;
-//							triangleSet.Enqueue(tris);
-//						}
-//					}
-//				}
-//
-//				if (vertices.Count < 1) {
-//					return;
-//				}
-//
-//
-//				List<int> newTriangles = new List<int>(TRIS);
-//				List<Vector3> newVertices = new List<Vector3>(VERTS);
-//				int tri = 0;
-//				while (triangleSet.Count > 0) {
-//					int[] triangleList = triangleSet.Dequeue();
-//					for (int i = 0; i < triangleList.Length; ++i) {
-//						if (vertices[triangleList[i]].GetType() == typeof(Vector3)) {
-//							newVertices.Add((Vector3)vertices[triangleList[i]]);
-//							vertices[triangleList[i]] = newVertices.Count - 1;
-//						}
-//						newTriangles.Add((int)vertices[triangleList[i]]);
-//					}
-//					tri += triangleList.Length;
-//				}
-//
-//				Vector3[] finalNorms = new Vector3[newVertices.Count];
-//				Array.Copy(NORMS, finalNorms, NORMS.Length);
-//				int oldNormCount = NORMS.Length;
-//
-//				VERTS = newVertices.ToArray();
-//				TRIS = newTriangles.ToArray();
-//				calcNorms();
-//				Array.Copy(NORMS, oldNormCount, finalNorms, oldNormCount, finalNorms.Length - oldNormCount);
-//				NORMS = finalNorms;
-//			}
-//
-//			alignEdge(info, x, y, z);
-//			control.enqueueJob(new ApplyMeshJob(this, info.detailLevel, info.x, info.y, info.z));
-//		}
-
 		private static void addDualVertices(LinkedList<Vector3[]> otherVerts, VoxelRenderer rend, int x, int y, int z, byte xyz) {
 			Vector3[] otherVert1;
 			Vector3[] otherVert2;
@@ -607,72 +472,6 @@ namespace Vox {
 		public static int getZ(int x, int y, int z) {
 			return ((VERTEX_DIMENSION * 2 + x) * VERTEX_DIMENSION + y) * VERTEX_DIMENSION + z;
 		}
-
-		//private static int getX(int index, int dimension) {
-		//	return (y * VERTEX_DIMENSION + z) * VERTEX_DIMENSION + x;
-		//}
-
-		//private static int getY(int index, int dimension) {
-		//	return ((VERTEX_DIMENSION + x) * VERTEX_DIMENSION + z) * VERTEX_DIMENSION + y;
-		//}
-
-		//private static int getZ(int index, int dimension) {
-		//	return ((VERTEX_DIMENSION * 2 + x) * VERTEX_DIMENSION + y) * VERTEX_DIMENSION + z;
-		//}
-
-		//private static int getDimension(int index) {
-		//	return index / (VERTEX_DIMENSION * VERTEX_DIMENSION * VERTEX_DIMENSION);
-		//}
-
-//		private Voxel[, ,] createVoxelArray(VoxelUpdateInfo info) {
-////			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-////			watch.Start();
-//			setDimensions(info);
-//			Voxel[, ,] voxels = new Voxel[VERTEX_DIMENSION, VERTEX_DIMENSION, VERTEX_DIMENSION];
-//
-//			for (byte y = (byte)(1 - yExtend); y < yDim; ++y) {
-//				for (byte z = (byte)(1 - zExtend); z < zDim; ++z) {
-//					voxels[1 - xExtend, y, z] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - xExtend), (uint)(VOXEL_DIMENSION - 1 + y), (uint)(VOXEL_DIMENSION - 1 + z)).toVoxel();
-//				}
-//			}
-//			for (byte x = (byte)(2 - xExtend); x < xDim; ++x) {
-//				for (byte z = (byte)(1 - zExtend); z < zDim; ++z) {
-//					voxels[x, 1 - yExtend, z] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + x), (uint)(VOXEL_DIMENSION - yExtend), (uint)(VOXEL_DIMENSION - 1 + z)).toVoxel();
-//				}
-//			}
-//			for (byte x = (byte)(2 - xExtend); x < xDim; ++x) {
-//				for (byte y = (byte)(2 - yExtend); y < yDim; ++y) {
-//					voxels[x, y, 1 - zExtend] = info.getSub(VOXEL_COUNT_POWER, (uint)(VOXEL_DIMENSION - 1 + x), (uint)(VOXEL_DIMENSION - 1 + y), (uint)(VOXEL_DIMENSION - zExtend)).toVoxel();
-//				}
-//			}
-////			watch.Stop();
-////			control.meshGenArrayTime += watch.Elapsed.TotalSeconds;
-//			return voxels;
-//		}
-
-//		private void setDimensions(VoxelUpdateInfo info) {
-//			if (info.renderers[0, 1, 1] == null)
-//				xExtend = 0;
-//			else
-//				xExtend = 1;
-//			if (info.renderers[1, 0, 1] == null)
-//				yExtend = 0;
-//			else
-//				yExtend = 1;
-//			if (info.renderers[1, 1, 0] == null)
-//				zExtend = 0;
-//			else
-//				zExtend = 1;
-//			xDim = (byte)(VOXEL_DIMENSION + 1);
-//			yDim = (byte)(VOXEL_DIMENSION + 1);
-//			zDim = (byte)(VOXEL_DIMENSION + 1);
-//			if (info.renderers[2, 1, 1] != null && info.renderers[2, 1, 1].size > size * 1.1f)
-//				++xDim;
-//			if (info.renderers[1, 2, 1] != null && info.renderers[1, 2, 1].size > size * 1.1f)
-//				++yDim;
-//			if (info.renderers[1, 1, 2] != null && info.renderers[1, 1, 2].size > size * 1.1f)
-//				++zDim;
-//		}
 
 		private void calcNorms() {
 			Vector3[] norms = new Vector3[VERTS.Length];

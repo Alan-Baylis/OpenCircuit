@@ -219,10 +219,6 @@ namespace Vox {
 			return Vector3.zero;
 		}
 
-		public VoxelUpdateInfo getBaseUpdateInfo() {
-			return new VoxelUpdateInfo(sizes[0], head, this);
-		}
-
 		public Vector3 globalToVoxelPosition(Vector3 globalPosition) {
 			return transform.InverseTransformPoint(globalPosition) / voxelSize();
 		}
@@ -243,7 +239,7 @@ namespace Vox {
 			if (zMax > dimmension)
 				zMax = dimmension;
 			Voxel[,,] array = new Voxel[xMax -xMin, yMax -yMin, zMax -zMin];
-			head.putInArray(maximumDetail, ref array, 0, 0, 0, xMin, yMin, zMin, xMax, yMax, zMax);
+			head.putInArray(ref array, new Index(maximumDetail), xMin, yMin, zMin, xMax, yMax, zMax);
 			return array;
 		}
 

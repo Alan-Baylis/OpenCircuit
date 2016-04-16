@@ -635,6 +635,8 @@ public class VoxelEditorGUI : Editor {
 		public void setTo(Vox.VoxelEditor editor) {
 			editor.width = baseSize;
             editor.maximumDetail = maxDetail;
+			editor.maxChange = maxChange;
+			editor.proceduralSeed = proceduralSeed;
             editor.createColliders = createColliders;
             editor.useStaticMeshes = useStaticMeshes;
             editor.saveMeshes = saveMeshes;

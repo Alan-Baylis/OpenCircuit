@@ -251,12 +251,8 @@ namespace Vox {
 				for (byte xi = 0; xi < CHILD_DIMENSION; ++xi) {
 					for (byte yi = 0; yi < CHILD_DIMENSION; ++yi) {
 						for (byte zi = 0; zi < CHILD_DIMENSION; ++zi) {
-							//VoxelUpdateInfo childInfo = new VoxelUpdateInfo(info, xi, yi, zi);
 							if (children[xi, yi, zi].GetType() == typeof(Voxel)) {
-								//if (!childInfo.isSolid())
 								children[xi, yi, zi] = new VoxelBlock((Voxel)children[xi, yi, zi]);
-								//else
-								//continue;
 							}
 							UpdateCheckJob job = new UpdateCheckJob((VoxelBlock)children[xi, yi, zi], control, (byte)(detailLevel + 1));
 							job.setOffset((byte)(x * CHILD_DIMENSION + xi), (byte)(y * CHILD_DIMENSION + yi), (byte)(z * CHILD_DIMENSION + zi));
@@ -264,25 +260,14 @@ namespace Vox {
 						}
 					}
 				}
-				if (renderer != null) {
-					//GameObject.Destroy(renderer.ob);
-					//lock (myControl) {
-					//	myControl.enqueueJob(new DropRendererJob(renderer));
-					//	renderer = null;
-					//}
-					renderer.old = true;
-				}
 				return;
 			}
 
 			// check if we already have a mesh
 			if (renderer == null) {
-				//clearSubRenderers();
 				renderer = new VoxelRenderer(new Index(detailLevel, x, y, z), control);
-				//info.renderers[1, 1, 1] = renderer;
-			} else {
-				renderer.old = false;
-				if (!force) return;
+			} else if (!force) {
+				return;
 			}
 
 			// We should generate a mesh
@@ -301,15 +286,21 @@ namespace Vox {
 			return getDistSquare(control.getLocalCamPosition(), new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), size) >= size * size * control.getLodDetail();
 		}
 
-		public override void putInArray(byte level, ref Voxel[,,] array, uint x, uint y, uint z, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
-			int size = 1 << (CHILD_COUNT_POWER *level -CHILD_COUNT_POWER);
-			for(int xi=0; xi<CHILD_DIMENSION; ++xi) {
-				for(int yi=0; yi<CHILD_DIMENSION; ++yi) {
-					for(int zi=0; zi<CHILD_DIMENSION; ++zi) {
-						if (x +xi *size > xMax || y +yi *size > yMax || z +zi *size > zMax ||
-							x +xi *size +size < xMin || z +zi *size +size < zMin || z +zi *size +size < zMin)
+		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
+			uint size = 1u << (CHILD_COUNT_POWER *position.depth -CHILD_COUNT_POWER);
+			for(uint xi=0; xi<CHILD_DIMENSION; ++xi) {
+				uint xPos = position.x +xi *size;
+				if (xPos > xMax || xPos +size < xMin)
+					continue;
+				for (uint yi=0; yi<CHILD_DIMENSION; ++yi) {
+					uint yPos = position.y +yi *size;
+					if (yPos > yMax || yPos +size < yMin)
+						continue;
+					for (uint zi=0; zi<CHILD_DIMENSION; ++zi) {
+						uint zPos = position.z +zi *size;
+						if (zPos > zMax || zPos +size < zMin)
 							continue;
-						children[xi, yi, zi].putInArray((byte)(level -CHILD_COUNT_POWER), ref array, (uint)(x +xi *size), (uint)(y +yi *size), (uint)(z +zi *size), xMin, yMin, zMin, xMax, yMax, zMax);
+						children[xi, yi, zi].putInArray(ref array, new Index((byte)(position.depth -1), xPos, yPos, zPos), xMin, yMin, zMin, xMax, yMax, zMax);
 					}
 				}
 			}

@@ -55,18 +55,18 @@ namespace Vox {
 			return this;
 		}
 
-		public override void putInArray(byte level, ref Voxel[,,] array, uint x, uint y, uint z, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
-			int size = 1 << (VoxelBlock.CHILD_COUNT_POWER *level);
-			uint xStart = (uint)Mathf.Max(x, xMin);
-			uint xEnd = (uint)Mathf.Min(x +size, xMax);
-			uint yStart = (uint)Mathf.Max(y, yMin);
-			uint yEnd = (uint)Mathf.Min(y +size, yMax);
-			uint zStart = (uint)Mathf.Max(z, zMin);
-			uint zEnd = (uint)Mathf.Min(z +size, zMax);
+		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
+			uint size = 1u << (VoxelBlock.CHILD_COUNT_POWER *position.depth);
+			uint xStart = (uint)Mathf.Max(position.x, xMin) -xMin;
+			uint xEnd = (uint)Mathf.Min(position.x +size, xMax) -xMin;
+			uint yStart = (uint)Mathf.Max(position.y, yMin) -yMin;
+			uint yEnd = (uint)Mathf.Min(position.y +size, yMax) -yMin;
+			uint zStart = (uint)Mathf.Max(position.z, zMin) -zMin;
+			uint zEnd = (uint)Mathf.Min(position.z +size, zMax) -zMin;
 			for(uint xi=xStart; xi<xEnd; ++xi) {
 				for(uint yi=yStart; yi<yEnd; ++yi) {
 					for(uint zi=zStart; zi<zEnd; ++zi) {
-						array[xi -xMin, yi -yMin, zi -zMin] = this;
+						array[xi, yi, zi] = this;
 					}
 				}
 			}
@@ -82,7 +82,7 @@ namespace Vox {
 			if (level < maxLevel)
 				return 0;
 			Voxel[,,] array = new Voxel[3, 3, 3];
-			head.putInArray(level, ref array, 0, 0, 0, (uint)x -1, (uint)y -1, (uint)z -1, (uint)x +2, (uint)y +2, (uint)z +2);
+			head.putInArray(ref array, new Index(level), (uint)x -1, (uint)y -1, (uint)z -1, (uint)x +2, (uint)y +2, (uint)z +2);
 			bool solid = isSolid();
 			foreach(Voxel vox in array) {
 				if (vox != null && vox.isSolid() != solid)
