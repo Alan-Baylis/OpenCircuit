@@ -94,7 +94,7 @@ namespace Vox {
 		[System.NonSerialized]
 		private bool rebakedLighting = false;
 
-		public void Start() {
+		public void Awake() {
 			setupLookupTables();
 		}
 

@@ -46,7 +46,7 @@ namespace Vox {
 		public Vector3[] pathPoints = null;
 		public bool showPositionHandles = false;
 
-		public void Awake() {
+		public void Start() {
 			if (hasVoxelData() && findRendererObjects().Count < 1) {
 				generateRenderers();
 				pauseForGeneration();
