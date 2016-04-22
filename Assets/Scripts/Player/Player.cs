@@ -67,6 +67,7 @@ public class Player : NetworkBehaviour {
 		breathingSource.loop = true;
 		whiteOutTexture = new Texture2D (1, 1, TextureFormat.RGB24, false);
 		whiteOutTexture.SetPixel (0, 0, Color.white);
+		fadeIn(); // fade in for dramatic start
 	}
 
 	void Update () {

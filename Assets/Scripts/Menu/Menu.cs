@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -12,7 +13,6 @@ public class Menu : MonoBehaviour {
 	private Rect loadRect = new Rect(0.1f, 0.5f, 0.4f, 0.1f);
 	private Rect backRect = new Rect(0.1f, 0.7f, 0.4f, 0.1f);
 	private Rect titleRect = new Rect(0.4f, 0f, 1.2f, 0.2f);
-	private Player myPlayer;
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
 	private static bool didWin = false;
@@ -24,6 +24,10 @@ public class Menu : MonoBehaviour {
 	//public Texture2D controls;
 	public Vector3 endCamPosition;
 	public Vector3 endCamRotation;
+
+	public static Player player {
+		get { return GameObject.FindGameObjectWithTag("Player").GetComponent<Player>(); }
+	}
 
 	private static Menu myMenu = null;
 	public static Menu menu { get {
@@ -64,12 +68,14 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start() {
-		myPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-		if (activeAtStart && !didWin) {
-			myPlayer.gameObject.SetActive(false);
+		//myPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		//if (activeAtStart && !didWin) {
+		//	myPlayer.gameObject.SetActive(false);
 		//} else {
 		//	begin();
-		}
+		//}
+		pause();
+		currentMenu = state.MainMenu;
 		didWin = false;
 	}
 
@@ -106,7 +112,7 @@ public class Menu : MonoBehaviour {
 		didWin = true;
 		GetComponent<Camera>().enabled = true;
 		GetComponent<AudioListener>().enabled = true;
-		myPlayer.gameObject.SetActive(false);
+		player.gameObject.SetActive(false);
 		transform.position = endCamPosition;
 		transform.eulerAngles = endCamRotation;
 	}
@@ -204,7 +210,8 @@ public class Menu : MonoBehaviour {
 		QualitySettings.vSyncCount = (int)(GUI.HorizontalSlider(convertRect(new Rect(0.05f, 0.24f, 0.2f, 0.04f), false), QualitySettings.vSyncCount, 0, 2) +0.5f);
 
 		// input settings
-		adjustFontSize(skin.label, 0.07f);
+		Player myPlayer = player;
+        adjustFontSize(skin.label, 0.07f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.28f, 0.4f, 0.07f), false), "Look Sensitivity:  " +(myPlayer.controls.mouseSensitivity *4).ToString("##,0.0#"));
 		myPlayer.controls.mouseSensitivity = GUI.HorizontalSlider(convertRect(new Rect(0.05f, 0.34f, 0.25f, 0.04f), false), myPlayer.controls.mouseSensitivity, 0.0625f, 2);
 		myPlayer.controls.mouseSensitivity = ((int)(myPlayer.controls.mouseSensitivity * 16 + 0.5f)) / 16f;
@@ -231,10 +238,11 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void begin() {
-		myPlayer.gameObject.SetActive(true);
-		myPlayer.fadeIn(); // fade in for dramatic start
-		GetComponent<Camera>().enabled = false;
-		GetComponent<AudioListener>().enabled = false;
+		NetworkManager manager = NetworkManager.singleton;
+		manager.StartHost();
+		//player.gameObject.SetActive(true);
+		//GetComponent<Camera>().enabled = false;
+		//GetComponent<AudioListener>().enabled = false;
 		menuHistory.Clear();
 		activeAtStart = false;
 		Cursor.lockState = CursorLockMode.Locked;

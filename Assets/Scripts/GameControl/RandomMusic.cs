@@ -5,6 +5,7 @@ public class RandomMusic : MonoBehaviour {
 
 	private float nextTime;
 	private AudioSource source;
+	private AudioClip last;
 
 	public int minTimeWait;
 	public int maxTimeWait;
@@ -21,7 +22,14 @@ public class RandomMusic : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (nextTime < Time.fixedTime) {
-			source.clip = tracks[Random.Range(0, tracks.Length)];
+			for (int i = 0; i<10; ++i) {
+				AudioClip newTrack = tracks[Random.Range(0, tracks.Length)];
+				if (newTrack != last) {
+					last = newTrack;
+					break;
+				}
+            }
+			source.clip = last;
 			source.Play();
 			nextTime = Time.fixedTime + Random.Range(minTimeWait, maxTimeWait) +source.clip.length;
 		}

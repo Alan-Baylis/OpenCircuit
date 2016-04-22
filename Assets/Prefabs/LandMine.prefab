@@ -46,7 +46,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_Materials:
-  - {fileID: 2100000, guid: 7ab9fdb3f5b4a1343aedc7ccab8704b7, type: 2}
+  - {fileID: 2100000, guid: 668edba85a9049943873c95078622d15, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 1
@@ -140,6 +140,8 @@ MonoBehaviour:
   maxSuffering: 30
   recoveryRate: 0
   sufferingDisplay: 0
+  hurtSound: {fileID: 0}
+  hurtSoundPitch: 1
 --- !u!114 &11441838
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -205,7 +207,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7ab9fdb3f5b4a1343aedc7ccab8704b7, type: 2}
+      objectReference: {fileID: 2100000, guid: 668edba85a9049943873c95078622d15, type: 2}
     - target: {fileID: 0}
       propertyPath: m_Radius
       value: 1
