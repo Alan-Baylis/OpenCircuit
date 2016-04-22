@@ -8,8 +8,16 @@ public class Health : NetworkBehaviour {
 	public float recoveryRate = 25;
 	public float sufferingDisplay;
 
+	private AudioSource soundEmitter;
+	public AudioClip hurtSound;
+
 	[SyncVar]
 	private float suffering = 0;
+
+	void Start() {
+		soundEmitter = gameObject.AddComponent<AudioSource>();
+		soundEmitter.clip = hurtSound;
+	}
 
 	void Update() {
 		sufferingDisplay = suffering;
@@ -38,6 +46,9 @@ public class Health : NetworkBehaviour {
 
 	public virtual void hurt(float pain) {
 		suffering += pain;
+		if(soundEmitter.clip != null) {
+			soundEmitter.Play();
+		}
 		// play sound or whatever here
 	}
 }
