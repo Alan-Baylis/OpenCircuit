@@ -12,8 +12,12 @@ public class EffectHealth : Health {
 		base.destruct();
 		foreach (EffectSpec effect in destructEffects)
 			effect.spawn(transform.position, transform.rotation);
-		if (destroyOnDestruct)
+		if(destroyOnDestruct) { 
+			//Destroy(gameObject.GetComponent<MeshRenderer>());
+			//Destroy(gameObject.GetComponent<ParticleEmitter>());
+			gameObject.transform.parent.GetComponent<AudioSource>().Play();
 			Destroy(gameObject);
+		}
 	}
 
 	public override void hurt(float pain) {
