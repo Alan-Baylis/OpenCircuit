@@ -1506,7 +1506,7 @@ MonoBehaviour:
   normalPosition:
     position: {x: 0.15, y: -0.1, z: 0.3}
     rotation: {x: 0, y: 180, z: 0}
-    cameraRelative: 0
+    cameraRelative: 1
   sprintPosition:
     position: {x: 0.1, y: 0.55, z: 0.15}
     rotation: {x: -30, y: 160, z: 0}
@@ -1514,7 +1514,7 @@ MonoBehaviour:
   zoomPosition:
     position: {x: 0, y: -0.05, z: 0.25}
     rotation: {x: 0, y: 180, z: 0}
-    cameraRelative: 0
+    cameraRelative: 1
   responsiveness: 30
   positionalResponsiveness: 18
   maxResponsiveness: 0.1
@@ -1532,6 +1532,10 @@ MonoBehaviour:
   recoilAnimationDistance: {x: 0, y: -0.01, z: -0.03}
   recoilMinRotation: {x: -0.1, y: 0.1}
   recoilMaxRotation: {x: 0.1, y: 0.2}
+  reloadPosition:
+    position: {x: 0.1, y: 0.5, z: 0.15}
+    rotation: {x: -60, y: 160, z: 45}
+    cameraRelative: 0
   fireEffectLocation: {x: 0, y: 0, z: -0.4}
   fireEffect:
     prefab: {fileID: 431126, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
@@ -1683,6 +1687,42 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: zoomPosition.rotation.y
       value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: magazineSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: normalPosition.cameraRelative
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: zoomPosition.cameraRelative
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: reloadPosition.position.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: reloadPosition.position.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: reloadPosition.position.z
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: reloadPosition.rotation.y
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: reloadPosition.rotation.x
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: reloadPosition.rotation.z
+      value: 45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

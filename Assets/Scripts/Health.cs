@@ -10,6 +10,7 @@ public class Health : NetworkBehaviour {
 
 	private AudioSource soundEmitter;
 	public AudioClip hurtSound;
+	public float hurtSoundPitch = 1;
 
 	[SyncVar]
 	private float suffering = 0;
@@ -47,6 +48,7 @@ public class Health : NetworkBehaviour {
 	public virtual void hurt(float pain) {
 		suffering += pain;
 		if(soundEmitter.clip != null) {
+			soundEmitter.pitch = UnityEngine.Random.Range(hurtSoundPitch -0.05f, hurtSoundPitch +0.05f);
 			soundEmitter.Play();
 		}
 		// play sound or whatever here

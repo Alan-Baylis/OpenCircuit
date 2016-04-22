@@ -28,29 +28,12 @@ public abstract class Item : NetworkBehaviour {
 
 	public virtual void Update() {
 		if (followingCamera != null) {
-
-			// determine desired position
-			Vector3 newPosition;
-			Quaternion newRotation;
+			// reset desired zoom
 			holder.getPlayer().looker.resetCameraZoom();
-			if (holder.sprinting) {
-				Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
-				newPosition = transform.parent.TransformPoint(rotation *sprintPosition.position);
-				newRotation = transform.parent.rotation * Quaternion.Euler(sprintPosition.rotation);
-				newRotation = rotation * newRotation;
-			} else if (holder.getPlayer().zooming) {
-				newPosition = followingCamera.TransformPoint(zoomPosition.position);
-				newRotation = followingCamera.rotation * Quaternion.Euler(zoomPosition.rotation);
-				holder.getPlayer().looker.setCameraZoom(zoomLevel);
-			} else {
-				newPosition = followingCamera.TransformPoint(normalPosition.position);
-				newRotation = followingCamera.rotation * Quaternion.Euler(normalPosition.rotation);
-			}
 
 			// track to desired position
-			float multiplier = holder.getPlayer().zooming ? 1.5f : 1;
-			transform.position += Vector3.ClampMagnitude((newPosition -transform.position) *positionalResponsiveness *Time.deltaTime *multiplier, maxResponsiveness);
-			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, responsiveness *Time.deltaTime *multiplier);
+			float multiplier = holder.getPlayer().zooming ? 1.3f : 1;
+			moveTowardsPosition(getHoldPosition(), multiplier);
 		}
 	}
 
@@ -60,6 +43,17 @@ public abstract class Item : NetworkBehaviour {
 			nextStepBump.x = -nextStepBump.x;
 		transform.position += transform.TransformVector(nextStepBump);
 		rightStepNext = !rightStepNext;
+	}
+
+	public virtual HoldPosition getHoldPosition() {
+		if (holder.sprinting) {
+			return sprintPosition;
+		} else if (holder.getPlayer().zooming) {
+			holder.getPlayer().looker.setCameraZoom(zoomLevel);
+			return zoomPosition;
+		} else {
+			return normalPosition;
+		}
 	}
 
 	public abstract void beginInvoke(Inventory invoker);
@@ -108,6 +102,26 @@ public abstract class Item : NetworkBehaviour {
 			position = hit.point;
 		}
 		return finalHit;
+	}
+
+	protected void moveTowardsPosition(HoldPosition position, float responsivenessMultiplier) {
+		Vector3 newPosition;
+		Quaternion newRotation;
+		if (position.cameraRelative) {
+			newPosition = followingCamera.TransformPoint(position.position);
+			newRotation = followingCamera.rotation * Quaternion.Euler(position.rotation);
+		} else {
+			Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
+			newPosition = transform.parent.TransformPoint(rotation *position.position);
+			newRotation = transform.parent.rotation * Quaternion.Euler(position.rotation);
+			newRotation = rotation * newRotation;
+		}
+
+		// track to desired position
+		float posResponse = Mathf.Min(positionalResponsiveness *Time.deltaTime *responsivenessMultiplier, 1);
+		float rotResponse = Mathf.Min(responsiveness *Time.deltaTime *responsivenessMultiplier, 1);
+		transform.position += (newPosition -transform.position) *posResponse;
+		transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, rotResponse);
 	}
 
 	[System.Serializable]

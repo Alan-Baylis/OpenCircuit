@@ -19,6 +19,7 @@ public abstract class AbstractGun : Item {
 	public Vector3 recoilAnimationDistance = new Vector3(0, 0, 0.2f);
 	public Vector2 recoilMinRotation = new Vector3(-0.1f, 0.1f);
 	public Vector2 recoilMaxRotation = new Vector3(0.1f, 0.2f);
+	public HoldPosition reloadPosition;
 
 	public Vector3 fireEffectLocation;
 	public EffectSpec fireEffect;
@@ -93,8 +94,10 @@ public abstract class AbstractGun : Item {
 		}
 	}
 
-	void windowFunction(int myWindow) {
-
+	public override HoldPosition getHoldPosition() {
+		if (reloading)
+			return reloadPosition;
+		return base.getHoldPosition();
 	}
 
 	public override void beginInvoke(Inventory invoker) {

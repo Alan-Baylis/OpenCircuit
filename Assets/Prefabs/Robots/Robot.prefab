@@ -180,6 +180,7 @@ MonoBehaviour:
   recoveryRate: 0
   sufferingDisplay: 0
   hurtSound: {fileID: 8300000, guid: 8e377cff4b1c85947affd086b06fa4c4, type: 3}
+  hurtSoundPitch: 1.2
 --- !u!114 &11499298
 MonoBehaviour:
   m_ObjectHideFlags: 1
