@@ -20,6 +20,7 @@ public class AutoDoor : NetworkBehaviour {
     private Vector3 upPosition;
     private bool isMovingUp = true;
 	private bool atEnd = false;
+	private bool firstTime = true;
 
 	private AudioSource soundEmitter;
 
@@ -97,7 +98,10 @@ public class AutoDoor : NetworkBehaviour {
 			door.transform.position = door.transform.position - new Vector3(0, distanceToMove, 0);
 		} else {
 			if(endSound != null && !atEnd) {
-				soundEmitter.PlayOneShot(endSound);
+				firstTime = false;
+				if(!firstTime) {
+					soundEmitter.PlayOneShot(endSound);
+				}
 				atEnd = true;
 			}
 			door.transform.position = downPosition;
@@ -116,7 +120,10 @@ public class AutoDoor : NetworkBehaviour {
 			door.transform.position = door.transform.position + new Vector3(0, distanceToMove, 0);
 		} else {
 			if(endSound != null && !atEnd) {
-				soundEmitter.PlayOneShot(endSound);
+				firstTime = false;
+				if(!firstTime) {
+					soundEmitter.PlayOneShot(endSound);
+				}
 				atEnd = true;
 			}
 			door.transform.position = upPosition;
