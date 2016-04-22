@@ -39,6 +39,9 @@ public class ZappyArms : AbstractArms {
 			if(hasTarget()) {
 				Label label = target.GetComponent<Label>();
 				label.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
+				if(!footstepEmitter.isPlaying) {
+					footstepEmitter.PlayOneShot(zap);
+				}
 			}
 		}
 	}
