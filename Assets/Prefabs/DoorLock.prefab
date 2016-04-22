@@ -141,7 +141,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: cfee81d00d02b2542a39fad2f754bb27, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -285,6 +285,7 @@ MonoBehaviour:
   recoveryRate: 0
   sufferingDisplay: 0
   hurtSound: {fileID: 0}
+  hurtSoundPitch: 1
   destructEffects:
   - prefab: {fileID: 464988, guid: 9c9877706958b774fb741e8905b1f737, type: 2}
     lifetime: 6
