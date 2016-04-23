@@ -57,7 +57,7 @@ public class Menu : MonoBehaviour {
 	public void pause() {
 		if (paused()) return;
 		Cursor.visible = true;
-		Cursor.lockState = CursorLockMode.Confined;
+		Cursor.lockState = CursorLockMode.None;
 		activeAtStart = true;
 	}
 

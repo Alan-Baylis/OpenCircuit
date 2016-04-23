@@ -77,6 +77,8 @@ public class ClientController : NetworkBehaviour {
 		isDead = true;
 		NetworkServer.ReplacePlayerForConnection(connectionToClient, gameObject, playerControllerId);
 		RpcSwitchCam();
+		enableSceneCam();
+		FindObjectOfType<Menu>().lose();
 	}
 
 	[Server]
@@ -113,7 +115,8 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcSwitchCam() {
-		switchCamera();
+		//switchCamera();
+		enableSceneCam();
 	}
 
 	[Client]
@@ -160,6 +163,16 @@ public class ClientController : NetworkBehaviour {
 	}
 
 	[Client]
+	private void enableSceneCam() {
+		if(!isLocalPlayer && !player.GetComponent<Player>().isLocalPlayer)
+			return;
+		if(sceneCamera != null) {
+			sceneCamera.enabled = true;
+			sceneCamera.GetComponent<AudioListener>().enabled = true;
+		}
+	}
+
+	[Client]
 	private void enableCurrentCam() {
 		if(!isLocalPlayer)
 			return;
@@ -169,6 +182,9 @@ public class ClientController : NetworkBehaviour {
 				nextCam.enabled = true;
 				nextCam.GetComponent<AudioListener>().enabled = true;
 			}
+		} else if(cameras.Count < 1) {
+			print("enable scene cam");
+			enableSceneCam();
 		}
 	}
 }
