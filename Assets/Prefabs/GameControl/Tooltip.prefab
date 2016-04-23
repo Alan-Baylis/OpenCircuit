@@ -128,10 +128,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tooltip: 
-  duration: 5
   maxOpacity: 0.8
   fadeInRate: 1
-  fadeOutRate: 0.2
+  fadeOutRate: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

@@ -43,6 +43,5 @@ public class RandomMusic : MonoBehaviour {
 		if(player != null) {
 			isActive = true;
 		}
-		
 	}
 }
