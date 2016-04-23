@@ -7,12 +7,13 @@ using System.Collections.Generic;
 [AddComponentMenu("Scripts/Menu/Menu")]
 public class Menu : MonoBehaviour {
 
-	private Rect startRect = new Rect(0.1f, 0.1f, 0.4f, 0.1f);
-	private Rect exitRect = new Rect(0.1f, 0.7f, 0.4f, 0.1f);
-	private Rect optionsRect = new Rect(0.1f, 0.3f, 0.4f, 0.1f);
+	private Rect startRect = new Rect(-0.03f, 0.15f, 0.4f, 0.1f);
+	private Rect exitRect = new Rect(-0.035f, 0.5f, 0.4f, 0.1f);
+	private Rect optionsRect = new Rect(-0.01f, 0.3f, 0.4f, 0.1f);
 	private Rect loadRect = new Rect(0.1f, 0.5f, 0.4f, 0.1f);
 	private Rect backRect = new Rect(0.1f, 0.7f, 0.4f, 0.1f);
-	private Rect titleRect = new Rect(0.4f, 0f, 1.2f, 0.2f);
+	private Rect titleRect = new Rect(-.25f, 0f, 1.2f, 0.2f);
+	private Rect resumeRect = new Rect(-0.01f, .15f, .4f, .1f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
 	private static bool didWin = false;
@@ -85,7 +86,7 @@ public class Menu : MonoBehaviour {
 		GUI.depth = -1;
 		GUI.skin = skin;
 		float width = (Screen.height * background.width) / background.height;
-		GUI.DrawTexture(new Rect(0, 0, width, Screen.height), background);
+		GUI.DrawTexture(new Rect(-250, 0, width, Screen.height), background);
 		adjustFontSize(skin.button, titleRect.height);
 		GUI.Label(convertRect(titleRect, false), "Guns 'n' Robots", skin.button);
 		switch (currentMenu) {
@@ -124,11 +125,11 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void doLose() {
-		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Restart", skin.button)) {
-			currentMenu = state.MainMenu;
-			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-		}
+		//adjustFontSize(skin.button, startRect.height);
+		//if (GUI.Button(convertRect(startRect, false), "Restart", skin.button)) {
+		//	currentMenu = state.MainMenu;
+		//	SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		//}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
@@ -140,16 +141,16 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void doWin() {
-		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Play Again", skin.button)) {
-			currentMenu = state.MainMenu;
-			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-		}
-		adjustFontSize(skin.button, optionsRect.height);
-		if (GUI.Button(convertRect(optionsRect,false), "Options", skin.button)) {
-			menuHistory.Push(currentMenu);
-			currentMenu = state.Options;
-		}
+		//adjustFontSize(skin.button, startRect.height);
+		//if (GUI.Button(convertRect(startRect, false), "Play Again", skin.button)) {
+		//	currentMenu = state.MainMenu;
+		//	SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		//}
+		//adjustFontSize(skin.button, optionsRect.height);
+		//if (GUI.Button(convertRect(optionsRect,false), "Options", skin.button)) {
+		//	menuHistory.Push(currentMenu);
+		//	currentMenu = state.Options;
+		//}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
@@ -161,15 +162,15 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void doInGameMenu() {
-		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Resume", skin.button)) {
+		adjustFontSize(skin.button, resumeRect.height);
+		if (GUI.Button(convertRect(resumeRect, false), "Resume", skin.button)) {
 			toggleInGameMenu();
 		}
-		adjustFontSize(skin.button, loadRect.height);
-		if (GUI.Button(convertRect(loadRect, false), "Restart Game", skin.button)) {
-			currentMenu = state.MainMenu;
-			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-		}
+		//adjustFontSize(skin.button, loadRect.height);
+		//if (GUI.Button(convertRect(loadRect, false), "Restart Game", skin.button)) {
+		//	currentMenu = state.MainMenu;
+		//	SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		//}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();

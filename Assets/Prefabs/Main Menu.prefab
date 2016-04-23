@@ -42,7 +42,7 @@ MonoBehaviour:
   defaultScreenHeight: 1080
   activeAtStart: 0
   skin: {fileID: 11400000, guid: 4c291cb9d9421e040bdbab8ba9af4718, type: 2}
-  background: {fileID: 2800000, guid: 874a4f850d4726d4bb67258f1be687a5, type: 3}
+  background: {fileID: 2800000, guid: 315e401e6ce1c3e4ea04e9e90e58e071, type: 3}
   endCamPosition: {x: 0, y: 0, z: 0}
   endCamRotation: {x: 0, y: 0, z: 0}
 --- !u!1001 &100100000
