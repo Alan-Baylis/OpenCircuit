@@ -9,6 +9,8 @@ public class TooltipTrigger : MonoBehaviour {
 	public float fadeInRate = 1f;
 	public float fadeOutRate = 0.2f;
 
+	public GUISkin skin;
+
 	private bool shown = false;
 	private float opacity = 0;
 	private float endTime = -1;
@@ -59,9 +61,10 @@ public class TooltipTrigger : MonoBehaviour {
 		if (opacity <= 0)
 			return;
 
+		GUI.skin = skin;
 		Color lastColor = GUI.color;
 		GUI.color = new Color(1, 1, 1, opacity);
-		GUI.Label(new Rect(Screen.width /4, Screen.height /4, 200, 300), tooltip);
+		GUI.Label(new Rect(Screen.width /6, Screen.height /6, 400, 300), tooltip);
 		GUI.color = lastColor;
 	}
 }

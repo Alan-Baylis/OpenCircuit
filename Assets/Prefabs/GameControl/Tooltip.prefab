@@ -131,6 +131,7 @@ MonoBehaviour:
   maxOpacity: 0.8
   fadeInRate: 1
   fadeOutRate: 1
+  skin: {fileID: 11400000, guid: c8b9dd4b5c82b0e479ef84724ff18a0b, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
