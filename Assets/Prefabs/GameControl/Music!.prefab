@@ -217,8 +217,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf54521d3d0e1dc4c9c40a646f84dbd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minTimeWait: 30
-  maxTimeWait: 60
+  minTimeWait: 15
+  maxTimeWait: 30
   tracks:
   - {fileID: 8300000, guid: 583c6318c4660a64ab6619128692db3d, type: 3}
   - {fileID: 8300000, guid: 15b32f87ee625184ab0f9159ec21aa38, type: 3}
