@@ -370,7 +370,7 @@ MonoBehaviour:
   heavyBreathingSound: {fileID: 8300000, guid: 93cc1f44eb856894187e8d711f429b62, type: 3}
   teleportSound: {fileID: 0}
   whiteOutDuration: 0
-  blackOutDuration: 20
+  blackOutDuration: 12
   controller: {fileID: 0}
   zooming: 0
   effectSpec:

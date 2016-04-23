@@ -158,7 +158,7 @@ public class Player : NetworkBehaviour {
 		}
 
 		if (blackOutTime > 0) {
-			GUI.color = new Color(0, 0, 0, blackOutTime / blackOutDuration *1.5f);
+			GUI.color = new Color(0, 0, 0, blackOutTime / blackOutDuration);
 			GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), whiteOutTexture);
 			GUI.color = Color.white;
 			blackOutTime -= Time.deltaTime;
