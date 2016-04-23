@@ -1547,6 +1547,7 @@ MonoBehaviour:
     prefab: {fileID: 415622, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
     lifetime: 0.03
   reloadSound: {fileID: 8300000, guid: 6ade20a0736a43449a90cf3faa3eee88, type: 3}
+  guiSkin: {fileID: 11400000, guid: 2131ccba8b54c0c4dadc3239b116ce52, type: 2}
   inaccuracy: 0.1
   range: 1000
   damage: 5

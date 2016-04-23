@@ -86,7 +86,7 @@ public class Menu : MonoBehaviour {
 		float width = (Screen.height * background.width) / background.height;
 		GUI.DrawTexture(new Rect(0, 0, width, Screen.height), background);
 		adjustFontSize(skin.button, titleRect.height);
-		GUI.Label(convertRect(titleRect, false), "Open Circuit", skin.button);
+		GUI.Label(convertRect(titleRect, false), "Guns 'n' Robots", skin.button);
 		switch (currentMenu) {
 			case state.MainMenu:
 				doMainMenu();
