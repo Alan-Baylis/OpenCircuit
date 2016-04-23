@@ -32,7 +32,7 @@ public abstract class Item : NetworkBehaviour {
 			holder.getPlayer().looker.resetCameraZoom();
 
 			// track to desired position
-			float multiplier = holder.getPlayer().zooming ? 1.3f : 1;
+			float multiplier = holder.getPlayer().zooming ? 2f : 1.3f;
 			moveTowardsPosition(getHoldPosition(), multiplier);
 		}
 	}
