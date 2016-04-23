@@ -56,6 +56,10 @@ public class AssaultRifle : AbstractGun {
 			if(navAgent.speed < 1f) {
 				navAgent.speed = 1;
 			}
+			navAgent.baseOffset -= 0.1f;
+			if (navAgent.baseOffset < 1.5f) {
+				navAgent.baseOffset = 1.5f;
+			}
 		}
 		if(health != null) {
 			health.hurt(calculateDamage(direction, hitInfo));

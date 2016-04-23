@@ -1367,7 +1367,8 @@ MonoBehaviour:
   powerDrawRate: 5
   regularSpeed: 5
   pursueSpeed: 5
-  speedRegenRate: 5
+  speedRegenRate: 4
+  heightRegenRate: 0.2
 --- !u!114 &11467540
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1510,6 +1511,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: pursueSpeed
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: speedRegenRate
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: stepHeight

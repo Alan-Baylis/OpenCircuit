@@ -25,12 +25,16 @@ public class HoverJet : AbstractRobotComponent {
 	public float pursueSpeed = 7f;
 
 	public float speedRegenRate = 5f;
+	public float heightRegenRate = 0.2f;
 
 #if UNITY_EDITOR
 	private GameObject dest;
 #endif
+	private float regularHeight;
+	private float regularStrideLength;
+	private ChassisController chassis;
 
-    public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
+	public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
 		this.target = target;
 		matchTargetRotation = matchRotation;
 		if(target == null) {
@@ -64,7 +68,12 @@ public class HoverJet : AbstractRobotComponent {
 	void Start() {
 		myAnimator = GetComponent<Animation> ();
 		nav = roboController.GetComponent<NavMeshAgent> ();
+		chassis = GetComponentInChildren<ChassisController>();
+		regularSpeed += Random.Range(-0.5f, 0.5f);
+		pursueSpeed += Random.Range(-0.5f, 0.5f);
 		nav.speed = regularSpeed;
+		regularHeight = nav.height;
+		regularStrideLength = chassis.strideLength;
 	}
 
 	[ServerCallback]
@@ -74,6 +83,14 @@ public class HoverJet : AbstractRobotComponent {
 
 			if(nav.speed > regularSpeed) {
 				nav.speed = regularSpeed;
+			}
+		}
+		chassis.strideLength = regularStrideLength *nav.speed /regularSpeed;
+		if (nav.baseOffset < regularHeight) {
+			nav.baseOffset = nav.baseOffset + heightRegenRate * Time.deltaTime;
+
+			if (nav.baseOffset > regularHeight) {
+				nav.baseOffset = regularHeight;
 			}
 		}
 		if (powerSource == null) {
