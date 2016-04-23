@@ -15,7 +15,7 @@ MonoBehaviour:
   m_box:
     m_Name: box
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 0afce14d6334cdc428d57f2d7da7725f, type: 3}
+      m_Background: {fileID: 2800000, guid: 93ca19b0f3d96294391fded5dc51aa05, type: 3}
       m_TextColor: {r: 0.79999995, g: 0.79999995, b: 0.79999995, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
@@ -69,7 +69,7 @@ MonoBehaviour:
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
     m_FixedHeight: 0
-    m_StretchWidth: 1
+    m_StretchWidth: 0
     m_StretchHeight: 0
   m_button:
     m_Name: button
@@ -311,7 +311,7 @@ MonoBehaviour:
     m_Name: textarea
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: 1, g: 1, b: 1, a: 1}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 0.491}
     m_Hover:
       m_Background: {fileID: 11026, guid: 0000000000000000e000000000000000, type: 0}
       m_TextColor: {r: 0.79999995, g: 0.79999995, b: 0.79999995, a: 1}

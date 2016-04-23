@@ -47,6 +47,16 @@ public abstract class AbstractGun : Item {
 	protected float reloadTimeRemaining = 0;
 
 	private AudioSource soundEmitter;
+	private Texture2D myBlackTexture = null;
+	private Texture2D blackTexture {
+		get {
+			if (myBlackTexture == null) {
+				myBlackTexture = new Texture2D(1, 1);
+				myBlackTexture.SetPixel(0, 0, Color.black);
+			}
+			return myBlackTexture;
+		}
+	}
 
 	void Start() {
 		soundEmitter = gameObject.AddComponent<AudioSource>();
@@ -87,6 +97,9 @@ public abstract class AbstractGun : Item {
 			int boxHeight = 30 +padding *2;
 			int boxCornerX = Screen.width - boxWidth - padding;
 			int boxCornerY = Screen.height - boxHeight - padding;
+			GUI.color = new Color(0, 0, 0, 0.6f);
+			GUI.DrawTexture(new Rect(boxCornerX -2, boxCornerY -2, boxWidth +4, boxHeight +4), blackTexture);
+			GUI.color = Color.white;
 			GUI.Box(new Rect(boxCornerX, boxCornerY, boxWidth, boxHeight), GUIContent.none);
 
 			//int imageWidth = 50;
