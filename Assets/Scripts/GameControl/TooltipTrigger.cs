@@ -22,6 +22,7 @@ public class TooltipTrigger : MonoBehaviour {
 			shown = true;
 			endTime = Time.time + duration;
 			StartCoroutine("showTooltip");
+			GetComponent<AudioSource>().Play();
 		}
 	}
 
