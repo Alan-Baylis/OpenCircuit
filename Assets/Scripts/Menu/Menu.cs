@@ -17,6 +17,7 @@ public class Menu : MonoBehaviour {
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
 	private static bool didWin = false;
+	private float endTextFontSize = .2f;
 
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
@@ -134,9 +135,10 @@ public class Menu : MonoBehaviour {
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
 		}
-		int width = 200;
+		int width = 400;
 		int height = 50;
 		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
+		adjustFontSize(skin.button, endTextFontSize);
 		GUI.Label(position, "You Lost!", skin.button);
 	}
 
@@ -155,9 +157,10 @@ public class Menu : MonoBehaviour {
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
 		}
-		int width = 200;
+		int width = 400;
 		int height = 50;
 		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
+		adjustFontSize(skin.button, endTextFontSize);
 		GUI.Label(position, "You Won!", skin.button);
 	}
 
