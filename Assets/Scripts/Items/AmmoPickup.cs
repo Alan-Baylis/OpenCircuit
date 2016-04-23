@@ -14,6 +14,7 @@ public class AmmoPickup : NetworkBehaviour {
 
 	void Start() {
 		soundEmitter = gameObject.AddComponent<AudioSource>();
+		soundEmitter.spatialBlend = 1f;
 
 	}
 

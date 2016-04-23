@@ -17,6 +17,7 @@ public class LandMine : NetworkBehaviour {
 	void Start() {
 		soundEmitter = gameObject.AddComponent<AudioSource>();
 		soundEmitter.volume = 1f;
+		soundEmitter.spatialBlend = 1f;
 	}
 
 	[ServerCallback]

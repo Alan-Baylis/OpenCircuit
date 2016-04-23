@@ -243,7 +243,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -317,7 +317,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100002}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3631b5e8b39fc534a89aa41b69aa24dc, type: 3}
   m_Name: 
@@ -373,6 +373,9 @@ MonoBehaviour:
   blackOutDuration: 20
   controller: {fileID: 0}
   zooming: 0
+  effectSpec:
+    prefab: {fileID: 418606, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
+    lifetime: 5
 --- !u!114 &11405568
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -450,6 +453,8 @@ MonoBehaviour:
   maxSuffering: 100
   recoveryRate: 25
   sufferingDisplay: 0
+  hurtSound: {fileID: 0}
+  hurtSoundPitch: 1
 --- !u!114 &11451698
 MonoBehaviour:
   m_ObjectHideFlags: 1

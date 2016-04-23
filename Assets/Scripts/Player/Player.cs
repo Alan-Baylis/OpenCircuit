@@ -38,6 +38,8 @@ public class Player : NetworkBehaviour {
 
 	private bool alive = true;
 	private float deltaTime;
+
+	public EffectSpec effectSpec;
 	
 	public Attack attacker { get { return myAttacker; } set { myAttacker = value; } }
 	public Grab grabber { get { return myGrabber; } set { myGrabber = value; } }
@@ -113,7 +115,8 @@ public class Player : NetworkBehaviour {
 		if(controller != null) {
 			controller.setPlayerDead();
 		}
-
+		effectSpec.spawn(transform.position);
+	
 		Destroy(this.gameObject);
 
 
