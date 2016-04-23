@@ -390,7 +390,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		while (trans.childCount > 0)
 			dismantle(trans.GetChild(0));
 		Collider col = trans.GetComponent<Collider>();
-        if (col == null) {
+        if (col == null || col.GetComponent<RobotController>()) {
 			Destroy(trans.gameObject);
 		} else {
 			foreach(NetworkBehaviour net in trans.GetComponents<NetworkBehaviour>()) {
