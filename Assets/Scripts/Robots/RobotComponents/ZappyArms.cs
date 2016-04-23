@@ -6,7 +6,7 @@ using System.Collections.Generic;
 [AddComponentMenu("Scripts/Robot/Zappy Arms")]
 public class ZappyArms : AbstractArms {
 
-	public static Vector3 HOLD_POSITION = new Vector3(0, .5f, .85f);
+	public static Vector3 HOLD_POSITION = new Vector3(0, -0.25f, .85f);
 
 	public float damagePerSecond = 1f;
 
