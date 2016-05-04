@@ -8,6 +8,8 @@ using System.Collections.Generic;
 public class Menu : MonoBehaviour {
 
 	private Rect startRect = new Rect(-0.03f, 0.15f, 0.4f, 0.1f);
+	private Rect joinRect = new Rect(-0.03f, 0.22f, 0.4f, 0.1f);
+	private Rect hostNameRect = new Rect(.25f, 0.25f, 0.3f, 0.04f);
 	private Rect exitRect = new Rect(-0.035f, 0.5f, 0.4f, 0.1f);
 	private Rect optionsRect = new Rect(-0.01f, 0.3f, 0.4f, 0.1f);
 	private Rect loadRect = new Rect(0.1f, 0.5f, 0.4f, 0.1f);
@@ -18,6 +20,7 @@ public class Menu : MonoBehaviour {
 	private Stack<state> menuHistory = new Stack<state>();
 	private static bool didWin = false;
 	private float endTextFontSize = .2f;
+	private string host = "localhost";
 
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
@@ -187,8 +190,14 @@ public class Menu : MonoBehaviour {
 
 	private void doMainMenu() {
 		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Begin", skin.button)) {
+		if (GUI.Button(convertRect(startRect, false), "Host", skin.button)) {
 			begin();
+		}
+		adjustFontSize(skin.textArea, hostNameRect.height);
+		host = GUI.TextField(convertRect(hostNameRect, false), host);
+		adjustFontSize(skin.button, joinRect.height);
+		if(GUI.Button(convertRect(joinRect, false), "Join", skin.button)) {
+			join();
 		}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
@@ -240,6 +249,14 @@ public class Menu : MonoBehaviour {
 		if (fixedHeight)
 			return new Rect(r.x * Screen.height, r.y * Screen.height, r.width * Screen.height, r.height);
 		return new Rect(r.x * Screen.height, r.y * Screen.height, r.width * Screen.height, r.height * Screen.height);
+	}
+
+	private void join() {
+		NetworkManager manager = NetworkManager.singleton;
+		manager.matchHost = host;
+		manager.StartClient();
+		activeAtStart = false;
+		Cursor.lockState = CursorLockMode.Locked;
 	}
 
 	private void begin() {
