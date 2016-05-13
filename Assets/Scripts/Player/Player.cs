@@ -112,14 +112,10 @@ public class Player : NetworkBehaviour {
 		//alive = false;
 		//blackOutTime = blackOutDuration;
 		//Menu.menu.lose();
-		if(controller != null) {
-			controller.setPlayerDead();
-		}
 		effectSpec.spawn(transform.position);
-	
-		Destroy(this.gameObject);
-
-
+		if(controller != null) {
+			controller.destroyPlayer(connectionToClient, playerControllerId);
+		}
 	}
 
 	public void teleport(Vector3 position) {

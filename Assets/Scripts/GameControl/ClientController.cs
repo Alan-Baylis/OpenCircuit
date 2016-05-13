@@ -13,7 +13,7 @@ public class ClientController : NetworkBehaviour {
 	private NetworkInstanceId id;
 	private GameObject player = null;
 
-	[SyncVar]
+	[SyncVar(hook="setPlayerDead")]
 	private bool isDead = false;
 
 	private int currentCamera = -1;
@@ -68,17 +68,26 @@ public class ClientController : NetworkBehaviour {
 		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
 		newPlayer.name = "player" + Random.Range(1, 20);
 		NetworkServer.Spawn(newPlayer);
-		NetworkServer.ReplacePlayerForConnection(connectionToClient, newPlayer, playerControllerId);
+		Player playerScript = newPlayer.GetComponent<Player>();
+
+		NetworkServer.AddPlayerForConnection(connectionToClient, newPlayer, 1);
+		
 		id = newPlayer.GetComponent<NetworkIdentity>().netId;
 	}
 
 	[Server]
-	public void setPlayerDead() {
+	public void destroyPlayer(NetworkConnection clientConnection, short playerID) {
 		isDead = true;
-		NetworkServer.ReplacePlayerForConnection(connectionToClient, gameObject, playerControllerId);
-		RpcSwitchCam();
-		enableSceneCam();
-		FindObjectOfType<Menu>().lose();
+
+		Destroy(player);
+	}
+
+	[Client]
+	private void setPlayerDead(bool dead) {
+		isDead = dead;
+		if(isLocalPlayer) {
+			switchCamera();
+		}
 	}
 
 	[Server]
@@ -115,13 +124,12 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcSwitchCam() {
-		//switchCamera();
-		enableSceneCam();
+		switchCamera();
 	}
 
 	[Client]
 	private void switchCamera() {
-		if(!isLocalPlayer)
+		if(!isDead)
 			return;
 		if(currentCamera >= 0) {
 			disableCurrentCam();
@@ -154,7 +162,7 @@ public class ClientController : NetworkBehaviour {
 
 	[Client]
 	private void disableSceneCam() {
-		if(!isLocalPlayer && !player.GetComponent<Player>().isLocalPlayer)
+		if(!isLocalPlayer)
 			return;
 		if(sceneCamera != null) {
 			sceneCamera.enabled = false;
@@ -164,7 +172,7 @@ public class ClientController : NetworkBehaviour {
 
 	[Client]
 	private void enableSceneCam() {
-		if(!isLocalPlayer && !player.GetComponent<Player>().isLocalPlayer)
+		if(!isLocalPlayer)
 			return;
 		if(sceneCamera != null) {
 			sceneCamera.enabled = true;
@@ -176,14 +184,13 @@ public class ClientController : NetworkBehaviour {
 	private void enableCurrentCam() {
 		if(!isLocalPlayer)
 			return;
-		if(currentCamera < cameras.Count) {
+		if(currentCamera < cameras.Count && currentCamera >= 0) {
 			Camera nextCam = ClientScene.FindLocalObject(cameras[currentCamera]).GetComponentInChildren<Camera>();
 			if(nextCam != null) {
 				nextCam.enabled = true;
 				nextCam.GetComponent<AudioListener>().enabled = true;
 			}
 		} else if(cameras.Count < 1) {
-			print("enable scene cam");
 			enableSceneCam();
 		}
 	}
