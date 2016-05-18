@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 public abstract class AbstractGun : Item {
 
 	public AudioClip fireSound;
+	public AudioClip reloadSound;
+
 	public float fireSoundVolume = 1;
 	public float fireDelay = 0.1f;
 
@@ -26,7 +28,6 @@ public abstract class AbstractGun : Item {
 	public EffectSpec fireEffectSideways;
 	public EffectSpec fireEffectLight;
 
-	public AudioClip reloadSound;
 	public GUISkin guiSkin;
 	//public Texture bulletIcon;
 
@@ -36,7 +37,6 @@ public abstract class AbstractGun : Item {
 	[SyncVar]
 	protected int currentMagazineFill;
 	
-	protected AudioSource audioSource;
 	protected Inventory inventory;
 
 
@@ -59,7 +59,6 @@ public abstract class AbstractGun : Item {
 	}
 
 	void Start() {
-		soundEmitter = gameObject.AddComponent<AudioSource>();
 		maxBullets = magazineSize * maxMagazines;
 		currentMagazineFill = magazineSize; //one mag loaded
 		bulletsRemaining = (maxMagazines - 1) * magazineSize; //the rest in reserve
@@ -88,7 +87,7 @@ public abstract class AbstractGun : Item {
 	[ClientCallback]
 	void OnGUI() {
 		//GUI.Window(0, new Rect(GUI., 5, 50, 50), windowFunction, GUIContent.none);
-		if(transform.parent.GetComponent<Player>().isLocalPlayer) {
+		if(transform.parent != null && transform.parent.GetComponent<Player>().isLocalPlayer) {
 
 			GUI.skin = guiSkin;
 
@@ -128,15 +127,14 @@ public abstract class AbstractGun : Item {
 
 	public override void onEquip(Inventory equipper) {
 		base.onEquip(equipper);
-		audioSource = equipper.gameObject.AddComponent<AudioSource>();
-		audioSource.clip = fireSound;
-		audioSource.volume = fireSoundVolume;
+		getAudioSource().clip = fireSound;
+		getAudioSource().volume = fireSoundVolume;
 	}
 
 	public override void onUnequip(Inventory equipper) {
 		base.onUnequip(equipper);
-		if(audioSource != null)
-			Destroy(audioSource);
+		if(getAudioSource() != null)
+			Destroy(getAudioSource());
 	}
 
 	public bool addMags(int number) {
@@ -154,7 +152,7 @@ public abstract class AbstractGun : Item {
 	public void reload() {
 		if(currentMagazineFill < magazineSize) {
 			reloading = true;
-			soundEmitter.PlayOneShot(reloadSound);
+			getAudioSource().PlayOneShot(reloadSound);
 			int bulletsNeeded = magazineSize - currentMagazineFill;
 			if(bulletsRemaining > bulletsNeeded) {
 				currentMagazineFill += bulletsNeeded;
@@ -167,26 +165,39 @@ public abstract class AbstractGun : Item {
 		}
 	}
 
+	public AudioSource getAudioSource() {
+		if(soundEmitter == null) {
+			soundEmitter = GetComponent<AudioSource>();
+		}
+		return soundEmitter;
+	}
+
 	protected void shoot(Vector3 position, Vector3 direction) {
 		if(currentMagazineFill > 0) {
-			audioSource.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-			audioSource.Play();
+
 			direction = inaccurateDirection(direction, getMovementInaccuracy());
             direction = inaccurateDirection(direction, baseInaccuracy);
             doBullet(position, direction, 1);
 			cycleTime += fireDelay;
 			--currentMagazineFill;
 			transform.position -= transform.TransformVector(recoilAnimationDistance);
-			
-			// do fire effects
-			Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
-			fireEffect.spawn(effectPosition, -transform.forward);
-			fireEffectSideways.spawn(effectPosition, -transform.right -transform.forward);
-			fireEffectSideways.spawn(effectPosition, transform.right -transform.forward);
-			fireEffectLight.spawn(effectPosition);
+
+			doFireEffects();
 		} else {
 			reload();
 		}
+	}
+
+	protected void doFireEffects() {
+		getAudioSource().pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+		getAudioSource().Play();
+
+		// do fire effects
+		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
+		fireEffect.spawn(effectPosition, -transform.forward);
+		fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
+		fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
+		fireEffectLight.spawn(effectPosition);
 	}
 
 	protected virtual float getMovementInaccuracy() {
