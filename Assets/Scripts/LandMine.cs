@@ -14,12 +14,6 @@ public class LandMine : NetworkBehaviour {
 	private AudioSource soundEmitter;
 	private bool triggered = false;
 
-	void Start() {
-		soundEmitter = gameObject.AddComponent<AudioSource>();
-		soundEmitter.volume = 1f;
-		soundEmitter.spatialBlend = 1f;
-	}
-
 	[ServerCallback]
 	public void OnTriggerEnter(Collider other) {
 		Player player = other.GetComponent<Player>();
@@ -69,9 +63,16 @@ public class LandMine : NetworkBehaviour {
 
 		// do effects
 		if (explosionSound != null) {
-			soundEmitter.PlayOneShot(explosionSound);
+			getAudioSource().PlayOneShot(explosionSound);
 		}
 		explosion.spawn(transform.position);
 		explosionLight.spawn(transform.position +Vector3.up);
+	}
+
+	public AudioSource getAudioSource() {
+		if(soundEmitter == null) {
+			soundEmitter = GetComponent<AudioSource>();
+		}
+		return soundEmitter;
 	}
 }
