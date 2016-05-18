@@ -38,7 +38,6 @@ public class AutoDoor : NetworkBehaviour {
 				}
 			}
 		} 
-		soundEmitter = gameObject.AddComponent<AudioSource>();
         downPosition = door.transform.position - new Vector3 (0,doorHeight,0);
         upPosition = door.transform.position;
 	}
@@ -100,7 +99,7 @@ public class AutoDoor : NetworkBehaviour {
 			if(endSound != null && !atEnd) {
 				firstTime = false;
 				if(!firstTime) {
-					soundEmitter.PlayOneShot(endSound);
+					getAudioSource().PlayOneShot(endSound);
 				}
 				atEnd = true;
 			}
@@ -122,7 +121,7 @@ public class AutoDoor : NetworkBehaviour {
 			if(endSound != null && !atEnd) {
 				firstTime = false;
 				if(!firstTime) {
-					soundEmitter.PlayOneShot(endSound);
+					getAudioSource().PlayOneShot(endSound);
 				}
 				atEnd = true;
 			}
@@ -130,4 +129,11 @@ public class AutoDoor : NetworkBehaviour {
 		}
 
     }
+
+	public AudioSource getAudioSource() {
+		if(soundEmitter == null) {
+			soundEmitter = GetComponent<AudioSource>();
+		}
+		return soundEmitter;
+	}
 }
