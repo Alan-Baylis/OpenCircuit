@@ -253,7 +253,7 @@ public class Menu : MonoBehaviour {
 
 	private void join() {
 		NetworkManager manager = NetworkManager.singleton;
-		manager.matchHost = host;
+		manager.networkAddress = host;
 		manager.StartClient();
 		activeAtStart = false;
 		Cursor.lockState = CursorLockMode.Locked;
