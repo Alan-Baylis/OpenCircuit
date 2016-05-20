@@ -133,8 +133,6 @@ public abstract class AbstractGun : Item {
 
 	public override void onUnequip(Inventory equipper) {
 		base.onUnequip(equipper);
-		if(getAudioSource() != null)
-			Destroy(getAudioSource());
 	}
 
 	public bool addMags(int number) {
