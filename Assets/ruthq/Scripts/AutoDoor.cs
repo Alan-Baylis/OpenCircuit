@@ -130,7 +130,7 @@ public class AutoDoor : NetworkBehaviour {
 
     }
 
-	public AudioSource getAudioSource() {
+	protected AudioSource getAudioSource() {
 		if(soundEmitter == null) {
 			soundEmitter = GetComponent<AudioSource>();
 		}

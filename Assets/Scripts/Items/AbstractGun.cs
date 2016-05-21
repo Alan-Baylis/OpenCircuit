@@ -39,7 +39,6 @@ public abstract class AbstractGun : Item {
 	
 	protected Inventory inventory;
 
-
 	protected bool shooting = false;
 	protected bool reloading = false;
 

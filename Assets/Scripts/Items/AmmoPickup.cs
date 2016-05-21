@@ -12,12 +12,6 @@ public class AmmoPickup : NetworkBehaviour {
 	[SyncVar]
 	private bool pickedUp = false;
 
-	void Start() {
-		soundEmitter = gameObject.AddComponent<AudioSource>();
-		soundEmitter.spatialBlend = 1f;
-
-	}
-
 
 	[ServerCallback]
 	public void OnTriggerEnter(Collider other) {
@@ -44,7 +38,14 @@ public class AmmoPickup : NetworkBehaviour {
 	}
 
 	private void handlePickupEffects() {
-		soundEmitter.PlayOneShot(pickupSound);
+		getAudioSource().PlayOneShot(pickupSound);
 		Destroy(GetComponent<MeshRenderer>());
+	}
+
+	protected AudioSource getAudioSource() {
+		if(soundEmitter == null) {
+			soundEmitter = GetComponent<AudioSource>();
+		}
+		return soundEmitter;
 	}
 }

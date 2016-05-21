@@ -69,7 +69,7 @@ public class LandMine : NetworkBehaviour {
 		explosionLight.spawn(transform.position +Vector3.up);
 	}
 
-	public AudioSource getAudioSource() {
+	protected AudioSource getAudioSource() {
 		if(soundEmitter == null) {
 			soundEmitter = GetComponent<AudioSource>();
 		}
