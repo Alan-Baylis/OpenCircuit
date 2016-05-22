@@ -5,9 +5,6 @@ using UnityEngine.Networking;
 
 public abstract class AbstractGun : Item {
 
-	public AudioClip fireSound;
-	public AudioClip reloadSound;
-
 	public float fireSoundVolume = 1;
 	public float fireDelay = 0.1f;
 
@@ -45,7 +42,8 @@ public abstract class AbstractGun : Item {
 	protected float cycleTime = 0;
 	protected float reloadTimeRemaining = 0;
 
-	private AudioSource soundEmitter;
+	public AudioSource gunshotSoundEmitter;
+	public AudioSource reloadSoundEmitter;
 	private Texture2D myBlackTexture = null;
 	private Texture2D blackTexture {
 		get {
@@ -126,8 +124,7 @@ public abstract class AbstractGun : Item {
 
 	public override void onEquip(Inventory equipper) {
 		base.onEquip(equipper);
-		getAudioSource().clip = fireSound;
-		getAudioSource().volume = fireSoundVolume;
+
 	}
 
 	public override void onUnequip(Inventory equipper) {
@@ -149,7 +146,7 @@ public abstract class AbstractGun : Item {
 	public void reload() {
 		if(currentMagazineFill < magazineSize) {
 			reloading = true;
-			getAudioSource().PlayOneShot(reloadSound);
+			playReloadSound();
 			int bulletsNeeded = magazineSize - currentMagazineFill;
 			if(bulletsRemaining > bulletsNeeded) {
 				currentMagazineFill += bulletsNeeded;
@@ -160,13 +157,6 @@ public abstract class AbstractGun : Item {
 			}
 			reloadTimeRemaining += reloadTime;
 		}
-	}
-
-	public AudioSource getAudioSource() {
-		if(soundEmitter == null) {
-			soundEmitter = GetComponent<AudioSource>();
-		}
-		return soundEmitter;
 	}
 
 	protected void shoot(Vector3 position, Vector3 direction) {
@@ -186,8 +176,7 @@ public abstract class AbstractGun : Item {
 	}
 
 	protected void doFireEffects() {
-		getAudioSource().pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-		getAudioSource().Play();
+		playFireSound();
 
 		// do fire effects
 		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
@@ -211,5 +200,30 @@ public abstract class AbstractGun : Item {
 		Vector3 randomAngle = Random.onUnitSphere;
 		float angle = Vector3.Angle(direction, randomAngle) /360;
 		return Vector3.RotateTowards(direction, Random.onUnitSphere, Mathf.PI *angle *inaccuracy, 0);
+	}
+
+	private void playReloadSound() {
+		if(reloadSoundEmitter != null) {
+			reloadSoundEmitter.volume = fireSoundVolume;
+		}
+		playSound(reloadSoundEmitter);
+	}
+
+	private void playFireSound() {
+		if(gunshotSoundEmitter != null) {
+			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+		}
+		playSound(gunshotSoundEmitter);
+	}
+
+	private void playSound(AudioSource soundEmitter) {
+		if(soundEmitter != null && soundEmitter.clip != null) {
+			soundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+			soundEmitter.Play();
+		} else if(soundEmitter == null) {
+			Debug.LogWarning("AudioSource not set for the '"+GetType()+"' component attached to '" + gameObject.name + "'");
+		} else if (soundEmitter.clip == null) {
+			Debug.LogWarning("AudioSource clip missing for the '" + GetType() + "' component attached to '" + gameObject.name + "'");
+		}
 	}
 }

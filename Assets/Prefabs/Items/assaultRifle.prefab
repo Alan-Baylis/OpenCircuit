@@ -148,6 +148,7 @@ GameObject:
   - 114: {fileID: 11493642}
   - 114: {fileID: 11472894}
   - 82: {fileID: 8299550}
+  - 82: {fileID: 8231792}
   m_Layer: 0
   m_Name: assaultRifle
   m_TagString: Untagged
@@ -1492,7 +1493,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.1, y: 0.2, z: 0.75}
   m_Center: {x: 0, y: -0.06, z: -0.02}
---- !u!82 &8299550
+--- !u!82 &8231792
 AudioSource:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1501,7 +1502,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 6ade20a0736a43449a90cf3faa3eee88, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1537,7 +1538,81 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
       value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+--- !u!82 &8299550
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137264}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1595,8 +1670,6 @@ MonoBehaviour:
   maxResponsiveness: 0.1
   stepBump: {x: 0.1, y: -0.1, z: 0}
   zoomLevel: 1.5
-  fireSound: {fileID: 8300000, guid: 72ddc1a69eeac1747a911cc0d2ff9288, type: 3}
-  reloadSound: {fileID: 8300000, guid: 6ade20a0736a43449a90cf3faa3eee88, type: 3}
   fireSoundVolume: 0.3
   fireDelay: 0.1
   reloadTime: 1.5
@@ -1623,6 +1696,8 @@ MonoBehaviour:
     prefab: {fileID: 415622, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
     lifetime: 0.03
   guiSkin: {fileID: 11400000, guid: 2131ccba8b54c0c4dadc3239b116ce52, type: 2}
+  gunshotSoundEmitter: {fileID: 8299550}
+  reloadSoundEmitter: {fileID: 8231792}
   inaccuracy: 0.1
   range: 1000
   damage: 5
