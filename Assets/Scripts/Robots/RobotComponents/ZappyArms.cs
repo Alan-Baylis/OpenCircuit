@@ -72,7 +72,7 @@ public class ZappyArms : AbstractArms {
 			if(proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
 
 				// footstepEmitter.PlayOneShot(pickUp, 1);
-				roboController.addEndeavour(new HoldAction(roboController, proposedTarget, proposedTarget.labelHandle));
+				getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
 			}
 		}
 	}
@@ -91,7 +91,7 @@ public class ZappyArms : AbstractArms {
 	public override void dropTarget() {
 		if(target != null) {
 			target.clearTag(TagEnum.Grabbed);
-			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
 			footstepEmitter.PlayOneShot(drop, 1);
 
 			dropRigidbody(target.gameObject);
@@ -126,8 +126,8 @@ public class ZappyArms : AbstractArms {
 			NetworkIdentity netId = obj.GetComponent<NetworkIdentity>();
 			if (netId != null)
 				RpcAttachTarget(netId.netId);
-			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
-			roboController.addEndeavour(new ScanAction(roboController, new List<Goal>(), target));
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
+			getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
 		}
 	}
 

@@ -62,7 +62,7 @@ public class RobotArms : AbstractArms {
             if (proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
 
                // footstepEmitter.PlayOneShot(pickUp, 1);
-                roboController.addEndeavour(new HoldAction(roboController, proposedTarget, proposedTarget.labelHandle));
+                getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
             }
         }
     }
@@ -89,7 +89,7 @@ public class RobotArms : AbstractArms {
 				rigidbody.AddForce(transform.up * throwForce.y);
 			}
 			target.transform.parent = null;
-			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
 			footstepEmitter.PlayOneShot (drop, 1);
 			Player player = target.GetComponent<Player>();
 			if (player != null) {
@@ -113,12 +113,12 @@ public class RobotArms : AbstractArms {
 
             target.transform.parent = transform;
             target.transform.localPosition = HOLD_POSITION;
-			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
 			Player player = target.GetComponent<Player>();
 			if (player != null) {
 				player.inventory.pushContext(typeof(PocketEMP));
 			}
-			roboController.addEndeavour(new ScanAction(roboController, new List<Goal>(), target));
+			getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
         }
     }
 
