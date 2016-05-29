@@ -42,7 +42,9 @@ public class Health : NetworkBehaviour {
 	}
 
 	public virtual void destruct() {
-		GetComponent<Label>().sendTrigger(gameObject, new DestructTrigger());
+		Label label = GetComponent<Label>();
+		if (label != null)
+			label.sendTrigger(gameObject, new DestructTrigger());
 	}
 
 	public virtual void hurt(float pain) {
