@@ -506,6 +506,7 @@ MonoBehaviour:
   standingElevation: 0.65
   crouchingElevation: 0.25
   jumpSpeed: 5
+  airControl: 0.2
   oxygenStopSprint: 10
   oxygenBeginSprint: 15
   oxygenSprintUsage: 30

@@ -6,6 +6,8 @@ public class EffectHealth : Health {
 	public EffectSpec[] destructEffects;
 	public EffectSpec[] hurtEffects;
 
+	public AudioSource destroySound;
+
 	public bool destroyOnDestruct = false;
 
 	public override void destruct() {
@@ -15,7 +17,8 @@ public class EffectHealth : Health {
 		if(destroyOnDestruct) { 
 			//Destroy(gameObject.GetComponent<MeshRenderer>());
 			//Destroy(gameObject.GetComponent<ParticleEmitter>());
-			gameObject.transform.parent.GetComponent<AudioSource>().Play();
+			if (destroySound != null)
+				destroySound.Play();
 			Destroy(gameObject);
 		}
 	}

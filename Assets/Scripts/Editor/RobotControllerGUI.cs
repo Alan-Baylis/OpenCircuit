@@ -141,8 +141,6 @@ public class RobotControllerGUI : Editor {
         serializedObject.Update();
 		RobotController robot = (RobotController)target;
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("debug"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("health"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("maxHealth"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("reliability"));
         SerializedProperty goals = serializedObject.FindProperty("goals");
         status = UnityEditor.EditorGUILayout.Foldout(status, "Goals");

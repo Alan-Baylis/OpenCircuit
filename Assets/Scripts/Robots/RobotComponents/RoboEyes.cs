@@ -23,7 +23,7 @@ public class RoboEyes : AbstractRobotComponent {
 		float sizeValue = 2f*Mathf.PI / theta_scale; 
 		size = (int)sizeValue;
 		size++;
-		lineRenderer = roboController.gameObject.AddComponent<LineRenderer>();
+		lineRenderer = getController().gameObject.AddComponent<LineRenderer>();
 		lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
 		lineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
 		lineRenderer.SetVertexCount(size);
@@ -33,7 +33,7 @@ public class RoboEyes : AbstractRobotComponent {
 	void Update() {
 		clearCircle();
 #if UNITY_EDITOR
-		if(roboController.debug) {
+		if(getController().debug) {
 			lineRenderer.SetVertexCount(size);
 			drawCircle();
 		}
@@ -46,14 +46,14 @@ public class RoboEyes : AbstractRobotComponent {
 			RaycastHit hitInfo;
 			if(Physics.Raycast(transform.position, direction, out hitInfo, direction.magnitude)) {
 #if UNITY_EDITOR
-				if (roboController.debug)
+				if (getController().debug)
 					drawLine(transform.position, hitInfo.point, Color.green);
 #endif
 				return hitInfo.collider.gameObject;
 			}
 		}
 #if UNITY_EDITOR
-		if (roboController.debug)
+		if (getController().debug)
 			drawLine(transform.position, position, Color.red);
 #endif
 		return null;
@@ -75,21 +75,21 @@ public class RoboEyes : AbstractRobotComponent {
 			Vector3 dir = objPos - transform.position;
 			dir.Normalize();
 			float angle = Vector3.Angle(dir, transform.forward);
-//			print (roboController.gameObject.name);
+//			print (getController().gameObject.name);
 //			print (angle);
 			if(angle < fieldOfViewAngle * 0.5f) {
 				Physics.Raycast (transform.position, dir, out hit, sightDistance);
 				if (hit.transform == obj ) {//&& Vector3.Dot (transform.forward.normalized, (objPos - transform.position).normalized) > 0) {
 					result = true;
 #if UNITY_EDITOR
-					if (roboController.debug)
+					if (getController().debug)
 						drawLine(transform.position, hit.point, Color.green);
 #endif
 				} else {
 					//print("looking for: " + obj.gameObject.name);
 					//print("blocked by: " + hit.collider.gameObject.name);
 #if UNITY_EDITOR
-					if (roboController.debug)
+					if (getController().debug)
 						drawLine(transform.position, hit.point, Color.red);
 #endif
 					//print("lost: " + obj.gameObject.name + "obscured by: " + hit.transform.gameObject.name);
@@ -123,14 +123,14 @@ public class RoboEyes : AbstractRobotComponent {
 				}
 				if(targetMap[label].getSightings() == 0) {
 					//print("target sighted: " + label.name);
-					roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_SIGHTED, "target sighted", label.labelHandle, label.transform.position, targetMap[label].getDirection()));
+					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_SIGHTED, "target sighted", label.labelHandle, label.transform.position, targetMap[label].getDirection()));
 					targetMap[label].addSighting();
 				}
 				targetMap[label].updatePosition(label.transform.position);
 			} else {
 				if (targetMap.ContainsKey(label) && targetMap [label].getSightings() == 1) {
 					//print("target lost: " + label.name);
-					roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
+					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
 					targetMap[label].removeSighting();
 				}
 			}
