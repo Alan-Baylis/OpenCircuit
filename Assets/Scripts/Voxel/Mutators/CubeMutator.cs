@@ -29,8 +29,8 @@ namespace Vox {
 			CubeApp app = new CubeApp();
 			app.tree = target;
 			app.halfDimension = halfDimension;
-			app.min = new Index(target.maxDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+			app.min = new Index(target.maximumDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(target.maximumDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.position = center;
 			return app;
 		}
@@ -38,7 +38,7 @@ namespace Vox {
 		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize) {
 			CubeApp cApp = (CubeApp)app;
 			CubeAction action = new CubeAction();
-			if (p.depth >= app.tree.maxDetail)
+			if (p.depth >= app.tree.maximumDetail)
 				voxelSize *= 0.5f;
 
 			action.percentInside = 1;

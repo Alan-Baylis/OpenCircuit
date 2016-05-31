@@ -26,8 +26,8 @@ namespace Vox {
 			Vector3 exactMax = center + radiusCube;
 			SphereApp app = new SphereApp();
 			app.tree = target;
-			app.min = new Index(target.maxDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+			app.min = new Index(target.maximumDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(target.maximumDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.position = center;
 			app.radius = radius;
 			return app;

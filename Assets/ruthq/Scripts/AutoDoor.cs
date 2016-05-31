@@ -1,36 +1,93 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 
-public class AutoDoor : MonoBehaviour {
+public class AutoDoor : NetworkBehaviour {
+
+	public List<Label> doorLocks;
 
     public float doorHeight = 3.5f;
 	public float toggleTime = .25f;
 
 	public GameObject door;
 
+	public AudioClip endSound;
+
+	private List<Label> activeDoorLocks = new List<Label>();
+
     private Vector3 downPosition;
     private Vector3 upPosition;
     private bool isMovingUp = true;
+	private bool atEnd = false;
+	private bool firstTime = true;
+
+	private AudioSource soundEmitter;
+
 
     // Use this for initialization
+	[ServerCallback]
     void Start () {
+		if(doorLocks != null && doorLocks.Count > 0) {
+			foreach (Label lockLabel in doorLocks) {
+				if (lockLabel != null) {
+					DoorControlDestruction operation = new DoorControlDestruction();
+					operation.setDoor(this);
+					lockLabel.addOperation(operation, new System.Type [] {typeof(DestructTrigger)});
+					activeDoorLocks.Add(lockLabel);
+				}
+			}
+		} 
         downPosition = door.transform.position - new Vector3 (0,doorHeight,0);
         upPosition = door.transform.position;
 	}
 
+	// Update is called once per frame
+	[ServerCallback]
+	void Update() {
+
+		if(isMovingUp) {
+			//print("moving up");
+			moveUp();
+		} else {
+			moveDown();
+		}
+
+	}
+
+	[Server]
+	public void removeDoorLock(Label doorLock) {
+		activeDoorLocks.Remove(doorLock);
+		if(activeDoorLocks.Count < 1) {
+			open();
+		}
+	}
+
+	[Server]
 	public void open() {
 		if(isMovingUp) {
 			isMovingUp = false;
+			atEnd = false;
 		}
 	}
 
+	[Server]
 	public void close() {
 		if(!isMovingUp) {
 			isMovingUp = true;
+			atEnd = false;
 		}
 	}
 
-    void moveDown() {
+
+	[Server]
+	public void toggle() {
+		isMovingUp = !isMovingUp;
+		atEnd = false;
+	}
+
+	[Server]
+   private void moveDown() {
         Vector3 stopVector = door.transform.position - downPosition;
         float length = stopVector.magnitude;
 
@@ -39,12 +96,20 @@ public class AutoDoor : MonoBehaviour {
         if (length > distanceToMove){ 
 			door.transform.position = door.transform.position - new Vector3(0, distanceToMove, 0);
 		} else {
+			if(endSound != null && !atEnd) {
+				firstTime = false;
+				if(!firstTime) {
+					getAudioSource().PlayOneShot(endSound);
+				}
+				atEnd = true;
+			}
 			door.transform.position = downPosition;
 		}
 
     }
 
-    void moveUp() {
+	[Server]
+    private void moveUp() {
         Vector3 upVector = door.transform.position - upPosition;
         float upLength = upVector.magnitude;
 
@@ -53,19 +118,22 @@ public class AutoDoor : MonoBehaviour {
         if (upLength > distanceToMove) {
 			door.transform.position = door.transform.position + new Vector3(0, distanceToMove, 0);
 		} else {
+			if(endSound != null && !atEnd) {
+				firstTime = false;
+				if(!firstTime) {
+					getAudioSource().PlayOneShot(endSound);
+				}
+				atEnd = true;
+			}
 			door.transform.position = upPosition;
 		}
 
     }
-	// Update is called once per frame
-	void Update () {
 
-    if (isMovingUp) {
-            moveUp();
-        }
-     else {
-            moveDown();
-        }
-
+	protected AudioSource getAudioSource() {
+		if(soundEmitter == null) {
+			soundEmitter = GetComponent<AudioSource>();
+		}
+		return soundEmitter;
 	}
 }

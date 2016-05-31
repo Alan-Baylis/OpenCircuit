@@ -1,20 +1,26 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
 public class Menu : MonoBehaviour {
 
-	private Rect startRect = new Rect(0.1f, 0.1f, 0.4f, 0.1f);
-	private Rect exitRect = new Rect(0.1f, 0.7f, 0.4f, 0.1f);
-	private Rect optionsRect = new Rect(0.1f, 0.3f, 0.4f, 0.1f);
+	private Rect startRect = new Rect(-0.03f, 0.15f, 0.4f, 0.1f);
+	private Rect joinRect = new Rect(-0.03f, 0.22f, 0.4f, 0.1f);
+	private Rect hostNameRect = new Rect(.25f, 0.25f, 0.3f, 0.04f);
+	private Rect exitRect = new Rect(-0.035f, 0.5f, 0.4f, 0.1f);
+	private Rect optionsRect = new Rect(-0.01f, 0.3f, 0.4f, 0.1f);
 	private Rect loadRect = new Rect(0.1f, 0.5f, 0.4f, 0.1f);
 	private Rect backRect = new Rect(0.1f, 0.7f, 0.4f, 0.1f);
-	private Rect titleRect = new Rect(0.4f, 0f, 1.2f, 0.2f);
-	private Player myPlayer;
+	private Rect titleRect = new Rect(-.25f, 0f, 1.2f, 0.2f);
+	private Rect resumeRect = new Rect(-0.01f, .15f, .4f, .1f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
 	private static bool didWin = false;
+	private float endTextFontSize = .2f;
+	private string host = "localhost";
 
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
@@ -24,14 +30,17 @@ public class Menu : MonoBehaviour {
 	public Vector3 endCamPosition;
 	public Vector3 endCamRotation;
 
+	public static Player player {
+		get { return GameObject.FindGameObjectWithTag("Player").GetComponent<Player>(); }
+	}
+
 	private static Menu myMenu = null;
 	public static Menu menu { get {
 			if (myMenu == null)
 				myMenu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 			return myMenu;
 	}}
-
-	private float timeScale;
+	
 	private enum state {
 		MainMenu, InGameMenu, Options, Load, Win, Lose
 	};
@@ -51,10 +60,9 @@ public class Menu : MonoBehaviour {
 
 	public void pause() {
 		if (paused()) return;
+		Cursor.visible = true;
 		Cursor.lockState = CursorLockMode.None;
 		activeAtStart = true;
-		timeScale = Time.timeScale;
-		Time.timeScale = 0;
 	}
 
 	public void unpause() {
@@ -62,18 +70,18 @@ public class Menu : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		activeAtStart = false;
 		menuHistory.Clear();
-		Time.timeScale = timeScale;
 	}
 
 	// Use this for initialization
 	public void Start() {
-		myPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-		if (activeAtStart && !didWin) {
-			myPlayer.gameObject.SetActive(false);
-			Time.timeScale = 0;
+		//myPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		//if (activeAtStart && !didWin) {
+		//	myPlayer.gameObject.SetActive(false);
 		//} else {
 		//	begin();
-		}
+		//}
+		pause();
+		currentMenu = state.MainMenu;
 		didWin = false;
 	}
 
@@ -82,9 +90,9 @@ public class Menu : MonoBehaviour {
 		GUI.depth = -1;
 		GUI.skin = skin;
 		float width = (Screen.height * background.width) / background.height;
-		GUI.DrawTexture(new Rect(0, 0, width, Screen.height), background);
+		GUI.DrawTexture(new Rect(-250, 0, width, Screen.height), background);
 		adjustFontSize(skin.button, titleRect.height);
-		GUI.Label(convertRect(titleRect, false), "Open Circuit", skin.button);
+		GUI.Label(convertRect(titleRect, false), "Guns 'n' Robots", skin.button);
 		switch (currentMenu) {
 			case state.MainMenu:
 				doMainMenu();
@@ -110,7 +118,7 @@ public class Menu : MonoBehaviour {
 		didWin = true;
 		GetComponent<Camera>().enabled = true;
 		GetComponent<AudioListener>().enabled = true;
-		myPlayer.gameObject.SetActive(false);
+		player.gameObject.SetActive(false);
 		transform.position = endCamPosition;
 		transform.eulerAngles = endCamRotation;
 	}
@@ -121,52 +129,54 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void doLose() {
-		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Restart", skin.button)) {
-			currentMenu = state.MainMenu;
-			Application.LoadLevel(0);
-		}
+		//adjustFontSize(skin.button, startRect.height);
+		//if (GUI.Button(convertRect(startRect, false), "Restart", skin.button)) {
+		//	currentMenu = state.MainMenu;
+		//	SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		//}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
 		}
-		int width = 200;
+		int width = 400;
 		int height = 50;
 		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
+		adjustFontSize(skin.button, endTextFontSize);
 		GUI.Label(position, "You Lost!", skin.button);
 	}
 
 	private void doWin() {
-		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Play Again", skin.button)) {
-			currentMenu = state.MainMenu;
-			Application.LoadLevel(0);
-		}
-		adjustFontSize(skin.button, optionsRect.height);
-		if (GUI.Button(convertRect(optionsRect,false), "Options", skin.button)) {
-			menuHistory.Push(currentMenu);
-			currentMenu = state.Options;
-		}
+		//adjustFontSize(skin.button, startRect.height);
+		//if (GUI.Button(convertRect(startRect, false), "Play Again", skin.button)) {
+		//	currentMenu = state.MainMenu;
+		//	SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		//}
+		//adjustFontSize(skin.button, optionsRect.height);
+		//if (GUI.Button(convertRect(optionsRect,false), "Options", skin.button)) {
+		//	menuHistory.Push(currentMenu);
+		//	currentMenu = state.Options;
+		//}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
 		}
-		int width = 200;
+		int width = 400;
 		int height = 50;
 		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
+		adjustFontSize(skin.button, endTextFontSize);
 		GUI.Label(position, "You Won!", skin.button);
 	}
 
 	private void doInGameMenu() {
-		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Resume", skin.button)) {
+		adjustFontSize(skin.button, resumeRect.height);
+		if (GUI.Button(convertRect(resumeRect, false), "Resume", skin.button)) {
 			toggleInGameMenu();
 		}
-		adjustFontSize(skin.button, loadRect.height);
-		if (GUI.Button(convertRect(loadRect, false), "Restart Game", skin.button)) {
-			currentMenu = state.MainMenu;
-			Application.LoadLevel(0);
-		}
+		//adjustFontSize(skin.button, loadRect.height);
+		//if (GUI.Button(convertRect(loadRect, false), "Restart Game", skin.button)) {
+		//	currentMenu = state.MainMenu;
+		//	SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		//}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
@@ -180,8 +190,14 @@ public class Menu : MonoBehaviour {
 
 	private void doMainMenu() {
 		adjustFontSize(skin.button, startRect.height);
-		if (GUI.Button(convertRect(startRect, false), "Begin", skin.button)) {
+		if (GUI.Button(convertRect(startRect, false), "Host", skin.button)) {
 			begin();
+		}
+		adjustFontSize(skin.textArea, hostNameRect.height);
+		host = GUI.TextField(convertRect(hostNameRect, false), host);
+		adjustFontSize(skin.button, joinRect.height);
+		if(GUI.Button(convertRect(joinRect, false), "Join", skin.button)) {
+			join();
 		}
 		adjustFontSize(skin.button, exitRect.height);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
@@ -208,7 +224,8 @@ public class Menu : MonoBehaviour {
 		QualitySettings.vSyncCount = (int)(GUI.HorizontalSlider(convertRect(new Rect(0.05f, 0.24f, 0.2f, 0.04f), false), QualitySettings.vSyncCount, 0, 2) +0.5f);
 
 		// input settings
-		adjustFontSize(skin.label, 0.07f);
+		Player myPlayer = player;
+        adjustFontSize(skin.label, 0.07f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.28f, 0.4f, 0.07f), false), "Look Sensitivity:  " +(myPlayer.controls.mouseSensitivity *4).ToString("##,0.0#"));
 		myPlayer.controls.mouseSensitivity = GUI.HorizontalSlider(convertRect(new Rect(0.05f, 0.34f, 0.25f, 0.04f), false), myPlayer.controls.mouseSensitivity, 0.0625f, 2);
 		myPlayer.controls.mouseSensitivity = ((int)(myPlayer.controls.mouseSensitivity * 16 + 0.5f)) / 16f;
@@ -234,14 +251,22 @@ public class Menu : MonoBehaviour {
 		return new Rect(r.x * Screen.height, r.y * Screen.height, r.width * Screen.height, r.height * Screen.height);
 	}
 
+	private void join() {
+		NetworkManager manager = NetworkManager.singleton;
+		manager.networkAddress = host;
+		manager.StartClient();
+		activeAtStart = false;
+		Cursor.lockState = CursorLockMode.Locked;
+	}
+
 	private void begin() {
-		myPlayer.gameObject.SetActive(true);
-		myPlayer.fadeIn(); // fade in for dramatic start
-		GetComponent<Camera>().enabled = false;
-		GetComponent<AudioListener>().enabled = false;
+		NetworkManager manager = NetworkManager.singleton;
+		manager.StartHost();
+		//player.gameObject.SetActive(true);
+		//GetComponent<Camera>().enabled = false;
+		//GetComponent<AudioListener>().enabled = false;
 		menuHistory.Clear();
 		activeAtStart = false;
-		Time.timeScale = 1;
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 

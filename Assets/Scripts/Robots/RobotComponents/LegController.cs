@@ -19,7 +19,6 @@ public class LegController : MonoBehaviour {
 	public float lowerLegLength;
 	public float lowerMinRotation = -90;
 	public float lowerMaxRotation = 90;
-	
 
 	private Transform leg;
 	private Transform hip;
@@ -28,7 +27,7 @@ public class LegController : MonoBehaviour {
 
 	private float upperLegLength;
 	
-	public void Start () {
+	public void Awake () {
 		leg = GetComponent<Transform>();
 		hip = leg.FindChild("Hip");
 		upperLeg = hip.FindChild("Upper Leg");

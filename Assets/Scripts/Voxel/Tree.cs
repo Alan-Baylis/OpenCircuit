@@ -20,8 +20,6 @@ namespace Vox {
 		public readonly static HashSet<Tree> generatingTrees = new HashSet<Tree>();
 
 		// basic stats
-		public float baseSize = 128;
-		public byte maxDetail = 7;
 		public byte isoLevel = 127;
 		public float lodDetail = 1;
 		public bool useLod = false;
@@ -39,6 +37,15 @@ namespace Vox {
 		public bool reduceMeshes = false;
 		public float reductionAmount = 0.1f;
 
+		public byte maximumDetail {
+			get { return maxDetail; }
+			set { maxDetail = value; setupLookupTables(); }
+		}
+		public float width {
+			get { return baseSize; }
+			set { baseSize = value; setupLookupTables(); }
+		}
+
 
 		// performance stats
 //		private int treeCount = 0;
@@ -48,6 +55,8 @@ namespace Vox {
 		public VoxelBlock head;
 		[HideInInspector]
 		public float[] sizes;
+		[HideInInspector]
+		public uint dimmension;
 		[System.NonSerialized]
 		public RendererDict renderers = new RendererDict();
 		public byte[] voxelData = new byte[0];
@@ -58,6 +67,22 @@ namespace Vox {
 		[System.NonSerialized]
 		public int triangleCount = 0;
 
+		[System.NonSerialized]
+		public double meshGenTime = 0;
+		[System.NonSerialized]
+		public double meshGenArrayTime = 0;
+		[System.NonSerialized]
+		public double meshApplyTime = 0;
+
+		[System.NonSerialized]
+		public int meshGenCount = 0;
+		[System.NonSerialized]
+		public int meshApplyCount = 0;
+
+		[SerializeField]
+		private byte maxDetail = 7;
+		[SerializeField]
+		private float baseSize = 128;
 
 		[System.NonSerialized]
 		private Queue<VoxelJob> jobQueue = new Queue<VoxelJob>(100);
@@ -68,6 +93,10 @@ namespace Vox {
 		private bool generationPaused = false;
 		[System.NonSerialized]
 		private bool rebakedLighting = false;
+
+		public void Awake() {
+			setupLookupTables();
+		}
 
 
 
@@ -98,13 +127,14 @@ namespace Vox {
 		}
 
 		public void setupLookupTables() {
-			sizes = new float[maxDetail + 1];
+			sizes = new float[maximumDetail + 1];
 			float s = baseSize;
-			for (int i = 0; i <= maxDetail; ++i) {
+			for (int i = 0; i <= maximumDetail; ++i) {
 				sizes[i] = s;
 				s /= 2;
 			}
-		}
+			dimmension = (uint)(1 << maximumDetail);
+        }
 
 		public void Update() {
 //			if (Application.isPlaying) {
@@ -189,10 +219,6 @@ namespace Vox {
 			return Vector3.zero;
 		}
 
-		public VoxelUpdateInfo getBaseUpdateInfo() {
-			return new VoxelUpdateInfo(sizes[0], head, this);
-		}
-
 		public Vector3 globalToVoxelPosition(Vector3 globalPosition) {
 			return transform.InverseTransformPoint(globalPosition) / voxelSize();
 		}
@@ -202,12 +228,18 @@ namespace Vox {
 		}
 
 		public float voxelSize() {
-			return sizes[maxDetail];
+			return sizes[maximumDetail];
 		}
 
-		public Voxel[,,] getArray(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+		public Voxel[,,] getArray(uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
+			if (xMax > dimmension)
+				xMax = dimmension;
+			if (yMax > dimmension)
+				yMax = dimmension;
+			if (zMax > dimmension)
+				zMax = dimmension;
 			Voxel[,,] array = new Voxel[xMax -xMin, yMax -yMin, zMax -zMin];
-			head.putInArray(maxDetail, ref array, 0, 0, 0, xMin, yMin, zMin, xMax, yMax, zMax);
+			head.putInArray(ref array, new Index(maximumDetail), xMin, yMin, zMin, xMax, yMax, zMax);
 			return array;
 		}
 
@@ -357,7 +389,7 @@ namespace Vox {
 			} else {
 				// read meta data
 				if (fileFormatVersion > 1) {
-					maxDetail = reader.ReadByte();
+					maximumDetail = reader.ReadByte();
 					int substanceCount = reader.ReadInt32();
 					if (substanceCount > voxelSubstances.Length)
 						System.Array.Resize(ref voxelSubstances, substanceCount);
@@ -397,6 +429,8 @@ namespace Vox {
 		}
 
 		public void pauseForGeneration() {
+			if (!Application.isPlaying)
+				return;
 			generationPaused = true;
 			rebakedLighting = false;
 			Time.timeScale = 0;

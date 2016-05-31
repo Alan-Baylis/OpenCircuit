@@ -5,15 +5,11 @@ using System.Collections.Generic;
 public class LabelHandle {
 	public Label label;
 	public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
-
-	private string name;
+	
 	private Vector3 position;
-	private Vector3 direction;
 
 	public LabelHandle(Vector3 pos, string name) {
 		position = pos;
-		this.name = name;
-
 	}
 
 	public string getName() {
@@ -52,6 +48,6 @@ public class LabelHandle {
 				return rigidBody.velocity;
 			}
 		}
-		return direction;
+		return Vector3.zero;
 	}
 }

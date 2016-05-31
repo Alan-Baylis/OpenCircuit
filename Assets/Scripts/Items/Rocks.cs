@@ -11,16 +11,13 @@ public class Rocks : Item {
 	public AudioClip collisionSound;
 	
 
-	public override void invoke(Inventory invoker) {
+	public override void beginInvoke(Inventory invoker) {
 		Transform cam = invoker.getPlayer().cam.transform;
         GameObject rock = new GameObject("Rock");
 		rock.transform.localPosition = cam.TransformPoint(releaseLocation);
 		rock.transform.localScale *= 0.2f;
 		rock.AddComponent<MeshFilter>().sharedMesh = rockMesh;
 		rock.AddComponent<MeshRenderer>().sharedMaterial = rockMaterial;
-		SphereCollider col = rock.AddComponent<SphereCollider>();
-		//col.radius
-		//col.convex = true;
 		Rigidbody rb = rock.AddComponent<Rigidbody>();
 		rb.velocity = cam.TransformVector(throwVelocity);
 		rb.collisionDetectionMode = CollisionDetectionMode.Continuous;

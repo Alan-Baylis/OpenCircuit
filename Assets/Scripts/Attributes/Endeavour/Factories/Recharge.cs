@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System;
 
@@ -18,9 +17,10 @@ public class Recharge : EndeavourFactory {
         return action;
     }
 
+#if UNITY_EDITOR
 	public override void doGUI() {
-		rechargePoint = EditorGUILayout.FloatField("Recharge Point", rechargePoint);
+		rechargePoint = UnityEditor.EditorGUILayout.FloatField("Recharge Point", rechargePoint);
 		base.doGUI();
-
 	}
+#endif
 }

@@ -79,7 +79,7 @@ public class ChassisController : MonoBehaviour {
 
 			target.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
 			Vector3 diff = (target - info.foot);
-			info.foot += diff.normalized * Mathf.Min(Mathf.Max(0.5f, diff.magnitude /8), diff.magnitude);
+			info.foot += diff.normalized * Mathf.Min(Mathf.Max(0.5f, diff.magnitude /3), diff.magnitude);
 
 #if UNITY_EDITOR
 			if(debug) {

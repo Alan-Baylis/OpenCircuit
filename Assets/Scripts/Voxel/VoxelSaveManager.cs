@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
@@ -23,3 +24,4 @@ namespace Vox {
 		}
 	}
 }
+#endif

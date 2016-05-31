@@ -9,6 +9,7 @@ namespace Vox {
 	public class Voxel : VoxelHolder {
 
 		public static readonly Voxel empty = new Voxel(0, 0);
+		public static readonly Voxel full = new Voxel(0, byte.MaxValue);
 
 		public readonly byte opacity;
 		public readonly byte matType;
@@ -54,18 +55,18 @@ namespace Vox {
 			return this;
 		}
 
-		public override void putInArray(byte level, ref Voxel[,,] array, int x, int y, int z, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
-			int size = 1 << (VoxelBlock.CHILD_COUNT_POWER *level);
-			int xStart = Mathf.Max(x, xMin);
-			int xEnd = Mathf.Min(x +size, xMax);
-			int yStart = Mathf.Max(y, yMin);
-			int yEnd = Mathf.Min(y +size, yMax);
-			int zStart = Mathf.Max(z, zMin);
-			int zEnd = Mathf.Min(z +size, zMax);
-			for(int xi=xStart; xi<xEnd; ++xi) {
-				for(int yi=yStart; yi<yEnd; ++yi) {
-					for(int zi=zStart; zi<zEnd; ++zi) {
-						array[xi -xMin, yi -yMin, zi -zMin] = this;
+		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
+			uint size = 1u << (VoxelBlock.CHILD_COUNT_POWER *position.depth);
+			uint xStart = (uint)Mathf.Max(position.x, xMin) -xMin;
+			uint xEnd = (uint)Mathf.Min(position.x +size, xMax) -xMin;
+			uint yStart = (uint)Mathf.Max(position.y, yMin) -yMin;
+			uint yEnd = (uint)Mathf.Min(position.y +size, yMax) -yMin;
+			uint zStart = (uint)Mathf.Max(position.z, zMin) -zMin;
+			uint zEnd = (uint)Mathf.Min(position.z +size, zMax) -zMin;
+			for(uint xi=xStart; xi<xEnd; ++xi) {
+				for(uint yi=yStart; yi<yEnd; ++yi) {
+					for(uint zi=zStart; zi<zEnd; ++zi) {
+						array[xi, yi, zi] = this;
 					}
 				}
 			}
@@ -74,6 +75,21 @@ namespace Vox {
 		public override int canSimplify(out Voxel simplification) {
 			simplification = this;
 			return 0;
+		}
+
+		public override int cleanArtifacts(out Voxel simplified, VoxelHolder head, byte level, byte maxLevel, int x, int y, int z) {
+			simplified = null;
+			if (level < maxLevel)
+				return 0;
+			Voxel[,,] array = new Voxel[3, 3, 3];
+			head.putInArray(ref array, new Index(level), (uint)x -1, (uint)y -1, (uint)z -1, (uint)x +2, (uint)y +2, (uint)z +2);
+			bool solid = isSolid();
+			foreach(Voxel vox in array) {
+				if (vox != null && vox.isSolid() != solid)
+					return 0;
+			}
+			simplified = solid? full : empty;
+			return 1;
 		}
 
 		public static VoxelHolder setSphere(VoxelHolder original, int x, int y, int z, Vector3 min, Vector3 max, VoxelHolder val) {

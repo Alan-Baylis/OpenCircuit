@@ -12,7 +12,7 @@ public class AudioSensor : AbstractRobotComponent {
 	public void processAudioEvent(AudioEvent eventMessage) {
 		if(hasPower) {
 			//Debug.Log("sound heard");
-			roboController.enqueueMessage(eventMessage);
+			getController().enqueueMessage(eventMessage);
 		}
 	}
 

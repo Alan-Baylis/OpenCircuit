@@ -1,37 +1,50 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Player/Inventory")]
-public class Inventory : MonoBehaviour {
+public class Inventory : NetworkBehaviour {
 
     public Vector2 iconDimensions;
     public float iconSpacing;
     public float itemCircleRadius;
     public Texture2D itemBackground;
+	public Transform[] startingItemPrefabs;
 
 	protected Player player;
-    protected Dictionary<System.Type, List<Item>> items;
+	protected Dictionary<System.Type, List<Item>> items = new Dictionary<System.Type, List<Item>>();
 	protected Item equipped;
-    protected System.Type[] slots;
+    protected System.Type[] slots = new System.Type[3];
     protected int selecting;
     protected int highlighted;
     protected List<System.Type> unselectedItems;
     protected Vector2 mousePos;
-	protected List<System.Type> contextStack;
+	protected List<System.Type> contextStack = new List<System.Type>();
+	[HideInInspector]
+	public bool sprinting = false;
+
+	[ServerCallback]
+	void Awake() {
+		foreach(Transform trans in startingItemPrefabs) {
+			Transform newItem = Instantiate(trans);
+			newItem.transform.parent = transform;
+			NetworkServer.Spawn(newItem.gameObject);
+		}
+	}
 
     void Start () {
-        items = new Dictionary<System.Type, List<Item>>();
-		slots = new System.Type[3];
-		contextStack = new List<System.Type>();
 		equipped = null;
         selecting = -1;
         unselectedItems = new List<System.Type>();
-		player = GetComponent<Player>();
 
-		foreach (Item item in GetComponentsInChildren<Item>())
-			if (!contains(item))
-				take(item);
+		if(isServer) {
+			foreach(Item item in GetComponentsInChildren<Item>())
+				if(!contains(item)) {
+					take(item);
+					RpcTake(item.netId);
+				}
+		}
     }
 
     public void OnGUI() {
@@ -42,7 +55,14 @@ public class Inventory : MonoBehaviour {
     }
 
 	public Player getPlayer() {
+		if(player == null) {
+			player = GetComponent<Player>();
+		}
 		return player;
+	}
+
+	public void setSprinting(bool sprint) {
+		sprinting = sprint;
 	}
 
     public bool take(GameObject itemObject) {
@@ -57,6 +77,11 @@ public class Inventory : MonoBehaviour {
         item.onTake(this);
         return true;
     }
+
+	[ClientRpc]
+	public void RpcTake(NetworkInstanceId item) {
+		take(ClientScene.FindLocalObject(item));
+	}
 
 	public bool canTake(GameObject itemObject) {
 		return itemObject.GetComponent<Item>() != null;
@@ -93,7 +118,7 @@ public class Inventory : MonoBehaviour {
 
     public void useEquipped() {
 		if (inContext()) {
-			getItem(contextStack[0]).invoke(this);
+			getItem(contextStack[0]).beginInvoke(this);
 			return;
 		}
         if (selecting >= 0) {
@@ -101,10 +126,18 @@ public class Inventory : MonoBehaviour {
             mousePos = Vector3.zero;
 			return;
 		}
-        if (equipped == null)
-            return;
-        equipped.invoke(this);
+        if (equipped != null)
+            equipped.beginInvoke(this);
     }
+
+	public void stopUsingEquiped() {
+		if (inContext()) {
+			getItem(contextStack[0]).endInvoke(this);
+			return;
+		}
+		if (equipped != null)
+			equipped.endInvoke(this);
+	}
 
 	public void pushContext(System.Type contextItem) {
 		contextStack.Insert(0, contextItem);
@@ -155,6 +188,11 @@ public class Inventory : MonoBehaviour {
 	public bool inContext() {
 		return contextStack.Count > 0;
     }
+
+	public void doStep(float strength) {
+		if (equipped != null)
+			equipped.doStep(strength);
+	}
 
 	public List<T> getItemsExtending<T>() where T : Item {
 		List<T> results = new List<T>();

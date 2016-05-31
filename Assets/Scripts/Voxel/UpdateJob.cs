@@ -19,8 +19,22 @@ namespace Vox {
 
 		public override void execute() {
 			lock (control) {
-				VoxelUpdateInfo info = control.getBaseUpdateInfo().getSubInfo(detailLevel, xOff, yOff, zOff);
-				getRenderer().genMesh(info);
+				System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+				watch.Start();
+
+				Voxel[,,] array = control.getArray(
+					xOff *VoxelRenderer.VOXEL_DIMENSION,
+					yOff *VoxelRenderer.VOXEL_DIMENSION,
+					zOff *VoxelRenderer.VOXEL_DIMENSION,
+					(xOff +1) *VoxelRenderer.VOXEL_DIMENSION +1,
+					(yOff +1) *VoxelRenderer.VOXEL_DIMENSION +1,
+					(zOff +1) *VoxelRenderer.VOXEL_DIMENSION +1);
+				getRenderer().genMesh(array);
+
+				watch.Stop();
+
+				control.meshGenTime += watch.Elapsed.TotalSeconds;
+				++control.meshGenCount;
 			}
 		}
 
@@ -44,9 +58,9 @@ namespace Vox {
 
 		private VoxelRenderer rend;
 		private byte detailLevel;
-		private int x, y, z;
+		private uint x, y, z;
 
-		public ApplyMeshJob(VoxelRenderer rend, byte detailLevel, int x, int y, int z) {
+		public ApplyMeshJob(VoxelRenderer rend, byte detailLevel, uint x, uint y, uint z) {
 			//MonoBehaviour.print("CREATING!");
 			this.rend = rend;
 			this.detailLevel = detailLevel;
@@ -57,9 +71,16 @@ namespace Vox {
 
 		public override void execute() {
 			//MonoBehaviour.print("APPLYING!");
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Start();
 			Vector3 pos = rend.position / rend.size;
 			if (VoxelBlock.isRenderLod(pos.x, pos.y, pos.z, rend.size, rend.control) || VoxelBlock.isRenderSize(rend.size, rend.control))
-				rend.applyMesh(detailLevel, x, y, z);
+				rend.applyMesh();
+			watch.Stop();
+			lock(rend.control) {
+				rend.control.meshApplyTime += watch.Elapsed.TotalSeconds;
+				++rend.control.meshApplyCount;
+			}
 		}
 	}
 
@@ -67,6 +88,7 @@ namespace Vox {
 
 		public byte xOff, yOff, zOff;
 		public byte detailLevel;
+		public bool force = false;
 		private VoxelBlock block;
 		private Tree control;
 		
@@ -79,7 +101,7 @@ namespace Vox {
 
 		public override void execute() {
 			lock (control) {
-				block.updateAll(xOff, yOff, zOff, detailLevel, control);
+				block.updateAll(xOff, yOff, zOff, detailLevel, control, force);
 				control.removeUpdateCheckJob();
 			}
 		}
@@ -88,6 +110,10 @@ namespace Vox {
 			this.xOff = xOff;
 			this.yOff = yOff;
 			this.zOff = zOff;
+		}
+
+		public void setForce(bool force) {
+			this.force = force;
 		}
 	}
 

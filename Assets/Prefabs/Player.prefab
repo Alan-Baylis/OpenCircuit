@@ -12,7 +12,6 @@ GameObject:
   - 124: {fileID: 12400000}
   - 92: {fileID: 9200000}
   - 81: {fileID: 8100000}
-  - 114: {fileID: 11400002}
   - 54: {fileID: 5400002}
   m_Layer: 0
   m_Name: Camera
@@ -34,6 +33,7 @@ GameObject:
   - 54: {fileID: 5400000}
   - 136: {fileID: 13600000}
   - 114: {fileID: 11400006}
+  - 114: {fileID: 11449806}
   - 114: {fileID: 11400004}
   - 114: {fileID: 11478922}
   - 82: {fileID: 8200000}
@@ -41,7 +41,10 @@ GameObject:
   - 114: {fileID: 11420722}
   - 114: {fileID: 11465136}
   - 114: {fileID: 11482956}
+  - 114: {fileID: 11429406}
   - 114: {fileID: 11499038}
+  - 114: {fileID: 11405568}
+  - 114: {fileID: 11451698}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -80,7 +83,7 @@ Camera:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0.019607844}
@@ -90,7 +93,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.02
   far clip plane: 5000
   field of view: 60
   orthographic: 0
@@ -177,7 +180,7 @@ AudioListener:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!82 &8200000
 AudioSource:
   m_ObjectHideFlags: 1
@@ -303,7 +306,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -314,7 +317,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -325,7 +328,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!92 &9200000
 Behaviour:
   m_ObjectHideFlags: 1
@@ -333,24 +336,6 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
---- !u!114 &11400002
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26dcc21010ffe1341ac6a300df20d267, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  axes: 0
-  sensitivityX: 15
-  sensitivityY: 15
-  minimumX: -360
-  maximumX: 360
-  minimumY: -60
-  maximumY: 60
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -362,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86b37a7829c771743a353622ac5085db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 0.1
+  mouseSensitivity: 0.5
   invertLook: 0
   enableMousePadHacking: 0
 --- !u!114 &11400006
@@ -381,13 +366,48 @@ MonoBehaviour:
   maxOxygen: 60
   oxygenRecoveryRate: 10
   oxygen: 60
-  maxSuffering: 100
-  recoveryRate: 25
   sufferingOverlay: {fileID: 2800000, guid: fbd0cf77b9eb98f4aab7231dd4effd24, type: 3}
   heavyBreathingSound: {fileID: 8300000, guid: 93cc1f44eb856894187e8d711f429b62, type: 3}
   teleportSound: {fileID: 0}
   whiteOutDuration: 0
-  blackOutDuration: 20
+  blackOutDuration: 12
+  controller: {fileID: 0}
+  zooming: 0
+  effectSpec:
+    prefab: {fileID: 418606, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
+    lifetime: 5
+--- !u!114 &11405568
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 176
+    i1: 126
+    i2: 192
+    i3: 196
+    i4: 33
+    i5: 137
+    i6: 32
+    i7: 180
+    i8: 25
+    i9: 175
+    i10: 142
+    i11: 56
+    i12: 195
+    i13: 141
+    i14: 47
+    i15: 195
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &11420722
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -401,6 +421,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highlightMaterial: {fileID: 2100000, guid: 75e3c3d48bf4fd64b8dac1330cf8cd73, type: 2}
   grabDistance: 2.5
+--- !u!114 &11429406
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26dcc21010ffe1341ac6a300df20d267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensitivityX: 1
+  sensitivityY: 1
+  minimumX: -360
+  maximumX: 360
+  minimumY: -60
+  maximumY: 60
+  zoomRate: 0.2
+--- !u!114 &11449806
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba74ec35107dc041826b44adf893850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSuffering: 100
+  recoveryRate: 25
+  sufferingDisplay: 0
+  hurtSound: {fileID: 0}
+  hurtSoundPitch: 1
+--- !u!114 &11451698
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d744924bc1f46b4da2ad8800f9af550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  interpolationRate: 0.1
+  networkChannel: 0
 --- !u!114 &11465136
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -438,12 +506,13 @@ MonoBehaviour:
   standingElevation: 0.65
   crouchingElevation: 0.25
   jumpSpeed: 5
+  airControl: 0.2
   oxygenStopSprint: 10
   oxygenBeginSprint: 15
   oxygenSprintUsage: 30
   footsteps:
   - {fileID: 8300000, guid: 81829dd7877a9b54face23754adbd789, type: 3}
-  minimumFoostepOccurence: 0.6
+  minimumFoostepOccurence: 0.45
   foostepSpeedScale: 0.03
   fallHurtSpeed: 12
   fallDeathSpeed: 25
@@ -463,6 +532,9 @@ MonoBehaviour:
   iconSpacing: 48
   itemCircleRadius: 150
   itemBackground: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
+  startingItemPrefabs:
+  - {fileID: 447710, guid: 9ef636ff4434b87428e0aad321e6cb6a, type: 2}
+  sprinting: 0
 --- !u!114 &11499038
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -474,7 +546,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000010000000403546167020000000903000000050300000003546167020000000474797065087365766572697479040007546167456e756d020000000b02000000050400000007546167456e756d010000000776616c75655f5f00080200000001000000000000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e02000000090300000005030000000344696500000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000010000000410456e646561766f7572466163746f72790200000009030000000503000000065075727375650300000005676f616c7317456e646561766f7572466163746f72792b73746174757315456e646561766f7572466163746f72792b73697a650300007153797374656d2e436f6c6c656374696f6e732e47656e657269632e4c69737460315b5b476f616c2c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c5d5d0108020000000904000000010200000004040000007153797374656d2e436f6c6c656374696f6e732e47656e657269632e4c69737460315b5b476f616c2c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c5d5d03000000065f6974656d73055f73697a65085f76657273696f6e04000006476f616c5b5d0200000008080905000000020000000200000007050000000001000000040000000404476f616c02000000090600000009070000000a0a050600000004476f616c020000000474797065087072696f72697479040008476f616c456e756d020000000b02000000050800000008476f616c456e756d010000000776616c75655f5f000802000000000000000000004001070000000600000001090000000800000001000000000000400b
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000010000000403546167020000000903000000050300000003546167020000000474797065087365766572697479040007546167456e756d020000000b02000000050400000007546167456e756d010000000776616c75655f5f00080200000001000000000000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000300000004094f7065726174696f6e02000000090300000009040000000905000000050300000003446965000000000200000005040000000f44616d6167654f7065726174696f6e0000000002000000050500000014506c6179657244656174684f7065726174696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000010000000410456e646561766f7572466163746f727902000000090300000005030000000448756e740300000005676f616c7317456e646561766f7572466163746f72792b73746174757315456e646561766f7572466163746f72792b73697a650300007153797374656d2e436f6c6c656374696f6e732e47656e657269632e4c69737460315b5b476f616c2c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c5d5d0108020000000904000000000000000004040000007153797374656d2e436f6c6c656374696f6e732e47656e657269632e4c69737460315b5b476f616c2c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c5d5d03000000065f6974656d73055f73697a65085f76657273696f6e04000006476f616c5b5d0200000008080905000000000000000000000007050000000001000000000000000404476f616c020000000b
   isVisible: 1
 --- !u!124 &12400000
 Behaviour:
@@ -508,6 +580,10 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
+      propertyPath: startingItemPrefabs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 81829dd7877a9b54face23754adbd789, type: 3}
@@ -533,7 +609,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: blackOutDuration
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: sufferingOverlay
@@ -541,7 +617,7 @@ Prefab:
       objectReference: {fileID: 2800000, guid: fbd0cf77b9eb98f4aab7231dd4effd24, type: 3}
     - target: {fileID: 0}
       propertyPath: recoveryRate
-      value: 25
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: minimumFoostepOccurence
@@ -607,6 +683,134 @@ Prefab:
       propertyPath: footsteps.Array.data[0]
       value: 
       objectReference: {fileID: 8300000, guid: 81829dd7877a9b54face23754adbd789, type: 3}
+    - target: {fileID: 0}
+      propertyPath: mouseSensitivity
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sensitivityX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sensitivityY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_TransformSyncMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LocalPlayerAuthority
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i0
+      value: 176
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i1
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i2
+      value: 192
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i3
+      value: 196
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i4
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i5
+      value: 137
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i6
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i7
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i8
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i9
+      value: 175
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i10
+      value: 142
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i11
+      value: 56
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i12
+      value: 195
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i13
+      value: 141
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i14
+      value: 47
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_AssetId.i15
+      value: 195
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_ServerOnly
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_SendInterval
+      value: 0.033333335
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_SnapThreshold
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_MovementTheshold
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_InterpolateMovement
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: startingItemPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 447710, guid: 9ef636ff4434b87428e0aad321e6cb6a, type: 2}
+    - target: {fileID: 0}
+      propertyPath: networkChannel
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: interpolationRate
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: near clip plane
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: zoomRate
+      value: 0.2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 100002}

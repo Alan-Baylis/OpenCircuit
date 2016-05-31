@@ -70,8 +70,7 @@ public class Grab : MonoBehaviour {
 		Physics.IgnoreCollision(GetComponent<Collider>(), grabbed.GetComponent<Collider>(), true);
 
 		// create and configure the joint
-		driver = new JointDrive();
-		driver.mode = JointDriveMode.Position;
+		driver = new JointDrive(); 
 		driver.positionDamper = strength /5;
 		driver.positionSpring = strength *3f;
 		driver.maximumForce = strength *3;

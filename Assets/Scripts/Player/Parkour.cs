@@ -42,6 +42,7 @@ public class Parkour : MovementController {
 	public float standingElevation = 0.65f;
 	public float crouchingElevation = 0.25f;
 	public float jumpSpeed = 5;
+	public float airControl = 0.1f;
 	public float oxygenStopSprint = 10;
 	public float oxygenBeginSprint = 15;
 	public float oxygenSprintUsage = 30;
@@ -99,12 +100,14 @@ public class Parkour : MovementController {
 			++freeFallDelay;
 			return;
 		}
+		float actualAcceleration = acceleration;
 		if (!isGrounded()) {
 			if (freeFallDelay > 0)
 				--freeFallDelay;
 			else {
 				nextFootstep = 1;
-				return;
+				actualAcceleration *= airControl;
+				//return;
 			}
 		} else
 			freeFallDelay = 2;
@@ -138,7 +141,7 @@ public class Parkour : MovementController {
 
 		if (isGrounded()) {
 			// levitate
-			desiredVel.y += Mathf.Clamp((dHeight - floors[highestFlatFloor].elevation) * 30 *acceleration, -4 *acceleration, 4 *acceleration);
+			desiredVel.y += Mathf.Clamp((dHeight - floors[highestFlatFloor].elevation) * 30 *actualAcceleration, -4 * actualAcceleration, 4 * actualAcceleration);
 
 			// keep player from flying
 			if (floors[highestFlatFloor].elevation > dHeight)
@@ -155,7 +158,7 @@ public class Parkour : MovementController {
 
 		// handle the maximum acceleration
 		Vector3 force = desiredVel -rb.velocity;
-		float maxAccel = acceleration;
+		float maxAccel = actualAcceleration;
 		if (force.magnitude > maxAccel) {
 			force.Normalize();
 			force *= maxAccel;
@@ -164,6 +167,9 @@ public class Parkour : MovementController {
 		rb.AddForce(force, ForceMode.VelocityChange);
 
 		// play footstep sounds
+		if (!isGrounded())
+			return;
+
 		float currentSpeed = rb.velocity.sqrMagnitude;
 		if (nextFootstep <= Time.fixedTime && currentSpeed > 0.1f) {
 			if (nextFootstep != 0) {
@@ -174,6 +180,7 @@ public class Parkour : MovementController {
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f));
 				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
 				footStepsEvent.broadcast(volume);
+				myPlayer.inventory.doStep(volume);
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);
 		}
@@ -266,7 +273,7 @@ public class Parkour : MovementController {
 				//print("Force: " + averageForce);
 				if (averageForce > fallHurtSpeed && collisionSpeed > fallHurtSpeed / 2f) {
 					float damage = (averageForce - fallHurtSpeed) / (fallDeathSpeed - fallHurtSpeed);
-					myPlayer.hurt(damage * myPlayer.maxSuffering);
+					myPlayer.health.hurt(damage * myPlayer.health.maxSuffering);
 					//pastForces[pastForces.Count - 1] *= 0.5f;
 				}
 		}

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Robot/Robot Arms")]
-public class RobotArms : AbstractRobotComponent {
+public class RobotArms : AbstractArms {
 
     public static Vector3 HOLD_POSITION = new Vector3(0, .5f, .85f);
 
@@ -31,8 +31,7 @@ public class RobotArms : AbstractRobotComponent {
 		if (powerSource == null || !powerSource.hasPower (Time.deltaTime)) {
 			collider.enabled = false;
 			dropTarget ();
-		}
-		else {
+		} else {
 			collider.enabled = true;
 		}
 	}
@@ -63,7 +62,7 @@ public class RobotArms : AbstractRobotComponent {
             if (proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
 
                // footstepEmitter.PlayOneShot(pickUp, 1);
-                roboController.addEndeavour(new HoldAction(roboController, proposedTarget, proposedTarget.labelHandle));
+                getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
             }
         }
     }
@@ -75,11 +74,11 @@ public class RobotArms : AbstractRobotComponent {
         }
     }
 
-	public bool hasTarget() {
+	public override bool hasTarget() {
 		return target != null;
 	}
 
-	public void dropTarget() {
+	public override void dropTarget() {
 		if (target != null) {
 			target.clearTag(TagEnum.Grabbed);
 			Rigidbody rigidbody = target.GetComponent<Rigidbody> ();
@@ -90,7 +89,7 @@ public class RobotArms : AbstractRobotComponent {
 				rigidbody.AddForce(transform.up * throwForce.y);
 			}
 			target.transform.parent = null;
-			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
 			footstepEmitter.PlayOneShot (drop, 1);
 			Player player = target.GetComponent<Player>();
 			if (player != null) {
@@ -101,7 +100,7 @@ public class RobotArms : AbstractRobotComponent {
 		}
 	}
 
-    public void attachTarget(Label obj) {
+    public override void attachTarget(Label obj) {
         if (target == null) {
             target = obj;
 			target.setTag(new Tag(TagEnum.Grabbed, 0));
@@ -114,12 +113,12 @@ public class RobotArms : AbstractRobotComponent {
 
             target.transform.parent = transform;
             target.transform.localPosition = HOLD_POSITION;
-			roboController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
 			Player player = target.GetComponent<Player>();
 			if (player != null) {
 				player.inventory.pushContext(typeof(PocketEMP));
 			}
-			roboController.addEndeavour(new ScanAction(roboController, new List<Goal>(), target));
+			getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
         }
     }
 
@@ -130,7 +129,7 @@ public class RobotArms : AbstractRobotComponent {
 		}
 	}
 
-    public Label getProposedTarget() {
+    public override Label getProposedTarget() {
         return proposedTarget;
     }
 

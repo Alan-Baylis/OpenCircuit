@@ -28,9 +28,15 @@ namespace Vox {
 
 		public abstract void serialize(BinaryWriter writer);
 
-		public abstract void putInArray(byte level, ref Voxel[,,] array, int x, int y, int z, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax);
+		public abstract void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax);
 
 		public abstract int canSimplify(out Voxel simplification);
+
+		public abstract int cleanArtifacts(out Voxel simplified, VoxelHolder head, byte level, byte maxLevel, int x, int y, int z);
+
+		public bool isSolid() {
+			return averageOpacity() > byte.MaxValue /2;
+		}
 
 		public static VoxelHolder deserialize(BinaryReader reader) {
 			byte type = reader.ReadByte();
