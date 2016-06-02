@@ -13,20 +13,18 @@ namespace Vox {
 		static byte isolevel;
 		static Voxel[,,] voxels;
 		static Vector3 offset;
-		static Vector3[] meshVerts;
 		public const byte MIDDLE_LEVEL = 128;
 
 		/*
 		 * MUST BE CALLED BEFORE polygonize!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		 */
-		public static void setup(float voxelSize, byte isolevel, ref Dictionary<int, Vector3> vertices, ref Dictionary<int, byte> materials, ref Voxel[,,] voxels, Vector3 offset, Vector3[] meshVerts) {
+		public static void setup(float voxelSize, byte isolevel, ref Dictionary<int, Vector3> vertices, ref Dictionary<int, byte> materials, ref Voxel[,,] voxels, Vector3 offset) {
 			MarchingCubes.isolevel = isolevel;
 			MarchingCubes.vertices = vertices;
 			MarchingCubes.materials = materials;
 			MarchingCubes.voxels = voxels;
 			MarchingCubes.voxelSize = voxelSize;
 			MarchingCubes.offset = offset;
-			MarchingCubes.meshVerts = meshVerts;
 		}
 
 		/*

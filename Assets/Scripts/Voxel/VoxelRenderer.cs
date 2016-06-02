@@ -20,7 +20,7 @@ namespace Vox {
 		public Dictionary<int, int> vertices;
 		public Dictionary<int, byte> vertexSubstances;
 		[System.NonSerialized]
-		public Tree control;
+		public OcTree control;
 		public float size;
 		public Vector3 position;
 		public GameObject[] obs;
@@ -43,14 +43,14 @@ namespace Vox {
 					}
 		}
 
-		public VoxelRenderer(Index index, Tree control):
+		public VoxelRenderer(Index index, OcTree control):
 			this(index, control, new Vector3(
 				index.x * control.sizes[index.depth],
 				index.y * control.sizes[index.depth],
 				index.z * control.sizes[index.depth])) {
 		}
 
-		public VoxelRenderer(Index index, Tree control, Vector3 localPosition) {
+		public VoxelRenderer(Index index, OcTree control, Vector3 localPosition) {
 			this.index = index;
 			this.position = localPosition;
 			this.control = control;
@@ -75,7 +75,7 @@ namespace Vox {
 			Dictionary<int, Vector3> actualVertices = new Dictionary<int, Vector3>();
 			vertexSubstances = new Dictionary<int, byte>();
 			lock (control) {
-				MarchingCubes.setup(size / VOXEL_DIMENSION, control.isoLevel, ref actualVertices, ref vertexSubstances, ref voxels, position + new Vector3(0.5f, 0.5f, 0.5f) * size / VOXEL_DIMENSION, null);
+				MarchingCubes.setup(size / VOXEL_DIMENSION, control.isoLevel, ref actualVertices, ref vertexSubstances, ref voxels, position + new Vector3(0.5f, 0.5f, 0.5f) * size / VOXEL_DIMENSION);
 				int totalTris = 0;
 				uint xDim = (uint)voxels.GetLength(0) -1;
 				uint yDim = (uint)voxels.GetLength(1) -1;
@@ -123,7 +123,7 @@ namespace Vox {
 			alignEdge(1, 0, 1);
 			alignEdge(1, 1, 0);
 			lock (control) {
-				control.enqueueJob(new ApplyMeshJob(this, index.depth, index.x, index.y, index.z));
+				control.enqueueJob(new ApplyMeshJob(this));
 			}
 
 			watch.Stop();
@@ -494,7 +494,7 @@ namespace Vox {
 			NORMS = norms;
 		}
 
-		public Tree getControl() {
+		public OcTree getControl() {
 			return control;
 		}
 

@@ -8,7 +8,7 @@ namespace Vox {
 		/// Applies mutator as configured to a voxel tree.
 		/// </summary>
 		/// <param name="target">the voxel tree to apply the mutator to</param>
-		public void apply(Tree target) {
+		public void apply(OcTree target) {
 			Application app = setup(target);
 			//applyMasksToApplication(app, target);
 
@@ -60,10 +60,10 @@ namespace Vox {
 		/// </summary>
 		/// <param name="target">the voxel tree to setup for applying to</param>
 		/// <returns>the setup Application</returns>
-		public virtual Application setup(Tree target) {
+		public virtual Application setup(OcTree target) {
 			Application app = new Application();
-			uint width = (uint) (1 << (target.maximumDetail)) - 1;
 			app.tree = target;
+			//uint width = (uint)(1 << (target.maximumDetail)) - 1;
 			//app.min = new Index(target.maxDetail);
 			//app.max = new Index(target.maxDetail, width, width, width);
 			return app;
@@ -73,7 +73,7 @@ namespace Vox {
 
 		protected abstract Voxel mutate(Application app, Index pos, Action action, Voxel original);
 
-		protected Action checkMasks(Tree tree, Index p) {
+		protected Action checkMasks(OcTree tree, Index p) {
 			// skip if no masks
 			if (tree.masks == null)
 				return new Action(false, true);
@@ -111,7 +111,7 @@ namespace Vox {
 		public class Application {
 			public bool updateMesh;
 			public Index min, max;
-			public Tree tree;
+			public OcTree tree;
 			public List<VoxelJob> jobs = new List<VoxelJob>();
 		}
 

@@ -12,12 +12,12 @@ namespace Vox {
 
 	[AddComponentMenu("")]
 	[ExecuteInEditMode]
-	public class Tree : MonoBehaviour, ISerializationCallbackReceiver {
+	public class OcTree : MonoBehaviour, ISerializationCallbackReceiver {
 
 		public const ulong FILE_FORMAT_VERSION = 2;
 
 		[System.NonSerialized]
-		public readonly static HashSet<Tree> generatingTrees = new HashSet<Tree>();
+		public readonly static HashSet<OcTree> generatingTrees = new HashSet<OcTree>();
 
 		// basic stats
 		public byte isoLevel = 127;
@@ -91,17 +91,11 @@ namespace Vox {
 		private int updateCheckJobs;
 		[System.NonSerialized]
 		private bool generationPaused = false;
-		[System.NonSerialized]
-		private bool rebakedLighting = false;
 
 		public void Awake() {
 			setupLookupTables();
 		}
-
-
-
-		// test values
-		private int updateCounter = 0;
+		
 
 		public virtual void initialize() {
 
@@ -137,37 +131,13 @@ namespace Vox {
         }
 
 		public void Update() {
-//			if (Application.isPlaying) {
-//				if (updateCounter == 0) {
-//					if (useLod) {
-//						if (curLodDetail < lodDetail) {
-//							if (lodDetail - curLodDetail < 0.1f) {
-//								if (lodDetail - curLodDetail > -0.1f)
-//									curLodDetail = lodDetail;
-//								else
-//									curLodDetail -= 0.1f;
-//							} else
-//								curLodDetail += 0.1f;
-//						}
-////						updateLocalCamPosition();
-//					}
-//					if (updateCheckJobs < 1)
-//						enqueueCheck(new UpdateCheckJob(head, this, 0));
-//				}
-//				updateCounter = (updateCounter + 1) % 2;
-//			}
 			applyQueuedMeshes();
 			if (jobQueue.Count < 1)
 				generatingTrees.Remove(this);
 			if (generationPaused) {
 				if (VoxelThread.getJobCount() < 1 && jobQueue.Count < 1) {
-					//if (!rebakedLighting) {
-					//	UnityEditor.Lightmapping.Bake();
-					//	rebakedLighting = true;
-					//} else if (!UnityEditor.Lightmapping.isRunning) {
-						generationPaused = false;
-						Time.timeScale = 1;
-					//}
+					generationPaused = false;
+					Time.timeScale = 1;
 				}
 			}
 		}
@@ -432,7 +402,6 @@ namespace Vox {
 			if (!Application.isPlaying)
 				return;
 			generationPaused = true;
-			rebakedLighting = false;
 			Time.timeScale = 0;
 		}
 

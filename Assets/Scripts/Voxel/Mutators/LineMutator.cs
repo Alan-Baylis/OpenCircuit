@@ -14,7 +14,7 @@ namespace Vox {
 			this.child = child;
 		}
 
-		public override Application setup(Tree target) {
+		public override Application setup(OcTree target) {
 
 			LineApplication app = new LineApplication();
 			app.tree = target;

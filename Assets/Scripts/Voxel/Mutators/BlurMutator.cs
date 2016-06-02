@@ -11,13 +11,13 @@ namespace Vox {
 		public Vector3 worldPosition;
 		public float worldRadius;
 
-		public BlurMutator(Tree control, Vector3 worldPosition, float worldRadius, float strength) {
+		public BlurMutator(OcTree control, Vector3 worldPosition, float worldRadius, float strength) {
 			this.strength = strength;
 			this.worldPosition = worldPosition;
 			this.worldRadius = worldRadius;
 		}
 
-		public override Application setup(Tree target) {
+		public override Application setup(OcTree target) {
 			float radius = worldRadius / target.voxelSize();
 			Vector3 radiusCube = new Vector3(radius, radius, radius);
 			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize();
@@ -67,7 +67,7 @@ namespace Vox {
 			public Voxel[,,] original;
 			public float radius;
 
-			public void setOriginal(Tree target) {
+			public void setOriginal(OcTree target) {
 				original = target.getArray(min.x, min.y, min.z, max.x + 1, max.y + 1, max.z + 1);
 			}
 		}
@@ -91,12 +91,12 @@ namespace Vox {
 				for (int yi = minY; yi < maxY; ++yi) {
 					for (int zi = minZ; zi < maxZ; ++zi) {
 						++count;
-						Vector3 diff = new Vector3(x - xi, y - yi, z - zi);
+						Vector3 diff = new Vector3(x - xi, y - yi, z - zi); 
 						float dis = diff.magnitude;
 						Voxel value = original[xi, yi, zi];
 						if (dis < 0.5f || value == null)
 							continue;
-						float factor = Mathf.Max((1 - dis / blurRadius) * strength * 0.1f, 0);
+						float factor = Mathf.Min(Mathf.Max((1 - dis / blurRadius) * strength * 0.1f, 0), 1);
 						opacity = opacity * (1 - factor) + value.averageOpacity() * factor;
 					}
 				}

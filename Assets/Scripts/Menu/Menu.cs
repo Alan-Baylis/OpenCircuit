@@ -12,13 +12,11 @@ public class Menu : MonoBehaviour {
 	private Rect hostNameRect = new Rect(.25f, 0.25f, 0.3f, 0.04f);
 	private Rect exitRect = new Rect(-0.035f, 0.5f, 0.4f, 0.1f);
 	private Rect optionsRect = new Rect(-0.01f, 0.3f, 0.4f, 0.1f);
-	private Rect loadRect = new Rect(0.1f, 0.5f, 0.4f, 0.1f);
 	private Rect backRect = new Rect(0.1f, 0.7f, 0.4f, 0.1f);
 	private Rect titleRect = new Rect(-.25f, 0f, 1.2f, 0.2f);
 	private Rect resumeRect = new Rect(-0.01f, .15f, .4f, .1f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
-	private static bool didWin = false;
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 
@@ -74,15 +72,8 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start() {
-		//myPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-		//if (activeAtStart && !didWin) {
-		//	myPlayer.gameObject.SetActive(false);
-		//} else {
-		//	begin();
-		//}
 		pause();
 		currentMenu = state.MainMenu;
-		didWin = false;
 	}
 
 	public void OnGUI() {
@@ -115,7 +106,6 @@ public class Menu : MonoBehaviour {
 	public void win() {
 		pause();
 		currentMenu = state.Win;
-		didWin = true;
 		GetComponent<Camera>().enabled = true;
 		GetComponent<AudioListener>().enabled = true;
 		player.gameObject.SetActive(false);
