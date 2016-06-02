@@ -10,7 +10,7 @@ public class Inventory : NetworkBehaviour {
     public float iconSpacing;
     public float itemCircleRadius;
     public Texture2D itemBackground;
-	public Transform[] startingItemPrefabs;
+	public GameObject[] startingItemPrefabs;
 
 	protected Player player;
 	protected Dictionary<System.Type, List<Item>> items = new Dictionary<System.Type, List<Item>>();
@@ -26,10 +26,13 @@ public class Inventory : NetworkBehaviour {
 
 	[ServerCallback]
 	void Awake() {
-		foreach(Transform trans in startingItemPrefabs) {
-			Transform newItem = Instantiate(trans);
-			newItem.transform.parent = transform;
-			NetworkServer.Spawn(newItem.gameObject);
+		foreach(GameObject itemPrefab in startingItemPrefabs) {
+			GameObject instantiatedItem = Instantiate(itemPrefab);
+			Item item = instantiatedItem.GetComponent<Item>();
+			if(item != null) {
+				instantiatedItem.transform.parent = transform;
+				NetworkServer.Spawn(instantiatedItem.gameObject);
+			}
 		}
 	}
 
@@ -37,14 +40,6 @@ public class Inventory : NetworkBehaviour {
 		equipped = null;
         selecting = -1;
         unselectedItems = new List<System.Type>();
-
-		if(isServer) {
-			foreach(Item item in GetComponentsInChildren<Item>())
-				if(!contains(item)) {
-					take(item);
-					RpcTake(item.netId);
-				}
-		}
     }
 
     public void OnGUI() {
