@@ -11,7 +11,7 @@ public abstract class InherentEndeavourFactory : EndeavourFactory, InspectorList
 
 	private static string[] typeNames = null;
 
-	public static readonly System.Type[] types = new System.Type[] {
+	public static new readonly System.Type[] types = new System.Type[] {
 		typeof(Investigate),
 	};
 
@@ -25,7 +25,7 @@ public abstract class InherentEndeavourFactory : EndeavourFactory, InspectorList
 		return typeNames;
 	}
 
-	public static InherentEndeavourFactory constructDefault() {
+	public static new InherentEndeavourFactory constructDefault() {
 		InherentEndeavourFactory factory = (InherentEndeavourFactory)types[0].GetConstructor(new System.Type[0]).Invoke(new object[0]);
 		factory.goals = new List<Goal>();
 		return factory;
@@ -51,7 +51,7 @@ public abstract class InherentEndeavourFactory : EndeavourFactory, InspectorList
 		return this;
 	}
 
-	public virtual void doGUI() {
+	public override void doGUI() {
 		status = UnityEditor.EditorGUILayout.Foldout(status, "Goals");
 
 		if(status && goals != null) {

@@ -9,9 +9,9 @@ namespace Vox {
 		public uint xOff, yOff, zOff;
 		public byte detailLevel;
 		private VoxelBlock block;
-		private Tree control;
+		private OcTree control;
 
-		public GenMeshJob(VoxelBlock block, Tree control, byte detailLevel) {
+		public GenMeshJob(VoxelBlock block, OcTree control, byte detailLevel) {
 			this.block = block;
 			this.control = control;
 			this.detailLevel = detailLevel;
@@ -57,20 +57,12 @@ namespace Vox {
 	public class ApplyMeshJob : VoxelJob {
 
 		private VoxelRenderer rend;
-		private byte detailLevel;
-		private uint x, y, z;
 
-		public ApplyMeshJob(VoxelRenderer rend, byte detailLevel, uint x, uint y, uint z) {
-			//MonoBehaviour.print("CREATING!");
+		public ApplyMeshJob(VoxelRenderer rend) {
 			this.rend = rend;
-			this.detailLevel = detailLevel;
-			this.x = x;
-			this.y = y;
-			this.z = z;
 		}
 
 		public override void execute() {
-			//MonoBehaviour.print("APPLYING!");
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
 			Vector3 pos = rend.position / rend.size;
@@ -90,9 +82,9 @@ namespace Vox {
 		public byte detailLevel;
 		public bool force = false;
 		private VoxelBlock block;
-		private Tree control;
+		private OcTree control;
 		
-		public UpdateCheckJob(VoxelBlock block, Tree control, byte detailLevel) {
+		public UpdateCheckJob(VoxelBlock block, OcTree control, byte detailLevel) {
 			this.block = block;
 			this.control = control;
 			this.detailLevel = detailLevel;
@@ -133,9 +125,9 @@ namespace Vox {
 	}
 
 	public class LinkRenderersJob: VoxelJob {
-		private Tree control;
+		private OcTree control;
 
-		public LinkRenderersJob(Tree control) {
+		public LinkRenderersJob(OcTree control) {
 			this.control = control;
 		}
 

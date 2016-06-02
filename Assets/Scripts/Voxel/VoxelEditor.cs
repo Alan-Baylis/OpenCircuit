@@ -9,7 +9,7 @@ namespace Vox {
 
 	[AddComponentMenu("Scripts/Voxel/VoxelEditor")]
 	[ExecuteInEditMode]
-	public class VoxelEditor : Tree {
+	public class VoxelEditor : OcTree {
 
 		public const string DEFAULT_MATERIAL_PATH = "Assets/Materials/Voxel/VoxelBase.mat";
 		public const string DEFAULT_BLEND_MATERIAL_PATH = "Assets/Materials/Voxel/VoxelBaseBlend.mat";

@@ -15,6 +15,7 @@ public class Player : NetworkBehaviour {
 	public AudioClip teleportSound;
 	public float whiteOutDuration;
 	public float blackOutDuration;
+	public bool showFPSMeter = false;
 
 	[HideInInspector]
 	public ClientController controller;
@@ -172,10 +173,12 @@ public class Player : NetworkBehaviour {
 			GUI.color = Color.white;
 		}
 
-		float msec = deltaTime *1000;
-		float fps = 1f /deltaTime;
-		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-		//GUI.Label(new Rect(0, 0, 100, 20), text);
+		if (showFPSMeter) {
+			float msec = deltaTime * 1000;
+			float fps = 1f / deltaTime;
+			string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+			GUI.Label(new Rect(0, 0, 100, 20), text);
+		}
 
 		//// draw the player's oxygen level
 		//GUI.Label(new Rect(10, 30, 100, 20), oxygen.ToString());

@@ -50,7 +50,7 @@ namespace Vox {
 						children[xi, yi, zi] = fillValue;
 		}
 
-		public void set(byte detailLevel, int x, int y, int z, Voxel value, Tree control) {
+		public void set(byte detailLevel, int x, int y, int z, Voxel value, OcTree control) {
 			if (detailLevel > 0) {
 				short factor = (short)(1 << (detailLevel - CHILD_COUNT_POWER));
 				byte xi = (byte)(x / factor);
@@ -126,7 +126,7 @@ namespace Vox {
 			return (VoxelBlock)children[x, y, z];
 		}
 
-		public void setToHeightmap(byte detailLevel, int x, int y, int z, ref float[,] map, byte material, Tree control) {
+		public void setToHeightmap(byte detailLevel, int x, int y, int z, ref float[,] map, byte material, OcTree control) {
 			if (detailLevel <= CHILD_COUNT_POWER) {
 				for (int xi = 0; xi < CHILD_DIMENSION; ++xi) {
 					for (int zi = 0; zi < CHILD_DIMENSION; ++zi) {
@@ -183,7 +183,7 @@ namespace Vox {
 			control.dirty = true;
 		}
 
-		public void setToHeightmap(byte detailLevel, int x, int y, int z, ref float[,] map, byte[,] mats, Tree control) {
+		public void setToHeightmap(byte detailLevel, int x, int y, int z, ref float[,] map, byte[,] mats, OcTree control) {
 			if (detailLevel <= CHILD_COUNT_POWER) {
 				for (int xi = 0; xi < CHILD_DIMENSION; ++xi) {
 					for (int zi = 0; zi < CHILD_DIMENSION; ++zi) {
@@ -244,7 +244,7 @@ namespace Vox {
 			control.dirty = true;
 		}
 
-		public void updateAll(uint x, uint y, uint z, byte detailLevel, Tree control, bool force = false) {
+		public void updateAll(uint x, uint y, uint z, byte detailLevel, OcTree control, bool force = false) {
 			// check if this is a high enough detail level.  If not, call the childrens' update methods
 			VoxelRenderer renderer = control.getRenderer(new Index(detailLevel, x, y, z));
 			if (!isRenderSize(control.sizes[detailLevel], control) && (!isRenderLod(x, y, z, control.sizes[detailLevel], control))) {
@@ -276,11 +276,11 @@ namespace Vox {
 			control.enqueueUpdate(updateJob);
 		}
 
-		public static bool isRenderSize(float size, Tree control) {
+		public static bool isRenderSize(float size, OcTree control) {
 			return control.sizes[control.maximumDetail - VoxelRenderer.VOXEL_COUNT_POWER] == size;
 		}
 
-		public static bool isRenderLod(float x, float y, float z, float size, Tree control) {
+		public static bool isRenderLod(float x, float y, float z, float size, OcTree control) {
 			if (!control.useLod)
 				return size == control.sizes[control.maximumDetail];
 			return getDistSquare(control.getLocalCamPosition(), new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), size) >= size * size * control.getLodDetail();

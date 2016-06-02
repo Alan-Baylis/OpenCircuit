@@ -68,7 +68,6 @@ public class ClientController : NetworkBehaviour {
 		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
 		newPlayer.name = "player" + Random.Range(1, 20);
 		NetworkServer.Spawn(newPlayer);
-		Player playerScript = newPlayer.GetComponent<Player>();
 
 		NetworkServer.AddPlayerForConnection(connectionToClient, newPlayer, 1);
 		

@@ -16,12 +16,12 @@ class VoxelEditorProgressController {
 		if (Vox.VoxelThread.getStartJobCount() > 0)
 			jobCount = Vox.VoxelThread.getStartJobCount();
 		
-		foreach (Vox.Tree tree in new List<Vox.Tree>(Vox.Tree.generatingTrees)) {
+		foreach (Vox.OcTree tree in new List<Vox.OcTree>(Vox.OcTree.generatingTrees)) {
 			tree.Update();
 		}
 	}
 
-	public static float getGenerationProgress(Vox.Tree editor) {
+	public static float getGenerationProgress(Vox.OcTree editor) {
 		return 1 -(float)(editor.getJobCount() +Vox.VoxelThread.getJobCount()) /jobCount *2;
 	}
 }

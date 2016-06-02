@@ -18,7 +18,7 @@ namespace Vox {
 			this.worldRadius = worldRadius;
 		}
 
-		public override Application setup(Tree target) {
+		public override Application setup(OcTree target) {
 			float radius = worldRadius / target.voxelSize();
 			Vector3 radiusCube = new Vector3(radius, radius, radius);
 			Vector3 center = target.globalToVoxelPosition(worldPosition);

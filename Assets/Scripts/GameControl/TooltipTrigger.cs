@@ -4,7 +4,6 @@ using System.Collections;
 public class TooltipTrigger : MonoBehaviour {
 
 	public string tooltip;
-	//public float duration = 10;
 	public float maxOpacity = 0.8f;
 	public float fadeInRate = 1f;
 	public float fadeOutRate = 0.2f;
@@ -13,7 +12,6 @@ public class TooltipTrigger : MonoBehaviour {
 
 	private bool shown = false;
 	private float opacity = 0;
-	private float endTime = -1;
 	private bool triggered = false;
 
 	public void OnTriggerEnter(Collider col) {
@@ -23,7 +21,6 @@ public class TooltipTrigger : MonoBehaviour {
 		Player player = col.GetComponent<Player>();
 		if (player != null && player.isLocalPlayer) {
 			shown = true;
-			//endTime = Time.time + duration;
 			StartCoroutine("showTooltip");
 			if(!triggered) {
 				GetComponent<AudioSource>().Play();

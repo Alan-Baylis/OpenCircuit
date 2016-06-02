@@ -14,13 +14,13 @@ namespace Vox {
 		public Vector3 worldPosition;
 		private Vector3 worldDimensions;
 
-		public CubeMutator(Tree control, Vector3 worldPosition, Vector3 worldDimensions, VoxelHolder value, bool updateMesh) {
+		public CubeMutator(OcTree control, Vector3 worldPosition, Vector3 worldDimensions, VoxelHolder value, bool updateMesh) {
 			this.worldPosition = worldPosition;
 			this.worldDimensions = worldDimensions;
 			this.value = value.toVoxel();
 		}
 
-		public override Application setup(Tree target) {
+		public override Application setup(OcTree target) {
 			Vector3 halfDimension = worldDimensions / target.voxelSize() /2f;
 			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize();
 			Vector3 exactMin = center - halfDimension;
