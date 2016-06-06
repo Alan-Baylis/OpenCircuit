@@ -534,7 +534,7 @@ MonoBehaviour:
   itemCircleRadius: 150
   itemBackground: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
   startingItemPrefabs:
-  - {fileID: 447710, guid: 9ef636ff4434b87428e0aad321e6cb6a, type: 2}
+  - {fileID: 137264, guid: 9ef636ff4434b87428e0aad321e6cb6a, type: 2}
   sprinting: 0
 --- !u!114 &11499038
 MonoBehaviour:

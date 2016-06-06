@@ -14,33 +14,33 @@ public class Inventory : NetworkBehaviour {
 
 	protected Player player;
 	protected Dictionary<System.Type, List<Item>> items = new Dictionary<System.Type, List<Item>>();
-	protected Item equipped;
+	protected Item equipped = null;
     protected System.Type[] slots = new System.Type[3];
-    protected int selecting;
+    protected int selecting = -1;
     protected int highlighted;
-    protected List<System.Type> unselectedItems;
+	protected List<System.Type> unselectedItems = new List<System.Type>();
     protected Vector2 mousePos;
 	protected List<System.Type> contextStack = new List<System.Type>();
 	[HideInInspector]
 	public bool sprinting = false;
 
+	private List<GameObject> toTake = new List<GameObject>();
+
 	[ServerCallback]
 	void Awake() {
 		foreach(GameObject itemPrefab in startingItemPrefabs) {
 			GameObject instantiatedItem = Instantiate(itemPrefab);
-			Item item = instantiatedItem.GetComponent<Item>();
-			if(item != null) {
-				instantiatedItem.transform.parent = transform;
-				NetworkServer.Spawn(instantiatedItem.gameObject);
-			}
+			NetworkServer.Spawn(instantiatedItem.gameObject);
+			toTake.Add(instantiatedItem);
 		}
 	}
 
-    void Start () {
-		equipped = null;
-        selecting = -1;
-        unselectedItems = new List<System.Type>();
-    }
+	[ServerCallback]
+	void Start() {
+		foreach(GameObject item in toTake) {
+			take(item);
+		}
+	}
 
     public void OnGUI() {
         if (selecting < 0)
@@ -69,6 +69,7 @@ public class Inventory : NetworkBehaviour {
 
     public bool take(Item item) {
 		addItem(item);
+		item.setParent(netId);
         item.onTake(this);
         return true;
     }

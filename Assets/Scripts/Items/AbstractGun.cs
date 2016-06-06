@@ -122,15 +122,6 @@ public abstract class AbstractGun : Item {
 		shooting = false;
 	}
 
-	public override void onEquip(Inventory equipper) {
-		base.onEquip(equipper);
-
-	}
-
-	public override void onUnequip(Inventory equipper) {
-		base.onUnequip(equipper);
-	}
-
 	public bool addMags(int number) {
 		int currentAmmo = bulletsRemaining + currentMagazineFill;
 		if(currentAmmo < maxBullets) {
