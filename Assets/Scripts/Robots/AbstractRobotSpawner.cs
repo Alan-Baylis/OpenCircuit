@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
+using System.Collections.Generic;
 
 public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
@@ -32,22 +32,15 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			Player[] players = FindObjectsOfType<Player>();
-			Label[] labels = new Label[players.Length];
-			for (int i = 0; i < players.Length; ++i) {
-				Player player = players[i];
-				if (player != null) {
-					labels[i] = player.GetComponent<Label>();
-				} else if (player == null) {
-					Debug.LogWarning("Scene contains no player!!!");
-				}
-
+			RobotSpawner[] spawners = FindObjectsOfType<RobotSpawner>();
+			Label[] labels = new Label[players.Length +spawners.Length];
+			int i = 0;
+			foreach(Player player in players) {
+				labels[i++] = player.GetComponent<Label>();
 			}
-			//if (winZone != null) {
-			//	labels[labels.Length - 1] = winZone.GetComponent<Label>();
-			//}
-			//else if (winZone == null) {
-			//	Debug.LogWarning("Scene contains no win zone!!!");
-			//}
+			foreach (RobotSpawner spawner in spawners) {
+				labels[i++] = spawner.GetComponent<Label>();
+			}
 			RobotController robotController = body.GetComponent<RobotController>();
 			robotController.locations = labels;
 

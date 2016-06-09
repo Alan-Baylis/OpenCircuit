@@ -371,6 +371,7 @@ MonoBehaviour:
   teleportSound: {fileID: 0}
   whiteOutDuration: 0
   blackOutDuration: 12
+  showFPSMeter: 0
   controller: {fileID: 0}
   zooming: 0
   effectSpec:
