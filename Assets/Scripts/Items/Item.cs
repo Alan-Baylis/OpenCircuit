@@ -19,7 +19,16 @@ public abstract class Item : NetworkBehaviour {
 
 	protected Inventory holder;
 	protected Collider col;
-	protected Transform followingCamera;
+	private Transform myFollowingCamera;
+
+	protected Transform followingCamera {
+		get {
+			if(holder != null && myFollowingCamera == null) {
+				myFollowingCamera = holder.getPlayer().cam.transform;
+			}
+			return myFollowingCamera; }
+		set { myFollowingCamera = value; }
+	}
 	protected bool rightStepNext;
 
 	[SyncVar(hook = "onClientTake")]
@@ -89,17 +98,17 @@ public abstract class Item : NetworkBehaviour {
 
     public virtual void onTake(Inventory taker) {
         transform.SetParent(taker.transform);
-		followingCamera = taker.getPlayer().cam.transform;
 		holder = taker;
         gameObject.SetActive(false);
     }
 
     public virtual void onDrop(Inventory taker) {
         transform.SetParent(null);
-		followingCamera = null;
+		myFollowingCamera = null;
 		gameObject.SetActive(true);
 		endInvoke(taker);
-    }
+		holder = null;
+	}
 
     public virtual void onEquip(Inventory equipper) {
 		transform.localPosition = normalPosition.position;

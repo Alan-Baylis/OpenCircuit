@@ -40,7 +40,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7634e523dcca3344f855c7138ff3234c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 100002, guid: b07ec0c4218920b419af8e38c38d2fc3, type: 2}
+  playerPrefab: {fileID: 144342, guid: 93f30fedd45ade9458e6cb1493939b9a, type: 2}
+  playerCamPrefab: {fileID: 135544, guid: 0fbfc8e24628d9542a5b8b095be261f9, type: 2}
 --- !u!114 &11494366
 MonoBehaviour:
   m_ObjectHideFlags: 1

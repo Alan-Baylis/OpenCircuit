@@ -8,9 +8,12 @@ public class ClientController : NetworkBehaviour {
 	private static List<NetworkInstanceId> cameras = new List<NetworkInstanceId>();
 
 	public GameObject playerPrefab;
+	public GameObject playerCamPrefab;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
+	[SyncVar(hook="setCamId")]
+	private NetworkInstanceId camId;
 	private GameObject player = null;
 
 	[SyncVar(hook="setPlayerDead")]
@@ -66,12 +69,20 @@ public class ClientController : NetworkBehaviour {
 	[Server]
 	private void spawnPlayerAt(Vector3 position) {
 		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
+		GameObject playerCam = Instantiate(playerCamPrefab, position, Quaternion.identity) as GameObject;
+
+		playerCam.transform.parent = newPlayer.transform;
+		playerCam.transform.localPosition = new Vector3(0, .8f, 0);
+
 		newPlayer.name = "player" + Random.Range(1, 20);
 		NetworkServer.Spawn(newPlayer);
+		NetworkServer.Spawn(playerCam);
 
 		NetworkServer.AddPlayerForConnection(connectionToClient, newPlayer, 1);
-		
-		id = newPlayer.GetComponent<NetworkIdentity>().netId;
+		id = newPlayer.GetComponent<Player>().netId;
+		camId = playerCam.GetComponent<NetworkIdentity>().netId;
+		playerCam.GetComponent<NetworkParenter>().setParentId(id);
+
 	}
 
 	[Server]
@@ -112,12 +123,20 @@ public class ClientController : NetworkBehaviour {
 		this.id = id;
 		player = ClientScene.FindLocalObject(id);
 		player.GetComponent<Player>().controller = this;
+		if(!player.GetComponent<Player>().isLocalPlayer) {
+			cameras.Add(id);
+		}
+	}
+
+	[Client]
+	private void setCamId(NetworkInstanceId camId) {
+		this.camId = camId;
+		player = ClientScene.FindLocalObject(id);
+		GameObject cam = ClientScene.FindLocalObject(camId);
 		if(player.GetComponent<Player>().isLocalPlayer) {
 			disableSceneCam();
-			player.GetComponentInChildren<Camera>().enabled = true;
-			player.GetComponentInChildren<AudioListener>().enabled = true;
-		} else {
-			cameras.Add(id);
+			cam.GetComponent<Camera>().enabled = true;
+			cam.GetComponent<AudioListener>().enabled = true;
 		}
 	}
 

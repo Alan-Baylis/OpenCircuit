@@ -6,6 +6,15 @@ using System.Collections.Generic;
 public class Parkour : MovementController {
 
 	private Player myPlayer;
+
+	public Player player {
+		get {
+			if(myPlayer == null) {
+				myPlayer = GetComponent<Player>();
+			}
+			return myPlayer; 
+		}
+	}
 	private List<FloorData> floors;
 	private int highestFlatFloor;
 	private int flatestFloor;
@@ -54,7 +63,6 @@ public class Parkour : MovementController {
 
 	void Awake() {
 		floors = new List<FloorData>();
-		myPlayer = GetComponent<Player>();
 		col = GetComponent<CapsuleCollider>();
 		rb = GetComponent<Rigidbody>();
 		footstepEmitter = gameObject.AddComponent<AudioSource>();
@@ -180,7 +188,7 @@ public class Parkour : MovementController {
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f));
 				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
 				footStepsEvent.broadcast(volume);
-				myPlayer.inventory.doStep(volume);
+				player.inventory.doStep(volume);
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);
 		}
@@ -193,12 +201,12 @@ public class Parkour : MovementController {
 
 		// update sprinting
 		if (desiredVel.sqrMagnitude > 0.1f && sprinting) {
-			if (myPlayer.oxygen < oxygenStopSprint)
-				myPlayer.oxygen -= myPlayer.oxygenRecoveryRate *Time.deltaTime;
+			if (player.oxygen < oxygenStopSprint)
+				player.oxygen -= player.oxygenRecoveryRate *Time.deltaTime;
 			else if (crouching)
 				sprinting = false;
 			else
-				myPlayer.oxygen -= oxygenSprintUsage * Time.deltaTime;
+				player.oxygen -= oxygenSprintUsage * Time.deltaTime;
 		}
 	}
 
@@ -216,7 +224,7 @@ public class Parkour : MovementController {
 			}
 		} else {
 			desiredVel = new Vector3(rightSpeed, 0, forwardSpeed);
-			desiredVel = myPlayer.cam.transform.TransformDirection(desiredVel);
+			desiredVel = player.cam.transform.TransformDirection(desiredVel);
 
 			// prevent player from going faster by moving diagonally
 			desiredVel = Vector3.ClampMagnitude(desiredVel, Mathf.Max(Mathf.Abs(forwardSpeed), Mathf.Abs(rightSpeed)));
@@ -225,8 +233,8 @@ public class Parkour : MovementController {
 	}
 
 	protected float calculateSprintMultiplier() {
-		if (myPlayer.oxygen < oxygenStopSprint)
-			return (sprintMult -1) *(myPlayer.oxygenRecoveryRate /oxygenSprintUsage) + 1;
+		if (player.oxygen < oxygenStopSprint)
+			return (sprintMult -1) *(player.oxygenRecoveryRate /oxygenSprintUsage) + 1;
 		return sprintMult;
 	}
 
@@ -273,7 +281,7 @@ public class Parkour : MovementController {
 				//print("Force: " + averageForce);
 				if (averageForce > fallHurtSpeed && collisionSpeed > fallHurtSpeed / 2f) {
 					float damage = (averageForce - fallHurtSpeed) / (fallDeathSpeed - fallHurtSpeed);
-					myPlayer.health.hurt(damage * myPlayer.health.maxSuffering);
+					player.health.hurt(damage * player.health.maxSuffering);
 					//pastForces[pastForces.Count - 1] *= 0.5f;
 				}
 		}
@@ -391,7 +399,7 @@ public class Parkour : MovementController {
 	}
 
 	protected Vector3 getDirection() {
-		Vector3 ledgeDirection = myPlayer.cam.transform.forward;
+		Vector3 ledgeDirection = player.cam.transform.forward;
 		ledgeDirection.y = 0;
 		return ledgeDirection.normalized;
 	}

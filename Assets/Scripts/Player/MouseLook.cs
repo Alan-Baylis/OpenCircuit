@@ -31,20 +31,22 @@ public class MouseLook : NetworkBehaviour {
 	private Vector3 lookPoint;
 	private bool isAuto = false;
 	private float autoLookSpeed = 1f;
-	private float defaultFov;
+	public float defaultFov;
 	private float currentZoom = 1;
 
 	private float rotationY = 0F;
 
-	private Transform trans;
-	private Camera cam;
+	private Player myPlayer;
+
+	public Player player {
+		get {
+			if(myPlayer == null) {
+				myPlayer = GetComponent<Player>();
+			}
+			return myPlayer; }
+	}
 
 	void Start() {
-		cam = GetComponentInChildren<Camera>();
-        trans = cam.transform;
-
-		defaultFov = cam.fieldOfView;
-
 		// Make the rigid body not change rotation
 		if(GetComponent<Rigidbody>())
 			GetComponent<Rigidbody>().freezeRotation = true;
@@ -52,24 +54,24 @@ public class MouseLook : NetworkBehaviour {
 
 	void Update() {
 		// do zooming
-		cam.fieldOfView += (defaultFov /currentZoom -cam.fieldOfView) *zoomRate;
+		player.cam.fieldOfView += (defaultFov /currentZoom -player.cam.fieldOfView) *zoomRate;
 
 		if(isAuto) {
-			trans.rotation = Quaternion.Lerp(trans.rotation, Quaternion.LookRotation(lookPoint - trans.position), Time.deltaTime * autoLookSpeed);
-			if(1 - Mathf.Abs(Vector3.Dot(trans.forward, (lookPoint - trans.position).normalized)) < .05f) {
+			player.cam.transform.rotation = Quaternion.Lerp(player.cam.transform.rotation, Quaternion.LookRotation(lookPoint - player.cam.transform.position), Time.deltaTime * autoLookSpeed);
+			if(1 - Mathf.Abs(Vector3.Dot(player.cam.transform.forward, (lookPoint - player.cam.transform.position).normalized)) < .05f) {
 				isAuto = false;
 			}
 		}
 	}
 
 	public void rotate(float xRotate, float yRotate) {
-		float rotationX = trans.localEulerAngles.y + xRotate *sensitivityX;
+		float rotationX = player.cam.transform.localEulerAngles.y + xRotate * sensitivityX;
 
 		rotationY += yRotate *sensitivityY;
 		rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 
 		Vector3 angle = new Vector3(-rotationY, rotationX, 0);
-		trans.localEulerAngles = angle;
+		player.cam.transform.localEulerAngles = angle;
 		CmdSetRotation(angle);
 
 	}
@@ -90,7 +92,7 @@ public class MouseLook : NetworkBehaviour {
 
 	[Command]
 	protected void CmdSetRotation(Vector3 eulerAngles) {
-		trans.localEulerAngles = eulerAngles;
+		player.cam.transform.localEulerAngles = eulerAngles;
 	}
 
 	public bool isAutoMode() {

@@ -42,27 +42,56 @@ public class Player : NetworkBehaviour {
 
 	public EffectSpec effectSpec;
 	
-	public Attack attacker { get { return myAttacker; } set { myAttacker = value; } }
-	public Grab grabber { get { return myGrabber; } set { myGrabber = value; } }
-	public Interact interactor { get { return myInteractor; } set { myInteractor = value; } }
-	public Inventory inventory { get { return myInventory; } set { myInventory = value; } }
-	public MovementController mover { get { return myMover; } set { myMover = value; } }
-	public Camera cam { get { return myCam; } set { myCam = value; } }
-	public MouseLook looker { get { return myLooker; } set { myLooker = value; } }
-	public Controls controls { get { return myControls; } set { myControls = value; } }
-	public Health health { get { return myHealth; } set { myHealth = value; } }
+	public Attack attacker { get {
+		if(myAttacker == null) {
+			myAttacker = GetComponent<Attack>();
+		}
+		return myAttacker; 
+	} set { myAttacker = value; } }
 
-	void Awake() {
-		attacker = GetComponent<Attack> ();
-		grabber = GetComponent<Grab>();
-		interactor = GetComponent<Interact>();
-		inventory = GetComponent<Inventory>();
-		mover = GetComponent<MovementController>();
-		cam = GetComponentInChildren<Camera>();
-		looker = GetComponent<MouseLook>();
-		controls = GetComponent<Controls>();
-		myHealth = GetComponent<Health>();
-		
+	public Grab grabber { get {
+		if(myGrabber == null) {
+			myGrabber = GetComponent<Grab>();
+		}
+		return myGrabber; } set { myGrabber = value; } }
+	public Interact interactor { get {
+		if(myInteractor == null) {
+			myInteractor = GetComponent<Interact>();
+		}
+		return myInteractor; } set { myInteractor = value; } }
+	public Inventory inventory { get {
+		if(myInventory == null) {
+			myInventory = GetComponent<Inventory>();
+		}
+		return myInventory; } set { myInventory = value; } }
+	public MovementController mover { get {
+		if(myMover == null) {
+			myMover = GetComponent<MovementController>();
+		}
+		return myMover; } set { myMover = value; } }
+	public Camera cam { get {
+		if(myCam == null) {
+			myCam = GetComponentInChildren<Camera>();
+		}
+		return myCam; 
+	} set { myCam = value; } }
+	public MouseLook looker { get {
+		if(myLooker == null) {
+			myLooker = GetComponent<MouseLook>();
+		}
+		return myLooker; } set { myLooker = value; } }
+	public Controls controls { get {
+		if(myControls == null) {
+			myControls = GetComponent<Controls>();
+		}
+		return myControls; } set { myControls = value; } }
+	public Health health { get {
+		if(myHealth == null) {
+			myHealth = GetComponent<Health>();
+		}
+		return myHealth; } set { myHealth = value; } }
+
+	void Awake() {		
 		whiteOutTime = 0;
 		breathingSource = gameObject.AddComponent<AudioSource>();
 		breathingSource.clip = heavyBreathingSound;
@@ -148,7 +177,7 @@ public class Player : NetworkBehaviour {
 				whiteOutTime = 0;
 		}
 
-		if (myHealth.getDamage() > 0) {
+		if (health.getDamage() > 0) {
 			GUI.color = new Color(1, 0.2f, 0.2f, myHealth.getDamagePercent() * 0.5f);
 			GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), sufferingOverlay);
 			GUI.color = Color.white;

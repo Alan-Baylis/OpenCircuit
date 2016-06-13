@@ -4,8 +4,13 @@ using System.Collections;
 
 public class NetworkParenter : NetworkBehaviour {
 
-	[SyncVar(hook ="updateParentId")]
+	[SyncVar(hook = "updateParentId")]
 	protected NetworkInstanceId parentId;
+
+	public override void OnStartClient() {
+		base.OnStartClient();
+		updateParentId(parentId);
+	}
 
 	[Server]
 	public void setParentId(NetworkInstanceId id) {
@@ -16,6 +21,8 @@ public class NetworkParenter : NetworkBehaviour {
 	protected void updateParentId(NetworkInstanceId id) {
 		this.parentId = id;
 		GameObject parentObject = ClientScene.FindLocalObject(id);
-		transform.parent = parentObject.transform;
+		if(parentObject != null) {
+			transform.parent = parentObject.transform;
+		}
 	}
 }
