@@ -13,6 +13,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public Transform armsPrefab;
 	public Transform generatorPrefab;
 	public Transform hoverPackPrefab;
+	public Transform eyesPrefab;
 
 	private GlobalConfig config;
 
@@ -26,10 +27,14 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			Transform arms = Instantiate(armsPrefab, transform.position + armsPrefab.transform.position, armsPrefab.transform.rotation) as Transform;
 			Transform generator = Instantiate(generatorPrefab, transform.position + generatorPrefab.transform.position, generatorPrefab.transform.rotation) as Transform;
 			Transform hoverPack = Instantiate(hoverPackPrefab, transform.position + hoverPackPrefab.transform.position, hoverPackPrefab.transform.rotation) as Transform;
+			if(spawnEyes) {
+				Transform eyes = (Instantiate(eyesPrefab, transform.position + eyesPrefab.transform.position, eyesPrefab.transform.rotation)) as Transform;
+				eyes.parent = body;
+			}
 
-			generator.transform.parent = body;
-			arms.transform.parent = body;
-			hoverPack.transform.parent = body;
+			generator.parent = body;
+			arms.parent = body;
+			hoverPack.parent = body;
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();

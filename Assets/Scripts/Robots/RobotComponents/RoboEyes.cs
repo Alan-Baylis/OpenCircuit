@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,6 +19,7 @@ public class RoboEyes : AbstractRobotComponent {
 	private LaserProjector scanner;
 
 	// Use this for initialization
+	[ServerCallback]
 	void Start () {
 		scanner = GetComponent<LaserProjector>();
 		float sizeValue = 2f*Mathf.PI / theta_scale; 
@@ -30,6 +32,7 @@ public class RoboEyes : AbstractRobotComponent {
 		InvokeRepeating ("lookAround", 0.5f, .03f);
 	}
 
+	[ServerCallback]
 	void Update() {
 		clearCircle();
 #if UNITY_EDITOR
