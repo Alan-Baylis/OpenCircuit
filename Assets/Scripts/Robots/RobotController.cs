@@ -35,7 +35,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
     public Goal[] goals;
 	[System.NonSerialized]
 	public InherentEndeavourFactory[] inherentEndeavours = new InherentEndeavourFactory[0];
-		[System.NonSerialized]
+	[System.NonSerialized]
 	public Dictionary<GoalEnum, Goal> goalMap = new Dictionary<GoalEnum, Goal>();
 
     public float reliability = 5f;
@@ -81,8 +81,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 				Debug.LogWarning("Null location attached to AI with name: " + gameObject.name);
 				continue;
 			}
-			mentalModel.addSighting(location.labelHandle, location.transform.position, null);
-			trackTarget(location.labelHandle);
+			addKnownLocation(location);
 		}
 		InvokeRepeating ("evaluateActions", .1f, .2f);
 	}
@@ -138,6 +137,11 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		}
 	}
 
+	public void addKnownLocation(Label location) {
+		mentalModel.addSighting(location.labelHandle, location.transform.position, null);
+		trackTarget(location.labelHandle);
+	}
+
 	public void notify (EventMessage message){
 		if (message.Type.Equals ("target found")) {
 			trackTarget(message.Target);
@@ -153,28 +157,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		dirty = true;
 	}
 
-	public void trackTarget(LabelHandle target) {
-		trackedTargets.Add(target);
-		target.getPosition();
-		foreach(InherentEndeavourFactory factory in inherentEndeavours) {
-			if(factory.isApplicable(target)) {
-				Endeavour action = factory.constructEndeavour(this, target);
-				if(action != null) {
-					availableEndeavours.Add(action);
-					dirty = true;
-
-				}
-			}
-		}
-		if(target.label != null) {
-			foreach(Endeavour action in target.label.getAvailableEndeavours(this)) {
-				availableEndeavours.Add(action);
-				dirty = true;
-
-			}
-		}
-	}
-
 	public bool knowsTarget(LabelHandle target) {
 		return getMentalModel ().canSee (target);
 	}
@@ -187,10 +169,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		externalMentalModel = model;
 	}
 
-	public void detachMentalModel () {
-		externalMentalModel = null;
-	}
-
 	public void enqueueMessage(RobotMessage message) {
 		messageQueue.Enqueue (message);
 	}
@@ -199,12 +177,32 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		return goalMap;
 	}
 
-	public Dictionary<System.Type, AbstractRobotComponent> getComponentMap() {
-		return componentMap;
+	public T getRobotComponent<T> () where T : AbstractRobotComponent {
+		return (T)componentMap[typeof(T)];
 	}
 
 	public List<LabelHandle> getTrackedTargets() {
 		return trackedTargets;
+	}
+
+	private void trackTarget(LabelHandle target) {
+		trackedTargets.Add(target);
+		foreach(InherentEndeavourFactory factory in inherentEndeavours) {
+			if(factory.isApplicable(target)) {
+				Endeavour action = factory.constructEndeavour(this, target);
+				if(action != null) {
+					availableEndeavours.Add(action);
+					dirty = true;
+				}
+			}
+		}
+		if(target.label != null) {
+			foreach(Endeavour action in target.label.getAvailableEndeavours(this)) {
+				availableEndeavours.Add(action);
+				dirty = true;
+
+			}
+		}
 	}
 
 	private void evaluateActions() {

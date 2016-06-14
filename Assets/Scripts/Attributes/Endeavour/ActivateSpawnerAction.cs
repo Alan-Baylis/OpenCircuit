@@ -10,7 +10,7 @@ public class ActivateSpawnerAction : Endeavour {
 	public ActivateSpawnerAction(RobotController controller, List<Goal> goals, LabelHandle parent, RobotSpawner spawner) : base(controller, goals, parent) {
 		this.spawner = spawner;
 		requiredComponents = new System.Type[] { typeof(HoverJet) };
-		hoverJet = controller.getComponentMap()[typeof(HoverJet)] as HoverJet;
+		hoverJet = controller.getRobotComponent<HoverJet>();
 		name = "ActivateSpawner";
 	}
 

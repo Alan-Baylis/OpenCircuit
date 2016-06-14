@@ -6,6 +6,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 	public bool active = false;
 	public bool debug = false;
+	public bool spawnEyes = true;
+	public bool playerOmniscient = true;
 
 	public Transform bodyPrefab;
 	public Transform armsPrefab;
@@ -19,7 +21,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	[Server]
 	protected void spawnRobot() {
 
-
 		if (bodyPrefab != null && armsPrefab != null && generatorPrefab != null && hoverPackPrefab != null) {
 			Transform body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as Transform;
 			Transform arms = Instantiate(armsPrefab, transform.position + armsPrefab.transform.position, armsPrefab.transform.rotation) as Transform;
@@ -31,18 +32,13 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			hoverPack.transform.parent = body;
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
-			Player[] players = FindObjectsOfType<Player>();
-			RobotSpawner[] spawners = FindObjectsOfType<RobotSpawner>();
-			Label[] labels = new Label[players.Length +spawners.Length];
-			int i = 0;
-			foreach(Player player in players) {
-				labels[i++] = player.GetComponent<Label>();
-			}
-			foreach (RobotSpawner spawner in spawners) {
-				labels[i++] = spawner.GetComponent<Label>();
-			}
 			RobotController robotController = body.GetComponent<RobotController>();
-			robotController.locations = labels;
+
+			if(playerOmniscient) {
+				applyPlayerKnowledge(robotController);
+			}
+
+			applySpawnerKnowledge(robotController);
 
 #if UNITY_EDITOR
 			robotController.debug = debug;
@@ -76,5 +72,19 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			config = FindObjectOfType<GlobalConfig>();
 		}
 		return config;
+	}
+
+	private void applyPlayerKnowledge(RobotController controller) {
+		Player[] players = FindObjectsOfType<Player>();
+		foreach(Player player in players) {
+			controller.addKnownLocation(player.GetComponent<Label>());
+		}
+	}
+
+	private void applySpawnerKnowledge(RobotController controller) {
+		RobotSpawner[] spawners = FindObjectsOfType<RobotSpawner>();
+		foreach(RobotSpawner spawner in spawners) {
+			controller.addKnownLocation(spawner.GetComponent<Label>());
+		}
 	}
 }
