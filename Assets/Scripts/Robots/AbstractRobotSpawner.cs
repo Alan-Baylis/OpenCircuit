@@ -7,7 +7,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public bool active = false;
 	public bool debug = false;
 	public bool spawnEyes = true;
-	public bool playerOmniscient = true;
+	public bool playerOmniscient = false;
 
 	public Transform bodyPrefab;
 	public Transform armsPrefab;

@@ -54,7 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 0
   debug: 0
-  spawnEyes: 1
+  spawnEyes: 0
   playerOmniscient: 1
   bodyPrefab: {fileID: 433500, guid: b045fdefde2f47f4ebee19cf703fffa6, type: 2}
   armsPrefab: {fileID: 492174, guid: 966432c7228a46841803a8c201645281, type: 2}
