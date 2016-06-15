@@ -29,13 +29,14 @@ GameObject:
   - 23: {fileID: 2327558}
   - 114: {fileID: 11451438}
   - 114: {fileID: 11426314}
+  - 114: {fileID: 11488654}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &449140
 Transform:
   m_ObjectHideFlags: 1
@@ -43,8 +44,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 194710}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .00499999989, y: .175999999, z: .43900001}
-  m_LocalScale: {x: .400000006, y: .200000003, z: .200000003}
+  m_LocalPosition: {x: 0.005, y: 0.176, z: 0.439}
+  m_LocalScale: {x: 0.4, y: 0.2, z: 0.2}
   m_Children:
   - {fileID: 499102}
   m_Father: {fileID: 0}
@@ -56,7 +57,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 193280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: .200000003, z: .699999988}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 449140}
@@ -79,8 +80,10 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_AutoUVMaxDistance: .5
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
@@ -122,8 +125,9 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_Strength: 1
-    m_Bias: .0500000007
-    m_NormalBias: .400000006
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
@@ -147,13 +151,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15bd774a3550e314fa95cd936175dc66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laserWidth: .00999999978
+  laserWidth: 0.01
   numLasers: 15
   laserSpread: 1
-  movementRange: .899999976
-  laserLength: .699999988
-  verticalOffset: 1.20000005
-  color: {r: .298000008, g: .270000011, b: 1, a: .5}
+  movementRange: 0.9
+  laserLength: 0.7
+  verticalOffset: 1.2
+  color: {r: 0.298, g: 0.27, b: 1, a: 0.5}
   scanTime: 3
   zOffset: 0
   scanSound: {fileID: 8300000, guid: dee82de8b78f17f45aeb4119e0ed4f19, type: 3}
@@ -170,6 +174,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fieldOfViewAngle: 140
   sightDistance: 15
+--- !u!114 &11488654
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 194710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 209
+    i1: 43
+    i2: 226
+    i3: 48
+    i4: 178
+    i5: 207
+    i6: 45
+    i7: 68
+    i8: 58
+    i9: 165
+    i10: 60
+    i11: 21
+    i12: 8
+    i13: 188
+    i14: 12
+    i15: 55
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

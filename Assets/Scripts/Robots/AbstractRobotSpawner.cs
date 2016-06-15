@@ -27,8 +27,9 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			Transform arms = Instantiate(armsPrefab, transform.position + armsPrefab.transform.position, armsPrefab.transform.rotation) as Transform;
 			Transform generator = Instantiate(generatorPrefab, transform.position + generatorPrefab.transform.position, generatorPrefab.transform.rotation) as Transform;
 			Transform hoverPack = Instantiate(hoverPackPrefab, transform.position + hoverPackPrefab.transform.position, hoverPackPrefab.transform.rotation) as Transform;
+			Transform eyes = null;
 			if(spawnEyes) {
-				Transform eyes = (Instantiate(eyesPrefab, transform.position + eyesPrefab.transform.position, eyesPrefab.transform.rotation)) as Transform;
+				eyes = (Instantiate(eyesPrefab, transform.position + eyesPrefab.transform.position, eyesPrefab.transform.rotation)) as Transform;
 				eyes.parent = body;
 			}
 
@@ -54,10 +55,16 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			arms.gameObject.SetActive(true);
 			generator.gameObject.SetActive(true);
 
+			if(spawnEyes) {
+				eyes.gameObject.SetActive(true);
+				NetworkServer.Spawn(eyes.gameObject);
+			}
+
 			NetworkServer.Spawn(body.gameObject);
 			NetworkServer.Spawn(arms.gameObject);
 			NetworkServer.Spawn(generator.gameObject);
 			NetworkServer.Spawn(hoverPack.gameObject);
+
 
 			NetworkInstanceId robotId = robotController.netId;
 			hoverPack.GetComponent<NetworkParenter>().setParentId(robotId);

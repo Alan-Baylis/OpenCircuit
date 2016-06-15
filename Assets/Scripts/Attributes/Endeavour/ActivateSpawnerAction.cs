@@ -5,15 +5,16 @@ using System.Collections.Generic;
 public class ActivateSpawnerAction : Endeavour {
 
 	RobotSpawner spawner;
-	HoverJet hoverJet;
 
 	public ActivateSpawnerAction(RobotController controller, List<Goal> goals, LabelHandle parent, RobotSpawner spawner) : base(controller, goals, parent) {
 		this.spawner = spawner;
 		requiredComponents = new System.Type[] { typeof(HoverJet) };
-		hoverJet = controller.getRobotComponent<HoverJet>();
 		name = "ActivateSpawner";
 	}
 
+	private HoverJet getHoverJet() {
+		return controller.getRobotComponent<HoverJet>();
+	}
 
 	public override bool canExecute() {
 		return true;
@@ -21,7 +22,7 @@ public class ActivateSpawnerAction : Endeavour {
 
 	public override void execute() {
 		base.execute();
-		hoverJet.setTarget(parent, true);
+		getHoverJet().setTarget(parent, true);
 	}
 
 	public override bool isStale() {
@@ -35,6 +36,6 @@ public class ActivateSpawnerAction : Endeavour {
     }
 
 	protected override float getCost() {
-		return hoverJet.calculatePathCost(parent.label);
+		return getHoverJet().calculatePathCost(parent.label);
 	}
 }

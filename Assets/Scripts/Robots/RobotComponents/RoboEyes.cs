@@ -8,13 +8,8 @@ public class RoboEyes : AbstractRobotComponent {
 
 	public float fieldOfViewAngle = 170f;           // Number of degrees, centered on forward, for the enemy sight.
 	public float sightDistance = 30.0f;
-	int size; //Total number of points in circle
-	float theta_scale = 0.01f;        //Set lower to add more points
 	
 	private Dictionary<Label, SensoryInfo> targetMap = new Dictionary<Label, SensoryInfo>();
-
-	private List<GameObject> lines = new List<GameObject>();
-	LineRenderer lineRenderer;
 
 	private LaserProjector scanner;
 
@@ -22,6 +17,7 @@ public class RoboEyes : AbstractRobotComponent {
 	[ServerCallback]
 	void Start () {
 		scanner = GetComponent<LaserProjector>();
+#if UNITY_EDITOR
 		float sizeValue = 2f*Mathf.PI / theta_scale; 
 		size = (int)sizeValue;
 		size++;
@@ -29,19 +25,11 @@ public class RoboEyes : AbstractRobotComponent {
 		lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
 		lineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
 		lineRenderer.SetVertexCount(size);
+#endif
 		InvokeRepeating ("lookAround", 0.5f, .03f);
 	}
 
-	[ServerCallback]
-	void Update() {
-		clearCircle();
-#if UNITY_EDITOR
-		if(getController().debug) {
-			lineRenderer.SetVertexCount(size);
-			drawCircle();
-		}
-#endif
-	}
+
 
 	public GameObject lookAt(Vector3 position) {
 		if(powerSource.hasPower(Time.deltaTime)) {
@@ -55,6 +43,7 @@ public class RoboEyes : AbstractRobotComponent {
 				return hitInfo.collider.gameObject;
 			}
 		}
+
 #if UNITY_EDITOR
 		if (getController().debug)
 			drawLine(transform.position, position, Color.red);
@@ -102,22 +91,17 @@ public class RoboEyes : AbstractRobotComponent {
 		return result;
 	}
 
-	private void clearLines() {
-		foreach(GameObject line in lines) {
-			Destroy(line);
-		}
-		lines.Clear();
-	}
-
 	private void lookAround() {
+#if UNITY_EDITOR
 		clearLines();
+#endif
 		bool hasPower = (powerSource != null) && powerSource.hasPower(Time.deltaTime);
-		foreach (Label label in Label.visibleLabels) {
-			bool targetInView = hasPower && canSee (label.transform);
+		foreach(Label label in Label.visibleLabels) {
+			bool targetInView = hasPower && canSee(label.transform);
 			if(targetInView) {
 				if(!targetMap.ContainsKey(label)) {
 					Rigidbody labelRB = label.GetComponent<Rigidbody>();
-					if (labelRB != null) {
+					if(labelRB != null) {
 						targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, 0);
 
 					} else {
@@ -131,12 +115,35 @@ public class RoboEyes : AbstractRobotComponent {
 				}
 				targetMap[label].updatePosition(label.transform.position);
 			} else {
-				if (targetMap.ContainsKey(label) && targetMap [label].getSightings() == 1) {
+				if(targetMap.ContainsKey(label) && targetMap[label].getSightings() == 1) {
 					//print("target lost: " + label.name);
 					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
 					targetMap[label].removeSighting();
 				}
 			}
+		}
+	}
+
+#if UNITY_EDITOR
+
+	private List<GameObject> lines = new List<GameObject>();
+	private LineRenderer lineRenderer;
+	private int size; //Total number of points in circle
+	private float theta_scale = 0.01f;        //Set lower to add more points
+
+	private void clearLines() {
+		foreach(GameObject line in lines) {
+			Destroy(line);
+		}
+		lines.Clear();
+	}
+
+	[ServerCallback]
+	void Update() {
+		clearCircle();
+		if(getController().debug) {
+			lineRenderer.SetVertexCount(size);
+			drawCircle();
 		}
 	}
 
@@ -171,4 +178,6 @@ public class RoboEyes : AbstractRobotComponent {
 		line.material.color = color;
 		lines.Add(line.gameObject);
 	}
+#endif
+
 }
