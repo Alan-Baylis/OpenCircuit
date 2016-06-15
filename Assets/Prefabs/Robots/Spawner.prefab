@@ -56,10 +56,11 @@ MonoBehaviour:
   debug: 0
   spawnEyes: 0
   playerOmniscient: 1
-  bodyPrefab: {fileID: 433500, guid: b045fdefde2f47f4ebee19cf703fffa6, type: 2}
-  armsPrefab: {fileID: 492174, guid: 966432c7228a46841803a8c201645281, type: 2}
-  generatorPrefab: {fileID: 471346, guid: f462ed1fe395337449fd1390d55af843, type: 2}
-  hoverPackPrefab: {fileID: 417332, guid: f26cb59a57e7fdd4ca975aab4043a6f4, type: 2}
+  bodyPrefab: {fileID: 135778, guid: b045fdefde2f47f4ebee19cf703fffa6, type: 2}
+  armsPrefab: {fileID: 188280, guid: 966432c7228a46841803a8c201645281, type: 2}
+  generatorPrefab: {fileID: 170158, guid: f462ed1fe395337449fd1390d55af843, type: 2}
+  hoverPackPrefab: {fileID: 167118, guid: f26cb59a57e7fdd4ca975aab4043a6f4, type: 2}
+  eyesPrefab: {fileID: 194710, guid: d12be230b2cf2d443aa53c1508bc0c37, type: 2}
   playerActivates: 0
 --- !u!1001 &100100000
 Prefab:

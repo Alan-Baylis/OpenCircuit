@@ -146,7 +146,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 194482}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.505447, y: 112.87, z: 31.306593}
+  m_LocalPosition: {x: 4.039857, y: 64.56, z: 5.2815228}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 433274}
@@ -354,11 +354,11 @@ MonoBehaviour:
   debug: 0
   spawnEyes: 1
   playerOmniscient: 0
-  bodyPrefab: {fileID: 433500, guid: b045fdefde2f47f4ebee19cf703fffa6, type: 2}
-  armsPrefab: {fileID: 492174, guid: 966432c7228a46841803a8c201645281, type: 2}
-  generatorPrefab: {fileID: 471346, guid: f462ed1fe395337449fd1390d55af843, type: 2}
-  hoverPackPrefab: {fileID: 417332, guid: f26cb59a57e7fdd4ca975aab4043a6f4, type: 2}
-  eyesPrefab: {fileID: 449140, guid: d12be230b2cf2d443aa53c1508bc0c37, type: 2}
+  bodyPrefab: {fileID: 135778, guid: b045fdefde2f47f4ebee19cf703fffa6, type: 2}
+  armsPrefab: {fileID: 188280, guid: 966432c7228a46841803a8c201645281, type: 2}
+  generatorPrefab: {fileID: 170158, guid: f462ed1fe395337449fd1390d55af843, type: 2}
+  hoverPackPrefab: {fileID: 167118, guid: f26cb59a57e7fdd4ca975aab4043a6f4, type: 2}
+  eyesPrefab: {fileID: 194710, guid: d12be230b2cf2d443aa53c1508bc0c37, type: 2}
 --- !u!114 &11403458
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -9,11 +9,11 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public bool spawnEyes = true;
 	public bool playerOmniscient = false;
 
-	public Transform bodyPrefab;
-	public Transform armsPrefab;
-	public Transform generatorPrefab;
-	public Transform hoverPackPrefab;
-	public Transform eyesPrefab;
+	public GameObject bodyPrefab;
+	public GameObject armsPrefab;
+	public GameObject generatorPrefab;
+	public GameObject hoverPackPrefab;
+	public GameObject eyesPrefab;
 
 	private GlobalConfig config;
 
@@ -23,19 +23,19 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	protected void spawnRobot() {
 
 		if (bodyPrefab != null && armsPrefab != null && generatorPrefab != null && hoverPackPrefab != null) {
-			Transform body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as Transform;
-			Transform arms = Instantiate(armsPrefab, transform.position + armsPrefab.transform.position, armsPrefab.transform.rotation) as Transform;
-			Transform generator = Instantiate(generatorPrefab, transform.position + generatorPrefab.transform.position, generatorPrefab.transform.rotation) as Transform;
-			Transform hoverPack = Instantiate(hoverPackPrefab, transform.position + hoverPackPrefab.transform.position, hoverPackPrefab.transform.rotation) as Transform;
-			Transform eyes = null;
+			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as GameObject;
+			GameObject arms = Instantiate(armsPrefab, transform.position + armsPrefab.transform.position, armsPrefab.transform.rotation) as GameObject;
+			GameObject generator = Instantiate(generatorPrefab, transform.position + generatorPrefab.transform.position, generatorPrefab.transform.rotation) as GameObject;
+			GameObject hoverPack = Instantiate(hoverPackPrefab, transform.position + hoverPackPrefab.transform.position, hoverPackPrefab.transform.rotation) as GameObject;
+			GameObject eyes = null;
 			if(spawnEyes) {
-				eyes = (Instantiate(eyesPrefab, transform.position + eyesPrefab.transform.position, eyesPrefab.transform.rotation)) as Transform;
-				eyes.parent = body;
+				eyes = (Instantiate(eyesPrefab, transform.position + eyesPrefab.transform.position, eyesPrefab.transform.rotation)) as GameObject;
+				eyes.transform.parent = body.transform;
 			}
 
-			generator.parent = body;
-			arms.parent = body;
-			hoverPack.parent = body;
+			generator.transform.parent = body.transform;
+			arms.transform.parent = body.transform;
+			hoverPack.transform.parent = body.transform;
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
