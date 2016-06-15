@@ -24,33 +24,43 @@ public class LevelLoad {
 		foreach(GameObject ob in gameObjects)
 			GameObject.DestroyImmediate(ob);
 
+		// create organizer objects
+		Transform gameControl = new GameObject("Game Control").transform;
+		Transform environment = new GameObject("Environment").transform;
+
+
 		// create network manager
-		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab");
+		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab", gameControl);
 
 		// create game controller
-		createPrefab("Assets/Prefabs/GameControl/GameController.prefab");
+		createPrefab("Assets/Prefabs/GameControl/GameController.prefab", gameControl);
 
 		// create start point
-		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab");
+		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab", gameControl);
 
 		// create empty voxel object
-		Vox.VoxelEditor.createEmpty();
+		Vox.VoxelEditor.createEmpty().transform.parent = environment;
 
 		// create sun
-		createPrefab("Assets/Prefabs/Sun.prefab");
+		createPrefab("Assets/Prefabs/Sun.prefab", environment);
 
 		// create scene camera
-		createPrefab("Assets/Prefabs/GameControl/SceneCamera.prefab");
+		createPrefab("Assets/Prefabs/GameControl/SceneCamera.prefab", gameControl);
 
 		// create menu
-		createPrefab("Assets/Prefabs/Main Menu.prefab");
+		createPrefab("Assets/Prefabs/Main Menu.prefab", gameControl);
 
 		// set lighting mode
 		Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
 	}
 
 	private static void createPrefab(string assetPath) {
-		PrefabUtility.InstantiatePrefab(
-			AssetDatabase.LoadAssetAtPath<GameObject>(assetPath));
+		createPrefab(assetPath, null);
+	}
+
+	private static void createPrefab(string assetPath, Transform parent) {
+		GameObject prefab = PrefabUtility.InstantiatePrefab(
+			AssetDatabase.LoadAssetAtPath<GameObject>(assetPath)) as GameObject;
+		prefab.transform.parent = parent;
 	}
 }

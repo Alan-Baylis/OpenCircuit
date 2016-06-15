@@ -26,7 +26,7 @@ public class ClientController : NetworkBehaviour {
 	void Start() {
 		Camera[] cams = FindObjectsOfType<Camera>();
 		foreach(Camera cam in cams) {
-			if(cam.transform.parent == null) {
+			if(cam.tag == "SceneCamera") {
 				sceneCamera = cam;
 			}
 		}
