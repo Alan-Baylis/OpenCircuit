@@ -287,9 +287,10 @@ MonoBehaviour:
   hurtSound: {fileID: 0}
   hurtSoundPitch: 1
   destructEffects:
-  - prefab: {fileID: 464988, guid: 9c9877706958b774fb741e8905b1f737, type: 2}
+  - prefab: {fileID: 103288, guid: 9c9877706958b774fb741e8905b1f737, type: 2}
     lifetime: 6
   hurtEffects: []
+  destroySound: {fileID: 0}
   destroyOnDestruct: 1
 --- !u!114 &11489576
 MonoBehaviour:

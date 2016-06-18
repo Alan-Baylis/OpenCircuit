@@ -5,9 +5,7 @@ using System.Collections;
 public class AmmoPickup : NetworkBehaviour {
 
 	public int magazines = 1;
-	public AudioClip pickupSound;
-
-	private AudioSource soundEmitter;
+	public EffectSpec pickupSoundPlayer;
 
 	[SyncVar]
 	private bool pickedUp = false;
@@ -25,7 +23,7 @@ public class AmmoPickup : NetworkBehaviour {
 						pickedUp = true;
 						handlePickupEffects();
 						RpcHandlePickupEffects();
-						Destroy(gameObject, 5);
+						Destroy(gameObject);
 					}
 				}
 			}
@@ -38,14 +36,6 @@ public class AmmoPickup : NetworkBehaviour {
 	}
 
 	private void handlePickupEffects() {
-		getAudioSource().PlayOneShot(pickupSound);
-		Destroy(GetComponent<MeshRenderer>());
-	}
-
-	protected AudioSource getAudioSource() {
-		if(soundEmitter == null) {
-			soundEmitter = GetComponent<AudioSource>();
-		}
-		return soundEmitter;
+		pickupSoundPlayer.spawn(transform.position);
 	}
 }
