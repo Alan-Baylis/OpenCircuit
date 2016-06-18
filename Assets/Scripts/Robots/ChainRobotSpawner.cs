@@ -44,7 +44,14 @@ public class ChainRobotSpawner : RobotSpawner {
 			if (activator != null) {
 				triggered = true;
 				activeSpawner = this;
+				active = true;
 			}
+		}
+	}
+
+	protected override void addKnowledge(RobotController robotController) {
+		if(playerOmniscient) {
+			applyPlayerKnowledge(robotController);
 		}
 	}
 
