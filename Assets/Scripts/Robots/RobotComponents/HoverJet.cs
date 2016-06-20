@@ -286,7 +286,7 @@ public class HoverJet : AbstractRobotComponent {
 		float xzDist = Vector2.Distance(new Vector2(getController().transform.position.x, getController().transform.position.z),
 								new Vector2(targetLocation.getPosition().x, targetLocation.getPosition().z));
 		float yDist = Mathf.Abs((getController().transform.position.y - .4f) - targetLocation.getPosition().y);
-		if(xzDist < .5f && yDist < .8f) {
+		if(xzDist < .5f && yDist < 2.5f) {
 			return true;
 		}
 		return false;

@@ -1362,7 +1362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4496f75761c237845a696753e2243c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceCost: 0.6
+  distanceCost: 0.05
   animSpeedAdjust: 1
   powerDrawRate: 5
   regularSpeed: 5

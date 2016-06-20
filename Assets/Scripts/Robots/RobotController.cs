@@ -250,49 +250,31 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 		while(endeavourQueue.Count > 0) {
 			Endeavour action = (Endeavour)endeavourQueue.Dequeue();
-			if(action.isReady(componentMap)) {
 #if UNITY_EDITOR
-				if(debug) {
-					float priority = action.getPriority();
-					if(!maxPrioritySet) {
-						maxPrioritySet = true;
+			if (debug) {
+				float priority = action.getPriority();
+				if (!maxPrioritySet) {
+					maxPrioritySet = true;
+					localMaxPriority = priority;
+					localMinPriority = priority;
+				} else {
+					if (priority > localMaxPriority) {
 						localMaxPriority = priority;
-						localMinPriority = priority;
-					} else {
-						if(priority > localMaxPriority) {
-							localMaxPriority = priority;
-						}
-						if(priority < localMinPriority) {
-							localMinPriority = priority;
-						}
 					}
-					debugText.Add(new DecisionInfoObject(action.getName(), action.getParent().getName(), priority, true));
+					if (priority < localMinPriority) {
+						localMinPriority = priority;
+					}
 				}
+				debugText.Add(new DecisionInfoObject(action.getName(), action.getParent().getName(), priority, true));
+			}
 #endif
+			if (action.isReady(componentMap)) {
 				if(proposedEndeavours.Contains(action)) {
 					Debug.LogError("action already proposed!!!");
 				}
 				proposedEndeavours.Add(action);
 				availableEndeavours.Remove(action);
 			} else {
-#if UNITY_EDITOR
-				if(debug) {
-					float priority = action.getPriority();
-					if(!maxPrioritySet) {
-						maxPrioritySet = true;
-						localMaxPriority = priority;
-						localMinPriority = priority;
-					} else {
-						if(priority > localMaxPriority) {
-							localMaxPriority = priority;
-						}
-						if(priority < localMinPriority) {
-							localMinPriority = priority;
-						}
-					}
-					debugText.Add(new DecisionInfoObject(action.getName(), action.getParent().getName(), priority, false));
-				}
-#endif
 				if(action.active) {
 					action.stopExecution();
 				}
@@ -459,14 +441,12 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			} else {
 				return;
 			}
-
-			while(lines.Count > 8) {
-				lines.RemoveAt(0);
-			}
+			
+			int shownLines = Mathf.Min(8, lines.Count);
 
 			GUI.enabled = true;
 			string buffer = "";
-			for(int i = 0; i < lines.Count; i++) {
+			for(int i = 0; i < shownLines; i++) {
 				buffer += "\n";
 			}
 
@@ -492,8 +472,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			green.Apply();
 
 			float lineHeight = 30f;
-			Vector2 size = new Vector2(200, lines.Count * lineHeight);
-			for (int i = 0; i < lines.Count; ++i) {
+			Vector2 size = new Vector2(200, shownLines * lineHeight);
+			for (int i = 0; i < shownLines; ++i) {
 				DecisionInfoObject obj = lines[i];
 				float percentFilled = 0;
 
