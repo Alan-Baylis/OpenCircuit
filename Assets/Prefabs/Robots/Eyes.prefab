@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldOfViewAngle: 140
-  sightDistance: 15
+  sightDistance: 30
 --- !u!114 &11488654
 MonoBehaviour:
   m_ObjectHideFlags: 1
