@@ -250,6 +250,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 		while(endeavourQueue.Count > 0) {
 			Endeavour action = (Endeavour)endeavourQueue.Dequeue();
+			bool isReady = action.isReady(componentMap);
 #if UNITY_EDITOR
 			if (debug) {
 				float priority = action.getPriority();
@@ -265,10 +266,10 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 						localMinPriority = priority;
 					}
 				}
-				debugText.Add(new DecisionInfoObject(action.getName(), action.getParent().getName(), priority, true));
+				debugText.Add(new DecisionInfoObject(action.getName(), action.getParent().getName(), priority, isReady));
 			}
 #endif
-			if (action.isReady(componentMap)) {
+			if (isReady) {
 				if(proposedEndeavours.Contains(action)) {
 					Debug.LogError("action already proposed!!!");
 				}
