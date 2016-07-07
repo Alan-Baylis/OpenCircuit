@@ -97,6 +97,11 @@ public class RoboEyes : AbstractRobotComponent {
 #endif
 		bool hasPower = (powerSource != null) && powerSource.hasPower(Time.deltaTime);
 		foreach(Label label in Label.visibleLabels) {
+			if(label == null) {
+				//TODO find a way to clean up this list
+				//Label.visibleLabels.Remove(label);
+				continue;
+			}
 			bool targetInView = hasPower && canSee(label.transform);
 			if(targetInView) {
 				if(!targetMap.ContainsKey(label)) {
