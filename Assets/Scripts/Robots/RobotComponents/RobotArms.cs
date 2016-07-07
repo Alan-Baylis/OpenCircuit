@@ -62,6 +62,7 @@ public class RobotArms : AbstractArms {
             if (proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
 
                // footstepEmitter.PlayOneShot(pickUp, 1);
+				Debug.LogWarning("TODO: add code to pick up player here");
                 getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
             }
         }
@@ -118,7 +119,8 @@ public class RobotArms : AbstractArms {
 			if (player != null) {
 				player.inventory.pushContext(typeof(PocketEMP));
 			}
-			getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
+			Debug.LogWarning("Please revise the scan action creation code");
+			//getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
         }
     }
 

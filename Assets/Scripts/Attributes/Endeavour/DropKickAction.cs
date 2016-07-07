@@ -6,7 +6,7 @@ public class DropKickAction : Endeavour {
 
 	LabelHandle dropPoint;
 
-	public DropKickAction(RobotController controller, List<Goal> goals, LabelHandle dropPoint) : base(controller, goals, dropPoint) {
+	public DropKickAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle dropPoint) : base(factory, controller, goals, dropPoint) {
 		this.name = "dropKick";
 		this.dropPoint = dropPoint;
 		requiredComponents = new System.Type[] {typeof(HoverJet)};
@@ -44,6 +44,10 @@ public class DropKickAction : Endeavour {
 			RobotArms arms = controller.GetComponentInChildren<RobotArms> ();
 			arms.dropTarget();
 		}
+	}
+
+	public override bool singleExecutor() {
+		return true;
 	}
 
 	protected override float getCost() {

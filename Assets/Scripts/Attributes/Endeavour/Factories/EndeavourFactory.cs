@@ -10,6 +10,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public List<Goal> goals = new List<Goal> ();
 	private bool status = false;
 	private int size = 0;
+	private int concurrentExecutions = 0;
 
 	[System.NonSerialized]
 	protected Label parent;
@@ -51,11 +52,18 @@ public abstract class EndeavourFactory : InspectorListElement {
 		return factory;
 	}
 
-	public virtual void drawGizmo() {
-		Gizmos.color = Color.green;
-		Gizmos.DrawSphere(parent.transform.position, .2f);
+	public void addExecution() {
+		++concurrentExecutions;
 	}
-	
+
+	public void removeExecution() {
+		--concurrentExecutions;
+	}
+
+	public int getConcurrentExecutions() {
+		return concurrentExecutions;
+	}
+
 	private static string[] getTypeNames() {
 		if (typeNames == null || typeNames.Length != types.Length) {
 			typeNames = new string[types.Length];
@@ -67,6 +75,11 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
+	public virtual void drawGizmo() {
+		Gizmos.color = Color.green;
+		Gizmos.DrawSphere(parent.transform.position, .2f);
+	}
+
 	InspectorListElement InspectorListElement.doListElementGUI() {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());

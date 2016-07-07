@@ -5,7 +5,7 @@ public class GuardAction : Endeavour {
 
 	Label guardLocation;
 
-	public GuardAction(RobotController controller, List<Goal> goals, Label guardLocation) : base(controller, goals, guardLocation.labelHandle){
+	public GuardAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label guardLocation) : base(factory, controller, goals, guardLocation.labelHandle){
 		this.guardLocation = guardLocation;
 		this.name = "guard";
 		requiredComponents = new System.Type[] { typeof(HoverJet) };
@@ -43,6 +43,10 @@ public class GuardAction : Endeavour {
 			this.active = false;
 		}
 		return true;
+	}
+
+	public override bool singleExecutor() {
+		return false;
 	}
 
 	protected override float getCost() {

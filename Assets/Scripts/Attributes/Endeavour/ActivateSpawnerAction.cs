@@ -6,7 +6,7 @@ public class ActivateSpawnerAction : Endeavour {
 
 	RobotSpawner spawner;
 
-	public ActivateSpawnerAction(RobotController controller, List<Goal> goals, LabelHandle parent, RobotSpawner spawner) : base(controller, goals, parent) {
+	public ActivateSpawnerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent, RobotSpawner spawner) : base(factory, controller, goals, parent) {
 		this.spawner = spawner;
 		requiredComponents = new System.Type[] { typeof(HoverJet) };
 		name = "ActivateSpawner";
@@ -37,5 +37,9 @@ public class ActivateSpawnerAction : Endeavour {
 
 	protected override float getCost() {
 		return getHoverJet().calculatePathCost(parent.label);
+	}
+
+	public override bool singleExecutor() {
+		return true;
 	}
 }

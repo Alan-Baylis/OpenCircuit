@@ -22,7 +22,7 @@ public class Patrol : EndeavourFactory {
 			}
 			return null;
 		}
-		return new PatrolAction(controller, goals, getPointHandles(), parent);
+		return new PatrolAction(this, controller, goals, getPointHandles(), parent);
 	}
 
 	public List<Label> getPoints() {

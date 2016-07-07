@@ -12,7 +12,7 @@ public class Recharge : EndeavourFactory {
 		if (parent == null || battery == null) {
             return null;
         }
-		RechargeAction action = new RechargeAction(controller, goals, parent, battery);
+		RechargeAction action = new RechargeAction(this, controller, goals, parent, battery);
 		action.rechargePoint = rechargePoint;
         return action;
     }

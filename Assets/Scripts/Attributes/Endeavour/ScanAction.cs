@@ -6,7 +6,7 @@ public class ScanAction : Endeavour {
 	private Label target;
 	private bool isComplete = false;
 
-	public ScanAction (RobotController controller, List<Goal> goals, Label target) : base(controller, goals, target.labelHandle) {
+	public ScanAction (EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target) : base(factory, controller, goals, target.labelHandle) {
 		this.target = target;
 		this.name = "scan";
 		requiredComponents = new System.Type[] {typeof(HoverJet)};
@@ -22,7 +22,7 @@ public class ScanAction : Endeavour {
 			if(message.Message.Equals("target scanned")) {
 				List<Goal> goals = new List<Goal>();
 				goals.Add(new Goal(GoalEnum.Offense, 10f));
-				controller.addEndeavour(new ElectrocuteAction(controller, goals, target));
+				controller.addEndeavour(new ElectrocuteAction(factory, controller, goals, target));
 			}
 		}
 	}
@@ -47,6 +47,10 @@ public class ScanAction : Endeavour {
 		if(eyes != null) {
 			eyes.getScanner().stopScan();
 		}
+	}
+
+	public override bool singleExecutor() {
+		return true;
 	}
 
 	protected override float getCost() {

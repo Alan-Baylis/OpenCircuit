@@ -16,7 +16,7 @@ public class Guard : EndeavourFactory {
 			return null;
 		}
 
-		return new GuardAction(controller, goals, parent);
+		return new GuardAction(this, controller, goals, parent);
 	}
 
 	public override void drawGizmo() {

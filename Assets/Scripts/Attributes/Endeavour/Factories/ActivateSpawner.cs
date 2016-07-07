@@ -8,6 +8,6 @@ public class ActivateSpawner : EndeavourFactory {
 		if (parent == null) {
 			return null;
 		}
-		return new ActivateSpawnerAction(controller, goals, parent.labelHandle, parent.GetComponent<RobotSpawner>());
+		return new ActivateSpawnerAction(this, controller, goals, parent.labelHandle, parent.GetComponent<RobotSpawner>());
 	}
 }

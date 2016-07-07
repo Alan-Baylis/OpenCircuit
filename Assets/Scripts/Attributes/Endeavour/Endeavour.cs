@@ -23,28 +23,32 @@ public abstract class Endeavour : Prioritizable {
 
 	protected LabelHandle parent;
 
+	protected EndeavourFactory factory;
+
     public bool active = false;
 
-	public Endeavour(RobotController controller, List<Goal> goals, LabelHandle parent) {
+	public Endeavour(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, LabelHandle parent) {
 		this.controller = controller;
 		this.goals = goals;
 		this.parent = parent;
-
+		this.factory = parentFactory;
 	}
 
 	public abstract bool isStale();
 
 	public virtual void execute () {
         active = true;
+		factory.addExecution();
     }
 
     public virtual void stopExecution() {
         active = false;
+		factory.removeExecution();
     }
 	public abstract void onMessage(RobotMessage message);
 
 	public bool isReady(Dictionary<System.Type, int> availableComponents) {
-		return canExecute() && hasAllComponents(availableComponents);
+		return (!singleExecutor() || factory.getConcurrentExecutions() == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
 	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
@@ -65,6 +69,8 @@ public abstract class Endeavour : Prioritizable {
 	}
 
 	public abstract bool canExecute();
+
+	public abstract bool singleExecutor();
 
 	public virtual float getPriority() {
 		float finalPriority = 0;

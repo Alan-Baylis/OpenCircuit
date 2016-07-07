@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class ElectrocuteAction : Endeavour {
 
-	public ElectrocuteAction(RobotController controller, List<Goal> goals, Label target)
-		: base(controller, goals, target.labelHandle) {
+	public ElectrocuteAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target)
+		: base(factory, controller, goals, target.labelHandle) {
 		this.name = "electrocute";
 		requiredComponents = new System.Type[] { };
 
@@ -29,6 +29,10 @@ public class ElectrocuteAction : Endeavour {
 	}
 
 	public override bool canExecute() {
+		return true;
+	}
+
+	public override bool singleExecutor() {
 		return true;
 	}
 

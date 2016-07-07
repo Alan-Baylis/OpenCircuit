@@ -5,7 +5,7 @@ using System;
 
 public class IdleAction : Endeavour {
 
-    public IdleAction(RobotController controller, List<Goal> goals, Label target) : base(controller, goals, target.labelHandle) {
+    public IdleAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target) : base(factory, controller, goals, target.labelHandle) {
 
     }
 
@@ -31,5 +31,9 @@ public class IdleAction : Endeavour {
 
 	public override bool canExecute() {
 		return true;
+	}
+
+	public override bool singleExecutor() {
+		return false;
 	}
 }
