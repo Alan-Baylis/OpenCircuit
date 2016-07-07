@@ -6,7 +6,7 @@ public class SearchAction : InherentEndeavour {
 	public float agePriorityMultiplier = 0.05f;
 	protected float lastSeen = 0;
 
-	public SearchAction(RobotController controller, List<Goal> goals, LabelHandle parent) : base(controller, goals, parent) {
+	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent) : base(factory, controller, goals, parent) {
 		this.name = "search";
 		requiredComponents = new System.Type[] { typeof(HoverJet) };
 	}
@@ -27,7 +27,6 @@ public class SearchAction : InherentEndeavour {
 	public override void onMessage(RobotMessage message) {
 		MonoBehaviour.print("message");
 		if (message.Type == RobotMessage.MessageType.ACTION && message.Message == "target reached") {
-			MonoBehaviour.print("reset time");
 			lastSeen = Time.time;
 		}
 	}
@@ -41,6 +40,10 @@ public class SearchAction : InherentEndeavour {
 		float cost = (jet == null) ? 0 : jet.calculatePathCost(parent.getPosition()) *0.5f;
 		return priority - cost;
 	}
+
+    public override bool singleExecutor() {
+        return false;
+    }
 
 	protected override float getCost() {
 		return 0;

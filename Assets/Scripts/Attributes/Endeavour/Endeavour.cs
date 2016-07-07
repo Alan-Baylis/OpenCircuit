@@ -38,17 +38,17 @@ public abstract class Endeavour : Prioritizable {
 
 	public virtual void execute () {
         active = true;
-		factory.addExecution();
+		factory.addExecution(controller);
     }
 
     public virtual void stopExecution() {
         active = false;
-		factory.removeExecution();
+		factory.removeExecution(controller);
     }
 	public abstract void onMessage(RobotMessage message);
 
 	public bool isReady(Dictionary<System.Type, int> availableComponents) {
-		return (!singleExecutor() || factory.getConcurrentExecutions() == 0) && canExecute() && hasAllComponents(availableComponents);
+		return (!singleExecutor() || factory.getConcurrentExecutions(controller) == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
 	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {

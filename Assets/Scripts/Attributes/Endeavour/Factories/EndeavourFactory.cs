@@ -10,7 +10,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public List<Goal> goals = new List<Goal> ();
 	private bool status = false;
 	private int size = 0;
-	private int concurrentExecutions = 0;
+    private HashSet<RobotController> executors = new HashSet<RobotController>();
 
 	[System.NonSerialized]
 	protected Label parent;
@@ -52,16 +52,19 @@ public abstract class EndeavourFactory : InspectorListElement {
 		return factory;
 	}
 
-	public void addExecution() {
-		++concurrentExecutions;
+	public void addExecution(RobotController executor) {
+        executors.Add(executor);
 	}
 
-	public void removeExecution() {
-		--concurrentExecutions;
+	public void removeExecution(RobotController executor) {
+        executors.Remove(executor);
 	}
 
-	public int getConcurrentExecutions() {
-		return concurrentExecutions;
+	public int getConcurrentExecutions(RobotController executor) {
+        if (executors.Contains(executor)) {
+            return executors.Count - 1;
+        }
+		return executors.Count;
 	}
 
 	private static string[] getTypeNames() {

@@ -8,6 +8,6 @@ public class Search : EndeavourFactory {
 		if (parent == null) {
 			return null;
 		}
-		return new SearchAction(controller, goals, parent.labelHandle);
+		return new SearchAction(this, controller, goals, parent.labelHandle);
 	}
 }

@@ -63,7 +63,7 @@ public class RobotArms : AbstractArms {
 
                // footstepEmitter.PlayOneShot(pickUp, 1);
 				Debug.LogWarning("TODO: add code to pick up player here");
-                getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
+                //getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
             }
         }
     }
