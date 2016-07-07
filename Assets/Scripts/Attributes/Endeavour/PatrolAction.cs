@@ -9,8 +9,8 @@ public class PatrolAction : Endeavour {
 	private List<LabelHandle> routePoints;
 	private int currentDestination;
 
-	public PatrolAction(RobotController controller, List<Goal> goals, List<LabelHandle> route, Label target)
-		: base(controller, goals, target.labelHandle) {
+	public PatrolAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, List<LabelHandle> route, Label target)
+		: base(factory, controller, goals, target.labelHandle) {
 		//this.route = route;
 		this.name = "patrol";
 		requiredComponents = new System.Type[] {typeof(HoverJet)};
@@ -90,6 +90,10 @@ public class PatrolAction : Endeavour {
 			return jet.calculatePathCost(routePoints[currentDestination].label);
 		}
 		return 0;
+	}
+
+	public override bool singleExecutor() {
+		return false;
 	}
 
 	public override bool canExecute() {

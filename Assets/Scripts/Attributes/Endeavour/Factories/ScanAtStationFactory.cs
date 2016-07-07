@@ -9,6 +9,6 @@ public class ScanAtStationFactory : EndeavourFactory {
 		if(parent == null) {
 			return null;
 		}
-		return new ScanAtStationAction(controller, goals, parent.labelHandle);
+		return new ScanAtStationAction(this, controller, goals, parent.labelHandle);
 	}
 }

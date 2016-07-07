@@ -11,6 +11,6 @@ public class Hunt : EndeavourFactory {
 		//Goal[] goals = new Goal[2];
 		//goals [0] = new Goal ("protection", 3);
 		//goals [1] = new Goal ("offense", 3);
-		return new HuntAction(controller, goals, parent);
+		return new HuntAction(this, controller, goals, parent);
 	}
 }

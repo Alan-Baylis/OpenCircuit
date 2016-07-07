@@ -1687,13 +1687,13 @@ MonoBehaviour:
     cameraRelative: 0
   fireEffectLocation: {x: 0, y: 0, z: -0.4}
   fireEffect:
-    prefab: {fileID: 431126, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
+    prefab: {fileID: 122320, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
     lifetime: 2
   fireEffectSideways:
-    prefab: {fileID: 408568, guid: cd74836e1ee0e7a4ba343f10a1441965, type: 2}
+    prefab: {fileID: 153292, guid: cd74836e1ee0e7a4ba343f10a1441965, type: 2}
     lifetime: 2
   fireEffectLight:
-    prefab: {fileID: 415622, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
+    prefab: {fileID: 141812, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
     lifetime: 0.03
   guiSkin: {fileID: 11400000, guid: 2131ccba8b54c0c4dadc3239b116ce52, type: 2}
   gunshotSoundEmitter: {fileID: 8299550}
@@ -1703,10 +1703,10 @@ MonoBehaviour:
   damage: 5
   impulse: 200
   hitEffect:
-    prefab: {fileID: 414120, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
+    prefab: {fileID: 196292, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
     lifetime: 30
   robotHitEffect:
-    prefab: {fileID: 444912, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
+    prefab: {fileID: 103590, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
     lifetime: 2
 --- !u!114 &11493642
 MonoBehaviour:

@@ -379,7 +379,7 @@ MonoBehaviour:
   controller: {fileID: 0}
   zooming: 0
   effectSpec:
-    prefab: {fileID: 418606, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
+    prefab: {fileID: 171970, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
     lifetime: 5
 --- !u!114 &11469390
 MonoBehaviour:

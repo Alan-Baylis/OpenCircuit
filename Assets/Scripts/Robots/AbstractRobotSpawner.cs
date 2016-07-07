@@ -40,11 +40,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
 
-			if(playerOmniscient) {
-				applyPlayerKnowledge(robotController);
-			}
+			addKnowledge(robotController);
 
-			applySpawnerKnowledge(robotController);
 			applyAmmoKnowledge(robotController);
 
 #if UNITY_EDITOR
@@ -58,13 +55,13 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 			if(spawnEyes) {
 				eyes.gameObject.SetActive(true);
-				NetworkServer.Spawn(eyes.gameObject);
+				NetworkServer.Spawn(eyes);
 			}
 
-			NetworkServer.Spawn(body.gameObject);
-			NetworkServer.Spawn(arms.gameObject);
-			NetworkServer.Spawn(generator.gameObject);
-			NetworkServer.Spawn(hoverPack.gameObject);
+			NetworkServer.Spawn(body);
+			NetworkServer.Spawn(arms);
+			NetworkServer.Spawn(generator);
+			NetworkServer.Spawn(hoverPack);
 
 
 			NetworkInstanceId robotId = robotController.netId;
@@ -78,6 +75,14 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 		}
 	}
 
+	protected virtual void addKnowledge(RobotController robotController) {
+		if(playerOmniscient) {
+			applyPlayerKnowledge(robotController);
+		}
+
+		applySpawnerKnowledge(robotController);
+	}
+
 
 
 	protected GlobalConfig getConfig() {
@@ -87,14 +92,14 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 		return config;
 	}
 
-	private void applyPlayerKnowledge(RobotController controller) {
+	protected void applyPlayerKnowledge(RobotController controller) {
 		Player[] players = FindObjectsOfType<Player>();
 		foreach(Player player in players) {
 			controller.addKnownLocation(player.GetComponent<Label>());
 		}
 	}
 
-	private void applySpawnerKnowledge(RobotController controller) {
+	protected void applySpawnerKnowledge(RobotController controller) {
 		RobotSpawner[] spawners = FindObjectsOfType<RobotSpawner>();
 		foreach(RobotSpawner spawner in spawners) {
 			controller.addKnownLocation(spawner.GetComponent<Label>());

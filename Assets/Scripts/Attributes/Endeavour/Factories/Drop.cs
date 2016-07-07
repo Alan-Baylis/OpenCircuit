@@ -19,7 +19,7 @@ public class Drop : EndeavourFactory {
 		//goals[0] = new Goal ("protection", 5);
 		//goals[1] = new Goal ("offense", 5);
 		//Debug.Log ("get drop");
-		return new DropKickAction(controller, goals, parent.labelHandle);
+		return new DropKickAction(this, controller, goals, parent.labelHandle);
 	}
 
 	public override void drawGizmo() {

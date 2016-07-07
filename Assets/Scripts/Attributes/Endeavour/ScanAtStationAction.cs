@@ -6,8 +6,8 @@ public class ScanAtStationAction : Endeavour {
 
 	LabelHandle scanStation;
 
-	public ScanAtStationAction(RobotController controller, List<Goal> goals, LabelHandle scanStation)
-		: base(controller, goals, scanStation) {
+	public ScanAtStationAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle scanStation)
+		: base(factory, controller, goals, scanStation) {
 		this.name = "scanAtStation";
 		this.scanStation = scanStation;
 		requiredComponents = new System.Type[] {typeof(HoverJet)};
@@ -58,10 +58,15 @@ public class ScanAtStationAction : Endeavour {
 				RobotArms arms = controller.GetComponentInChildren<RobotArms>();
 				Label target = arms.getTarget();
 				if(target.GetComponent<Player>() != null) {
-					controller.addEndeavour(new ElectrocuteAction(controller, goals, target));
+					Debug.LogWarning("Implement this using a stack instead!!");
+					controller.addEndeavour(new ElectrocuteAction(factory, controller, goals, target));
 				}
 			}
 		}
+	}
+
+	public override bool singleExecutor() {
+		return true;
 	}
 
 	protected override float getCost() {

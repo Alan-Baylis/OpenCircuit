@@ -10,8 +10,8 @@ public class InvestigateAction : InherentEndeavour {
 	private float creationTime;
 	private bool completed = false;
 
-	public InvestigateAction(RobotController controller, List<Goal> goals, LabelHandle parent)
-		: base(controller, goals, parent) {
+	public InvestigateAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent)
+		: base(factory, controller, goals, parent) {
 		//creationTime = System.DateTime.Now;
 		creationTime = Time.time;
 		this.name = "investigate";
@@ -69,6 +69,10 @@ public class InvestigateAction : InherentEndeavour {
 			jet.setTarget(null, false);
 			jet.setAvailability(true);
 		}
+	}
+
+	public override bool singleExecutor() {
+		return false;
 	}
 
 	protected override float getCost() {

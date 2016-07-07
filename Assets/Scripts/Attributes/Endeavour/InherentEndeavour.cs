@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public abstract class InherentEndeavour : Endeavour {
 
-	public InherentEndeavour(RobotController controller, List<Goal> goals, LabelHandle parent) : base(controller, goals, parent) {
+	public InherentEndeavour(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent) : base(factory, controller, goals, parent) {
 
 	}
 }

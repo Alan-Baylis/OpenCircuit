@@ -9,6 +9,6 @@ public class Investigate : InherentEndeavourFactory {
 	}
 
 	public override Endeavour constructEndeavour(RobotController controller, LabelHandle target) {
-		return new InvestigateAction(controller, this.goals, target);
+		return new InvestigateAction(this, controller, this.goals, target);
 	}
 }

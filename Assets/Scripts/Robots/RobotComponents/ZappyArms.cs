@@ -72,7 +72,7 @@ public class ZappyArms : AbstractArms {
 			if(proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
 
 				// footstepEmitter.PlayOneShot(pickUp, 1);
-				getController().addEndeavour(new HoldAction(getController(), proposedTarget, proposedTarget.labelHandle));
+				getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target in reach", proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			}
 		}
 	}
@@ -127,7 +127,8 @@ public class ZappyArms : AbstractArms {
 			if (netId != null)
 				RpcAttachTarget(netId.netId);
 			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
-			getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
+			Debug.LogWarning("Please revise the scan action creation code");
+			//getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
 		}
 	}
 
