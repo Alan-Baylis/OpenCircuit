@@ -25,7 +25,6 @@ public class SearchAction : InherentEndeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		MonoBehaviour.print("message");
 		if (message.Type == RobotMessage.MessageType.ACTION && message.Message == "target reached") {
 			lastSeen = Time.time;
 		}

@@ -10,6 +10,7 @@ GameObject:
   - 4: {fileID: 497670}
   - 114: {fileID: 11467582}
   - 114: {fileID: 11410708}
+  - 114: {fileID: 11460274}
   m_Layer: 0
   m_Name: AmmoSpawner
   m_TagString: Untagged
@@ -42,6 +43,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnedPrefab: {fileID: 184424, guid: 45d33216d18d07f46a11a93efeeb34df, type: 2}
   spawnDelay: 5
+--- !u!114 &11460274
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 189802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000000000004094f7065726174696f6e020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
+  isVisible: 1
 --- !u!114 &11467582
 MonoBehaviour:
   m_ObjectHideFlags: 1

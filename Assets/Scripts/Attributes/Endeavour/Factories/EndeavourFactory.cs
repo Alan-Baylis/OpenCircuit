@@ -10,6 +10,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public List<Goal> goals = new List<Goal> ();
 	private bool status = false;
 	private int size = 0;
+    [System.NonSerialized]
     private HashSet<RobotController> executors = new HashSet<RobotController>();
 
 	[System.NonSerialized]
@@ -53,18 +54,18 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 	public void addExecution(RobotController executor) {
-        executors.Add(executor);
+        getExecutors().Add(executor);
 	}
 
 	public void removeExecution(RobotController executor) {
-        executors.Remove(executor);
+        getExecutors().Remove(executor);
 	}
 
 	public int getConcurrentExecutions(RobotController executor) {
-        if (executors.Contains(executor)) {
-            return executors.Count - 1;
+        if (getExecutors().Contains(executor)) {
+            return getExecutors().Count - 1;
         }
-		return executors.Count;
+        return getExecutors().Count;
 	}
 
 	private static string[] getTypeNames() {
@@ -76,6 +77,13 @@ public abstract class EndeavourFactory : InspectorListElement {
 		}
 		return typeNames;
 	}
+
+    private HashSet<RobotController> getExecutors() {
+        if (executors == null) {
+            executors = new HashSet<RobotController>();
+        }
+        return executors;
+    }
 
 #if UNITY_EDITOR
 	public virtual void drawGizmo() {
