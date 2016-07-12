@@ -43,6 +43,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			addKnowledge(robotController);
 
 			applyAmmoKnowledge(robotController);
+            applyAmmoSpawnerKnowledge(robotController);
 
 #if UNITY_EDITOR
 			robotController.debug = debug;
@@ -106,10 +107,17 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 		}
 	}
 
-	private void applyAmmoKnowledge(RobotController controller) {
-		AmmoPickup[] spawners = FindObjectsOfType<AmmoPickup>();
-		foreach(AmmoPickup spawner in spawners) {
+	private void applyAmmoSpawnerKnowledge(RobotController controller) {
+        PickupableSpawner[] spawners = FindObjectsOfType<PickupableSpawner>();
+        foreach (PickupableSpawner spawner in spawners) {
 			controller.addKnownLocation(spawner.GetComponent<Label>());
 		}
 	}
+
+    private void applyAmmoKnowledge(RobotController controller) {
+        AmmoPickup[] spawners = FindObjectsOfType<AmmoPickup>();
+        foreach (AmmoPickup spawner in spawners) {
+            controller.addKnownLocation(spawner.GetComponent<Label>());
+        }
+    }
 }
