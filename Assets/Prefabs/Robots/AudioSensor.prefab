@@ -12,6 +12,8 @@ GameObject:
   - 65: {fileID: 6510018}
   - 23: {fileID: 2379918}
   - 114: {fileID: 11484768}
+  - 114: {fileID: 11472638}
+  - 114: {fileID: 11474266}
   m_Layer: 0
   m_Name: AudioSensor
   m_TagString: Untagged
@@ -25,9 +27,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 101790}
-  m_LocalRotation: {x: 0, y: .999942958, z: -0, w: -.0106890453}
-  m_LocalPosition: {x: 0, y: .5, z: 0}
-  m_LocalScale: {x: .299999803, y: .300000012, z: .299999803}
+  m_LocalRotation: {x: 0, y: 0.99994296, z: -0, w: -0.010689045}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.2999998, y: 0.3, z: 0.2999998}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -49,8 +51,10 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_AutoUVMaxDistance: .5
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
@@ -74,6 +78,49 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &11472638
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 101790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 87
+    i1: 242
+    i2: 120
+    i3: 96
+    i4: 15
+    i5: 40
+    i6: 72
+    i7: 100
+    i8: 202
+    i9: 79
+    i10: 249
+    i11: 211
+    i12: 220
+    i13: 142
+    i14: 200
+    i15: 38
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &11474266
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 101790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31a02391b900c34bb1880e4400d0f8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11484768
 MonoBehaviour:
   m_ObjectHideFlags: 1

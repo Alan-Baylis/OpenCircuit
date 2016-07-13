@@ -12,6 +12,8 @@ GameObject:
   - 136: {fileID: 13631282}
   - 23: {fileID: 2334082}
   - 114: {fileID: 11447766}
+  - 114: {fileID: 11476218}
+  - 114: {fileID: 11496232}
   m_Layer: 0
   m_Name: Antenna
   m_TagString: Untagged
@@ -26,8 +28,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 128374}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .254000008, y: .792999983, z: .0130000003}
-  m_LocalScale: {x: .100000001, y: .5, z: .100000001}
+  m_LocalPosition: {x: 0.254, y: 0.793, z: 0.013}
+  m_LocalScale: {x: 0.1, y: 0.5, z: 0.1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -49,8 +51,10 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_AutoUVMaxDistance: .5
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
@@ -73,6 +77,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3d65763c487934f822d6cb661575d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &11476218
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 128374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 81
+    i1: 57
+    i2: 36
+    i3: 52
+    i4: 107
+    i5: 187
+    i6: 88
+    i7: 20
+    i8: 200
+    i9: 184
+    i10: 181
+    i11: 234
+    i12: 55
+    i13: 195
+    i14: 117
+    i15: 118
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &11496232
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 128374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31a02391b900c34bb1880e4400d0f8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &13631282
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -82,7 +129,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: .5
+  m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

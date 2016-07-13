@@ -9,6 +9,7 @@ public class GlobalConfig : NetworkBehaviour {
 	public float spawnRateIncreasePerPlayer = .1f;
 	public int maxRobots = 0;
 	public float delay = 0f;
+	public CentralRobotController centralRobotController;
 
 	[ServerCallback]
 	void Update() {
@@ -25,5 +26,10 @@ public class GlobalConfig : NetworkBehaviour {
 	[Server]
 	public float getDelay() {
 		return 1f/(NetworkServer.connections.Count * spawnRateIncreasePerPlayer + robotSpawnRatePerSecond); 
+	}
+
+	[Server]
+	public CentralRobotController getCRC() {
+		return centralRobotController;
 	}
 }

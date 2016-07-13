@@ -6,14 +6,10 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 	public bool active = false;
 	public bool debug = false;
-	public bool spawnEyes = true;
 	public bool playerOmniscient = false;
 
 	public GameObject bodyPrefab;
-	public GameObject armsPrefab;
-	public GameObject generatorPrefab;
-	public GameObject hoverPackPrefab;
-	public GameObject eyesPrefab;
+	public GameObject[] componentPrefabs;
 
 	private GlobalConfig config;
 
@@ -22,26 +18,13 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	[Server]
 	protected void spawnRobot() {
 
-		if (bodyPrefab != null && armsPrefab != null && generatorPrefab != null && hoverPackPrefab != null) {
+		if (bodyPrefab != null) {
 			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as GameObject;
-			GameObject arms = Instantiate(armsPrefab, transform.position + armsPrefab.transform.position, armsPrefab.transform.rotation) as GameObject;
-			GameObject generator = Instantiate(generatorPrefab, transform.position + generatorPrefab.transform.position, generatorPrefab.transform.rotation) as GameObject;
-			GameObject hoverPack = Instantiate(hoverPackPrefab, transform.position + hoverPackPrefab.transform.position, hoverPackPrefab.transform.rotation) as GameObject;
-			GameObject eyes = null;
-			if(spawnEyes) {
-				eyes = (Instantiate(eyesPrefab, transform.position + eyesPrefab.transform.position, eyesPrefab.transform.rotation)) as GameObject;
-				eyes.transform.parent = body.transform;
-			}
-
-			generator.transform.parent = body.transform;
-			arms.transform.parent = body.transform;
-			hoverPack.transform.parent = body.transform;
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
 
 			addKnowledge(robotController);
-
 			applyAmmoKnowledge(robotController);
             applyAmmoSpawnerKnowledge(robotController);
 
@@ -49,30 +32,43 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			robotController.debug = debug;
 #endif
 
-			body.gameObject.SetActive(true);
-			hoverPack.gameObject.SetActive(true);
-			arms.gameObject.SetActive(true);
-			generator.gameObject.SetActive(true);
-
-			if(spawnEyes) {
-				eyes.gameObject.SetActive(true);
-				NetworkServer.Spawn(eyes);
+			List<GameObject> components = new List<GameObject>();
+			foreach(GameObject prefab in componentPrefabs) {
+				if (prefab == null) {
+					Debug.LogWarning("Null robot component in spawner: " + name);
+					continue;
+				}
+				GameObject component = Instantiate(prefab, transform.position + prefab.transform.position, prefab.transform.rotation) as GameObject;
+				component.transform.parent = body.transform;
+				components.Add(component);
 			}
 
-			NetworkServer.Spawn(body);
-			NetworkServer.Spawn(arms);
-			NetworkServer.Spawn(generator);
-			NetworkServer.Spawn(hoverPack);
+			body.gameObject.SetActive(true);
+			foreach (GameObject component in components) {
+				component.SetActive(true);
+			}
 
-
+			NetworkServer.Spawn(body.gameObject);
 			NetworkInstanceId robotId = robotController.netId;
-			hoverPack.GetComponent<NetworkParenter>().setParentId(robotId);
-			generator.GetComponent<NetworkParenter>().setParentId(robotId);
-			arms.GetComponent<NetworkParenter>().setParentId(robotId);
+			foreach (GameObject component in components) {
+				NetworkServer.Spawn(component);
+				NetworkParenter parenter = component.GetComponent<NetworkParenter>();
+				if (parenter == null) {
+					Debug.LogWarning("Robot component does not have network parenter: " +component.name);
+				} else {
+					parenter.setParentId(robotId);
+				}
+			}
 
-			body.GetComponent<NavMeshAgent>().enabled = true;
+			NavMeshAgent navAgent = body.GetComponent<NavMeshAgent>();
+			navAgent.avoidancePriority = Random.Range(0, 100);
+			navAgent.enabled = true;
+
+			if (config.getCRC() != null) {
+				config.getCRC().forceAddListener(robotController);
+			}
 		} else {
-			print("Null");
+			Debug.LogError("Null body prefab in spawner: " +name);
 		}
 	}
 
