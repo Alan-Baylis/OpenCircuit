@@ -178,7 +178,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	}
 
 	public T getRobotComponent<T> () where T : AbstractRobotComponent {
-		return (T)componentMap[typeof(T)];
+		AbstractRobotComponent comp = null;
+		componentMap.TryGetValue(typeof(T), out comp);
+		return (T)comp;
 	}
 
 	public List<LabelHandle> getTrackedTargets() {

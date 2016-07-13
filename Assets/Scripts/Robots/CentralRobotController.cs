@@ -19,11 +19,7 @@ public class CentralRobotController : MonoBehaviour, MentalModelUpdateListener {
 					Debug.LogWarning("Null robot attached to CRC with name: " + gameObject.name);
 					continue;
 			}
-			RobotAntenna antenna = robots[i].GetComponentInChildren<RobotAntenna>();
-			if (antenna != null) {
-				listeners.Add(antenna.getController());
-				antenna.getController().attachMentalModel(mentalModel);
-			}
+			addListener(robots[i]);
 		}
 		foreach (Label location in locations) {
 			if (location == null) {
@@ -43,6 +39,20 @@ public class CentralRobotController : MonoBehaviour, MentalModelUpdateListener {
 
 	public void notifySightingLost(LabelHandle target) {
 		broadcastMessage (new EventMessage ("target lost", target));
+	}
+
+	public void addListener(RobotController listener) {
+		RobotAntenna antenna = listener.getRobotComponent<RobotAntenna>();
+		if (antenna != null) {
+			forceAddListener(listener);
+		} else {
+			Debug.LogWarning("Cannot add robot without antenna to CRC: " + listener.name);
+		}
+	}
+
+	public void forceAddListener(RobotController listener) {
+		listeners.Add(listener);
+		listener.attachMentalModel(mentalModel);
 	}
 
 	private void broadcastMessage(EventMessage message) {

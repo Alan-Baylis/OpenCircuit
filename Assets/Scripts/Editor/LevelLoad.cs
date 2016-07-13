@@ -33,7 +33,12 @@ public class LevelLoad {
 		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab", gameControl);
 
 		// create game controller
-		createPrefab("Assets/Prefabs/GameControl/GameController.prefab", gameControl);
+		CentralRobotController crc = createPrefab("Assets/Prefabs/Robots/CRC.prefab", gameControl)
+			.GetComponent<CentralRobotController>();
+
+		// create game controller
+		createPrefab("Assets/Prefabs/GameControl/GameController.prefab", gameControl)
+			.GetComponent<GlobalConfig>().centralRobotController = crc;
 
 		// create start point
 		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab", gameControl);
@@ -54,13 +59,14 @@ public class LevelLoad {
 		Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
 	}
 
-	private static void createPrefab(string assetPath) {
-		createPrefab(assetPath, null);
+	private static GameObject createPrefab(string assetPath) {
+		return createPrefab(assetPath, null);
 	}
 
-	private static void createPrefab(string assetPath, Transform parent) {
+	private static GameObject createPrefab(string assetPath, Transform parent) {
 		GameObject prefab = PrefabUtility.InstantiatePrefab(
 			AssetDatabase.LoadAssetAtPath<GameObject>(assetPath)) as GameObject;
 		prefab.transform.parent = parent;
+		return prefab;
 	}
 }

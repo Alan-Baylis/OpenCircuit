@@ -30,6 +30,7 @@ GameObject:
   - 114: {fileID: 11451438}
   - 114: {fileID: 11426314}
   - 114: {fileID: 11488654}
+  - 114: {fileID: 11407536}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
@@ -140,6 +141,17 @@ Light:
   m_ShadowRadius: 0
   m_ShadowAngle: 0
   m_AreaSize: {x: 1, y: 1}
+--- !u!114 &11407536
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 194710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31a02391b900c34bb1880e4400d0f8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11426314
 MonoBehaviour:
   m_ObjectHideFlags: 1
