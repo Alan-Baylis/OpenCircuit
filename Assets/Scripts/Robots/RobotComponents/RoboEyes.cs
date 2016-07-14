@@ -18,15 +18,17 @@ public class RoboEyes : AbstractRobotComponent {
 	void Start () {
 		scanner = GetComponent<LaserProjector>();
 #if UNITY_EDITOR
-		float sizeValue = 2f*Mathf.PI / theta_scale; 
-		size = (int)sizeValue;
-		size++;
-		lineRenderer = getController().gameObject.AddComponent<LineRenderer>();
-		lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
-		lineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
-		lineRenderer.SetVertexCount(size);
+        if (this.getController().debug) {
+            float sizeValue = 2f * Mathf.PI / theta_scale;
+            size = (int)sizeValue;
+            size++;
+            lineRenderer = getController().gameObject.AddComponent<LineRenderer>();
+            lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
+            lineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
+            lineRenderer.SetVertexCount(size);
+        }
 #endif
-		InvokeRepeating ("lookAround", 0.5f, .03f);
+		InvokeRepeating ("lookAround", 0.5f, .1f);
 	}
 
 
@@ -145,8 +147,8 @@ public class RoboEyes : AbstractRobotComponent {
 
 	[ServerCallback]
 	void Update() {
-		clearCircle();
 		if(getController().debug) {
+            clearCircle();
 			lineRenderer.SetVertexCount(size);
 			drawCircle();
 		}
