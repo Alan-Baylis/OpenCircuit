@@ -155,13 +155,17 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		return gameObject;
 	}
 
+#if UNITY_EDITOR
 	void OnDrawGizmos() {
 		if(!isVisible) {
 			Gizmos.color = Color.green;
 			Gizmos.DrawSphere(transform.position, .2f);
 		}
 		foreach(EndeavourFactory factory in endeavours) {
+            if (factory == null)
+                continue;
 			factory.drawGizmo();
 		}
 	}
+#endif
 }

@@ -40,6 +40,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
     public float reliability = 5f;
 	public AudioClip targetSightedSound;
+    public float evaluatePeriod = .2f;
+
 
 	[System.NonSerialized]
 	private HashSet<Endeavour> currentEndeavours = new HashSet<Endeavour>();
@@ -59,6 +61,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	[System.NonSerialized]
 	private float timeoutSeconds = 10;
+
 
 	[ServerCallback]
 	void Start() {
@@ -83,7 +86,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			}
 			addKnownLocation(location);
 		}
-		InvokeRepeating ("evaluateActions", .1f, .2f);
+		InvokeRepeating ("evaluateActions", .1f, evaluatePeriod);
 	}
 
 	// Update is called once per frame
@@ -211,7 +214,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		List<DecisionInfoObject> debugText = new List<DecisionInfoObject>();
 		//print("****EVALUATE****");
 		dirty = false;
-		PriorityQueue endeavourQueue = new PriorityQueue();
+        DictionaryHeap endeavourQueue = new DictionaryHeap();
 		List<Endeavour> staleEndeavours = new List<Endeavour>();
 		//print("\tCurrent Endeavours");
 		foreach(Endeavour action in currentEndeavours) {

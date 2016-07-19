@@ -22,6 +22,7 @@ public class Drop : EndeavourFactory {
 		return new DropKickAction(this, controller, goals, parent.labelHandle);
 	}
 
+#if UNITY_EDITOR
 	public override void drawGizmo() {
 		float sphereSize = .2f;
 		for (int i = 0; i < NUM_STRIPES; i ++) {
@@ -33,4 +34,5 @@ public class Drop : EndeavourFactory {
 		Gizmos.color = Color.red;
 		Gizmos.DrawSphere(parent.transform.position, sphereSize);
 	}
+#endif
 }

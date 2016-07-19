@@ -19,6 +19,7 @@ public class Guard : EndeavourFactory {
 		return new GuardAction(this, controller, goals, parent);
 	}
 
+#if UNITY_EDITOR
 	public override void drawGizmo() {
 		float sphereSize = .2f;
 		for(int i = 0; i < NUM_STRIPES; i++) {
@@ -30,4 +31,5 @@ public class Guard : EndeavourFactory {
 		Gizmos.color = Color.red;
 		Gizmos.DrawSphere(parent.transform.position, sphereSize);
 	}
+#endif
 }
