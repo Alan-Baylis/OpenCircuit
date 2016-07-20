@@ -27,6 +27,9 @@ public abstract class Endeavour : Prioritizable {
 
     public bool active = false;
 
+    private float priorityCache;
+    private int lastFrameEvaluated = -1;
+
 	public Endeavour(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, LabelHandle parent) {
 		this.controller = controller;
 		this.goals = goals;
@@ -72,23 +75,14 @@ public abstract class Endeavour : Prioritizable {
 
 	public abstract bool singleExecutor();
 
-	public virtual float getPriority() {
-		float finalPriority = 0;
-		foreach (Goal goal in goals) {
-			Dictionary<GoalEnum, Goal> robotGoals = controller.getGoals ();
-			if (robotGoals.ContainsKey(goal.type)) {
-				float priorityCubed = (goal.priority * goal.priority * goal.priority) ;
-				finalPriority += priorityCubed * robotGoals[goal.type].priority;
-			}
-		}
-		float cost = getCost ();
-        if (active) {
-            finalPriority += controller.reliability * momentum;
+	public float getPriority() {
+        if (lastFrameEvaluated != Time.frameCount) {
+            priorityCache = calculatePriority();
+            lastFrameEvaluated = Time.frameCount;
         }
-		return finalPriority - cost + BENEFIT_CONSTANT_TERM;
+        return priorityCache;
 	}
 
-	protected abstract float getCost ();
 	
 	public string getName() {
 		return name;
@@ -105,4 +99,22 @@ public abstract class Endeavour : Prioritizable {
 	public bool Equals(Endeavour endeavour) {
 		return controller == endeavour.controller && name.Equals(endeavour.name);
 	}
+
+    protected abstract float getCost();
+
+    protected virtual float calculatePriority() {
+        float finalPriority = 0;
+        foreach (Goal goal in goals) {
+            Dictionary<GoalEnum, Goal> robotGoals = controller.getGoals();
+            if (robotGoals.ContainsKey(goal.type)) {
+                float priorityCubed = (goal.priority * goal.priority * goal.priority);
+                finalPriority += priorityCubed * robotGoals[goal.type].priority;
+            }
+        }
+        float cost = getCost();
+        if (active) {
+            finalPriority += controller.reliability * momentum;
+        }
+        return finalPriority - cost + BENEFIT_CONSTANT_TERM;
+    }
 }

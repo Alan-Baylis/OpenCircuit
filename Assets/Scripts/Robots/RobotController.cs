@@ -211,7 +211,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	}
 
 	private void evaluateActions() {
+#if UNITY_EDITOR
 		List<DecisionInfoObject> debugText = new List<DecisionInfoObject>();
+#endif
 		//print("****EVALUATE****");
 		dirty = false;
         DictionaryHeap endeavourQueue = new DictionaryHeap();
@@ -227,6 +229,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 				availableEndeavours.Add(action);
 			}
 		}
+
 		//print("\tAvailable Endeavours");
 		foreach(Endeavour action in availableEndeavours) {
 			if(action.isStale()) {

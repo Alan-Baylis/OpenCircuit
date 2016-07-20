@@ -30,18 +30,18 @@ public class SearchAction : InherentEndeavour {
 		}
 	}
 
-	public override float getPriority() {
-		float priority = base.getPriority();
-		priority *= (1 -Mathf.Min(1 /(Time.time -lastSeen) /agePriorityMultiplier, 1));
-		HoverJet jet = controller.getRobotComponent<HoverJet>();
-
-		// this is a kind of hackish system to circumvent the order of applying priority modifiers
-		float cost = (jet == null) ? 0 : jet.calculatePathCost(parent.getPosition()) *0.5f;
-		return priority - cost;
-	}
-
     public override bool singleExecutor() {
         return false;
+    }
+
+    protected override float calculatePriority() {
+        float priority = base.calculatePriority();
+        priority *= (1 - Mathf.Min(1 / (Time.time - lastSeen) / agePriorityMultiplier, 1));
+        HoverJet jet = controller.getRobotComponent<HoverJet>();
+
+        // this is a kind of hackish system to circumvent the order of applying priority modifiers
+        float cost = (jet == null) ? 0 : jet.calculatePathCost(parent.getPosition()) * 0.5f;
+        return priority - cost;
     }
 
 	protected override float getCost() {
