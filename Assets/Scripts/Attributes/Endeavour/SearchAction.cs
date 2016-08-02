@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class SearchAction : InherentEndeavour {
 	
 	public float agePriorityMultiplier = 0.05f;
-	protected float lastSeen = 0;
+	protected float lastSeen = -30;
 
 	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent) : base(factory, controller, goals, parent) {
 		this.name = "search";
@@ -29,7 +29,7 @@ public class SearchAction : InherentEndeavour {
 			lastSeen = Time.time;
 		}
 	}
-
+	
     public override bool singleExecutor() {
         return false;
     }
@@ -37,14 +37,11 @@ public class SearchAction : InherentEndeavour {
     protected override float calculatePriority() {
         float priority = base.calculatePriority();
         priority *= (1 - Mathf.Min(1 / (Time.time - lastSeen) / agePriorityMultiplier, 1));
-        HoverJet jet = controller.getRobotComponent<HoverJet>();
-
-        // this is a kind of hackish system to circumvent the order of applying priority modifiers
-        float cost = (jet == null) ? 0 : jet.calculatePathCost(parent.getPosition()) * 0.5f;
-        return priority - cost;
+        return priority;
     }
 
 	protected override float getCost() {
-		return 0;
+        HoverJet jet = controller.getRobotComponent<HoverJet>();
+		return (jet == null) ? 0 : jet.calculatePathCost(parent.getPosition()) * 0.5f;
 	}
 }

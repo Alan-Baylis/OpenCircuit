@@ -77,12 +77,21 @@ public abstract class Endeavour : Prioritizable {
 
 	public float getPriority() {
         if (lastFrameEvaluated != Time.frameCount) {
-            priorityCache = calculatePriority();
+            priorityCache = calculateFinalPriority();
             lastFrameEvaluated = Time.frameCount;
         }
         return priorityCache;
 	}
-
+	
+	protected float calculateFinalPriority() {
+		float finalPriority = calculatePriority();
+		finalPriority += calculateMobBenefit();
+		if (active) {
+			finalPriority += controller.reliability * momentum;
+		}
+		finalPriority -= getCost();
+		return finalPriority;
+	}
 	
 	public string getName() {
 		return name;
@@ -103,18 +112,20 @@ public abstract class Endeavour : Prioritizable {
     protected abstract float getCost();
 
     protected virtual float calculatePriority() {
-        float finalPriority = 0;
-        foreach (Goal goal in goals) {
-            Dictionary<GoalEnum, Goal> robotGoals = controller.getGoals();
-            if (robotGoals.ContainsKey(goal.type)) {
-                float priorityCubed = (goal.priority * goal.priority * goal.priority);
-                finalPriority += priorityCubed * robotGoals[goal.type].priority;
-            }
-        }
-        float cost = getCost();
-        if (active) {
-            finalPriority += controller.reliability * momentum;
-        }
-        return finalPriority - cost + BENEFIT_CONSTANT_TERM;
-    }
+		float calculatedPriority = 0;
+		foreach (Goal goal in goals) {
+			Dictionary<GoalEnum, Goal> robotGoals = controller.getGoals();
+			if (robotGoals.ContainsKey(goal.type)) {
+				float priorityCubed = (goal.priority * goal.priority * goal.priority);
+				calculatedPriority += priorityCubed * robotGoals[goal.type].priority;
+			}
+		}
+		return calculatedPriority + BENEFIT_CONSTANT_TERM;
+	}
+
+	protected float calculateMobBenefit() {
+		int executors = factory.getConcurrentExecutions(controller);
+		return Mathf.Min(factory.maxMobBenefit, factory.maxMobBenefit *(executors + 1f) / factory.optimalMobSize)
+			   -executors * factory.mobCostPerRobot;
+	}
 }

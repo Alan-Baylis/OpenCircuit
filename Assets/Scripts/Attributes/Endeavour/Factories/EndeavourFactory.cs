@@ -10,7 +10,12 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public List<Goal> goals = new List<Goal> ();
 	private bool status = false;
 	private int size = 0;
-    [System.NonSerialized]
+
+	public float maxMobBenefit = 0;
+	public int optimalMobSize = 1;
+	public float mobCostPerRobot = 10;
+
+	[System.NonSerialized]
     private HashSet<RobotController> executors = new HashSet<RobotController>();
 
 	[System.NonSerialized]
@@ -103,10 +108,15 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 	public virtual void doGUI() {
+		optimalMobSize = Mathf.Max(1, UnityEditor.EditorGUILayout.IntField("Optimal Mob Size", optimalMobSize));
+		maxMobBenefit = UnityEditor.EditorGUILayout.FloatField("Max Mob Benefit", maxMobBenefit);
+		mobCostPerRobot = UnityEditor.EditorGUILayout.FloatField("Cost per Mob Robot", mobCostPerRobot);
+		UnityEditor.EditorGUILayout.Separator();
+
 		status = UnityEditor.EditorGUILayout.Foldout(status, "Goals");
 
 		if (status && goals != null) {
-			size = UnityEditor.EditorGUILayout.IntField("Size:", goals.Count);
+			size = UnityEditor.EditorGUILayout.IntField("Size", goals.Count);
 			UnityEditor.EditorGUILayout.Separator();
 
 			foreach (Goal goal in goals) {

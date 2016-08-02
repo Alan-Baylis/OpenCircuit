@@ -7,15 +7,7 @@ public class GlobalConfig : NetworkBehaviour {
 	public int robotsPerPlayer = 3;
 	public float robotSpawnRatePerSecond = 1f;
 	public float spawnRateIncreasePerPlayer = .1f;
-	public int maxRobots = 0;
-	public float delay = 0f;
 	public CentralRobotController centralRobotController;
-
-	[ServerCallback]
-	void Update() {
-		maxRobots = getMaxRobots();
-		delay = getDelay();
-	}
 
 	[Server]
 	public int getMaxRobots() {
