@@ -41,17 +41,17 @@ public abstract class Endeavour : Prioritizable {
 
 	public virtual void execute () {
         active = true;
-		factory.addExecution(controller);
+		parent.addExecution(controller, GetType());
     }
 
     public virtual void stopExecution() {
         active = false;
-		factory.removeExecution(controller);
+		parent.removeExecution(controller, GetType());
     }
 	public abstract void onMessage(RobotMessage message);
 
 	public bool isReady(Dictionary<System.Type, int> availableComponents) {
-		return (!singleExecutor() || factory.getConcurrentExecutions(controller) == 0) && canExecute() && hasAllComponents(availableComponents);
+		return (!singleExecutor() || parent.getConcurrentExecutions(controller, GetType()) == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
 	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
@@ -124,7 +124,7 @@ public abstract class Endeavour : Prioritizable {
 	}
 
 	protected float calculateMobBenefit() {
-		int executors = factory.getConcurrentExecutions(controller);
+		int executors = parent.getConcurrentExecutions(controller, GetType());
 		return Mathf.Min(factory.maxMobBenefit, factory.maxMobBenefit *(executors + 1f) / factory.optimalMobSize)
 			   -executors * factory.mobCostPerRobot;
 	}

@@ -450,10 +450,6 @@ Prefab:
       propertyPath: active
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 11457390, guid: 369faafd6aa2d00408f431797e35478a, type: 2}
-      propertyPath: serializedData.Array.data[474]
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 369faafd6aa2d00408f431797e35478a, type: 2}
   m_IsPrefabParent: 0
