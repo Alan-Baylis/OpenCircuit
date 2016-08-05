@@ -65,6 +65,7 @@ public class ZappyArms : AbstractArms {
 
 	}
 
+    [ServerCallback]
 	void OnTriggerEnter(Collider collision) {
 		if(target == null) {
 			proposedTarget = collision.gameObject.GetComponent<Label>();
@@ -88,6 +89,7 @@ public class ZappyArms : AbstractArms {
 		return target != null;
 	}
 
+    [Server]
 	public override void dropTarget() {
 		if(target != null) {
 			target.clearTag(TagEnum.Grabbed);
@@ -103,21 +105,9 @@ public class ZappyArms : AbstractArms {
 		}
 	}
 
-	[ClientRpc]
-	protected void RpcDropTarget(NetworkInstanceId netId) {
-		dropRigidbody(ClientScene.FindLocalObject(netId));
-	}
 
-	protected void dropRigidbody(GameObject obj) {
-		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
-		if (rigidbody != null) {
-			rigidbody.isKinematic = false;
-			rigidbody.useGravity = true;
-			rigidbody.AddForce(transform.forward * throwForce.z + transform.up * throwForce.y);
-		}
-		obj.transform.parent = null;
-	}
 
+    [Server]
 	public override void attachTarget(Label obj) {
 		if(target == null) {
 			target = obj;
@@ -132,22 +122,7 @@ public class ZappyArms : AbstractArms {
 		}
 	}
 
-	[ClientRpc]
-	protected void RpcAttachTarget(NetworkInstanceId netId) {
-		attachRigidbody(ClientScene.FindLocalObject(netId));
-	}
 
-	protected void attachRigidbody(GameObject obj) {
-		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
-		if (rigidbody != null) {
-			rigidbody.isKinematic = true;
-			rigidbody.useGravity = false;
-			rigidbody.velocity = new Vector3(0, 0, 0);
-		}
-
-		obj.transform.parent = transform;
-		obj.transform.localPosition = HOLD_POSITION;
-	}
 
 	public void electrifyTarget() {
 		if(target != null) {
@@ -163,4 +138,36 @@ public class ZappyArms : AbstractArms {
 	public Label getTarget() {
 		return target;
 	}
+
+    [ClientRpc]
+    protected void RpcDropTarget(NetworkInstanceId netId) {
+        dropRigidbody(ClientScene.FindLocalObject(netId));
+    }
+
+    [ClientRpc]
+    protected void RpcAttachTarget(NetworkInstanceId netId) {
+        attachRigidbody(ClientScene.FindLocalObject(netId));
+    }
+
+    protected void dropRigidbody(GameObject obj) {
+        Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+        if (rigidbody != null) {
+            rigidbody.isKinematic = false;
+            rigidbody.useGravity = true;
+            rigidbody.AddForce(transform.forward * throwForce.z + transform.up * throwForce.y);
+        }
+        obj.transform.parent = null;
+    }
+
+    protected void attachRigidbody(GameObject obj) {
+        Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+        if (rigidbody != null) {
+            rigidbody.isKinematic = true;
+            rigidbody.useGravity = false;
+            rigidbody.velocity = new Vector3(0, 0, 0);
+        }
+
+        obj.transform.parent = transform;
+        obj.transform.localPosition = HOLD_POSITION;
+    }
 }

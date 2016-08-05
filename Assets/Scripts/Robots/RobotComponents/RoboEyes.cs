@@ -12,6 +12,7 @@ public class RoboEyes : AbstractRobotComponent {
 	private Dictionary<Label, SensoryInfo> targetMap = new Dictionary<Label, SensoryInfo>();
 
 	private LaserProjector scanner;
+    private bool lookingEnabled = false;
 
 	// Use this for initialization
 	[ServerCallback]
@@ -28,10 +29,8 @@ public class RoboEyes : AbstractRobotComponent {
             lineRenderer.SetVertexCount(size);
         }
 #endif
-		InvokeRepeating ("lookAround", 0.5f, .1f);
+        enableLooking();
 	}
-
-
 
 	public GameObject lookAt(Vector3 position) {
 		if(powerSource.hasPower(Time.deltaTime)) {
@@ -60,6 +59,28 @@ public class RoboEyes : AbstractRobotComponent {
 	public LaserProjector getScanner() {
 		return scanner;
 	}
+
+    [ServerCallback]
+    void OnDisable() {
+        disableLooking();
+    }
+
+    [ServerCallback]
+    void OnEnable() {
+        enableLooking();
+    }
+
+    private void enableLooking() {
+        if (!lookingEnabled) {
+            InvokeRepeating("lookAround", 0.5f, .1f);
+            lookingEnabled = true;
+        }
+    }
+
+    private void disableLooking() {
+        CancelInvoke("lookAround");
+        lookingEnabled = false;
+    }
 
 	private bool canSee (Transform obj) {
 		Vector3 objPos = obj.position;

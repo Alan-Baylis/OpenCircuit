@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 public abstract class AbstractArms : AbstractRobotComponent {
@@ -13,4 +14,17 @@ public abstract class AbstractArms : AbstractRobotComponent {
 	public override System.Type getComponentArchetype() {
 		return typeof(AbstractArms);
 	}
+
+    [ServerCallback]
+    void OnDisable() {
+        dropTarget();
+        BoxCollider collider = GetComponent<BoxCollider>();
+        collider.enabled = false;
+    }
+
+    [ServerCallback]
+    void OnEnable() {
+        BoxCollider collider = GetComponent<BoxCollider>();
+        collider.enabled = true;
+    }
 }

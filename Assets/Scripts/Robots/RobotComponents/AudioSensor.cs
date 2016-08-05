@@ -29,4 +29,12 @@ public class AudioSensor : AbstractRobotComponent {
 	void Update () {
 		hasPower = powerSource != null && powerSource.hasPower(Time.deltaTime);
 	}
+
+    void OnDisable() {
+        sensors.Remove(this);
+    }
+
+    void OnEnable() {
+        sensors.Add(this);
+    }
 }

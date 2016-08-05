@@ -8,7 +8,7 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 	public AbstractPowerSource powerSource { get {
 			if (myPowerSource == null) {
 				myPowerSource = getController().GetComponentInChildren<AbstractPowerSource>();
-				if (powerSource == null)
+                if (myPowerSource == null)
 					Debug.LogWarning("Robot component '" + name + "' has no power source!");
 			}
 			return myPowerSource;
@@ -36,4 +36,60 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 	public virtual System.Type getComponentArchetype() {
 		return this.GetType();
 	}
+
+    [Server]
+    public virtual void dismantle() {
+        dismantle(transform);
+    }
+
+    protected void dismantle(Transform trans) {
+        trans.parent = null;
+        trans.gameObject.hideFlags |= HideFlags.HideInHierarchy;
+        while (trans.childCount > 0)
+            dismantle(trans.GetChild(0));
+        Collider [] cols = trans.GetComponents<Collider>();
+
+        bool hasCollider = false;
+        foreach (Collider col in cols) {
+
+            if (col.isTrigger) {
+                continue;
+            } else {
+                hasCollider = true;
+                //foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
+                //    if (script as NetworkIdentity == null) {
+                //        Destroy(script);
+                //    }
+                //}
+                if (col as MeshCollider != null)
+                    ((MeshCollider)col).convex = true;
+                col.enabled = true;
+            }
+        }
+
+        if (hasCollider) {
+            addRigidBody(trans);
+        } else {
+            Destroy(trans.gameObject);
+        }
+    }
+
+    protected static void addRigidBody(Transform trans) {
+        const float maxForce = 200;
+        const float lingerTime = 30;
+        Rigidbody rb = trans.GetComponent<Rigidbody>();
+        if (rb == null)
+            rb = trans.gameObject.AddComponent<Rigidbody>();
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        rb.AddForce(randomRange(Vector3.one * -maxForce, Vector3.one * maxForce));
+        Destroy(trans.gameObject, lingerTime);
+    }
+
+    protected static Vector3 randomRange(Vector3 min, Vector3 max) {
+        return new Vector3(
+            UnityEngine.Random.Range(min.x, max.x),
+            UnityEngine.Random.Range(min.y, max.y),
+            UnityEngine.Random.Range(min.z, max.z));
+    }
 }

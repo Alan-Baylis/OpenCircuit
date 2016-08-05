@@ -356,60 +356,37 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		}
 		this.enabled = false;
 
-		Destroy(GetComponent<NavMeshAgent>());
 		int randomSeed = UnityEngine.Random.seed;
 
+        disassembleRobotComponents();
 		RpcDismantle(randomSeed);
-		//dismantle(transform);
 	}
 
 	[ClientRpc]
 	protected void RpcDismantle(int randomSeed) {
 		UnityEngine.Random.seed = randomSeed;
-		dismantle(transform);
+		dismantle();
 		destructionEffect.spawn(transform.position);
 	}
 
-	protected static void dismantle(Transform trans) {
-		const float maxForce = 200;
-		const float lingerTime = 30;
+    [Server]
+    protected void disassembleRobotComponents() {
+        AbstractRobotComponent[] components = GetComponentsInChildren<AbstractRobotComponent>();
+        foreach (AbstractRobotComponent component in components) {
+            component.enabled = false;
+            component.transform.parent = null;
+            component.dismantle();
+        }
+    }
 
-		trans.parent = null;
-		trans.gameObject.hideFlags |= HideFlags.HideInHierarchy;
-		while (trans.childCount > 0)
-			dismantle(trans.GetChild(0));
-		Collider col = trans.GetComponent<Collider>();
-        if (col == null || col.GetComponent<RobotController>()) {
-			Destroy(trans.gameObject);
-		} else {
-			foreach(NetworkBehaviour net in trans.GetComponents<NetworkBehaviour>()) {
-				Destroy(net);
-			}
-
-
-			foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
-				if (script as NetworkIdentity == null) {
-					Destroy(script);
-				}
-			}
-			if (col as MeshCollider != null)
-				((MeshCollider)col).convex = true;
-			col.enabled = true;
-			Rigidbody rb = trans.GetComponent<Rigidbody>();
-			if (rb == null)
-				rb = trans.gameObject.AddComponent<Rigidbody>();
-			rb.isKinematic = false;
-			rb.useGravity = true;
-			rb.AddForce(randomRange(Vector3.one * -maxForce, Vector3.one * maxForce));
-			Destroy(trans.gameObject, lingerTime);
-		}
-	}
-
-	protected static Vector3 randomRange(Vector3 min, Vector3 max) {
-		return new Vector3(
-			UnityEngine.Random.Range(min.x, max.x),
-			UnityEngine.Random.Range(min.y, max.y),
-			UnityEngine.Random.Range(min.z, max.z));
+	protected void dismantle() {
+        int breaker = 0;
+        for (int i = transform.childCount-1; i >= 0 && breaker < 100; --i) {
+            breaker++;
+            Transform child = transform.GetChild(i);
+            Destroy(child.gameObject);
+        }
+        Destroy(gameObject);
 	}
 
 #if UNITY_EDITOR
