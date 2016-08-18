@@ -52,26 +52,7 @@ public abstract class InherentEndeavourFactory : EndeavourFactory, InspectorList
 	}
 
 	public override void doGUI() {
-		status = UnityEditor.EditorGUILayout.Foldout(status, "Goals");
-
-		if(status && goals != null) {
-			size = UnityEditor.EditorGUILayout.IntField("Size:", goals.Count);
-			UnityEditor.EditorGUILayout.Separator();
-
-			foreach(Goal goal in goals) {
-				//goal.name = EditorGUILayout.TextField("Name", goal.name);
-				//int selectedType = (int) goal.type; // System.Array.FindIndex(goalEnums, OP => OP == goal.type);
-				goal.type = (GoalEnum)UnityEditor.EditorGUILayout.Popup((int)goal.type, Enum.GetNames(typeof(GoalEnum)));
-				goal.priority = UnityEditor.EditorGUILayout.FloatField("Priority", goal.priority);
-				UnityEditor.EditorGUILayout.Separator();
-			}
-			if(size < goals.Count) {
-				goals.RemoveRange(size, goals.Count - size);
-			}
-			while(size > goals.Count) {
-				goals.Add(new Goal((GoalEnum)Enum.GetValues(typeof(GoalEnum)).GetValue(0), 0));
-			}
-		}
+		base.doGUI();
 	}
 #endif
 }

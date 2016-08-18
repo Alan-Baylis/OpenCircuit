@@ -16,9 +16,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public float mobCostPerRobot = 10;
 
 	[System.NonSerialized]
-    private HashSet<RobotController> executors = new HashSet<RobotController>();
-
-	[System.NonSerialized]
 	protected Label parent;
 
 	private static string[] typeNames = null;
@@ -58,21 +55,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 		return factory;
 	}
 
-	public void addExecution(RobotController executor) {
-        getExecutors().Add(executor);
-	}
-
-	public void removeExecution(RobotController executor) {
-        getExecutors().Remove(executor);
-	}
-
-	public int getConcurrentExecutions(RobotController executor) {
-        if (getExecutors().Contains(executor)) {
-            return getExecutors().Count - 1;
-        }
-        return getExecutors().Count;
-	}
-
 	private static string[] getTypeNames() {
 		if (typeNames == null || typeNames.Length != types.Length) {
 			typeNames = new string[types.Length];
@@ -82,13 +64,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 		}
 		return typeNames;
 	}
-
-    private HashSet<RobotController> getExecutors() {
-        if (executors == null) {
-            executors = new HashSet<RobotController>();
-        }
-        return executors;
-    }
 
 #if UNITY_EDITOR
 	public virtual void drawGizmo() {
