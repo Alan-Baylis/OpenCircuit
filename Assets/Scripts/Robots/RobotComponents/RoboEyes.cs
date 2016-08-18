@@ -80,6 +80,7 @@ public class RoboEyes : AbstractRobotComponent {
     private void disableLooking() {
         CancelInvoke("lookAround");
         lookingEnabled = false;
+		clearSightings();
     }
 
 	private bool canSee (Transform obj) {
@@ -143,13 +144,24 @@ public class RoboEyes : AbstractRobotComponent {
 				}
 				targetMap[label].updatePosition(label.transform.position);
 			} else {
-				if(targetMap.ContainsKey(label) && targetMap[label].getSightings() == 1) {
-					//print("target lost: " + label.name);
-					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
-					targetMap[label].removeSighting();
-				}
+				clearSighting(label);
 			}
 		}
+	}
+
+	private void clearSighting(Label label) {
+		if (targetMap.ContainsKey(label) && targetMap[label].getSightings() == 1) {
+			//print("target lost: " + label.name);
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
+			targetMap[label].removeSighting();
+		}
+	}
+
+	private void clearSightings() {
+		foreach(Label sighting in targetMap.Keys) {
+			clearSighting(sighting);
+		}
+		targetMap.Clear();
 	}
 
 #if UNITY_EDITOR
