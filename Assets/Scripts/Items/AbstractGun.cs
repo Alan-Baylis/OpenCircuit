@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 
 public abstract class AbstractGun : Item {
 
+	public float fireSoundThreatLevel = 5;
+	public float fireSoundThreatRate = 0.3f;
 	public float fireSoundVolume = 1;
 	public float fireDelay = 0.1f;
 
@@ -41,6 +43,8 @@ public abstract class AbstractGun : Item {
 
 	protected float cycleTime = 0;
 	protected float reloadTimeRemaining = 0;
+	protected LabelHandle audioLabel;
+	protected float lastShotTime = float.NegativeInfinity;
 
 	public AudioSource gunshotSoundEmitter;
 	public AudioSource reloadSoundEmitter;
@@ -201,7 +205,23 @@ public abstract class AbstractGun : Item {
 	}
 
 	private void playFireSound() {
-		if(gunshotSoundEmitter != null) {
+		// create sound event
+		float volume = gunshotSoundEmitter.volume;
+		if (Time.time - lastShotTime > fireDelay * 5 || audioLabel == null) {
+			audioLabel = new LabelHandle(transform.position, "gunshots");
+			audioLabel.addTag(new Tag(TagEnum.Sound, 0));
+			audioLabel.addTag(new Tag(TagEnum.Threat, 0));
+		}
+		audioLabel.setPosition(transform.position);
+		Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+		Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+		soundTag.severity += (volume *2 - soundTag.severity) * fireSoundThreatRate;
+		threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+		AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
+		gunshotEvent.broadcast(soundTag.severity);
+
+		// play sound effect
+		if (gunshotSoundEmitter != null) {
 			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 		}
 		playSound(gunshotSoundEmitter);
