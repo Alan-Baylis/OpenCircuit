@@ -75,16 +75,9 @@ public class LabelHandle {
 	}
 
 	private HashSet<RobotController> getExecutors(System.Type endeavourType) {
-		if (!getAllExecutors().ContainsKey(endeavourType)) {
-			getAllExecutors()[endeavourType] = new HashSet<RobotController>();
+		if (!executors.ContainsKey(endeavourType)) {
+			executors[endeavourType] = new HashSet<RobotController>();
 		}
-		return getAllExecutors()[endeavourType];
-	}
-
-	private Dictionary<System.Type, HashSet<RobotController>> getAllExecutors() {
-		if (executors == null) {
-			executors = new Dictionary<System.Type, HashSet<RobotController>>();
-		}
-		return executors;
+		return executors[endeavourType];
 	}
 }
