@@ -135,6 +135,14 @@ public class Inventory : NetworkBehaviour {
 			equipped.endInvoke(this);
 	}
 
+	public void reloadEquipped() {
+		if (equipped != null) {
+			AbstractGun gun = equipped as AbstractGun;
+			if (gun != null)
+				gun.reload();
+		}
+	}
+
 	public void pushContext(System.Type contextItem) {
 		contextStack.Insert(0, contextItem);
 		selecting = -1;

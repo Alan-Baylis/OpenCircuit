@@ -92,8 +92,10 @@ public class Controls : NetworkBehaviour {
 		}
 
 		if(Input.GetButtonDown("Reload")) {
-			GetComponentInChildren<AbstractGun>().reload();
-		}
+			myPlayer.inventory.reloadEquipped();
+			if (!isServer)
+				CmdReloadEquipped();
+        }
 
 		// nothing after this point is done while in menu
 		if(menu.paused()) {
@@ -186,6 +188,11 @@ public class Controls : NetworkBehaviour {
 	[Command]
 	protected void CmdSetZooming(bool zooming) {
 		myPlayer.zooming = zooming;
+	}
+
+	[Command]
+	protected void CmdReloadEquipped() {
+		myPlayer.inventory.reloadEquipped();
 	}
 
 	public void disablePlayerControls() {
