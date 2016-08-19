@@ -16,11 +16,15 @@ public class Player : NetworkBehaviour {
 	public float whiteOutDuration;
 	public float blackOutDuration;
 	public bool showFPSMeter = false;
+    [SyncVar]
+    public bool frozen = false;
 
 	[HideInInspector]
 	public ClientController controller;
 	[HideInInspector]
 	public bool zooming = false;
+
+    public GameObject freezeLock;
 	
 	private Attack myAttacker;
 	private Grab myGrabber;
@@ -135,6 +139,19 @@ public class Player : NetworkBehaviour {
 		blackOutTime = Mathf.Max(seconds, blackOutTime);
 	}
 
+    [Server]
+    public void freeze() {
+        frozen = true;
+        GetComponent<Label>().clearTag(TagEnum.GrabTarget);
+
+    }
+
+    [Server]
+    public void unfreeze() {
+        frozen = false;
+        GetComponent<Label>().setTag(new Tag(TagEnum.GrabTarget, 0));
+    }
+
 	[Server]
 	public void die() {
 		if (!alive)
@@ -142,10 +159,15 @@ public class Player : NetworkBehaviour {
 		//alive = false;
 		//blackOutTime = blackOutDuration;
 		//Menu.menu.lose();
-		effectSpec.spawn(transform.position);
-		if(controller != null) {
-			controller.destroyPlayer(connectionToClient, playerControllerId);
-		}
+		//effectSpec.spawn(transform.position);
+		//if(controller != null) {
+        GameObject newFreezeLock = GameObject.Instantiate(freezeLock, transform.position + new Vector3(0, 1, 0), freezeLock.transform.rotation) as GameObject;
+        FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
+        freezeLockScript.frozenPlayer = this;
+        NetworkServer.Spawn(newFreezeLock);
+            freeze();
+			//controller.destroyPlayer(connectionToClient, playerControllerId);
+		//}
 	}
 
 	public void teleport(Vector3 position) {

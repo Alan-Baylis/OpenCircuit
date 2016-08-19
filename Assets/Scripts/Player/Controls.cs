@@ -37,27 +37,29 @@ public class Controls : NetworkBehaviour {
 			return;
 
 		/****************MOVEMENT****************/
-		float amount = Input.GetAxis("Vertical");
-		myPlayer.mover.setForward(amount);
-		CmdSetForward(amount);
+        if (!myPlayer.frozen) {
+            float amount = Input.GetAxis("Vertical");
+            myPlayer.mover.setForward(amount);
+            CmdSetForward(amount);
 
-		amount = Input.GetAxis("Horizontal");
-		myPlayer.mover.setRight(amount);
-		CmdSetRight(amount);
+            amount = Input.GetAxis("Horizontal");
+            myPlayer.mover.setRight(amount);
+            CmdSetRight(amount);
 
-		if (Input.GetButtonDown("Jump")) {
-			if (!isServer)
-				myPlayer.mover.jump();
-			CmdJump();
-		}
+            if (Input.GetButtonDown("Jump")) {
+                if (!isServer)
+                    myPlayer.mover.jump();
+                CmdJump();
+            }
 
-		bool sprinting = Input.GetButton("Sprint");
-		setSprinting(sprinting);
-        CmdSetSprint(sprinting);
+            bool sprinting = Input.GetButton("Sprint");
+            setSprinting(sprinting);
+            CmdSetSprint(sprinting);
 
-		bool crouching = Input.GetButton("Crouch");
-		myPlayer.mover.setCrouching(crouching);
-        CmdSetCrouch(crouching);
+            bool crouching = Input.GetButton("Crouch");
+            myPlayer.mover.setCrouching(crouching);
+            CmdSetCrouch(crouching);
+        }
 
 		/****************INVENTORY***************/
 		if (!myPlayer.inventory.inContext()) {
@@ -101,43 +103,47 @@ public class Controls : NetworkBehaviour {
 		if(menu.paused()) {
 			return;
 		}
-
-		if (myPlayer.inventory.isSelecting()) {
-			myPlayer.inventory.moveMouse(new Vector2(Input.GetAxis("Look Horizontal"), Input.GetAxis("Look Vertical")));
-		} else {
-			if (invertLook)
-				myPlayer.looker.rotate(Input.GetAxis("Look Horizontal") * mouseSensitivity, -Input.GetAxis("Look Vertical") * mouseSensitivity);
-			else
-				myPlayer.looker.rotate(Input.GetAxis("Look Horizontal") * mouseSensitivity, Input.GetAxis("Look Vertical") * mouseSensitivity);
-		}
+        if (!myPlayer.frozen) {
+            if (myPlayer.inventory.isSelecting()) {
+                myPlayer.inventory.moveMouse(new Vector2(Input.GetAxis("Look Horizontal"), Input.GetAxis("Look Vertical")));
+            } else {
+                if (invertLook)
+                    myPlayer.looker.rotate(Input.GetAxis("Look Horizontal") * mouseSensitivity, -Input.GetAxis("Look Vertical") * mouseSensitivity);
+                else
+                    myPlayer.looker.rotate(Input.GetAxis("Look Horizontal") * mouseSensitivity, Input.GetAxis("Look Vertical") * mouseSensitivity);
+            }
+        }
 
 		/****************ACTION****************/
+        if (!myPlayer.frozen) {
+            if (Input.GetButtonDown("Use")) {
+                myPlayer.inventory.useEquipped();
+                if (!isServer)
+                    CmdUseEquipped();
+            }
+            if (Input.GetButtonDown("Zoom")) {
+                myPlayer.zooming = true;
+                if (!isServer)
+                    CmdSetZooming(true);
+            }
+            if (Input.GetButtonDown("Interact")) {
+                CmdInteract();
+            }
+        }
+            if (Input.GetButtonUp("Use") || myPlayer.frozen) {
+                myPlayer.inventory.stopUsingEquiped();
+                if (!isServer)
+                    CmdStopUsingEquipped();
+            }
 
-		if (Input.GetButtonDown("Use")) {
-			myPlayer.inventory.useEquipped();
-			if (!isServer)
-				CmdUseEquipped();
-		}
-		if (Input.GetButtonUp("Use")) {
-			myPlayer.inventory.stopUsingEquiped();
-			if (!isServer)
-				CmdStopUsingEquipped();
-		}
 
-		if (Input.GetButtonDown("Zoom")) {
-			myPlayer.zooming = true;
-			if (!isServer)
-				CmdSetZooming(true);
-		}
-		if (Input.GetButtonUp("Zoom")) {
-			myPlayer.zooming = false;
-			if (!isServer)
-				CmdSetZooming(false);
-		}
+            if (Input.GetButtonUp("Zoom") || myPlayer.frozen) {
+                myPlayer.zooming = false;
+                if (!isServer)
+                    CmdSetZooming(false);
+            }
 
-		if (Input.GetButtonDown ("Interact")) {
-			CmdInteract();
-		}
+
 	}
 
 	[Command]

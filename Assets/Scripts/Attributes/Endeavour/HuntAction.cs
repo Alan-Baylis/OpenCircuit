@@ -16,7 +16,7 @@ public class HuntAction : Endeavour {
 	public override bool canExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-		return arms != null && !arms.hasTarget() && !target.hasTag(TagEnum.Grabbed) && jet != null && jet.canReach(target);
+        return arms != null && !arms.hasTarget() && !target.hasTag(TagEnum.Grabbed) && jet != null && jet.canReach(target) && target.GetComponent<Player>() != null && !target.GetComponent<Player>().frozen;
 	}
 
 	public override void execute() {
