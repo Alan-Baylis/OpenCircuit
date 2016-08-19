@@ -42,11 +42,10 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	public AudioClip targetSightedSound;
     public float evaluatePeriod = .2f;
 
-
 	[System.NonSerialized]
 	private HashSet<Endeavour> currentEndeavours = new HashSet<Endeavour>();
 	[System.NonSerialized]
-	private Dictionary<System.Type, AbstractRobotComponent> componentMap = new Dictionary<System.Type, AbstractRobotComponent> ();
+	private Dictionary<System.Type, AbstractRobotComponent> myComponentMap = null;
 
 	[System.NonSerialized]
 	MentalModel mentalModel = new MentalModel ();
@@ -62,7 +61,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	[System.NonSerialized]
 	private float timeoutSeconds = 10;
 
-
 	[ServerCallback]
 	void Start() {
 		controllerCount++;
@@ -73,11 +71,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
                 goalMap.Add(goal.type, goal);
             }
         }
-		AbstractRobotComponent [] compenents = GetComponentsInChildren<AbstractRobotComponent> ();
 
-		foreach (AbstractRobotComponent component in compenents) {
-			componentMap[component.getComponentArchetype()] = component;
-		}
 
 		foreach (Label location in locations) {
 			if (location == null) {
@@ -88,6 +82,19 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		}
 		InvokeRepeating ("evaluateActions", .1f, evaluatePeriod);
 	}
+
+    public Dictionary<System.Type, AbstractRobotComponent> componentMap {
+        get {
+            if (myComponentMap == null) {
+                AbstractRobotComponent[] components = GetComponentsInChildren<AbstractRobotComponent>();
+                myComponentMap = new Dictionary<System.Type, AbstractRobotComponent>();
+                foreach (AbstractRobotComponent component in components) {
+                    myComponentMap[component.getComponentArchetype()] = component;
+                }
+            }
+            return myComponentMap;
+        }
+    }
 
 	// Update is called once per frame
 	[ServerCallback]
@@ -182,6 +189,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	public T getRobotComponent<T> () where T : AbstractRobotComponent {
 		AbstractRobotComponent comp = null;
+        //print("Get has: " + componentMap.Count);
 		componentMap.TryGetValue(typeof(T), out comp);
 		return (T)comp;
 	}

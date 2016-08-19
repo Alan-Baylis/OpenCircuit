@@ -132,15 +132,12 @@ public class RoboEyes : AbstractRobotComponent {
 					Rigidbody labelRB = label.GetComponent<Rigidbody>();
 					if(labelRB != null) {
 						targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, 0);
-
 					} else {
 						targetMap[label] = new SensoryInfo(label.transform.position, null, System.DateTime.Now, 0);
 					}
 				}
 				if(targetMap[label].getSightings() == 0) {
-					//print("target sighted: " + label.name);
-					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_SIGHTED, "target sighted", label.labelHandle, label.transform.position, targetMap[label].getDirection()));
-					targetMap[label].addSighting();
+                    registerSightingFound(label);
 				}
 				targetMap[label].updatePosition(label.transform.position);
 			} else {
@@ -148,6 +145,11 @@ public class RoboEyes : AbstractRobotComponent {
 			}
 		}
 	}
+
+    private void registerSightingFound(Label label) {
+        getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_SIGHTED, "target sighted", label.labelHandle, label.transform.position, targetMap[label].getDirection()));
+        targetMap[label].addSighting();
+    }
 
 	private void clearSighting(Label label) {
 		if (targetMap.ContainsKey(label) && targetMap[label].getSightings() == 1) {

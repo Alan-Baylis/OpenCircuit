@@ -43,12 +43,12 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 				components.Add(component);
 			}
 
-			body.gameObject.SetActive(true);
+			body.SetActive(true);
 			foreach (GameObject component in components) {
 				component.SetActive(true);
 			}
 
-			NetworkServer.Spawn(body.gameObject);
+			NetworkServer.Spawn(body);
 			NetworkInstanceId robotId = robotController.netId;
 			foreach (GameObject component in components) {
 				NetworkServer.Spawn(component);
