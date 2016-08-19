@@ -31,12 +31,16 @@ public class ZappyArms : AbstractArms {
 
 	void Update() {
 		BoxCollider collider = GetComponent<BoxCollider>();
-		if(powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
+        if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
 			collider.enabled = false;
 			dropTarget();
 		} else {
 			collider.enabled = true;
 			if(hasTarget()) {
+                if (target.GetComponent<Player>() != null && target.GetComponent<Player>().frozen) {
+                    dropTarget();
+                    return;
+                }
 				Label label = target.GetComponent<Label>();
 				label.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
 				if(!footstepEmitter.isPlaying) {

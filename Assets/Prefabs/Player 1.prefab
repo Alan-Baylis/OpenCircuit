@@ -376,8 +376,10 @@ MonoBehaviour:
   whiteOutDuration: 0
   blackOutDuration: 12
   showFPSMeter: 0
+  frozen: 0
   controller: {fileID: 0}
   zooming: 0
+  freezeLock: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
   effectSpec:
     prefab: {fileID: 171970, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
     lifetime: 5

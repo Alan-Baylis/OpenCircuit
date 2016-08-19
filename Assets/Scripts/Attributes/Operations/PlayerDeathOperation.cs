@@ -14,7 +14,7 @@ public class PlayerDeathOperation : Operation {
 
 	public override void perform(GameObject instigator, Trigger trig) {
 		Player player = parent.GetComponent<Player>();
-		if(player != null) {
+		if(player != null && !player.frozen) {
 			player.die();
 		}
 	}
