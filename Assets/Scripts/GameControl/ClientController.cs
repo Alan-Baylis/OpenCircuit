@@ -9,6 +9,7 @@ public class ClientController : NetworkBehaviour {
 
 	public GameObject playerPrefab;
 	public GameObject playerCamPrefab;
+    public static int numPlayers = 0;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
@@ -64,6 +65,7 @@ public class ClientController : NetworkBehaviour {
 	[Command]
 	private void CmdSpawnPlayerAt(Vector3 position) {
 		spawnPlayerAt(position);
+        numPlayers++;
 	}
 	
 	[Server]

@@ -143,13 +143,14 @@ public class Player : NetworkBehaviour {
     public void freeze() {
         frozen = true;
         GetComponent<Label>().clearTag(TagEnum.GrabTarget);
-
+        ++GlobalConfig.globalConfig.frozenPlayers;
     }
 
     [Server]
     public void unfreeze() {
         frozen = false;
         GetComponent<Label>().setTag(new Tag(TagEnum.GrabTarget, 0));
+        --GlobalConfig.globalConfig.frozenPlayers;
     }
 
 	[Server]
