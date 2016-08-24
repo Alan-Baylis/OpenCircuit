@@ -40,6 +40,12 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
     [Server]
     public virtual void dismantle() {
         dismantle(transform);
+        RpcDismantle();
+    }
+
+    [ClientRpc]
+    protected void RpcDismantle() {
+        dismantle(transform);
     }
 
     protected void dismantle(Transform trans) {
@@ -68,22 +74,31 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
         }
 
         if (hasCollider) {
-            addRigidBody(trans);
+            if (isServer) {
+                useAsTemporaryDebris(trans);
+            } else {
+                convertToDebris(trans);
+            }
         } else {
             Destroy(trans.gameObject);
         }
     }
 
-    protected static void addRigidBody(Transform trans) {
-        const float maxForce = 200;
+    [Server]
+    protected static void useAsTemporaryDebris(Transform trans) {
         const float lingerTime = 30;
+        convertToDebris(trans);
+        Destroy(trans.gameObject, lingerTime);
+    }
+
+    protected static void convertToDebris(Transform trans) {
+        const float maxForce = 200;
         Rigidbody rb = trans.GetComponent<Rigidbody>();
         if (rb == null)
             rb = trans.gameObject.AddComponent<Rigidbody>();
         rb.isKinematic = false;
         rb.useGravity = true;
         rb.AddForce(randomRange(Vector3.one * -maxForce, Vector3.one * maxForce));
-        Destroy(trans.gameObject, lingerTime);
     }
 
     protected static Vector3 randomRange(Vector3 min, Vector3 max) {
