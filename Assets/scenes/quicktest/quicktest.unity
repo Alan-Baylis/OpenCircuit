@@ -308,7 +308,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11460716, guid: 71c2b24eb311b0e4b84685bc99ef5ee0, type: 2}
       propertyPath: robotSpawnRatePerSecond
-      value: 0.02
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: 11460716, guid: 71c2b24eb311b0e4b84685bc99ef5ee0, type: 2}
       propertyPath: spawnRateIncreasePerPlayer
@@ -397,7 +397,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11402510, guid: 369faafd6aa2d00408f431797e35478a, type: 2}
       propertyPath: debug
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 369faafd6aa2d00408f431797e35478a, type: 2}
