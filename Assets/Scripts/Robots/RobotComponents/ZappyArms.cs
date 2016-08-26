@@ -139,7 +139,7 @@ public class ZappyArms : AbstractArms {
 		return proposedTarget;
 	}
 
-	public Label getTarget() {
+	public override Label getTarget() {
 		return target;
 	}
 

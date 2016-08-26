@@ -135,7 +135,7 @@ public class RobotArms : AbstractArms {
         return proposedTarget;
     }
 
-	public Label getTarget() {
+	public override Label getTarget() {
 		return target;
 	}
 }

@@ -41,14 +41,11 @@ public class HoverJet : AbstractRobotComponent {
 	private ChassisController chassis;
 
 	public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
-		this.target = target;
 		matchTargetRotation = matchRotation;
 		if(target == null) {
-			if(nav.enabled) {
-				nav.Stop();
-			}
-			isPursuit = false;
+            stop();
 		} else {
+            this.target = target;
 			if(hasReachedTargetLocation() && hasMatchedTargetRotation()) {
 				this.target = null;
 				//print("bailing...");
@@ -190,6 +187,14 @@ public class HoverJet : AbstractRobotComponent {
 	public bool hasReachedTarget(LabelHandle target) {
 		return hasReachedTargetLocation(target) && hasMatchedTargetRotation(target);
 	}
+
+    public void stop() {
+        this.target = null;
+        if (nav.enabled) {
+            nav.Stop();
+        }
+        isPursuit = false;
+    }
 
 	private void goToTarget() {
 		if(target != null) {

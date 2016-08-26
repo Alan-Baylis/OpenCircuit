@@ -25,7 +25,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			RobotController robotController = body.GetComponent<RobotController>();
 
 			addKnowledge(robotController);
-			applyAmmoKnowledge(robotController);
             applyAmmoSpawnerKnowledge(robotController);
 
 #if UNITY_EDITOR
@@ -109,11 +108,4 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			controller.addKnownLocation(spawner.GetComponent<Label>());
 		}
 	}
-
-    private void applyAmmoKnowledge(RobotController controller) {
-        AmmoPickup[] spawners = FindObjectsOfType<AmmoPickup>();
-        foreach (AmmoPickup spawner in spawners) {
-            controller.addKnownLocation(spawner.GetComponent<Label>());
-        }
-    }
 }
