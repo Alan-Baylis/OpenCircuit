@@ -20,6 +20,7 @@ public class Menu : MonoBehaviour {
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 
+	public GlobalConfigData serverConfig = GlobalConfigData.getDefault();
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
 	public GUISkin skin;
@@ -40,7 +41,7 @@ public class Menu : MonoBehaviour {
 	}}
 	
 	private enum state {
-		MainMenu, InGameMenu, Options, Load, Win, Lose
+		MainMenu, InGameMenu, Options, Host, Win, Lose
 	};
 
 	public bool paused() {
@@ -93,6 +94,9 @@ public class Menu : MonoBehaviour {
 				break;
 			case state.Options:
 				doOptions();
+				break;
+			case state.Host:
+				doHost();
 				break;
 			case state.Win:
 				doWin();
@@ -181,7 +185,8 @@ public class Menu : MonoBehaviour {
 	private void doMainMenu() {
 		adjustFontSize(skin.button, startRect.height);
 		if (GUI.Button(convertRect(startRect, false), "Host", skin.button)) {
-			begin();
+			menuHistory.Push(currentMenu);
+			currentMenu = state.Host;
 		}
 		adjustFontSize(skin.textArea, hostNameRect.height);
 		host = GUI.TextField(convertRect(hostNameRect, false), host);
@@ -228,6 +233,45 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, backRect.height);
 		if (GUI.Button(convertRect(backRect, false), "Back", skin.button)) {
 			currentMenu = menuHistory.Pop();
+		}
+	}
+
+	private void doHost() {
+		adjustFontSize(skin.button, startRect.height);
+
+		// start button
+		if (GUI.Button(convertRect(new Rect(0.04f, 0.15f, 0.4f, 0.1f), false), "Start Hosting", skin.button)) {
+			begin();
+			GlobalConfig.globalConfig.configuration = serverConfig;
+        }
+
+		// configuration
+		GUI.Label(convertRect(new Rect(0.05f, 0.3f, 0.4f, 0.07f), false), "Robot Spawn Rate: ");
+		serverConfig.robotSpawnRatePerSecond = numberField(new Rect(0.3f, 0.3f, 0.1f, 0.03f), serverConfig.robotSpawnRatePerSecond);
+		GUI.Label(convertRect(new Rect(0.05f, 0.35f, 0.4f, 0.07f), false), "Spawn Rate Increase: ");
+		serverConfig.spawnRateIncreasePerPlayer = numberField(new Rect(0.35f, 0.35f, 0.1f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
+		GUI.Label(convertRect(new Rect(0.05f, 0.4f, 0.4f, 0.07f), false), "Robots per Player: ");
+		serverConfig.robotsPerPlayer = numberField(new Rect(0.3f, 0.4f, 0.1f, 0.03f), serverConfig.robotsPerPlayer);
+
+		// back button
+		adjustFontSize(skin.button, backRect.height);
+		if (GUI.Button(convertRect(backRect, false), "Back", skin.button)) {
+			currentMenu = menuHistory.Pop();
+		}
+	}
+
+	private float numberField(Rect relativePosition, float startValue) {
+		try {
+			return float.Parse(GUI.TextField(convertRect(relativePosition, false), startValue.ToString()));
+		} catch (System.FormatException fe) {
+			return startValue;
+		}
+	}
+	private int numberField(Rect relativePosition, int startValue) {
+		try {
+			return int.Parse(GUI.TextField(convertRect(relativePosition, false), startValue.ToString()));
+		} catch (System.FormatException fe) {
+			return startValue;
 		}
 	}
 
