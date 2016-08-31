@@ -490,10 +490,16 @@ public class VoxelEditorGUI : Editor {
     }
 
     protected void doHeightmapGenerationGUI() {
+        serializedObject.Update();
+
 		SerializedProperty heightmaps = serializedObject.FindProperty("heightmaps");
 		EditorGUILayout.PropertyField(heightmaps, new GUIContent("Height Maps"), true);
 		SerializedProperty heightmapSubstances = serializedObject.FindProperty("heightmapSubstances");
 		EditorGUILayout.PropertyField(heightmapSubstances, new GUIContent("Height Map Substances"), true);
+        serializedObject.ApplyModifiedProperties();
+        generationParameters.heightmaps = ((Vox.VoxelEditor)this.target).heightmaps;
+        generationParameters.heightmapSubstances = ((Vox.VoxelEditor)this.target).heightmapSubstances;
+
     }
 
     public void generateVoxels(Vox.VoxelEditor editor) {
