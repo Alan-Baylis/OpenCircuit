@@ -62,6 +62,10 @@ public class LegController : MonoBehaviour {
 		return canReach;
 	}
 
+	public Vector3 deducePosition() {
+		return lowerLeg.TransformVector(rotate(new Vector3(0, 0, -lowerLegLength), new Vector3(0, -lowerAngleOffset, 0)) +lowerOffset) +lowerLeg.position;
+	}
+
 	private bool calculatHipRotation(Vector3 worldPos) {
 		bool canReach = true;
 		Vector3 eulerAngles = hip.localEulerAngles;
@@ -75,7 +79,7 @@ public class LegController : MonoBehaviour {
 		if (eulerAngles.y < hipMinRotation || eulerAngles.y > hipMaxRotation) {
 			float newAngle = flipAngle(eulerAngles.y);
 			if (newAngle < hipMinRotation || newAngle > hipMaxRotation) {
-				eulerAngles.y = Mathf.Clamp(eulerAngles.y, hipMinRotation, hipMaxRotation);
+				eulerAngles.y = clampAngle(eulerAngles.y, hipMinRotation, hipMaxRotation);
 				canReach = false;
 			} else {
 				eulerAngles.y = newAngle;
@@ -96,14 +100,18 @@ public class LegController : MonoBehaviour {
 
 		// calculate circle intersection
 		double midPointDistance = circleMidPointDistance(new Vector2(upperOffset.x, upperOffset.z), new Vector2(localPos.x, localPos.z), upperLegLength, lowerLegLength);
-		float angleOffset = (float) System.Math.Acos(midPointDistance / upperLegLength) *Mathf.Rad2Deg;
-		if (float.IsNaN(angleOffset) || angleOffset < 0)
-			angleOffset = 0;
-		eulerAngles.y += angleOffset;
+		if (midPointDistance < upperLegLength) {
+			float angleOffset = (float)System.Math.Acos(midPointDistance / upperLegLength) * Mathf.Rad2Deg;
+			if (float.IsNaN(angleOffset) || angleOffset < 0) {
+				angleOffset = 180;
+			}
+			eulerAngles.y += angleOffset;
+		}
 
 		// apply angle limits
-		if (eulerAngles.y < upperMinRotation || eulerAngles.y > upperMaxRotation) {
-			eulerAngles.y = Mathf.Clamp(eulerAngles.y, upperMinRotation, upperMaxRotation);
+		float clampedAngle = clampAngle(eulerAngles.y, upperMinRotation, upperMaxRotation);
+		if (clampedAngle % 360 != eulerAngles.y % 360) {
+			eulerAngles.y = clampedAngle;
 			canReach = false;
 		}
 		upperLeg.localPosition += rotate(-upperOffset, new Vector3(0, eulerAngles.y, 0));
@@ -120,16 +128,18 @@ public class LegController : MonoBehaviour {
 		Vector3 localPos = lowerLeg.InverseTransformPoint(worldPos);
 		eulerAngles.y = (getVectorAngle(localPos.z, localPos.x) + 180 -lowerMinRotation) % 360 -180 +lowerMinRotation +lowerAngleOffset;
 
-		if (eulerAngles.y < lowerMinRotation || eulerAngles.y > lowerMaxRotation) {
-			eulerAngles.y = Mathf.Clamp(eulerAngles.y, lowerMinRotation, lowerMaxRotation);
+		eulerAngles.y += 180;
+		float clampedAngle = clampAngle(eulerAngles.y, lowerMinRotation, lowerMaxRotation);
+		if (clampedAngle % 360 != eulerAngles.y %360) {
+			eulerAngles.y = clampedAngle;
 			canReach = false;
 		}
-		eulerAngles.y += 180;
 		lowerLeg.localPosition += rotate(-lowerOffset, new Vector3(0, eulerAngles.y, 0));
 		lowerLeg.localEulerAngles = eulerAngles;
 		return canReach;
 	}
 
+	// TODO: add unit test
 	private double circleMidPointDistance(Vector2 p1, Vector2 p2, double r1, double r2) {
 		// ax + by + c = 0 is the equation for the line that passes through the circle intersection points
 		double a = 2 * (p1.x - p2.x);
@@ -148,15 +158,28 @@ public class LegController : MonoBehaviour {
 		return sign > 0 ? distance : -distance;
 	}
 
+	// TODO: add unit test
 	private Vector3 rotate(Vector3 vector, Vector3 angle) {
 		return Quaternion.Euler(angle) *vector;
 	}
 
+	// TODO: add unit test
 	private float getVectorAngle(float x, float y) {
 		return Mathf.Atan2(y, x) *Mathf.Rad2Deg;
     }
 
+	// TODO: add unit test
 	private float flipAngle(float angle) {
 		return (angle +360) %360 -180;
+	}
+
+	// TODO: add unit test
+	private float clampAngle(float startAngle, float min, float max) {
+		if (startAngle < max) {
+			startAngle = max - ((max - startAngle) % 360);
+		} else if (startAngle > min) {
+			startAngle = min + ((startAngle - min) % 360);
+		}
+		return Mathf.Clamp(startAngle, min, max);
 	}
 }

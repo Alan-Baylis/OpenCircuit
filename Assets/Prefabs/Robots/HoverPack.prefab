@@ -1390,8 +1390,8 @@ MonoBehaviour:
   lowerOffset: {x: 0.0045, y: 0, z: 1.045}
   lowerAngleOffset: -1.8
   lowerLegLength: 2.1
-  lowerMinRotation: -180
-  lowerMaxRotation: 0
+  lowerMinRotation: 0
+  lowerMaxRotation: 180
 --- !u!114 &11474616
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1413,8 +1413,8 @@ MonoBehaviour:
   lowerOffset: {x: 0.0045, y: 0, z: 1.045}
   lowerAngleOffset: -1.8
   lowerLegLength: 2.1
-  lowerMinRotation: -180
-  lowerMaxRotation: 0
+  lowerMinRotation: 0
+  lowerMaxRotation: 180
 --- !u!114 &11476926
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1468,8 +1468,8 @@ MonoBehaviour:
   lowerOffset: {x: 0.0045, y: 0, z: 1.045}
   lowerAngleOffset: -1.8
   lowerLegLength: 2.1
-  lowerMinRotation: -180
-  lowerMaxRotation: 0
+  lowerMinRotation: 0
+  lowerMaxRotation: 180
 --- !u!114 &11489770
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1491,8 +1491,8 @@ MonoBehaviour:
   lowerOffset: {x: 0.0045, y: 0, z: 1.045}
   lowerAngleOffset: -1.8
   lowerLegLength: 2.1
-  lowerMinRotation: -180
-  lowerMaxRotation: 0
+  lowerMinRotation: 0
+  lowerMaxRotation: 180
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
