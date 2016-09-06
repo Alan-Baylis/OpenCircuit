@@ -31,7 +31,6 @@ public class PatrolAction : Endeavour {
 		if (jet != null) {
 			currentDestination = getNearest(controller.transform.position);
 			jet.setTarget(routePoints[currentDestination], false);
-			jet.setAvailability(false);
 		}
 	}
 
@@ -39,13 +38,12 @@ public class PatrolAction : Endeavour {
         base.stopExecution();
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
-			jet.setAvailability(true);
 			jet.setTarget(null, false);
 		}
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if (message.Message.Equals ("target reached")) {
+		if (message.Message.Equals (HoverJet.TARGET_REACHED)) {
 			HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 			if (jet != null && routePoints[currentDestination] == message.Target) {
 				++currentDestination;

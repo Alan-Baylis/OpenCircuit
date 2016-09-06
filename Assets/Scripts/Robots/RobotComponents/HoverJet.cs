@@ -6,6 +6,8 @@ using System.Collections.Generic;
 [AddComponentMenu("Scripts/Robot/Hover Jet")]
 public class HoverJet : AbstractRobotComponent {
 
+    public const string TARGET_REACHED = "target reached";
+
 	public float distanceCost = 1;
 
 	private LabelHandle target = null;
@@ -206,7 +208,7 @@ public class HoverJet : AbstractRobotComponent {
 					getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
 				} else {
 					//print("rotation matched");
-					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target reached", target, target.getPosition(), null));
+					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, target.getPosition(), null));
 					target = null;
 					nav.Stop();
 					return;
@@ -238,7 +240,7 @@ public class HoverJet : AbstractRobotComponent {
 				if(!hasMatchedTargetRotation()) {
 					getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
 				} else {
-					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target reached", target, target.getPosition(), null));
+                    getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, target.getPosition(), null));
 					target = null;
 					return;
 				}

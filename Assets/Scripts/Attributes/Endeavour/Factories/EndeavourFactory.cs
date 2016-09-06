@@ -29,7 +29,8 @@ public abstract class EndeavourFactory : InspectorListElement {
 		typeof(Guard),
 		typeof(Hunt),
 		typeof(ActivateSpawner),
-		typeof(Search)
+		typeof(Search), 
+        typeof(SentryDropPoint)
 	};
 
 	public static readonly GoalEnum[] goalEnums;

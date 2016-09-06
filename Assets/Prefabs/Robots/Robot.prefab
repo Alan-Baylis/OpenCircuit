@@ -271,6 +271,7 @@ MonoBehaviour:
     priority: 1
   reliability: 5
   targetSightedSound: {fileID: 8300000, guid: 3ca3171149033ea4bbb64c22d29fa77f, type: 3}
+  evaluatePeriod: 0.2
   maxPriority: 0
   minPriority: 0
 --- !u!135 &13588166

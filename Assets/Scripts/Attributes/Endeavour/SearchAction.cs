@@ -25,7 +25,7 @@ public class SearchAction : InherentEndeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if (message.Type == RobotMessage.MessageType.ACTION && message.Message == "target reached") {
+		if (message.Type == RobotMessage.MessageType.ACTION && message.Message == HoverJet.TARGET_REACHED) {
 			lastSeen = Time.time;
 		}
 	}

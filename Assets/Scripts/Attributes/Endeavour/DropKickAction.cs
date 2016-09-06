@@ -22,7 +22,6 @@ public class DropKickAction : Endeavour {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			jet.setTarget(dropPoint, true);
-			jet.setAvailability(false);
 		}
 	}
 
@@ -31,7 +30,6 @@ public class DropKickAction : Endeavour {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			jet.setTarget(null, false);
-			jet.setAvailability(true);
 		}
 	}
 
@@ -40,7 +38,7 @@ public class DropKickAction : Endeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if (message.Message.Equals ("target reached")) {
+		if (message.Message.Equals (HoverJet.TARGET_REACHED)) {
 			RobotArms arms = controller.GetComponentInChildren<RobotArms> ();
 			arms.dropTarget();
 		}

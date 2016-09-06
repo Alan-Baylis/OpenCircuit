@@ -21,7 +21,6 @@ public class RechargeAction : Endeavour {
         HoverJet jet = controller.GetComponentInChildren<HoverJet>();
         if (jet != null) {
             jet.setTarget(powerStation.labelHandle, true);
-            jet.setAvailability(false);
         }
     }
 
@@ -38,7 +37,6 @@ public class RechargeAction : Endeavour {
         HoverJet jet = controller.GetComponentInChildren<HoverJet>();
         if (jet != null) {
             jet.setTarget(null, false);
-            jet.setAvailability(true);
         }
     }
 

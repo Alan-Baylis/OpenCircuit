@@ -24,7 +24,6 @@ public class HuntAction : Endeavour {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		if(jet != null && target != null) {
 			jet.pursueTarget(target.labelHandle, false);
-			jet.setAvailability(false);
 		}
 	}
 
@@ -33,7 +32,6 @@ public class HuntAction : Endeavour {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		if(jet != null) {
 			jet.setTarget(null, false);
-			jet.setAvailability(true);
 		}
 	}
 
@@ -51,7 +49,6 @@ public class HuntAction : Endeavour {
                 }
 
 				arms.attachTarget(target);
-				arms.setAvailability(false);
 			}
 		}
 	}
