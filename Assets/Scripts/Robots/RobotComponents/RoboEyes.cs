@@ -42,36 +42,4 @@ public class RoboEyes : AbstractVisualSensor {
 	public LaserProjector getScanner() {
 		return scanner;
 	}
-
-	protected override bool canSee (Transform obj) {
-		Vector3 objPos = obj.position;
-		bool result = false;
-		if (Vector3.Distance (objPos, transform.position) < sightDistance) {
-			RaycastHit hit;
-			Vector3 dir = objPos - transform.position;
-			dir.Normalize();
-			float angle = Vector3.Angle(dir, transform.forward);
-//			print (getController().gameObject.name);
-//			print (angle);
-			if(angle < fieldOfViewAngle * 0.5f) {
-				Physics.Raycast (transform.position, dir, out hit, sightDistance);
-				if (hit.transform == obj ) {//&& Vector3.Dot (transform.forward.normalized, (objPos - transform.position).normalized) > 0) {
-					result = true;
-#if UNITY_EDITOR
-					if (getController().debug)
-						drawLine(transform.position, hit.point, Color.green);
-#endif
-				} else {
-					//print("looking for: " + obj.gameObject.name);
-					//print("blocked by: " + hit.collider.gameObject.name);
-#if UNITY_EDITOR
-					if (getController().debug)
-						drawLine(transform.position, hit.point, Color.red);
-#endif
-					//print("lost: " + obj.gameObject.name + "obscured by: " + hit.transform.gameObject.name);
-				}
-			}
-		}
-		return result;
-	}
 }

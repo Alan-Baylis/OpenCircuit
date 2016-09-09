@@ -7,6 +7,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
     public float fieldOfViewAngle = 170f;           // Number of degrees, centered on forward, for the enemy sight.
     public float sightDistance = 30.0f;
+    public GameObject eye;
 
     private bool lookingEnabled = false;
     protected Dictionary<Label, SensoryInfo> targetMap = new Dictionary<Label, SensoryInfo>();
@@ -37,7 +38,37 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
         enableLooking();
     }
 
-    protected abstract bool canSee(Transform transform);
+    protected bool canSee(Transform obj) {
+        Vector3 objPos = obj.position;
+        bool result = false;
+        if (Vector3.Distance(objPos, eye.transform.position) < sightDistance) {
+            RaycastHit hit;
+            Vector3 dir = objPos - eye.transform.position;
+            dir.Normalize();
+            float angle = Vector3.Angle(dir, eye.transform.forward);
+            //			print (getController().gameObject.name);
+            //			print (angle);
+            if (angle < fieldOfViewAngle * 0.5f) {
+                Physics.Raycast(eye.transform.position, dir, out hit, sightDistance);
+                if (hit.transform == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
+                    result = true;
+#if UNITY_EDITOR
+                    if (getController().debug)
+                        drawLine(eye.transform.position, hit.point, Color.green);
+#endif
+                } else {
+                    //print("looking for: " + obj.gameObject.name);
+                    //print("blocked by: " + hit.collider.gameObject.name);
+#if UNITY_EDITOR
+                    if (getController().debug)
+                        drawLine(eye.transform.position, hit.point, Color.red);
+#endif
+                    //print("lost: " + obj.gameObject.name + "obscured by: " + hit.transform.gameObject.name);
+                }
+            }
+        }
+        return result;
+    }
 
     private void lookAround() {
 #if UNITY_EDITOR

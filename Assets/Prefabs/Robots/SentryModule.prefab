@@ -65,7 +65,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106926}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 234.33426, y: 129.459, z: 226.4151}
+  m_LocalPosition: {x: 236.11148, y: 128.20195, z: 226.66861}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children:
   - {fileID: 487186}
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fieldOfViewAngle: 170
   sightDistance: 30
-  eye: {fileID: 11456232}
+  eye: {fileID: 119542}
   rotatable: {fileID: 11476790}
 --- !u!114 &11456232
 MonoBehaviour:
