@@ -19,7 +19,10 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
             float sizeValue = 2f * Mathf.PI / theta_scale;
             size = (int)sizeValue;
             size++;
-            lineRenderer = getController().gameObject.AddComponent<LineRenderer>();
+            lineRenderer = getController().gameObject.GetComponent<LineRenderer>();
+            if (lineRenderer == null) {
+                lineRenderer = getController().gameObject.AddComponent<LineRenderer>();
+            }
             lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
             lineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
             lineRenderer.SetVertexCount(size);
