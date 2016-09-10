@@ -23,7 +23,6 @@ public class PursueAction : Endeavour {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			jet.pursueTarget(target.labelHandle, false);
-			jet.setAvailability(false);
 		}
 	}
 
@@ -32,7 +31,6 @@ public class PursueAction : Endeavour {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			jet.setTarget(null, false);
-			jet.setAvailability(true);
 		}
 	}
 

@@ -186,6 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fieldOfViewAngle: 140
   sightDistance: 30
+  eye: {fileID: 194710}
 --- !u!114 &11488654
 MonoBehaviour:
   m_ObjectHideFlags: 1

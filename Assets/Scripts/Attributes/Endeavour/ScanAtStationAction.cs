@@ -23,7 +23,6 @@ public class ScanAtStationAction : Endeavour {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
 			jet.setTarget(scanStation, true);
-			jet.setAvailability(false);
 		}
 	}
 
@@ -32,7 +31,6 @@ public class ScanAtStationAction : Endeavour {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
 			jet.setTarget(null, false);
-			jet.setAvailability(true);
 		}
 	}
 
@@ -43,7 +41,7 @@ public class ScanAtStationAction : Endeavour {
 
 	public override void onMessage(RobotMessage message) {
 		if(message.Type == RobotMessage.MessageType.ACTION) {
-			if(message.Message.Equals("target reached")) {
+			if(message.Message.Equals(HoverJet.TARGET_REACHED)) {
 				LaserProjector projector = scanStation.label.GetComponentInChildren<LaserProjector>();
 				if(projector != null) {
 					projector.setController(controller);

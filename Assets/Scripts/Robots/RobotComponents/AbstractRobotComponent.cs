@@ -14,7 +14,6 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 			return myPowerSource;
 		} }
 	private RobotController roboController;
-	protected bool isOccupied = false;
 
 	public RobotController getController() {
 		if (roboController == null) {
@@ -25,13 +24,9 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 		return roboController;
 	}
 
-	public bool isAvailable() {
-		return isOccupied;
-	}
-
-	public void setAvailability(bool availability) {
-		isOccupied = !availability;
-	}
+    public void setController(RobotController controller) {
+        roboController = controller;
+    }
 
 	public virtual System.Type getComponentArchetype() {
 		return this.GetType();
