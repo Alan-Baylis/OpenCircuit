@@ -12,6 +12,7 @@ public class DropSentryAction : Endeavour {
     }
 
     public override void execute() {
+        base.execute();
         HoverJet jet = controller.getRobotComponent<HoverJet>();
         if (jet != null) {
             jet.setTarget(parent, true);
@@ -24,7 +25,6 @@ public class DropSentryAction : Endeavour {
     }
 
     public override void onMessage(RobotMessage message) {
-        Debug.Log(message.Message);
         if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(HoverJet.TARGET_REACHED)) {
             dropSentry();
         }
