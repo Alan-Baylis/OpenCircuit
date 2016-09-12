@@ -310,9 +310,17 @@ namespace Vox {
 				uvs = VoxelMeshReducer.removeEntries(uvs, verticesRemoved);
 			}
 
+			Vector4[] tangents = new Vector4[verts.Length];
+			for(int i=0; i<tangents.Length; ++i) {
+				//Vector3 n = norms[i];
+				//tangents[i] = new Vector4(n.x, n.y, n.z, -1f);
+				tangents[i] = new Vector4(1, 0, 0, -1f);
+			}
+
 			m.vertices = verts;
 			m.normals = norms;
 			m.uv = uvs;
+			m.tangents = tangents;
 
 			if (hasGrass) {
 				m.subMeshCount = 2;

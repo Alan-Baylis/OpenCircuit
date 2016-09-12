@@ -263,14 +263,14 @@ public class Menu : MonoBehaviour {
 	private float numberField(Rect relativePosition, float startValue) {
 		try {
 			return float.Parse(GUI.TextField(convertRect(relativePosition, false), startValue.ToString()));
-		} catch (System.FormatException fe) {
+		} catch (System.FormatException) {
 			return startValue;
 		}
 	}
 	private int numberField(Rect relativePosition, int startValue) {
 		try {
 			return int.Parse(GUI.TextField(convertRect(relativePosition, false), startValue.ToString()));
-		} catch (System.FormatException fe) {
+		} catch (System.FormatException) {
 			return startValue;
 		}
 	}
