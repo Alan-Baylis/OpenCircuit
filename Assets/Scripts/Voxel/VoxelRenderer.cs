@@ -312,9 +312,14 @@ namespace Vox {
 
 			Vector4[] tangents = new Vector4[verts.Length];
 			for(int i=0; i<tangents.Length; ++i) {
-				//Vector3 n = norms[i];
-				//tangents[i] = new Vector4(n.x, n.y, n.z, -1f);
-				tangents[i] = new Vector4(1, 0, 0, -1f);
+				Vector3 n = norms[i];
+				Vector3 t;
+				if (Mathf.Abs(n.y) < 0.5f) {
+					t = Vector3.Cross(n, Vector3.up).normalized;
+				} else {
+					t = Vector3.Cross(n, Vector3.forward).normalized;
+				}
+				tangents[i] = new Vector4(t.x, t.y, t.z, -1);
 			}
 
 			m.vertices = verts;
