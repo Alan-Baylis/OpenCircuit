@@ -17,7 +17,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 	[Server]
 	protected void spawnRobot() {
-
+        ++RobotController.controllerCount;
 		if (bodyPrefab != null) {
 			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as GameObject;
 
@@ -63,8 +63,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			navAgent.avoidancePriority = Random.Range(0, 100);
 			navAgent.enabled = true;
 
-			if (config.getCRC() != null) {
-				config.getCRC().forceAddListener(robotController);
+			if (getConfig().getCRC() != null) {
+                getConfig().getCRC().forceAddListener(robotController);
 			}
 		} else {
 			Debug.LogError("Null body prefab in spawner: " +name);

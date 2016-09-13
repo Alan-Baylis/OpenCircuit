@@ -63,7 +63,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	[ServerCallback]
 	void Start() {
-		controllerCount++;
 		myHealth = GetComponent<Health>();
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         foreach(Goal goal in goals) {
