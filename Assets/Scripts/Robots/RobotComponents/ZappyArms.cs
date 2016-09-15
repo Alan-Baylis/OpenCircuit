@@ -19,9 +19,6 @@ public class ZappyArms : AbstractArms {
 	private AudioSource footstepEmitter;
 
 	private Label target = null;
-	private Label proposedTarget = null;
-
-	private bool proposedTargetStatus = false;
 
 	void Start() {
 		footstepEmitter = gameObject.AddComponent<AudioSource>();
@@ -52,40 +49,21 @@ public class ZappyArms : AbstractArms {
 
 	void FixedUpdate() {
 
-		if(proposedTarget == null && target == null) {
-			return;
-		}
-		if(proposedTarget != null && !proposedTargetStatus) {
-			proposedTarget = null;
-		}
-
 		if(target != null) {
 			if(Vector3.Distance(target.transform.localPosition, HOLD_POSITION) > .0001f) {
 				target = null;
 			}
 		}
 
-		proposedTargetStatus = false;
-
 	}
 
     [ServerCallback]
 	void OnTriggerEnter(Collider collision) {
 		if(target == null) {
-			proposedTarget = collision.gameObject.GetComponent<Label>();
-			proposedTargetStatus = true;
+			Label proposedTarget = collision.gameObject.GetComponent<Label>();
 			if(proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
-
-				// footstepEmitter.PlayOneShot(pickUp, 1);
 				getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target in reach", proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			}
-		}
-	}
-
-	void OnTriggerStay(Collider collision) {
-		Label label = collision.gameObject.GetComponent<Label>();
-		if(label == proposedTarget) {
-			proposedTargetStatus = true;
 		}
 	}
 
@@ -133,10 +111,6 @@ public class ZappyArms : AbstractArms {
 			footstepEmitter.PlayOneShot(zap, 1);
 			target.sendTrigger(this.gameObject, new ElectricShock());
 		}
-	}
-
-	public override Label getProposedTarget() {
-		return proposedTarget;
 	}
 
 	public override Label getTarget() {
