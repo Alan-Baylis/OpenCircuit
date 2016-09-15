@@ -9,7 +9,10 @@ public class PursueAction : Endeavour {
 	public PursueAction (EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target) : base(factory, controller, goals, target.labelHandle) {
 		this.target = target;
 		this.name = "pursue";
-		requiredComponents = new System.Type[] {typeof(HoverJet)};
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute () {
@@ -18,27 +21,15 @@ public class PursueAction : Endeavour {
         return arms != null && !arms.hasTarget() && !target.hasTag(TagEnum.Grabbed) && controller.knowsTarget(target.labelHandle) && jet != null && jet.canReach(target);
 	}
 
-	public override void execute() {
-        base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			jet.pursueTarget(target.labelHandle, false);
 		}
 	}
 
-	public override void stopExecution() {
-        base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
-		if (jet != null) {
-			jet.setTarget(null, false);
-		}
-	}
-
 	public override bool isStale() {
 		return !controller.knowsTarget (target.labelHandle);
-	}
-
-	public override void onMessage(RobotMessage message) {
 	}
 
 	public override bool singleExecutor() {

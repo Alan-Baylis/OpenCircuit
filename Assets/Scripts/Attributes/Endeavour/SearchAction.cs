@@ -8,7 +8,10 @@ public class SearchAction : InherentEndeavour {
 
 	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent) : base(factory, controller, goals, parent) {
 		this.name = "search";
-		requiredComponents = new System.Type[] { typeof(HoverJet) };
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute() {
@@ -19,8 +22,7 @@ public class SearchAction : InherentEndeavour {
 		return false;
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		controller.getRobotComponent<HoverJet>().setTarget(parent, true);
 	}
 

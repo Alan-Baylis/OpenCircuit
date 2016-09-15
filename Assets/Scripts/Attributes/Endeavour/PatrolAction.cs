@@ -13,7 +13,6 @@ public class PatrolAction : Endeavour {
 		: base(factory, controller, goals, target.labelHandle) {
 		//this.route = route;
 		this.name = "patrol";
-		requiredComponents = new System.Type[] {typeof(HoverJet)};
 		//this.points = route;
 		//routePoints = new List<Label> ();
 		routePoints = route;
@@ -25,20 +24,11 @@ public class PatrolAction : Endeavour {
 		}*/
 	}
 
-	public override void execute (){
-        base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			currentDestination = getNearest(controller.transform.position);
 			jet.setTarget(routePoints[currentDestination], false);
-		}
-	}
-
-	public override void stopExecution(){
-        base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
-		if (jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 
@@ -88,6 +78,10 @@ public class PatrolAction : Endeavour {
 			return jet.calculatePathCost(routePoints[currentDestination].label);
 		}
 		return 0;
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool singleExecutor() {

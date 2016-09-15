@@ -15,10 +15,7 @@ public class InvestigateAction : InherentEndeavour {
 		//creationTime = System.DateTime.Now;
 		creationTime = Time.time;
 		this.name = "investigate";
-		requiredComponents = new System.Type[] { typeof(HoverJet) };
 	}
-
-
 
 	public override bool isStale() {
 		NavMeshAgent nav = controller.GetComponent<NavMeshAgent>();
@@ -48,24 +45,19 @@ public class InvestigateAction : InherentEndeavour {
 		}
 	}
 
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
+	}
+
 	public override bool canExecute() {
 		System.Nullable<Vector3> pos = controller.getLastKnownPosition(parent);
 		return pos != null;
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
 			jet.setTarget(parent, false);
-		}
-	}
-
-	public override void stopExecution() {
-		base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 

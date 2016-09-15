@@ -28,6 +28,9 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
         roboController = controller;
     }
 
+	public virtual void release() {
+	}
+
 	public virtual System.Type getComponentArchetype() {
 		return this.GetType();
 	}

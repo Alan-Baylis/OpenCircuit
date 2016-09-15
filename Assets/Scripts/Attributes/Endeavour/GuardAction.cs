@@ -8,22 +8,12 @@ public class GuardAction : Endeavour {
 	public GuardAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label guardLocation) : base(factory, controller, goals, guardLocation.labelHandle){
 		this.guardLocation = guardLocation;
 		this.name = "guard";
-		requiredComponents = new System.Type[] { typeof(HoverJet) };
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null ) {
 			jet.setTarget(guardLocation.labelHandle, true, true);
-		}
-	}
-
-	public override void stopExecution() {
-		base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 
@@ -31,8 +21,8 @@ public class GuardAction : Endeavour {
 		return false;
 	}
 
-	public override void onMessage(RobotMessage message) {
-
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute() {
