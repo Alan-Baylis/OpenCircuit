@@ -10,7 +10,7 @@ public class ElectrocuteAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new System.Type[] { typeof(AbstractArms) };
 	}
 
 	public override bool isStale() {
