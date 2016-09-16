@@ -10,7 +10,6 @@ public class HuntAction : Endeavour {
 		: base(factory, controller, goals, target.labelHandle) {
 		this.target = target;
 		this.name = "hunt";
-		requiredComponents = new System.Type[] { typeof(HoverJet), typeof(AbstractArms) };
 	}
 
 	public override bool canExecute() {
@@ -19,19 +18,10 @@ public class HuntAction : Endeavour {
         return arms != null && (!arms.hasTarget() || arms.getTarget() == target) && (!target.hasTag(TagEnum.Grabbed) || arms.hasTarget()) && jet != null && jet.canReach(target) && target.GetComponent<Player>() != null && !target.GetComponent<Player>().frozen;
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		if(jet != null && target != null) {
 			jet.pursueTarget(target.labelHandle, false);
-		}
-	}
-
-	public override void stopExecution() {
-		base.stopExecution();
-		HoverJet jet = controller.getRobotComponent<HoverJet>();
-		if(jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 
@@ -51,6 +41,10 @@ public class HuntAction : Endeavour {
 				arms.attachTarget(target);
 			}
 		}
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet), typeof(AbstractArms) };
 	}
 
 	public override bool singleExecutor() {

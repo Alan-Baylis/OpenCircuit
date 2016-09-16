@@ -8,20 +8,18 @@ public class ActivateSpawnerAction : Endeavour {
 
 	public ActivateSpawnerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent, RobotSpawner spawner) : base(factory, controller, goals, parent) {
 		this.spawner = spawner;
-		requiredComponents = new System.Type[] { typeof(HoverJet) };
 		name = "ActivateSpawner";
 	}
 
-	private HoverJet getHoverJet() {
-		return controller.getRobotComponent<HoverJet>();
-	}
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
+    }
 
 	public override bool canExecute() {
 		return true;
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		getHoverJet().setTarget(parent, true);
 	}
 
@@ -35,11 +33,15 @@ public class ActivateSpawnerAction : Endeavour {
 		}
     }
 
+	public override bool singleExecutor() {
+		return true;
+	}
+
 	protected override float getCost() {
 		return getHoverJet().calculatePathCost(parent.label);
 	}
 
-	public override bool singleExecutor() {
-		return true;
+	private HoverJet getHoverJet() {
+		return controller.getRobotComponent<HoverJet>();
 	}
 }

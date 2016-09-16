@@ -9,9 +9,7 @@ public class ScanAction : Endeavour {
 	public ScanAction (EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target) : base(factory, controller, goals, target.labelHandle) {
 		this.target = target;
 		this.name = "scan";
-		requiredComponents = new System.Type[] {typeof(HoverJet)};
 	}
-
 
 	public override bool isStale() {
 		return isComplete;
@@ -27,22 +25,24 @@ public class ScanAction : Endeavour {
 		}
 	}
 
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet), typeof(AbstractArms), typeof(RoboEyes) };
+	}
+
 	public override bool canExecute() {
 		RobotArms arms = controller.GetComponentInChildren<RobotArms>();
 		RoboEyes eyes = controller.GetComponentInChildren<RoboEyes>();
 		return eyes != null && eyes.hasScanner() && arms != null && arms.hasTarget();
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		RoboEyes eyes = controller.GetComponentInChildren<RoboEyes>();
 		if(eyes != null) {
 			eyes.getScanner().startScan();
 		}
 	}
 
-	public override void stopExecution() {
-		base.stopExecution();
+	protected override void onStopExecution() {
 		RoboEyes eyes = controller.GetComponentInChildren<RoboEyes>();
 		if(eyes != null) {
 			eyes.getScanner().stopScan();

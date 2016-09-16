@@ -8,12 +8,10 @@ public class DropSentryAction : Endeavour {
     public DropSentryAction(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, LabelHandle parent)
         : base(parentFactory, controller, goals, parent) {
         name = "dropSentry";
-        requiredComponents = new System.Type[] { typeof(HoverJet) };
     }
 
-    public override void execute() {
-        base.execute();
-        HoverJet jet = controller.getRobotComponent<HoverJet>();
+	protected override void onExecute() {
+		HoverJet jet = controller.getRobotComponent<HoverJet>();
         if (jet != null) {
             jet.setTarget(parent, true);
         }
@@ -28,9 +26,13 @@ public class DropSentryAction : Endeavour {
         if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(HoverJet.TARGET_REACHED)) {
             dropSentry();
         }
-    } 
+	}
 
-    public override bool canExecute() {
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
+	}
+
+	public override bool canExecute() {
         HoverJet legs = controller.getRobotComponent<HoverJet>();
         return legs != null && legs.canReach(parent.label);
     }

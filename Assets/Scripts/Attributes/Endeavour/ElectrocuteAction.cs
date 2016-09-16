@@ -7,21 +7,17 @@ public class ElectrocuteAction : Endeavour {
 	public ElectrocuteAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target)
 		: base(factory, controller, goals, target.labelHandle) {
 		this.name = "electrocute";
-		requiredComponents = new System.Type[] { };
-
 	}
 
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(AbstractArms) };
+	}
 
 	public override bool isStale() {
 		return false;
 	}
 
-	public override void onMessage(RobotMessage message) {
-
-	}
-
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		RobotArms arms = controller.GetComponentInChildren<RobotArms>();
 		if(arms != null) {
 			arms.electrifyTarget();

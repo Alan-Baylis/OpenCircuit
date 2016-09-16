@@ -9,7 +9,6 @@ public class DropKickAction : Endeavour {
 	public DropKickAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle dropPoint) : base(factory, controller, goals, dropPoint) {
 		this.name = "dropKick";
 		this.dropPoint = dropPoint;
-		requiredComponents = new System.Type[] {typeof(HoverJet)};
 	}
 
 	public override bool canExecute () {
@@ -17,19 +16,10 @@ public class DropKickAction : Endeavour {
 		return (arms != null) && (dropPoint != null) && (arms.hasTarget());
 	}
 
-	public override void execute (){
-        base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		if (jet != null) {
 			jet.setTarget(dropPoint, true);
-		}
-	}
-
-	public override void stopExecution(){
-        base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
-		if (jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 
@@ -42,6 +32,10 @@ public class DropKickAction : Endeavour {
 			RobotArms arms = controller.GetComponentInChildren<RobotArms> ();
 			arms.dropTarget();
 		}
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool singleExecutor() {

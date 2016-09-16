@@ -10,7 +10,10 @@ public class ScanAtStationAction : Endeavour {
 		: base(factory, controller, goals, scanStation) {
 		this.name = "scanAtStation";
 		this.scanStation = scanStation;
-		requiredComponents = new System.Type[] {typeof(HoverJet)};
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute() {
@@ -18,19 +21,10 @@ public class ScanAtStationAction : Endeavour {
 		return (arms != null) && (arms.hasTarget());
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
 			jet.setTarget(scanStation, true);
-		}
-	}
-
-	public override void stopExecution() {
-		base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 
