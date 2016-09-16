@@ -18,7 +18,7 @@ public class ElectrocuteAction : Endeavour {
 	}
 
 	protected override void onExecute() {
-		RobotArms arms = controller.GetComponentInChildren<RobotArms>();
+		ZappyArms arms = controller.GetComponentInChildren<ZappyArms>();
 		if(arms != null) {
 			arms.electrifyTarget();
 		}

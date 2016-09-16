@@ -30,7 +30,7 @@ public class ScanAction : Endeavour {
 	}
 
 	public override bool canExecute() {
-		RobotArms arms = controller.GetComponentInChildren<RobotArms>();
+		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
 		RoboEyes eyes = controller.GetComponentInChildren<RoboEyes>();
 		return eyes != null && eyes.hasScanner() && arms != null && arms.hasTarget();
 	}
