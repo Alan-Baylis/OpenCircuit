@@ -11,6 +11,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
     private bool lookingEnabled = false;
     protected Dictionary<Label, SensoryInfo> targetMap = new Dictionary<Label, SensoryInfo>();
+    private int visibleTargetCount = 0;
 
     [ServerCallback]
     public virtual void Start() {
@@ -29,6 +30,10 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
         }
 #endif
         enableLooking();
+    }
+
+    public int getSightingCount() {
+        return visibleTargetCount;
     }
 
     [ServerCallback]
@@ -107,6 +112,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
     private void registerSightingFound(Label label) {
         getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_SIGHTED, "target sighted", label.labelHandle, label.transform.position, targetMap[label].getDirection()));
         targetMap[label].addSighting();
+        ++visibleTargetCount;
     }
 
     private void enableLooking() {
@@ -127,6 +133,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
             //print("target lost: " + label.name);
             getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
             targetMap[label].removeSighting();
+            --visibleTargetCount;
         }
     }
 
