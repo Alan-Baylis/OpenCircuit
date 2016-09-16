@@ -17,7 +17,7 @@ public class ScanAtStationAction : Endeavour {
 	}
 
 	public override bool canExecute() {
-		RobotArms arms = controller.GetComponentInChildren<RobotArms>();
+		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
 		return (arms != null) && (arms.hasTarget());
 	}
 
@@ -47,7 +47,7 @@ public class ScanAtStationAction : Endeavour {
 			else if(message.Message.Equals("target scanned")) {
 				List<Goal> goals = new List<Goal>();
 				goals.Add(new Goal(GoalEnum.Offense, 10f));
-				RobotArms arms = controller.GetComponentInChildren<RobotArms>();
+				AbstractArms arms = controller.GetComponentInChildren<AbstractArms>();
 				Label target = arms.getTarget();
 				if(target.GetComponent<Player>() != null) {
 					Debug.LogWarning("Implement this using a stack instead!!");

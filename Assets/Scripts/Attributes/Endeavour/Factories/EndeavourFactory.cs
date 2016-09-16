@@ -20,18 +20,22 @@ public abstract class EndeavourFactory : InspectorListElement {
 
 	private static string[] typeNames = null;
 
-	public static readonly System.Type[] types = new System.Type[] {
-		typeof(Patrol),
-		typeof(Pursue),
-		typeof(Drop),
-        typeof(Recharge),
-		typeof(ScanAtStationFactory),
-		typeof(Guard),
-		typeof(Hunt),
-		typeof(ActivateSpawner),
-		typeof(Search), 
-        typeof(SentryDropPoint)
-	};
+	private static System.Type[] eTypes;
+
+	public static System.Type[] types { get {
+			if (eTypes == null) {
+				System.Type[] ts = System.Reflection.Assembly.GetAssembly(typeof(EndeavourFactory)).GetTypes();
+				List<System.Type> pairedTypes = new List<System.Type>();
+				System.Type targetType = typeof(EndeavourFactory);
+				foreach (System.Type t in ts) {
+					if (t.IsSubclassOf(targetType))
+						pairedTypes.Add(t);
+				}
+				eTypes = pairedTypes.ToArray();
+			}
+			return eTypes;
+		}
+	}
 
 	public static readonly GoalEnum[] goalEnums;
 
