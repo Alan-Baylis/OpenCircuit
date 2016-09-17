@@ -18,8 +18,6 @@ public class ZappyArms : AbstractArms {
 
 	private AudioSource footstepEmitter;
 
-	private Label target = null;
-
 	void Start() {
 		footstepEmitter = gameObject.AddComponent<AudioSource>();
 		footstepEmitter.enabled = true;
@@ -30,100 +28,80 @@ public class ZappyArms : AbstractArms {
 		BoxCollider collider = GetComponent<BoxCollider>();
         if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
 			collider.enabled = false;
-			dropTarget();
+			releaseTarget();
 		} else {
 			collider.enabled = true;
-			if(hasTarget()) {
-                if (target.GetComponent<Player>() != null && target.GetComponent<Player>().frozen) {
-                    dropTarget();
+			if(targetCaptured()) {
+                if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
+                    releaseTarget();
                     return;
                 }
-				Label label = target.GetComponent<Label>();
-				label.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
+				captured.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
 				if(!footstepEmitter.isPlaying) {
 					footstepEmitter.PlayOneShot(zap);
 				}
 			}
 		}
 	}
-
-	void FixedUpdate() {
-
-		if(target != null) {
-			if(Vector3.Distance(target.transform.localPosition, HOLD_POSITION) > .0001f) {
-				target = null;
-			}
-		}
-
-	}
-
+	
     [ServerCallback]
 	void OnTriggerEnter(Collider collision) {
-		if(target == null) {
+		if(!targetCaptured()) {
 			Label proposedTarget = collision.gameObject.GetComponent<Label>();
-			if(proposedTarget != null && proposedTarget.hasTag(TagEnum.GrabTarget)) {
-				getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target in reach", proposedTarget.labelHandle, proposedTarget.transform.position, null));
+			if(proposedTarget != null && proposedTarget == target) {
+				captureTarget(proposedTarget);
+				getController().enqueueMessage(new RobotMessage(
+					RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
+					proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			}
 		}
 	}
-
-	public override bool hasTarget() {
-		return target != null;
-	}
-
-    [Server]
-	public override void dropTarget() {
-		if(target != null) {
-			target.clearTag(TagEnum.Grabbed);
-			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target dropped", target.labelHandle, target.transform.position, null));
+	
+	[Server]
+	public override void releaseCaptured() {
+		if (captured != null) {
+			captured.clearTag(TagEnum.Grabbed);
+			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, RELEASED_CAPTURED_MESSAGE, captured.labelHandle, captured.transform.position, null));
 			footstepEmitter.PlayOneShot(drop, 1);
 
-			dropRigidbody(target.gameObject);
-			NetworkIdentity netId = target.GetComponent<NetworkIdentity>();
+			dropRigidbody(captured.gameObject);
+			NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
 			if (netId != null)
-				RpcDropTarget(netId.netId);
+				RpcReleaseTarget(netId.netId);
 
-			target = null;
+			captured = null;
+		}
+	}
+
+	[Server]
+	public void electrifyTarget() {
+		if(captured != null) {
+			footstepEmitter.PlayOneShot(zap, 1);
+			captured.sendTrigger(this.gameObject, new ElectricShock());
 		}
 	}
 
 
 
-    [Server]
-	public override void attachTarget(Label obj) {
-		if(target == null) {
-			target = obj;
-			target.setTag(new Tag(TagEnum.Grabbed, 0));
+	[Server]
+	protected void captureTarget(Label obj) {
+		if (captured == null) {
+			captured = obj;
+			captured.setTag(new Tag(TagEnum.Grabbed, 0));
 			attachRigidbody(obj.gameObject);
 			NetworkIdentity netId = obj.GetComponent<NetworkIdentity>();
 			if (netId != null)
-				RpcAttachTarget(netId.netId);
-			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target grabbed", target.labelHandle, target.transform.position, null));
-			Debug.LogWarning("Please revise the scan action creation code");
-			//getController().addEndeavour(new ScanAction(getController(), new List<Goal>(), target));
+				RpcCaptureTarget(netId.netId);
 		}
 	}
-
-
-
-	public void electrifyTarget() {
-		if(target != null) {
-			footstepEmitter.PlayOneShot(zap, 1);
-			target.sendTrigger(this.gameObject, new ElectricShock());
-		}
-	}
-
-	public override Label getTarget() {
-		return target;
-	}
-
-    [ClientRpc]
-    protected void RpcDropTarget(NetworkInstanceId netId) {
+	
+	[ClientRpc]
+    protected void RpcReleaseTarget(NetworkInstanceId netId) {
         dropRigidbody(ClientScene.FindLocalObject(netId));
     }
 
     [ClientRpc]
-    protected void RpcAttachTarget(NetworkInstanceId netId) {
+    protected void RpcCaptureTarget(NetworkInstanceId netId) {
         attachRigidbody(ClientScene.FindLocalObject(netId));
     }
 
