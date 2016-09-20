@@ -29,6 +29,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 	//Properties handled by Unity serialization
 	public bool isVisible = true;
+    public bool inherentKnowledge = false;
 
 	[System.NonSerialized]
 	public Tag[] tags = new Tag[0];

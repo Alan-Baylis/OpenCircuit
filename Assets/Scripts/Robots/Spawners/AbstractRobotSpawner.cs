@@ -25,7 +25,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			RobotController robotController = body.GetComponent<RobotController>();
 
 			addKnowledge(robotController);
-            applyAmmoSpawnerKnowledge(robotController);
 
 #if UNITY_EDITOR
 			robotController.debug = debug;
@@ -77,7 +76,9 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 		}
 
 		applySpawnerKnowledge(robotController);
-	}
+        applyAmmoSpawnerKnowledge(robotController);
+        applyInherentKnowledge(robotController);
+    }
 
 
 
@@ -108,4 +109,14 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			controller.addKnownLocation(spawner.GetComponent<Label>());
 		}
 	}
+
+    private void applyInherentKnowledge(RobotController controller) {
+        Label[] labels = FindObjectsOfType<Label>();
+        foreach (Label label in labels) {
+            if (label.inherentKnowledge) {
+                print("adding: " + label.name);
+                controller.addKnownLocation(label);
+            }
+        }
+    }
 }

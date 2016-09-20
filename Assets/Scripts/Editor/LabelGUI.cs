@@ -24,6 +24,7 @@ public class LabelGUI : Editor {
 		serializedObject.Update();
 		Label label = (Label)target;
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("isVisible"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("inherentKnowledge"));
 		doTagList(label);
 		doOperationList(label);
 		doEndeavourList(label);
