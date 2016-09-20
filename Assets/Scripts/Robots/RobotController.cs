@@ -88,7 +88,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
                 AbstractRobotComponent[] components = GetComponentsInChildren<AbstractRobotComponent>();
                 myComponentMap = new Dictionary<System.Type, AbstractRobotComponent>();
                 foreach (AbstractRobotComponent component in components) {
-                    myComponentMap[component.getComponentArchetype()] = component;
+                    component.attachToController(this);
                 }
             }
             return myComponentMap;
@@ -186,7 +186,15 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		return goalMap;
 	}
 
-	public T getRobotComponent<T> () where T : AbstractRobotComponent {
+    public void attachRobotComponent(AbstractRobotComponent component) {
+        componentMap[component.getComponentArchetype()] = component;
+    }
+
+    public void detachRobotComponent(AbstractRobotComponent component) {
+        componentMap.Remove(component.getComponentArchetype());
+    }
+
+    public T getRobotComponent<T> () where T : AbstractRobotComponent {
 		return (T)getRobotComponent(typeof(T));
 	}
 
@@ -374,15 +382,13 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	[ClientRpc]
 	protected void RpcDismantle(int randomSeed) {
-		UnityEngine.Random.seed = randomSeed;
 		dismantle();
 		destructionEffect.spawn(transform.position);
 	}
 
     [Server]
     protected void disassembleRobotComponents() {
-        AbstractRobotComponent[] components = GetComponentsInChildren<AbstractRobotComponent>();
-        foreach (AbstractRobotComponent component in components) {
+        foreach (AbstractRobotComponent component in componentMap.Values) {
             component.enabled = false;
             component.transform.parent = null;
             component.dismantle();

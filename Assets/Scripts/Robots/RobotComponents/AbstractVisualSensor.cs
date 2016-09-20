@@ -125,7 +125,9 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
     private void disableLooking() {
         CancelInvoke("lookAround");
         lookingEnabled = false;
-        clearSightings();
+        if (isComponentAttached()) {
+            clearSightings();
+        }
     }
 
     private void clearSighting(Label label) {

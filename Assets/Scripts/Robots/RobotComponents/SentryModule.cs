@@ -18,8 +18,10 @@ public class SentryModule : AbstractVisualSensor {
             }
             averageLocation /= getSightingCount();
 #if UNITY_EDITOR
-            //TODO: Surround this with a debug check...
-            drawLine(eye.transform.position, averageLocation, Color.blue);
+            if (isComponentAttached() && getController().debug) {
+                //TODO: Surround this with a debug check...
+                drawLine(eye.transform.position, averageLocation, Color.blue);
+            }
 #endif
             trackTarget(averageLocation);
         } else {
