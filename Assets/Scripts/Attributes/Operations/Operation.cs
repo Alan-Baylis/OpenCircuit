@@ -8,18 +8,24 @@ using System.Runtime.Serialization.Formatters.Binary;
 public abstract class Operation: InspectorListElement {
 
 	private static string[] typeNames = null;
-	public static readonly System.Type[] types = new System.Type[] {
-		typeof(OpenOperation),
-		typeof(DamageOperation),
-		typeof(EMPOp),
-		typeof(ShutdownOp),
-		typeof(Die),
-		typeof(RechargeOperation),
-		typeof(PlayerDeathOperation),
-		typeof(DoorControlDestruction),
-		typeof(RobotDestructionOperation),
-		typeof(MineDestruction)
-	};
+
+    private static System.Type[] oTypes;
+
+    public static System.Type[] types {
+        get {
+            if (oTypes == null) {
+                System.Type[] ts = System.Reflection.Assembly.GetAssembly(typeof(Operation)).GetTypes();
+                List<System.Type> pairedTypes = new List<System.Type>();
+                System.Type targetType = typeof(Operation);
+                foreach (System.Type t in ts) {
+                    if (t.IsSubclassOf(targetType))
+                        pairedTypes.Add(t);
+                }
+                oTypes = pairedTypes.ToArray();
+            }
+            return oTypes;
+        }
+    }
 
 	[System.NonSerialized]
 	protected Label parent;
