@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class ObjectReferenceManager : MonoBehaviour {
 
 	[SerializeField]
-	public ReferenceDictionary references;
+	private ReferenceDictionary references;
 	
 	[System.NonSerialized]
 	private static ObjectReferenceManager instance;
@@ -39,36 +39,61 @@ public class ObjectReferenceManager : MonoBehaviour {
 		return instance;
 	}
 
-	public string addReference(Object obReference) {
+	public string addReference(Object you, Object obReference) {
 		if (obReference == null)
 			return null;
 		string id = System.Guid.NewGuid().ToString();
-		references[id] = obReference;
+		references[id] = new Reference(you, obReference);
 		return id;
 	}
 
 	public void updateReference(string id, Object obReference) {
 		if (references.ContainsKey(id))
-			references[id] = obReference;
+			references[id] = new Reference(references[id], obReference);
 		else
 			Debug.LogError("Cannot update object reference with non-existant ID: " +id);
 	}
 
-	public bool deleteReference(string refId) {
+	public bool deleteReference(Object you, string refId) {
 		if (refId == null) return false;
-		return references.Remove(refId);
+        if (references.ContainsKey(refId) && references[refId].isOwner(you)) {
+            references.Remove(refId);
+            return true;
+        } else {
+            return false;
+        }
 	}
 
 	public T fetchReference<T>(string refId) where T: Object {
 		if (refId == null)
 			return null;
-		Object ob = null;
+		Reference ob;
 		if (!references.TryGetValue(refId, out ob)) {
 			Debug.LogError("Broken object reference");
 		}
-		return (T) ob;
+		return (T) ob.obj;
 	}
 
 	[System.Serializable]
-	public class ReferenceDictionary: SerializableDictionary<string, UnityEngine.Object> {}
+	protected class ReferenceDictionary: SerializableDictionary<string, Reference> {}
+
+    [System.Serializable]
+    protected struct Reference {
+        private UnityEngine.Object owner;
+        public UnityEngine.Object obj;
+
+        public Reference(UnityEngine.Object owner, UnityEngine.Object obj) {
+            this.owner = owner;
+            this.obj = obj;
+        }
+
+        public Reference(Reference original, UnityEngine.Object obj) {
+            this.owner = original.owner;
+            this.obj = obj;
+        }
+
+        public bool isOwner(UnityEngine.Object owner) {
+            return this.owner == owner;
+        }
+    }
 }

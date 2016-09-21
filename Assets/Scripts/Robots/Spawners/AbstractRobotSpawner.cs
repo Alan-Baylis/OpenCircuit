@@ -114,7 +114,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
         Label[] labels = FindObjectsOfType<Label>();
         foreach (Label label in labels) {
             if (label.inherentKnowledge) {
-                print("adding: " + label.name);
                 controller.addKnownLocation(label);
             }
         }

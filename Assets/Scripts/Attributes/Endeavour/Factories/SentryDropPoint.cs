@@ -8,16 +8,16 @@ public class SentryDropPoint : EndeavourFactory {
     public GameObject sentryModule;
 
     [System.NonSerialized]
-    public SentryModule sentryModulePrefab;
-    private string sentryPrefabPath;
+    public GameObject sentryModulePrefab;
+    private string sentryPrefabPath = null;
 
     public override Endeavour constructEndeavour(RobotController controller) {
        return new DropSentryAction(this, controller, goals, parent.labelHandle);
     }
 
-    public SentryModule getSentryModulePrefab() {
+    public GameObject getSentryModulePrefab() {
         if (sentryModulePrefab == null && sentryPrefabPath != null) {
-            sentryModulePrefab = ObjectReferenceManager.get().fetchReference<SentryModule>(sentryPrefabPath);
+            sentryModulePrefab = ObjectReferenceManager.get().fetchReference<GameObject>(sentryPrefabPath);
         }
         return sentryModulePrefab;
     }
@@ -25,12 +25,16 @@ public class SentryDropPoint : EndeavourFactory {
 #if UNITY_EDITOR
     public override void doGUI() {
         base.doGUI();
-        sentryModulePrefab = (SentryModule)UnityEditor.EditorGUILayout.ObjectField(getSentryModulePrefab(), typeof(SentryModule), true);
-        if (sentryModulePrefab != null) {
-            ObjectReferenceManager.get().deleteReference(sentryPrefabPath);
-            sentryPrefabPath = ObjectReferenceManager.get().addReference(sentryModulePrefab);
-        } else {
-            ObjectReferenceManager.get().deleteReference(sentryPrefabPath);
+        GameObject nextPrefab = (GameObject)UnityEditor.EditorGUILayout.ObjectField(getSentryModulePrefab(), typeof(GameObject), true);
+        if (nextPrefab != null) {
+            if (nextPrefab != getSentryModulePrefab()) {
+                ObjectReferenceManager.get().deleteReference(parent, sentryPrefabPath);
+                sentryPrefabPath = ObjectReferenceManager.get().addReference(parent, nextPrefab);
+                sentryModulePrefab = nextPrefab;
+            }
+        } else if (sentryPrefabPath != null) {
+            ObjectReferenceManager.get().deleteReference(parent, sentryPrefabPath);
+            sentryModulePrefab = null;
             sentryPrefabPath = null;
         }
     }
