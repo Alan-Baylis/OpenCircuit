@@ -7,7 +7,7 @@ public class SentryModule : AbstractVisualSensor {
     public Rotatable rotatable;
 
 
-    void Update() {
+    void FixedUpdate() {
 
         if (getSightingCount() > 0) { //no point if there are no targets in view
             Vector3 averageLocation = Vector3.zero;
