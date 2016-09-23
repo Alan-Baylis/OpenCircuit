@@ -86,8 +86,8 @@ public class Patrol : EndeavourFactory {
 			for (int i = 0; i < getPoints().Count; i++) {
 				getPoints()[i] = ((Label)UnityEditor.EditorGUILayout.ObjectField(getPoints()[i], typeof(Label), true));
 				if (getPoints()[i] != null) {
-					ObjectReferenceManager.get().deleteReference(getPointsPaths()[i]);
-					getPointsPaths()[i] = ObjectReferenceManager.get().addReference(getPoints()[i]);
+					ObjectReferenceManager.get().deleteReference(parent, getPointsPaths()[i]);
+					getPointsPaths()[i] = ObjectReferenceManager.get().addReference(parent, getPoints()[i]);
 				}
 			}
 		}

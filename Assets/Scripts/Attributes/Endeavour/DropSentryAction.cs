@@ -50,11 +50,12 @@ public class DropSentryAction : Endeavour {
     }
 
     private void dropSentry() {
-        ((SentryDropPoint)factory).getSentryModulePrefab().enabled = false;
-        SentryModule newSentry = GameObject.Instantiate(((SentryDropPoint)factory).getSentryModulePrefab(), controller.transform.position - new Vector3(0, 1, 0), ((SentryDropPoint)factory).getSentryModulePrefab().transform.rotation) as SentryModule;
-        ((SentryDropPoint)factory).sentryModule = newSentry.gameObject;
-        newSentry.setController(controller);
-        newSentry.enabled = true;
-        NetworkServer.Spawn(newSentry.gameObject);
+        ((SentryDropPoint)factory).getSentryModulePrefab().GetComponent<SentryModule>().enabled = false;
+        GameObject newSentry = GameObject.Instantiate(((SentryDropPoint)factory).getSentryModulePrefab(), controller.transform.position - new Vector3(0, 1, 0), ((SentryDropPoint)factory).getSentryModulePrefab().transform.rotation) as GameObject;
+        ((SentryDropPoint)factory).sentryModule = newSentry;
+        SentryModule sentry = newSentry.GetComponent<SentryModule>();
+        sentry.attachToController(controller);
+        sentry.enabled = true;
+        NetworkServer.Spawn(newSentry);
     }
 }
