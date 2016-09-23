@@ -8,15 +8,27 @@ public class Interact : MonoBehaviour {
 	public Material highlightMaterial;
 	public float grabDistance = 2.5f;
 
-	private Player myPlayer;
-	private Camera playerCam;
-	private GameObject target;
+    public Camera playerCam {
+        get {
+            if (myPlayerCam == null) {
+                myPlayerCam = player.cam;
+            }
+            return myPlayerCam;
+        }
+    }
 
-	// Use this for initialization
-	void Start () {
-		myPlayer = this.GetComponent<Player> ();
-		playerCam = myPlayer.cam;
-	}
+    public Player player {
+        get {
+            if (myPlayer == null) {
+                myPlayer = this.GetComponent<Player>();
+            }
+            return myPlayer;
+        }
+    }
+
+	private Player myPlayer;
+	private Camera myPlayerCam;
+	private GameObject target;
 
 	void Update() {
 		updateTarget();
@@ -59,8 +71,8 @@ public class Interact : MonoBehaviour {
 	}
 
 	public void interact() {
-		Grab grabber = myPlayer.grabber;
-		Inventory inventory = myPlayer.inventory;
+		Grab grabber = player.grabber;
+		Inventory inventory = player.inventory;
 		if (grabber.hasObject ()) {
 			grabber.dropObject ();
 		} else {
@@ -72,7 +84,7 @@ public class Interact : MonoBehaviour {
 				if(canInteract) {
 					InteractTrigger trig = new InteractTrigger();
 					trig.setPoint(point);
-					trgt.sendTrigger(myPlayer.gameObject, trig);
+					trgt.sendTrigger(player.gameObject, trig);
 				} else {
 					grabber.grabObject(nearest, point);
 				}
@@ -81,13 +93,13 @@ public class Interact : MonoBehaviour {
 	}
 
 	private bool canInteract(GameObject obj) {
-		Grab grabber = myPlayer.grabber;
+		Grab grabber = player.grabber;
 		if (grabber.hasObject())
 			return false;
 
 		if (obj.GetComponent<Player>() != null)
 			return false;
-		if (myPlayer.inventory.canTake(obj))
+		if (player.inventory.canTake(obj))
             return true;
 		Label output;
 		if (hasInteractable(obj, out output))
@@ -171,7 +183,7 @@ public class Interact : MonoBehaviour {
 		Collider[] closeObjects = Physics.OverlapSphere(camTrans.position, grabDistance);
 
 		foreach (Collider col in closeObjects) {
-			if (col.gameObject == myPlayer.gameObject)
+			if (col.gameObject == player.gameObject)
 				continue;
 
 			// filter out points that are behind the camera

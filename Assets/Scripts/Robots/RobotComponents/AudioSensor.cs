@@ -11,7 +11,6 @@ public class AudioSensor : AbstractRobotComponent {
 
 	public void processAudioEvent(AudioEvent eventMessage) {
 		if(hasPower) {
-			//Debug.Log("sound heard");
 			getController().enqueueMessage(eventMessage);
 		}
 	}
@@ -22,8 +21,10 @@ public class AudioSensor : AbstractRobotComponent {
 
 	// Use this for initialization
 	void Start () {
-        sensors.Add(this);
-	}
+        if (!sensors.Contains(this)) {
+            sensors.Add(this);
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -35,6 +36,8 @@ public class AudioSensor : AbstractRobotComponent {
     }
 
     void OnEnable() {
-        sensors.Add(this);
+        if (!sensors.Contains(this)) {
+            sensors.Add(this);
+        }
     }
 }

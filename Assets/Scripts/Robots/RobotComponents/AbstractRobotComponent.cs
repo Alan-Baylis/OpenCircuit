@@ -4,6 +4,8 @@ using System.Collections;
 
 public abstract class AbstractRobotComponent : NetworkBehaviour {
 
+    private bool isAttached;
+
 	private AbstractPowerSource myPowerSource;
 	public AbstractPowerSource powerSource { get {
 			if (myPowerSource == null) {
@@ -24,9 +26,20 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 		return roboController;
 	}
 
-    public void setController(RobotController controller) {
+    public void attachToController(RobotController controller) {
         roboController = controller;
+        roboController.attachRobotComponent(this);
+        isAttached = true;
     }
+
+    public void detachFromController() {
+        roboController.detachRobotComponent(this);
+        roboController = null;
+        isAttached = false;
+    }
+
+	public virtual void release() {
+	}
 
 	public virtual System.Type getComponentArchetype() {
 		return this.GetType();
@@ -36,11 +49,23 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
     public virtual void dismantle() {
         dismantle(transform);
         RpcDismantle();
+        isAttached = false;
     }
 
     [ClientRpc]
     protected void RpcDismantle() {
         dismantle(transform);
+        isAttached = false;
+    }
+
+    void OnDestroy() {
+        if (isAttached) {
+            detachFromController();
+        }
+    }
+
+    public bool isComponentAttached() {
+        return isAttached;
     }
 
     protected void dismantle(Transform trans) {

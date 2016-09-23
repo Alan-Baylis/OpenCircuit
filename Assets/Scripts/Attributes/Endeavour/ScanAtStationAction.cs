@@ -10,27 +10,21 @@ public class ScanAtStationAction : Endeavour {
 		: base(factory, controller, goals, scanStation) {
 		this.name = "scanAtStation";
 		this.scanStation = scanStation;
-		requiredComponents = new System.Type[] {typeof(HoverJet)};
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute() {
-		RobotArms arms = controller.GetComponentInChildren<RobotArms>();
-		return (arms != null) && (arms.hasTarget());
+		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
+		return (arms != null) && (arms.targetCaptured());
 	}
 
-	public override void execute() {
-		base.execute();
+	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
 			jet.setTarget(scanStation, true);
-		}
-	}
-
-	public override void stopExecution() {
-		base.stopExecution();
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			jet.setTarget(null, false);
 		}
 	}
 
@@ -53,7 +47,7 @@ public class ScanAtStationAction : Endeavour {
 			else if(message.Message.Equals("target scanned")) {
 				List<Goal> goals = new List<Goal>();
 				goals.Add(new Goal(GoalEnum.Offense, 10f));
-				RobotArms arms = controller.GetComponentInChildren<RobotArms>();
+				AbstractArms arms = controller.GetComponentInChildren<AbstractArms>();
 				Label target = arms.getTarget();
 				if(target.GetComponent<Player>() != null) {
 					Debug.LogWarning("Implement this using a stack instead!!");

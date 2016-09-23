@@ -9,17 +9,8 @@ public class IdleAction : Endeavour {
 
     }
 
-    public override void execute() {
-
-     }
-
-    public override void stopExecution() {
-
-    }
-
-    public override void onMessage(RobotMessage message) {
-       
-    }
+	protected override void onExecute() {
+	}
 
     public override bool isStale() {
       return false;
@@ -27,7 +18,11 @@ public class IdleAction : Endeavour {
 
     protected override float getCost() {
         return 0f;
-    }
+	}
+
+	public override System.Type[] getRequiredComponents() {
+		return new System.Type[] {};
+	}
 
 	public override bool canExecute() {
 		return true;

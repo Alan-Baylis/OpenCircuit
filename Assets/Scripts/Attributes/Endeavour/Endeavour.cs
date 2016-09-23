@@ -19,8 +19,6 @@ public abstract class Endeavour : Prioritizable {
 
 	protected RobotController controller;
 
-	protected System.Type[] requiredComponents;
-
 	protected LabelHandle parent;
 
 	protected EndeavourFactory factory;
@@ -39,29 +37,42 @@ public abstract class Endeavour : Prioritizable {
 
 	public abstract bool isStale();
 
-	public virtual void execute () {
-        active = true;
+	public void execute() {
+		active = true;
 		parent.addExecution(controller, GetType());
-    }
+		onExecute();
+	}
+	protected abstract void onExecute();
 
-    public virtual void stopExecution() {
+    public void stopExecution() {
         active = false;
 		parent.removeExecution(controller, GetType());
+
+		foreach(System.Type component in getRequiredComponents()) {
+			AbstractRobotComponent roboComp = getController().getRobotComponent(component);
+			if (roboComp != null) {
+				roboComp.release();
+			}
+		}
+
+		onStopExecution();
     }
-	public abstract void onMessage(RobotMessage message);
+	protected virtual void onStopExecution() {}
+
+	public virtual void onMessage(RobotMessage message) {}
 
 	public bool isReady(Dictionary<System.Type, int> availableComponents) {
 		return (!singleExecutor() || parent.getConcurrentExecutions(controller, GetType()) == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
 	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
-		foreach(System.Type type in requiredComponents) {
+		foreach(System.Type type in getRequiredComponents()) {
 			if(!availableComponents.ContainsKey(type) || availableComponents[type] < 1) {
 				return false;
 			}
 		}
 
-		foreach(System.Type type in requiredComponents) {
+		foreach(System.Type type in getRequiredComponents()) {
 			int numAvailable = availableComponents[type];
 			if(numAvailable > 0) {
 				--numAvailable;
@@ -70,6 +81,8 @@ public abstract class Endeavour : Prioritizable {
 		}
 		return true;
 	}
+
+	public abstract System.Type[] getRequiredComponents();
 
 	public abstract bool canExecute();
 

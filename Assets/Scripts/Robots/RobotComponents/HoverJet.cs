@@ -198,6 +198,10 @@ public class HoverJet : AbstractRobotComponent {
         isPursuit = false;
     }
 
+	public override void release() {
+		stop();
+	}
+
 	private void goToTarget() {
 		if(target != null) {
 
