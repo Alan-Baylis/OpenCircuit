@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using UnityEngine.Networking;
 
 /// MouseLook rotates the transform based on the mouse delta.
