@@ -15,13 +15,18 @@ public class HuntAction : Endeavour {
 	public override bool canExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-        return arms != null && (!arms.hasTarget() || arms.getTarget() == target) && (!target.hasTag(TagEnum.Grabbed) || arms.hasTarget()) && jet != null && jet.canReach(target) && target.GetComponent<Player>() != null && !target.GetComponent<Player>().frozen;
+        return arms != null
+			&& (!target.hasTag(TagEnum.Grabbed) || arms.targetCaptured())
+			&& jet != null && jet.canReach(target)
+			&& target.GetComponent<Player>() != null && !target.GetComponent<Player>().frozen;
 	}
 
 	protected override void onExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
-		if(jet != null && target != null) {
+		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
+		if (jet != null && arms != null && target != null) {
 			jet.pursueTarget(target.labelHandle, false);
+			arms.setTarget(target);
 		}
 	}
 
@@ -30,16 +35,11 @@ public class HuntAction : Endeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals("target in reach")) {
-			AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-			if(arms != null) {
-                HoverJet jet = controller.getRobotComponent<HoverJet>();
-                if (jet != null) {
-                    jet.stop();
-                }
-
-				arms.attachTarget(target);
-			}
+		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
+            HoverJet jet = controller.getRobotComponent<HoverJet>();
+            if (jet != null) {
+                jet.stop();
+            }
 		}
 	}
 

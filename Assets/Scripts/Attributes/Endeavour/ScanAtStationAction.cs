@@ -18,7 +18,7 @@ public class ScanAtStationAction : Endeavour {
 
 	public override bool canExecute() {
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-		return (arms != null) && (arms.hasTarget());
+		return (arms != null) && (arms.targetCaptured());
 	}
 
 	protected override void onExecute() {
