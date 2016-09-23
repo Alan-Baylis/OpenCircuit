@@ -50,9 +50,6 @@ public class ZappyArms : AbstractArms {
 			Label proposedTarget = collision.gameObject.GetComponent<Label>();
 			if(proposedTarget != null && proposedTarget == target) {
 				captureTarget(proposedTarget);
-				getController().enqueueMessage(new RobotMessage(
-					RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
-					proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			}
 		}
 	}
@@ -84,12 +81,15 @@ public class ZappyArms : AbstractArms {
 
 
 	[Server]
-	protected void captureTarget(Label obj) {
+	protected void captureTarget(Label proposedTarget) {
 		if (captured == null) {
-			captured = obj;
+			captured = proposedTarget;
+			getController().enqueueMessage(new RobotMessage(
+				RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
+				proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			captured.setTag(new Tag(TagEnum.Grabbed, 0));
-			attachRigidbody(obj.gameObject);
-			NetworkIdentity netId = obj.GetComponent<NetworkIdentity>();
+			attachRigidbody(proposedTarget.gameObject);
+			NetworkIdentity netId = proposedTarget.GetComponent<NetworkIdentity>();
 			if (netId != null)
 				RpcCaptureTarget(netId.netId);
 		}
