@@ -71,8 +71,15 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
             }
         }
 
+        Label[] labels = FindObjectsOfType<Label>();
+        foreach (Label label in labels) {
+            if (label.inherentKnowledge) {
+                addKnownLocation(label);
+            }
+        }
 
-		foreach (Label location in locations) {
+
+        foreach (Label location in locations) {
 			if (location == null) {
 				Debug.LogWarning("Null location attached to AI with name: " + gameObject.name);
 				continue;

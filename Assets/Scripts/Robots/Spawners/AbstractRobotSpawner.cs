@@ -74,10 +74,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 		if(playerOmniscient) {
 			applyPlayerKnowledge(robotController);
 		}
-
-		applySpawnerKnowledge(robotController);
-        applyAmmoSpawnerKnowledge(robotController);
-        applyInherentKnowledge(robotController);
     }
 
 
@@ -95,27 +91,4 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			controller.addKnownLocation(player.GetComponent<Label>());
 		}
 	}
-
-	protected void applySpawnerKnowledge(RobotController controller) {
-		RobotSpawner[] spawners = FindObjectsOfType<RobotSpawner>();
-		foreach(RobotSpawner spawner in spawners) {
-			controller.addKnownLocation(spawner.GetComponent<Label>());
-		}
-	}
-
-	private void applyAmmoSpawnerKnowledge(RobotController controller) {
-        PickupableSpawner[] spawners = FindObjectsOfType<PickupableSpawner>();
-        foreach (PickupableSpawner spawner in spawners) {
-			controller.addKnownLocation(spawner.GetComponent<Label>());
-		}
-	}
-
-    private void applyInherentKnowledge(RobotController controller) {
-        Label[] labels = FindObjectsOfType<Label>();
-        foreach (Label label in labels) {
-            if (label.inherentKnowledge) {
-                controller.addKnownLocation(label);
-            }
-        }
-    }
 }
