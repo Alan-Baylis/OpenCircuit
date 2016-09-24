@@ -24,6 +24,7 @@ public class ZappyArms : AbstractArms {
 		footstepEmitter.loop = false;
 	}
 
+    [ServerCallback]
 	void Update() {
 		BoxCollider collider = GetComponent<BoxCollider>();
         if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {

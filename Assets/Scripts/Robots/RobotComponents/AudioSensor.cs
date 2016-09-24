@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 
 public class AudioSensor : AbstractRobotComponent {
@@ -27,6 +27,7 @@ public class AudioSensor : AbstractRobotComponent {
     }
 	
 	// Update is called once per frame
+    [ServerCallback]
 	void Update () {
 		hasPower = powerSource != null && powerSource.hasPower(Time.deltaTime);
 	}
