@@ -6,9 +6,6 @@ using System;
 [System.Serializable]
 public abstract class InherentEndeavourFactory : EndeavourFactory, InspectorListElement {
 
-	private bool status = false;
-	private int size = 0;
-
 	private static string[] typeNames = null;
 
 	public static new readonly System.Type[] types = new System.Type[] {
@@ -29,14 +26,6 @@ public abstract class InherentEndeavourFactory : EndeavourFactory, InspectorList
 		InherentEndeavourFactory factory = (InherentEndeavourFactory)types[0].GetConstructor(new System.Type[0]).Invoke(new object[0]);
 		factory.goals = new List<Goal>();
 		return factory;
-	}
-
-	public abstract bool isApplicable(LabelHandle labelHandle);
-
-	public abstract Endeavour constructEndeavour(RobotController controller, LabelHandle target);
-
-	public override Endeavour constructEndeavour(RobotController controller) {
-		return null;
 	}
 
 #if UNITY_EDITOR

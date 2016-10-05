@@ -184,17 +184,17 @@ public class RobotControllerGUI : Editor {
 	}
 
 	public void doEndeavourList(RobotController robot) {
-		listFoldout(ref endeavoursExpanded, ref robot.inherentEndeavours, "Inherent Endeavours");
+		listFoldout(ref endeavoursExpanded, ref robot.endeavourFactories, "Actions");
 		if(!endeavoursExpanded) {
 			return;
 		}
 
-		for(int i = 0; i < robot.inherentEndeavours.Length; ++i) {
-			if(robot.inherentEndeavours[i] == null) {
-				robot.inherentEndeavours[i] = InherentEndeavourFactory.constructDefault();
+		for(int i = 0; i < robot.endeavourFactories.Length; ++i) {
+			if(robot.endeavourFactories[i] == null) {
+				robot.endeavourFactories[i] = EndeavourFactory.constructDefault();
 			}
 		}
-		doArrayGUI(ref robot.inherentEndeavours);
+		doArrayGUI(ref robot.endeavourFactories);
 	}
 
 	private static void doArrayGUI<T>(ref T[] array) where T : InspectorListElement {
@@ -257,7 +257,7 @@ public class RobotControllerGUI : Editor {
 		GUILayout.BeginHorizontal();
 		expanded = EditorGUILayout.Foldout(expanded, label);
 		int newSize = Math.Max(EditorGUILayout.IntField(array.Length), 0);
-		if(newSize != array.Length)
+		if (newSize != array.Length)
 			array = resize(array, newSize);
 		GUILayout.EndHorizontal();
 	}

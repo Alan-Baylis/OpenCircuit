@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class Hunt : EndeavourFactory {
 
-	public override Endeavour constructEndeavour(RobotController controller) {
-		if(parent == null) {
-			return null;
-		}
-		//Goal[] goals = new Goal[2];
-		//goals [0] = new Goal ("protection", 3);
-		//goals [1] = new Goal ("offense", 3);
-		return new HuntAction(this, controller, goals, parent);
+    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Player };
+
+    public override Endeavour constructEndeavour(RobotController controller, LabelHandle handle, List<Tag> tags) {
+		return new HuntAction(this, controller, goals, handle.label);
 	}
+
+    public override List<TagEnum> getRequiredTags() {
+        return requiredTags;
+    }
+
+    public override bool isApplicable(LabelHandle labelHandle) {
+        return labelHandle.hasTag(TagEnum.Player) && !labelHandle.hasTag(TagEnum.Grabbed);
+    }
 }

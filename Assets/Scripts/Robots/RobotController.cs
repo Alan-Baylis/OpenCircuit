@@ -34,7 +34,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	public Label[] locations;
     public Goal[] goals;
 	[System.NonSerialized]
-	public InherentEndeavourFactory[] inherentEndeavours = new InherentEndeavourFactory[0];
+	public EndeavourFactory[] endeavourFactories = new EndeavourFactory[0];
 	[System.NonSerialized]
 	public Dictionary<GoalEnum, Goal> goalMap = new Dictionary<GoalEnum, Goal>();
 
@@ -220,20 +220,13 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	private void trackTarget(LabelHandle target) {
 		trackedTargets.Add(target);
-		foreach(InherentEndeavourFactory factory in inherentEndeavours) {
+		foreach(EndeavourFactory factory in endeavourFactories) {
 			if(factory.isApplicable(target)) {
-				Endeavour action = factory.constructEndeavour(this, target);
+				Endeavour action = factory.constructEndeavour(this, target, target.getTags());
 				if(action != null) {
 					availableEndeavours.Add(action);
 					dirty = true;
 				}
-			}
-		}
-		if(target.label != null) {
-			foreach(Endeavour action in target.label.getAvailableEndeavours(this)) {
-				availableEndeavours.Add(action);
-				dirty = true;
-
 			}
 		}
 	}
@@ -565,10 +558,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	public void OnBeforeSerialize() {
 		lock(this) {
-
 			MemoryStream stream = new MemoryStream();
 			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, inherentEndeavours);
+			formatter.Serialize(stream, endeavourFactories);
 
 			serializedData = stream.ToArray();
 			stream.Close();
@@ -579,9 +571,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		lock(this) {
 			MemoryStream stream = new MemoryStream(serializedData);
 			BinaryFormatter formatter = new BinaryFormatter();
-			inherentEndeavours = (InherentEndeavourFactory[])formatter.Deserialize(stream);
+			endeavourFactories = (EndeavourFactory[])formatter.Deserialize(stream);
 
-			foreach(InherentEndeavourFactory factory in inherentEndeavours) {
+			foreach(EndeavourFactory factory in endeavourFactories) {
 				if(factory != null) {
 					if(factory.goals == null) {
 						factory.goals = new List<Goal>();
@@ -590,9 +582,5 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			}
 			stream.Close();
 		}
-
-
-		}	
-
-
+	}	
 }

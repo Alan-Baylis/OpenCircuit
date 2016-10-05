@@ -15,10 +15,21 @@ public class  Tag : InspectorListElement {
 	public TagEnum type;
 	public float severity;
 
+    [System.NonSerialized]
+    private Label label;
+
 	public Tag(TagEnum type, float severity) {
 		this.type = type;
 		this.severity = severity;
 	}
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    public Label getLabel() {
+        return label;
+    }
 
 #if UNITY_EDITOR
 	InspectorListElement InspectorListElement.doListElementGUI() {
@@ -28,7 +39,11 @@ public class  Tag : InspectorListElement {
 		return this;
 	}
 
-	private void doGUI() {
+    public virtual void drawGizmo() {
+
+    }
+
+	public virtual void doGUI() {
 		severity = UnityEditor.EditorGUILayout.FloatField("Severity: ", severity);
 	}
 #endif

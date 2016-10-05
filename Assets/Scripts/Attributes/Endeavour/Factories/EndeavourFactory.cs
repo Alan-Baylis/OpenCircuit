@@ -8,15 +8,15 @@ using System;
 public abstract class EndeavourFactory : InspectorListElement {
 
 	public List<Goal> goals = new List<Goal> ();
-	private bool status = false;
+    public float maxMobBenefit = 0;
+    public int optimalMobSize = 1;
+    public float mobCostPerRobot = 10;
+
+    private bool status = false;
 	private int size = 0;
 
-	public float maxMobBenefit = 0;
-	public int optimalMobSize = 1;
-	public float mobCostPerRobot = 10;
-
-	[System.NonSerialized]
-	protected Label parent;
+    [System.NonSerialized]
+    private RobotController robotController;
 
 	private static string[] typeNames = null;
 
@@ -48,13 +48,21 @@ public abstract class EndeavourFactory : InspectorListElement {
 		goalEnums = typeList.ToArray();
 	}
 
-	public void setParent(Label parent) {
-		this.parent = parent;
-	}
+	public abstract Endeavour constructEndeavour (RobotController controller, LabelHandle target, List<Tag> tags);
 
-	public abstract Endeavour constructEndeavour (RobotController controller);
+    public abstract bool isApplicable(LabelHandle labelHandle);
 
-	public static EndeavourFactory constructDefault() {
+    public abstract List<TagEnum> getRequiredTags();
+
+    public void setRobotController(RobotController controller) {
+        robotController = controller;
+    }
+
+    public RobotController getRobotController() {
+        return robotController;
+    }
+
+    public static EndeavourFactory constructDefault() {
 		EndeavourFactory factory = (EndeavourFactory) types[0].GetConstructor(new System.Type[0]).Invoke(new object[0]);
 		factory.goals = new List<Goal> ();
 		return factory;
@@ -71,12 +79,11 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-	public virtual void drawGizmo() {
-		Gizmos.color = Color.green;
-		Gizmos.DrawSphere(parent.transform.position, .2f);
-	}
+    public virtual void drawGizmo() {
+    }
 
-	InspectorListElement InspectorListElement.doListElementGUI() {
+
+        InspectorListElement InspectorListElement.doListElementGUI() {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());
 		if (newSelectedType != selectedType) {

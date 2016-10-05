@@ -3,34 +3,52 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class LabelHandle {
-	public Label label;
-	public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
+    public Label label;
+    public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
 
-	protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();
-	
-	private Vector3 position;
+    protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();
 
-	public LabelHandle(Vector3 pos, string name) {
-		position = pos;
-	}
+    private Vector3 position;
 
-	public string getName() {
-		if(label != null) {
-			return label.name;
-		}
-		return "";
-	}
+    public LabelHandle(Vector3 pos, string name) {
+        position = pos;
+    }
 
-	public bool hasTag(TagEnum tagName) {
-		if(label != null) {
-			return label.hasTag(tagName);
-		}
-		return tagMap.ContainsKey(tagName);
-	}
+    public string getName() {
+        if (label != null) {
+            return label.name;
+        }
+        return "";
+    }
 
-	public Tag getTag(TagEnum tagName) {
-		return tagMap[tagName];
-	}
+    public bool hasTag(TagEnum tagName) {
+        if (label != null) {
+            return label.hasTag(tagName);
+        }
+        return tagMap.ContainsKey(tagName);
+    }
+
+    public Tag getTag(TagEnum tagName) {
+        return tagMap[tagName];
+    }
+
+    public List<TagEnum> getTagsTypes() {
+        List<TagEnum> tags = new List<TagEnum>();
+        foreach (TagEnum tagEnum in tagMap.Keys) {
+            tags.Add(tagEnum);
+        }
+
+        return tags;
+    }
+
+    public List<Tag> getTags() {
+        List<Tag> tags = new List<Tag>();
+        foreach (Tag tag in tagMap.Values) {
+            tags.Add(tag);
+        }
+
+        return tags;
+    }
 
 	public void addTag(Tag tag) {
 		tagMap.Add(tag.type, tag);

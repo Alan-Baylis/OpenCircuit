@@ -37,7 +37,16 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 	[System.NonSerialized]
 	public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
 
-	public void Awake() {
+#if UNITY_EDITOR
+    void Update() {
+        if (tagMap.Count > tags.Length) {
+            tags = new Tag[tagMap.Count];
+            tagMap.Values.CopyTo(tags, 0);
+        }
+    }
+#endif
+
+    public void Awake() {
 		labelHandle = new LabelHandle(transform.position, name);
 		labelHandle.label = this;
 
@@ -48,10 +57,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		triggers = new Dictionary<System.Type, List<Operation>>();
 		foreach(Operation op in operations) {
 			addOperation(op, op.getTriggers());
-		}
-
-		foreach (EndeavourFactory endeavour in endeavours) {
-			endeavour.setParent(this);
 		}
 
 		foreach(Tag tag in tags) {
@@ -86,7 +91,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		}
 	}
 
-	public virtual List<Endeavour> getAvailableEndeavours (RobotController controller) {
+	/*public virtual List<Endeavour> getAvailableEndeavours (RobotController controller) {
 		List<Endeavour> availableEndeavours = new List<Endeavour> ();
 		foreach (EndeavourFactory endeavour in endeavours) {
 			Endeavour newEndeavour = endeavour.constructEndeavour(controller);
@@ -95,7 +100,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 			}
 		}
 		return availableEndeavours;
-	}
+	}*/
 
 	public void OnDestroy() {
 		Label.labels.Remove(this);
@@ -126,7 +131,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 			foreach (EndeavourFactory factory in endeavours) {
 				if(factory != null) {
-					factory.setParent(this);
 					if(factory.goals == null) {
 						factory.goals = new List<Goal>();
 					}
@@ -167,6 +171,11 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
                 continue;
 			factory.drawGizmo();
 		}
+        foreach (Tag tag in tags) {
+            if (tag == null)
+                continue;
+            tag.drawGizmo();
+        }
 	}
 #endif
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class MentalModel {
 
 	Dictionary<LabelHandle, SensoryInfo> targetSightings = new Dictionary<LabelHandle, SensoryInfo>();
+    Dictionary<TagEnum, List<Tag>> knownTags = new Dictionary<TagEnum, List<Tag>>();
 
 	List<MentalModelUpdateListener> listeners = new List<MentalModelUpdateListener> ();
 
@@ -24,6 +25,7 @@ public class MentalModel {
 			info.updateDirection(direction);
 		} else {
 			targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, 1);
+            registerTags(target);
 			notifyListenersTargetFound(target);
 		}
 	}
@@ -34,6 +36,7 @@ public class MentalModel {
 
 			info.removeSighting();
 			if (info.getSightings() < 1) {
+                unregisterTags(target);
 				notifyListenersTargetLost (target);
 			}
 			info.updatePosition(position);
@@ -83,4 +86,26 @@ public class MentalModel {
 	public void addUpdateListener(MentalModelUpdateListener listener) {
 		listeners.Add (listener);
 	}
+
+    private void registerTags(LabelHandle handle) {
+        List<TagEnum> tags = handle.getTagsTypes();
+        foreach (TagEnum tag in tags) {
+            if (knownTags.ContainsKey(tag)) {
+                knownTags[tag].Add(handle.getTag(tag));
+            } else {
+                List<Tag> tagList = new List<Tag>();
+                tagList.Add(handle.getTag(tag));
+                knownTags[tag] = tagList;
+            }
+        }
+    }
+
+    private void unregisterTags(LabelHandle handle) {
+        List<TagEnum> tags = handle.getTagsTypes();
+        foreach (TagEnum tag in tags) {
+            if (knownTags.ContainsKey(tag)) {
+                knownTags[tag].Remove(handle.getTag(tag));
+            }
+        }
+    }
 }
