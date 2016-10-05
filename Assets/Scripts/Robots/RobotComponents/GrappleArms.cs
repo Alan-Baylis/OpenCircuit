@@ -14,10 +14,12 @@ public class GrappleArms : AbstractArms {
 	public float reelSpeed = 5;
 	public float reelForce = 1;
 	
-	public AudioClip zap;
 	public EffectSpec hitEffect;
 	public EffectSpec retractedEffect;
+	public EffectSpec releasedEffect;
+	public EffectSpec dropEffect;
 	public AudioSource windSound;
+	public AudioSource electrocuteSound;
 
 	public Vector3 throwForce = new Vector3(0, 150, 300);
 
@@ -47,9 +49,6 @@ public class GrappleArms : AbstractArms {
 				}
 				if (targetReeledIn) {
 					captured.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
-					//if (!footstepEmitter.isPlaying) {
-					//	footstepEmitter.PlayOneShot(zap);
-					//}
 				} else {
 					reelInTarget();
 				}
@@ -63,9 +62,12 @@ public class GrappleArms : AbstractArms {
 		if (captured != null) {
 			captured.clearTag(TagEnum.Grabbed);
 			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, RELEASED_CAPTURED_MESSAGE, captured.labelHandle, captured.transform.position, null));
-			//footstepEmitter.PlayOneShot(drop, 1);
 
-			detachRigidbody(captured.gameObject);
+			if (targetReeledIn) {
+				detachRigidbody(captured.gameObject);
+			} else {
+				releaseRigidbody(captured.gameObject);
+			}
 			NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
 			if (netId != null)
 				RpcReleaseTarget(netId.netId);
@@ -78,7 +80,7 @@ public class GrappleArms : AbstractArms {
 	[Server]
 	public void electrifyTarget() {
 		if (captured != null && targetReeledIn) {
-			//footstepEmitter.PlayOneShot(zap, 1);
+			electrocuteSound.Play();
 			captured.sendTrigger(this.gameObject, new ElectricShock());
 		}
 	}
@@ -92,7 +94,6 @@ public class GrappleArms : AbstractArms {
 	public override void releaseTarget() {
 		base.releaseTarget();
 		CancelInvoke("tryCaptureTarget");
-		windSound.Stop();
 	}
 
 
@@ -200,6 +201,8 @@ public class GrappleArms : AbstractArms {
 			rigidbody.isKinematic = false;
 			rigidbody.useGravity = true;
 		}
+		windSound.Stop();
+		releasedEffect.spawn(obj.transform.position);
 	}
 
 	protected void detachRigidbody(GameObject obj) {
@@ -210,6 +213,8 @@ public class GrappleArms : AbstractArms {
 			rigidbody.AddForce(transform.forward * throwForce.z + transform.up * throwForce.y);
 		}
 		obj.transform.parent = null;
+		electrocuteSound.Stop();
+		dropEffect.spawn(obj.transform.position);
 	}
 
 	protected void attachRigidbody(GameObject obj) {
@@ -225,5 +230,6 @@ public class GrappleArms : AbstractArms {
 		targetReeledIn = true;
 		windSound.Stop();
 		retractedEffect.spawn(transform.position);
+		electrocuteSound.Play();
 	}
 }

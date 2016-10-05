@@ -166,6 +166,7 @@ GameObject:
   - 114: {fileID: 114000013739359536}
   - 120: {fileID: 120000013332749832}
   - 82: {fileID: 82000013304964530}
+  - 82: {fileID: 82000010888891980}
   m_Layer: 0
   m_Name: GrappleArms
   m_TagString: Untagged
@@ -931,6 +932,80 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.6, y: 2, z: 1.2}
   m_Center: {x: 0, y: 0.2, z: -0.15}
+--- !u!82 &82000010888891980
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011511779768}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 8d152311467a8f84bbf3479424322460, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!82 &82000013304964530
 AudioSource:
   m_ObjectHideFlags: 1
@@ -1053,14 +1128,20 @@ MonoBehaviour:
   checkTargetRate: 0.1
   reelSpeed: 4
   reelForce: 35
-  zap: {fileID: 8300000, guid: 8d152311467a8f84bbf3479424322460, type: 3}
   hitEffect:
     prefab: {fileID: 1000010504953470, guid: 7f3ccee5d8316a446a9d96c0d76b1987, type: 2}
     lifetime: 5
   retractedEffect:
     prefab: {fileID: 1000010432432864, guid: bf7c144cf7cb3674880717098b012d23, type: 2}
     lifetime: 5
+  releasedEffect:
+    prefab: {fileID: 1000012453525780, guid: a3d06ff22954d4c478a422c95b95aebf, type: 2}
+    lifetime: 5
+  dropEffect:
+    prefab: {fileID: 1000010432432864, guid: bf7c144cf7cb3674880717098b012d23, type: 2}
+    lifetime: 0
   windSound: {fileID: 82000013304964530}
+  electrocuteSound: {fileID: 82000010888891980}
   throwForce: {x: 0, y: -50, z: -100}
 --- !u!114 &114000013739359536
 MonoBehaviour:
