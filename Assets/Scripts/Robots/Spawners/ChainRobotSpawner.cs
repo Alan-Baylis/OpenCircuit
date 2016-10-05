@@ -19,7 +19,7 @@ public class ChainRobotSpawner : RobotSpawner {
 	}
 
 	[ServerCallback]
-	void Update() {
+	new void Update() {
 		if(this != activeSpawner) {
 			active = false;
 		}

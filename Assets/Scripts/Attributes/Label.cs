@@ -18,9 +18,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 	[SerializeField]
 	public byte[] serializedData;
 
-
-	[System.NonSerialized]
-	public EndeavourFactory[] endeavours = new EndeavourFactory[0];
 	[System.NonSerialized]
 	public Operation[] operations = new Operation[0];
 
@@ -113,7 +110,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 			formatter.Serialize(stream, tags);
 			formatter.Serialize(stream, operations);
-			formatter.Serialize(stream, endeavours);
 
 			serializedData = stream.ToArray();
 			stream.Close();
@@ -127,15 +123,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 			tags = (Tag[])formatter.Deserialize(stream);
 			operations = (Operation[]) formatter.Deserialize(stream);
-			endeavours = (EndeavourFactory[]) formatter.Deserialize(stream);
 
-			foreach (EndeavourFactory factory in endeavours) {
-				if(factory != null) {
-					if(factory.goals == null) {
-						factory.goals = new List<Goal>();
-					}
-				}
-			}
 			stream.Close();
 		}
 	}
@@ -165,11 +153,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		if(!isVisible) {
 			Gizmos.color = Color.green;
 			Gizmos.DrawSphere(transform.position, .2f);
-		}
-		foreach(EndeavourFactory factory in endeavours) {
-            if (factory == null)
-                continue;
-			factory.drawGizmo();
 		}
         foreach (Tag tag in tags) {
             if (tag == null)

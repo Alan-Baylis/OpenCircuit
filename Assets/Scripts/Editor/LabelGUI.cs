@@ -10,7 +10,6 @@ public class LabelGUI : Editor {
 
 	private bool tagsExpanded = false;
 	private bool operationsExpanded = false;
-	private bool endeavoursExpanded = true;
 	private string[] operationTypeNames;
 	
 	public void OnEnable() {
@@ -27,7 +26,6 @@ public class LabelGUI : Editor {
         EditorGUILayout.PropertyField(serializedObject.FindProperty("inherentKnowledge"));
 		doTagList(label);
 		doOperationList(label);
-		doEndeavourList(label);
 		serializedObject.ApplyModifiedProperties();
 
 		
@@ -88,20 +86,6 @@ public class LabelGUI : Editor {
 			if (label.operations[i] == null)
 				label.operations[i] = Operation.constructDefault();
 		doArrayGUI(ref label.operations);
-	}
-	
-	public void doEndeavourList(Label label) {
-		listFoldout(ref endeavoursExpanded, ref label.endeavours, "Endeavours");
-		if (!endeavoursExpanded) {
-			return;
-		}
-
-		for (int i=0; i<label.endeavours.Length; ++i) {
-			if (label.endeavours [i] == null) {
-				label.endeavours [i] = EndeavourFactory.constructDefault ();
-			}
-		}
-		doArrayGUI(ref label.endeavours);
 	}
 
 	private static void doArrayGUI<T>(ref T[] array) where T:InspectorListElement {
