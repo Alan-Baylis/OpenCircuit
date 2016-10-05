@@ -266,7 +266,6 @@ MonoBehaviour:
   destructionEffect:
     prefab: {fileID: 143798, guid: 3f9ed27588432d74eacd8fa5d41f4f23, type: 2}
     lifetime: 2
-    randomizePitch: 0
   debug: 0
   shouldAlphabetize: 0
   locations: []
