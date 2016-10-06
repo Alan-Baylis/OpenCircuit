@@ -7,6 +7,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
     public float fieldOfViewAngle = 170f;           // Number of degrees, centered on forward, for the enemy sight.
     public float sightDistance = 30.0f;
+	public float lookAroundInterval = 0.1f;
     public GameObject eye;
 
     private bool lookingEnabled = false;
@@ -117,7 +118,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
     private void enableLooking() {
         if (!lookingEnabled) {
-            InvokeRepeating("lookAround", 0.5f, .1f);
+            InvokeRepeating("lookAround", lookAroundInterval * 1.3f, lookAroundInterval);
             lookingEnabled = true;
         }
     }
