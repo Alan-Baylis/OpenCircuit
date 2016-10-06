@@ -34,10 +34,7 @@ public class GrappleArms : AbstractArms {
 		}
 	}
 
-	[ServerCallback]
-	void Start() {
-	}
-
+    [ServerCallback]
 	void FixedUpdate() {
 		if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
 			releaseTarget();
@@ -63,14 +60,17 @@ public class GrappleArms : AbstractArms {
 			captured.clearTag(TagEnum.Grabbed);
 			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, RELEASED_CAPTURED_MESSAGE, captured.labelHandle, captured.transform.position, null));
 
-			if (targetReeledIn) {
+            NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
+            if (targetReeledIn) {
 				detachRigidbody(captured.gameObject);
-			} else {
+                if (netId != null)
+                    RpcDetachTarget(netId.netId);
+            } else {
 				releaseRigidbody(captured.gameObject);
-			}
-			NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
-			if (netId != null)
-				RpcReleaseTarget(netId.netId);
+                if (netId != null)
+                    RpcReleaseTarget(netId.netId);
+            }
+
 
 			captured = null;
 			cable.enabled = false;
@@ -187,8 +187,13 @@ public class GrappleArms : AbstractArms {
 
 	[ClientRpc]
 	protected void RpcReleaseTarget(NetworkInstanceId netId) {
-		detachRigidbody(ClientScene.FindLocalObject(netId));
+	    releaseRigidbody(ClientScene.FindLocalObject(netId));
 	}
+
+    [ClientRpc]
+    protected void RpcDetachTarget(NetworkInstanceId netId) {
+        detachRigidbody(ClientScene.FindLocalObject(netId));
+    }
 
 	[ClientRpc]
 	protected void RpcCaptureTarget(NetworkInstanceId netId) {
