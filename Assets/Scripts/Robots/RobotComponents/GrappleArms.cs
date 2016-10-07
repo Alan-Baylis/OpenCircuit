@@ -94,17 +94,23 @@ public class GrappleArms : AbstractArms {
 		CancelInvoke("tryCaptureTarget");
 	}
     
+    [Server]
 	protected void tryCaptureTarget() {
 		if (!targetCaptured() && target != null) {
 			System.Nullable<RaycastHit> hit = getHitLocation(target);
 			if (hit != null) {
-				hitEffect.spawn(hit.Value.point, hit.Value.normal);
+                RpcSpawnHitEffect(hit.Value.point, hit.Value.normal);
 				captureTarget(target);
 			}
 		}
 	}
 
-	protected void reelInTarget() {
+    [ClientRpc]
+    protected void RpcSpawnHitEffect(Vector3 location, Vector3 direction) {
+        hitEffect.spawn(location, direction);
+    }
+
+    protected void reelInTarget() {
 		Vector3 holdPos = transform.TransformPoint(HOLD_POSITION);
 		Vector3 diff = holdPos - captured.transform.position;
 
