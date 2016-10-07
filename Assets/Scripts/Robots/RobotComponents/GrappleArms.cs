@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 [RequireComponent(typeof(LineRenderer))]
 public class GrappleArms : AbstractArms {
@@ -34,7 +33,6 @@ public class GrappleArms : AbstractArms {
 		}
 	}
 
-    [ServerCallback]
 	void FixedUpdate() {
 		if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
 			releaseTarget();
@@ -62,11 +60,11 @@ public class GrappleArms : AbstractArms {
 
             NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
             if (targetReeledIn) {
-				detachRigidbody(captured.gameObject);
+				detachRigidbody(captured);
                 if (netId != null)
                     RpcDetachTarget(netId.netId);
             } else {
-				releaseRigidbody(captured.gameObject);
+				releaseRigidbody(captured);
                 if (netId != null)
                     RpcReleaseTarget(netId.netId);
             }
@@ -95,9 +93,7 @@ public class GrappleArms : AbstractArms {
 		base.releaseTarget();
 		CancelInvoke("tryCaptureTarget");
 	}
-
-
-
+    
 	protected void tryCaptureTarget() {
 		if (!targetCaptured() && target != null) {
 			System.Nullable<RaycastHit> hit = getHitLocation(target);
@@ -114,10 +110,10 @@ public class GrappleArms : AbstractArms {
 
 		// check if grabbed
 		if (diff.sqrMagnitude < 1f) {
-			attachRigidbody(captured.gameObject);
+			attachRigidbody(captured);
 			NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
 			if (netId != null)
-				RpcCaptureTarget(netId.netId);
+				RpcAttachTarget(netId.netId);
 			return;
 		}
 
@@ -166,72 +162,88 @@ public class GrappleArms : AbstractArms {
 	[Server]
 	protected void captureTarget(Label proposedTarget) {
 		if (captured == null) {
-			captured = proposedTarget;
+            NetworkIdentity netId = proposedTarget.GetComponent<NetworkIdentity>();
+            captureRigidBody(proposedTarget);
+            RpcCaptureTarget(netId.netId);
 			getController().enqueueMessage(new RobotMessage(
-				RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
-				proposedTarget.labelHandle, proposedTarget.transform.position, null));
+			RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
+			proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			captured.setTag(new Tag(TagEnum.Grabbed, 0));
-			targetReeledIn = false;
-			updateChain();
-			cable.enabled = true;
-			windSound.Play();
 		}
 	}
 
-	protected void updateChain() {
-		cable.SetPositions(new Vector3[] {
-			transform.TransformPoint(GRAPPLE_POSITION),
-			captured.transform.position
-		});
+
+    [ClientRpc]
+    protected void RpcCaptureTarget(NetworkInstanceId netId) {
+        captureRigidBody(ClientScene.FindLocalObject(netId).GetComponent<Label>());
     }
+
 
 	[ClientRpc]
 	protected void RpcReleaseTarget(NetworkInstanceId netId) {
-	    releaseRigidbody(ClientScene.FindLocalObject(netId));
+	    releaseRigidbody(ClientScene.FindLocalObject(netId).GetComponent<Label>());
 	}
 
     [ClientRpc]
     protected void RpcDetachTarget(NetworkInstanceId netId) {
-        detachRigidbody(ClientScene.FindLocalObject(netId));
+        detachRigidbody(ClientScene.FindLocalObject(netId).GetComponent<Label>());
     }
 
-	[ClientRpc]
-	protected void RpcCaptureTarget(NetworkInstanceId netId) {
-		attachRigidbody(ClientScene.FindLocalObject(netId));
-	}
+    [ClientRpc]
+    protected void RpcAttachTarget(NetworkInstanceId netId) {
+        attachRigidbody(ClientScene.FindLocalObject(netId).GetComponent<Label>());
+    }
 
-	protected void releaseRigidbody(GameObject obj) {
-		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+    protected void updateChain() {
+        cable.SetPositions(new Vector3[] {
+            transform.TransformPoint(GRAPPLE_POSITION),
+            captured.transform.position
+        });
+    }
+
+    protected void captureRigidBody(Label proposedTarget) {
+        captured = proposedTarget;
+        targetReeledIn = false;
+        updateChain();
+        cable.enabled = true;
+        windSound.Play();
+    }
+
+    protected void releaseRigidbody(Label target) {
+        captured = null;
+        Rigidbody rigidbody = target.GetComponent<Rigidbody>();
 		if (rigidbody != null) {
 			rigidbody.isKinematic = false;
 			rigidbody.useGravity = true;
 		}
 		windSound.Stop();
-		releasedEffect.spawn(obj.transform.position);
+		releasedEffect.spawn(target.transform.position);
 	}
 
-	protected void detachRigidbody(GameObject obj) {
-		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+	protected void detachRigidbody(Label target) {
+        captured = null;
+		Rigidbody rigidbody = target.GetComponent<Rigidbody>();
 		if (rigidbody != null) {
 			rigidbody.isKinematic = false;
 			rigidbody.useGravity = true;
 			rigidbody.AddForce(transform.forward * throwForce.z + transform.up * throwForce.y);
 		}
-		obj.transform.parent = null;
+		target.transform.parent = null;
 		electrocuteSound.Stop();
-		dropEffect.spawn(obj.transform.position);
+		dropEffect.spawn(target.transform.position);
 	}
 
-	protected void attachRigidbody(GameObject obj) {
-		Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+	protected void attachRigidbody(Label proposedTarget) {
+        captured = proposedTarget;
+		Rigidbody rigidbody = proposedTarget.GetComponent<Rigidbody>();
 		if (rigidbody != null) {
 			rigidbody.isKinematic = true;
 			rigidbody.useGravity = false;
 			rigidbody.velocity = new Vector3(0, 0, 0);
 		}
 
-		obj.transform.parent = transform;
-		obj.transform.localPosition = HOLD_POSITION;
+        proposedTarget.transform.parent = transform;
+        proposedTarget.transform.localPosition = HOLD_POSITION;
 		targetReeledIn = true;
 		windSound.Stop();
 		retractedEffect.spawn(transform.position);

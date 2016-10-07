@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public abstract class AbstractArms : AbstractRobotComponent {
 	
