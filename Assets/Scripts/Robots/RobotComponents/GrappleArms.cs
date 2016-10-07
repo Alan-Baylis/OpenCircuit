@@ -34,23 +34,28 @@ public class GrappleArms : AbstractArms {
 	}
 
 	void FixedUpdate() {
-		if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
-			releaseTarget();
-		} else {
-			if (targetCaptured()) {
-				if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
-					releaseTarget();
-					return;
-				}
-				if (targetReeledIn) {
-					captured.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
-				} else {
-					reelInTarget();
-				}
-				updateChain();
-			}
-		}
-	}
+        if (isServer) {
+            if (powerSource == null || !powerSource.hasPower(Time.deltaTime)) {
+                releaseTarget();
+                return;
+            }
+            if (targetCaptured()) {
+                if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
+                    releaseTarget();
+                    return;
+                }
+                if (targetReeledIn) {
+                    captured.sendTrigger(this.gameObject, new DamageTrigger(damagePerSecond * Time.deltaTime));
+                } else {
+                    reelInTarget();
+                }
+            }
+        } 
+
+        if (captured != null) {
+            updateChain();
+        }
+    }
 
 	[Server]
 	public override void releaseCaptured() {
@@ -71,7 +76,6 @@ public class GrappleArms : AbstractArms {
 
 
 			captured = null;
-			cable.enabled = false;
 		}
 	}
 
@@ -224,9 +228,10 @@ public class GrappleArms : AbstractArms {
 		}
 		windSound.Stop();
 		releasedEffect.spawn(target.transform.position);
-	}
+        cable.enabled = false;
+    }
 
-	protected void detachRigidbody(Label target) {
+    protected void detachRigidbody(Label target) {
         captured = null;
 		Rigidbody rigidbody = target.GetComponent<Rigidbody>();
 		if (rigidbody != null) {
@@ -237,9 +242,10 @@ public class GrappleArms : AbstractArms {
 		target.transform.parent = null;
 		electrocuteSound.Stop();
 		dropEffect.spawn(target.transform.position);
-	}
+        cable.enabled = false;
+    }
 
-	protected void attachRigidbody(Label proposedTarget) {
+    protected void attachRigidbody(Label proposedTarget) {
         captured = proposedTarget;
 		Rigidbody rigidbody = proposedTarget.GetComponent<Rigidbody>();
 		if (rigidbody != null) {
