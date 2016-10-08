@@ -25,9 +25,24 @@ public class GlobalConfig : NetworkBehaviour {
         }
     }
 
+    [Server]
+    public void winGame() {
+        RpcWinGame();
+    }
+
+    [Server]
+    public void loseGame() {
+        RpcLoseGame();
+    }
+
     [ClientRpc]
     private void RpcLoseGame() {
         Menu.menu.lose();
+    }
+
+    [ClientRpc]
+    private void RpcWinGame() {
+        Menu.menu.win();
     }
 
 	[Server]

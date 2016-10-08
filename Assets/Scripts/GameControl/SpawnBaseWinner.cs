@@ -22,7 +22,7 @@ public class SpawnBaseWinner : NetworkBehaviour {
 			if (spawner != null)
 				return;
 		}
-		Menu.menu.win();
+		GlobalConfig.globalConfig.winGame();
 		hasWon = true;
 	}
 }
