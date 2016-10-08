@@ -110,11 +110,6 @@ public class Menu : MonoBehaviour {
 	public void win() {
 		pause();
 		currentMenu = state.Win;
-		GetComponent<Camera>().enabled = true;
-		GetComponent<AudioListener>().enabled = true;
-		player.gameObject.SetActive(false);
-		transform.position = endCamPosition;
-		transform.eulerAngles = endCamRotation;
 	}
 
 	public void lose() {
