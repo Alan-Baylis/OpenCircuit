@@ -239,6 +239,10 @@ public class GrappleArms : AbstractArms {
 			rigidbody.useGravity = true;
 			rigidbody.AddForce(transform.forward * throwForce.z + transform.up * throwForce.y);
 		}
+		TransformSync sync = target.GetComponent<TransformSync>();
+		if (sync != null) {
+			sync.enabled = true;
+		}
 		target.transform.parent = null;
 		electrocuteSound.Stop();
 		dropEffect.spawn(target.transform.position);
@@ -252,6 +256,10 @@ public class GrappleArms : AbstractArms {
 			rigidbody.isKinematic = true;
 			rigidbody.useGravity = false;
 			rigidbody.velocity = new Vector3(0, 0, 0);
+		}
+		TransformSync sync = proposedTarget.GetComponent<TransformSync>();
+		if (sync != null) {
+			sync.enabled = false;
 		}
 
         proposedTarget.transform.parent = transform;
