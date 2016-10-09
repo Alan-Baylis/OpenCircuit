@@ -4,6 +4,9 @@ using System.Collections;
 
 public class NetworkParenter : NetworkBehaviour {
 
+	public bool setPositionAndRotation = false;
+	public PositionAndRotation positionAndRotation;
+
 	[SyncVar(hook = "updateParentId")]
 	protected NetworkInstanceId parentId;
 
@@ -23,6 +26,16 @@ public class NetworkParenter : NetworkBehaviour {
 		GameObject parentObject = ClientScene.FindLocalObject(id);
 		if(parentObject != null) {
 			transform.parent = parentObject.transform;
+			if (setPositionAndRotation) {
+				transform.localPosition = positionAndRotation.position;
+				transform.localEulerAngles = positionAndRotation.rotation;
+			}
 		}
+	}
+
+	[System.Serializable]
+	public struct PositionAndRotation {
+		public Vector3 position;
+		public Vector3 rotation;
 	}
 }

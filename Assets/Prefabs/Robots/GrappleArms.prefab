@@ -1154,6 +1154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c31a02391b900c34bb1880e4400d0f8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  setPositionAndRotation: 1
+  positionAndRotation:
+    position: {x: 0, y: 0, z: 0.519}
+    rotation: {x: 0, y: 0, z: 0}
 --- !u!120 &120000013332749832
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -1191,10 +1195,10 @@ LineRenderer:
     endWidth: 0.05
     m_StartColor:
       serializedVersion: 2
-      rgba: 4294967040
+      rgba: 4282400768
     m_EndColor:
       serializedVersion: 2
-      rgba: 4294967040
+      rgba: 4282400768
   m_UseWorldSpace: 1
 --- !u!135 &135000010351847264
 SphereCollider:
