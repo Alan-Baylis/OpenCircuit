@@ -163,7 +163,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
     [ServerCallback]
     void Update() {
-        if (getController().debug) {
+        if (this.isComponentAttached() && getController().debug) {
             clearCircle();
             lineRenderer.SetVertexCount(size);
             drawCircle();
