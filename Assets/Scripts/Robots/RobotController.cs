@@ -45,7 +45,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	[System.NonSerialized]
 	private HashSet<Endeavour> currentEndeavours = new HashSet<Endeavour>();
 	[System.NonSerialized]
-	private Dictionary<System.Type, AbstractRobotComponent> myComponentMap = null;
+	private Dictionary<System.Type, List<AbstractRobotComponent>> myComponentMap = null;
 
 	[System.NonSerialized]
 	MentalModel mentalModel = new MentalModel ();
@@ -89,11 +89,11 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		InvokeRepeating ("evaluateActions", .1f, evaluatePeriod);
 	}
 
-    public Dictionary<System.Type, AbstractRobotComponent> componentMap {
+    public Dictionary<System.Type, List<AbstractRobotComponent>> componentMap {
         get {
             if (myComponentMap == null) {
                 AbstractRobotComponent[] components = GetComponentsInChildren<AbstractRobotComponent>();
-                myComponentMap = new Dictionary<System.Type, AbstractRobotComponent>();
+                myComponentMap = new Dictionary<System.Type, List<AbstractRobotComponent>>();
                 foreach (AbstractRobotComponent component in components) {
                     component.attachToController(this);
                 }
@@ -194,7 +194,10 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	}
 
     public void attachRobotComponent(AbstractRobotComponent component) {
-        componentMap[component.getComponentArchetype()] = component;
+        if (!componentMap.ContainsKey(component.getComponentArchetype())) {
+            componentMap[component.getComponentArchetype()] = new List<AbstractRobotComponent>();
+        }
+        componentMap[component.getComponentArchetype()].Add(component);
     }
 
     public void detachRobotComponent(AbstractRobotComponent component) {
@@ -206,9 +209,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	}
 
 	public AbstractRobotComponent getRobotComponent(System.Type type) {
-		AbstractRobotComponent comp = null;
-		componentMap.TryGetValue(type, out comp);
-		return comp;
+		List<AbstractRobotComponent> compList = null;
+		componentMap.TryGetValue(type, out compList);
+		return compList[0];
 	}
 
 	public List<LabelHandle> getTrackedTargets() {
@@ -336,16 +339,17 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	private Dictionary<System.Type, int> getComponentUsageMap() {
 		Dictionary<System.Type, int> componentUsageMap = new Dictionary<System.Type, int>();
-		foreach (AbstractRobotComponent component in componentMap.Values) {
-			if (componentUsageMap.ContainsKey(component.getComponentArchetype())) {
-				int count = componentUsageMap[component.getComponentArchetype()];
-				++count;
-				componentUsageMap[component.getComponentArchetype()] = count;
-			}
-			else {
-				componentUsageMap[component.getComponentArchetype()] = 1;
-			}
-		}
+        foreach (List<AbstractRobotComponent> componentList in componentMap.Values) {
+            foreach (AbstractRobotComponent component in componentList) {
+                if (componentUsageMap.ContainsKey(component.getComponentArchetype())) {
+                    int count = componentUsageMap[component.getComponentArchetype()];
+                    ++count;
+                    componentUsageMap[component.getComponentArchetype()] = count;
+                } else {
+                    componentUsageMap[component.getComponentArchetype()] = 1;
+                }
+            }
+        }
 		return componentUsageMap;
 	}
 
@@ -395,10 +399,12 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
     [Server]
     protected void disassembleRobotComponents() {
-        foreach (AbstractRobotComponent component in componentMap.Values) {
-            component.enabled = false;
-            component.transform.parent = null;
-            component.dismantle();
+        foreach (List<AbstractRobotComponent> componentList in componentMap.Values) {
+            foreach (AbstractRobotComponent component in componentList) {
+                component.enabled = false;
+                component.transform.parent = null;
+                component.dismantle();
+            }
         }
     }
 
