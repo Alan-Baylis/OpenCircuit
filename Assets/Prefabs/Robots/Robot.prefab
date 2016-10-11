@@ -724,5 +724,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30bb4b345930194448eb6ed472f7d296, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sentryModule: {fileID: 0}
   sentryModulePrefab: {fileID: 106926, guid: d53c2f88019075f41af0c3cf895de987, type: 2}

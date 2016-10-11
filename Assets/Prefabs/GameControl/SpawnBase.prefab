@@ -375,7 +375,6 @@ MonoBehaviour:
   - {fileID: 194710, guid: d12be230b2cf2d443aa53c1508bc0c37, type: 2}
   - {fileID: 101790, guid: 57f278600f284864ca4ff9d3dc8ec826, type: 2}
   - {fileID: 128374, guid: 513924346bbb5814c8b8b5ea37c37576, type: 2}
-  - {fileID: 122244, guid: 9b29586847c0b9646a532aacaa112665, type: 2}
 --- !u!114 &11403458
 MonoBehaviour:
   m_ObjectHideFlags: 1
