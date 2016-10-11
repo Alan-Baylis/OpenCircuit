@@ -19,6 +19,7 @@ GameObject:
   - 114: {fileID: 11454488}
   - 114: {fileID: 11454592}
   - 114: {fileID: 11482574}
+  - 114: {fileID: 114000014205405602}
   m_Layer: 0
   m_Name: Robot
   m_TagString: Untagged
@@ -233,6 +234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e020000000903000000050300000019526f626f744465737472756374696f6e4f7065726174696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
   isVisible: 0
+  inherentKnowledge: 0
 --- !u!114 &11495642
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -711,3 +713,16 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 135778}
   m_IsPrefabParent: 1
+--- !u!114 &114000014205405602
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 135778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30bb4b345930194448eb6ed472f7d296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sentryModule: {fileID: 0}
+  sentryModulePrefab: {fileID: 106926, guid: d53c2f88019075f41af0c3cf895de987, type: 2}
