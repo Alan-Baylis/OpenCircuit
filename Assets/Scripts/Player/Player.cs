@@ -105,21 +105,24 @@ public class Player : NetworkBehaviour {
 		fadeIn(); // fade in for dramatic start
 	}
 
+    [ClientCallback]
 	void Update () {
-		if (oxygen < maxOxygen - oxygenRecoveryRate *Time.deltaTime) {
-			oxygen += oxygenRecoveryRate *Time.deltaTime;
-			if (!breathingSource.isPlaying) {
-				breathingSource.Play();
-			}
-			breathingSource.volume = Mathf.Max(0, 1 -oxygen /maxOxygen);
-		} else {
-			oxygen = maxOxygen;
-			if (breathingSource.isPlaying) {
-				breathingSource.Stop();
-			}
-		}
+        if (isLocalPlayer) {
+            if (oxygen < maxOxygen - oxygenRecoveryRate * Time.deltaTime) {
+                oxygen += oxygenRecoveryRate * Time.deltaTime;
+                if (!breathingSource.isPlaying) {
+                    breathingSource.Play();
+                }
+                breathingSource.volume = Mathf.Max(0, 1 - oxygen / maxOxygen);
+            } else {
+                oxygen = maxOxygen;
+                if (breathingSource.isPlaying) {
+                    breathingSource.Stop();
+                }
+            }
 
-		deltaTime += (Time.deltaTime -deltaTime) *0.1f;
+            deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+        }
 	}
 
 	public void physicsPickup(GameObject item) {
