@@ -11,7 +11,7 @@ public class TransformSync : NetworkBehaviour {
 	}
 
 	public SyncMode mode = SyncMode.BOTH;
-	public float interpolationRate;
+	public float interpolationRate = .2f;
 	public int networkChannel = 1;
 
 	[SyncVar]
