@@ -5,6 +5,7 @@ public struct EffectSpec {
 
 	public GameObject prefab;
 	public float lifetime;
+    public bool randomizePitch;
 
 	public GameObject spawn(Vector3 location) {
 		if (prefab == null)
@@ -25,6 +26,13 @@ public struct EffectSpec {
 		effect.gameObject.hideFlags |= HideFlags.HideAndDontSave;
 		if (lifetime > 0)
 			MonoBehaviour.Destroy(effect.gameObject, lifetime);
-		return effect;
+
+        if (randomizePitch ) {
+            AudioSource source = effect.GetComponent<AudioSource>();
+            if (source != null) {
+                source.pitch = UnityEngine.Random.Range(source.pitch - 0.05f, source.pitch + 0.05f);
+            }
+        }
+        return effect;
 	}
 }

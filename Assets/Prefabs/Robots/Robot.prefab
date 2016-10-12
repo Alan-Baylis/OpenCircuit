@@ -248,7 +248,7 @@ MonoBehaviour:
   maxSuffering: 100
   recoveryRate: 0
   sufferingDisplay: 0
-  hurtSound: {fileID: 8300000, guid: 8e377cff4b1c85947affd086b06fa4c4, type: 3}
+  hurtSound: {fileID: 0}
   hurtSoundPitch: 1.2
 --- !u!114 &11499298
 MonoBehaviour:
@@ -266,6 +266,7 @@ MonoBehaviour:
   destructionEffect:
     prefab: {fileID: 143798, guid: 3f9ed27588432d74eacd8fa5d41f4f23, type: 2}
     lifetime: 2
+    randomizePitch: 0
   debug: 0
   shouldAlphabetize: 0
   locations: []
