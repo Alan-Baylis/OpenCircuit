@@ -1416,6 +1416,9 @@ MonoBehaviour:
   minMoveSpeed: 0.01
   minimumFramesPerSwitch: 3
   footstep: {fileID: 8289408}
+  footPlant:
+    prefab: {fileID: 127654, guid: 2953fbf8543951343adffc4647d99a83, type: 2}
+    lifetime: 5
   debug: 0
 --- !u!114 &11460476
 MonoBehaviour:
