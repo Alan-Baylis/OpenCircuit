@@ -42,8 +42,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverConfig:
     robotsPerPlayer: 3
-    robotSpawnRatePerSecond: 0.2
-    spawnRateIncreasePerPlayer: 0.1
+    robotSpawnRatePerSecond: 0.1
+    spawnRateIncreasePerPlayer: 0.05
   defaultScreenHeight: 1080
   activeAtStart: 0
   skin: {fileID: 11400000, guid: 4c291cb9d9421e040bdbab8ba9af4718, type: 2}
