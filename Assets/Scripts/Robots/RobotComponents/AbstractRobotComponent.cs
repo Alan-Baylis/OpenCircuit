@@ -94,7 +94,7 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
         }
 
         if (hasCollider) {
-            if (isServer) {
+            if (isServer || trans.GetComponent<NetworkIdentity>() == null) {
                 useAsTemporaryDebris(trans);
             } else {
                 convertToDebris(trans);
@@ -104,7 +104,6 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
         }
     }
 
-    [Server]
     protected static void useAsTemporaryDebris(Transform trans) {
         const float lingerTime = 30;
         convertToDebris(trans);
