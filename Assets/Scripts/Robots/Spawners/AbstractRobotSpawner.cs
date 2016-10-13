@@ -56,6 +56,9 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 				} else {
 					parenter.setParentId(robotId);
 				}
+				foreach(NetworkIdentity id in component.GetComponentsInChildren<NetworkIdentity>()) {
+					NetworkServer.Spawn(id.gameObject);
+				}
 			}
 
 			NavMeshAgent navAgent = body.GetComponent<NavMeshAgent>();
