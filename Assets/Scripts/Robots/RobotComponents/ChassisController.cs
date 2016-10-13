@@ -17,6 +17,7 @@ public class ChassisController : MonoBehaviour {
 	public int minimumFramesPerSwitch = 2;
 
 	public AudioSource footstep;
+	public EffectSpec footPlant;
 
 	public bool debug = false;
 
@@ -159,8 +160,13 @@ public class ChassisController : MonoBehaviour {
 		public void setPlanted(bool planted) {
 			if (!planted && this.planted)
 				setLastPlanted();
-			if (planted && !this.planted && chassis.footstep != null)
-				chassis.footstep.Play(0);
+			if (planted && !this.planted) {
+                if (chassis.footstep != null) {
+					chassis.footstep.pitch = Random.Range(1f, 1.5f);
+					chassis.footstep.Play();
+				}
+				chassis.footPlant.spawn(foot, Vector3.up);
+			}
 			this.planted = planted;
 		}
 
