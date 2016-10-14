@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class TransformSync : NetworkBehaviour {
 
@@ -13,6 +12,7 @@ public class TransformSync : NetworkBehaviour {
 	public SyncMode mode = SyncMode.BOTH;
 	public float interpolationRate = .2f;
 	public int networkChannel = 1;
+    public Transform syncTarget;
 
 	[SyncVar]
 	protected Vector3 serverPosition;
@@ -20,22 +20,22 @@ public class TransformSync : NetworkBehaviour {
 	protected Quaternion serverRotation;
 
 	public void Awake() {
-		serverPosition = transform.position;
+		serverPosition = getTransform().position;
 	}
 
 	public void FixedUpdate() {
 		if (isServer) {
 			if (mode != SyncMode.ROTATION)
-				serverPosition = transform.position;
+				serverPosition = getTransform().position;
 			if (mode != SyncMode.POSITION)
-				serverRotation = transform.rotation;
+				serverRotation = getTransform().rotation;
 		} else {
 			if (mode != SyncMode.ROTATION) {
-				Vector3 diff = serverPosition -transform.position;
-				transform.position += diff *interpolationRate;
+				Vector3 diff = serverPosition - getTransform().position;
+                getTransform().position += diff *interpolationRate;
 			}
 			if (mode != SyncMode.POSITION) {
-				transform.rotation = Quaternion.Lerp(transform.rotation, serverRotation, interpolationRate);
+                getTransform().rotation = Quaternion.Lerp(getTransform().rotation, serverRotation, interpolationRate);
 			}
 		}
 	}
@@ -43,4 +43,11 @@ public class TransformSync : NetworkBehaviour {
 	public override int GetNetworkChannel() {
 		return networkChannel;
 	}
+
+    private Transform getTransform() {
+        if (syncTarget != null) {
+            return syncTarget;
+        }
+        return transform;
+    }
 }

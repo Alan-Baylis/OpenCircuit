@@ -51,9 +51,9 @@ GameObject:
   - 33: {fileID: 3331890}
   - 65: {fileID: 6598588}
   - 23: {fileID: 2376242}
-  - 114: {fileID: 11476790}
-  - 114: {fileID: 114000012024975658}
-  - 114: {fileID: 114000010634110360}
+  - 114: {fileID: 114000014203750516}
+  - 114: {fileID: 114000011521836034}
+  - 114: {fileID: 114000010829384686}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -260,7 +260,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106926}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8a5a05976e559341be60c23f2f94893, type: 3}
   m_Name: 
@@ -269,20 +269,7 @@ MonoBehaviour:
   sightDistance: 30
   lookAroundInterval: 0.1
   eye: {fileID: 119542}
-  rotatable: {fileID: 11476790}
---- !u!114 &11476790
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 146578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38ef80c2f0a0c2849a61c06c56b33ab0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeed: 40
-  axis: 1
+  rotatable: {fileID: 0}
 --- !u!135 &13509422
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -333,7 +320,7 @@ MonoBehaviour:
   serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e0200000009030000000503000000144465737472756374696f6e4f7065726174696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
   isVisible: 0
   inherentKnowledge: 0
---- !u!114 &114000010634110360
+--- !u!114 &114000010829384686
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -344,10 +331,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d744924bc1f46b4da2ad8800f9af550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
-  interpolationRate: 0
+  mode: 2
+  interpolationRate: 0.2
   networkChannel: 1
---- !u!114 &114000012024975658
+--- !u!114 &114000011521836034
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -395,3 +382,16 @@ MonoBehaviour:
   sufferingDisplay: 0
   hurtSound: {fileID: 0}
   hurtSoundPitch: 1
+--- !u!114 &114000014203750516
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 146578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38ef80c2f0a0c2849a61c06c56b33ab0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 40
+  axis: 0

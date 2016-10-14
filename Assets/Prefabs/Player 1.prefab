@@ -387,6 +387,7 @@ MonoBehaviour:
   effectSpec:
     prefab: {fileID: 171970, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
     lifetime: 5
+    randomizePitch: 0
 --- !u!114 &11469390
 MonoBehaviour:
   m_ObjectHideFlags: 1
