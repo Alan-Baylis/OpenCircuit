@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.Networking;
 
 public class SentryModule : AbstractVisualSensor {
 
     public Rotatable rotatable;
 
 
+	[ServerCallback]
     void FixedUpdate() {
 
         if (getSightingCount() > 0) { //no point if there are no targets in view
@@ -30,6 +30,7 @@ public class SentryModule : AbstractVisualSensor {
         }
     }
 
+	[Server]
     private void scan() {
         if (Mathf.Abs(Vector3.Dot(rotatable.transform.forward, Vector3.up)) > .0001f) { //if we are not on the horizontal plane
             //rotate to the horizontal plane
@@ -40,8 +41,8 @@ public class SentryModule : AbstractVisualSensor {
         }
     }
 
+	[Server]
     private void trackTarget(Vector3 pos) {
-
         rotatable.transform.rotation = Quaternion.RotateTowards(rotatable.transform.rotation, Quaternion.LookRotation(pos - rotatable.transform.position), rotatable.rotationSpeed * Time.deltaTime);
     }
 }
