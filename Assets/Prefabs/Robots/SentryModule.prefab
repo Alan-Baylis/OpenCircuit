@@ -259,7 +259,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106926}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8a5a05976e559341be60c23f2f94893, type: 3}
   m_Name: 
@@ -268,7 +268,7 @@ MonoBehaviour:
   sightDistance: 30
   lookAroundInterval: 0.1
   eye: {fileID: 119542}
-  rotatable: {fileID: 0}
+  rotatable: {fileID: 114000014203750516}
 --- !u!135 &13509422
 SphereCollider:
   m_ObjectHideFlags: 1
