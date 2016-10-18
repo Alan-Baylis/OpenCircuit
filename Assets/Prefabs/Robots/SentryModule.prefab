@@ -15,6 +15,7 @@ GameObject:
   - 114: {fileID: 11442294}
   - 114: {fileID: 114000010271454078}
   - 114: {fileID: 114000013120167950}
+  - 114: {fileID: 114000010480240832}
   m_Layer: 0
   m_Name: SentryModule
   m_TagString: Untagged
@@ -52,8 +53,6 @@ GameObject:
   - 65: {fileID: 6598588}
   - 23: {fileID: 2376242}
   - 114: {fileID: 114000014203750516}
-  - 114: {fileID: 114000011521836034}
-  - 114: {fileID: 114000010829384686}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -320,52 +319,21 @@ MonoBehaviour:
   serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e0200000009030000000503000000144465737472756374696f6e4f7065726174696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
   isVisible: 0
   inherentKnowledge: 0
---- !u!114 &114000010829384686
+--- !u!114 &114000010480240832
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 146578}
+  m_GameObject: {fileID: 106926}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d744924bc1f46b4da2ad8800f9af550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 2
+  mode: 1
   interpolationRate: 0.2
   networkChannel: 1
---- !u!114 &114000011521836034
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 146578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 213
-    i1: 60
-    i2: 47
-    i3: 136
-    i4: 1
-    i5: 144
-    i6: 117
-    i7: 244
-    i8: 26
-    i9: 240
-    i10: 195
-    i11: 207
-    i12: 137
-    i13: 93
-    i14: 233
-    i15: 135
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
+  syncTarget: {fileID: 487186}
 --- !u!114 &114000013120167950
 MonoBehaviour:
   m_ObjectHideFlags: 1
