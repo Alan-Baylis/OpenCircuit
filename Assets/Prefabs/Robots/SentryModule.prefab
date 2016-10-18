@@ -16,6 +16,7 @@ GameObject:
   - 114: {fileID: 114000010271454078}
   - 114: {fileID: 114000013120167950}
   - 114: {fileID: 114000010480240832}
+  - 82: {fileID: 82000010791195288}
   m_Layer: 0
   m_Name: SentryModule
   m_TagString: Untagged
@@ -259,7 +260,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106926}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8a5a05976e559341be60c23f2f94893, type: 3}
   m_Name: 
@@ -269,6 +270,7 @@ MonoBehaviour:
   lookAroundInterval: 0.1
   eye: {fileID: 119542}
   rotatable: {fileID: 114000014203750516}
+  alertSound: {fileID: 82000010791195288}
 --- !u!135 &13509422
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -305,6 +307,80 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 106926}
   m_IsPrefabParent: 1
+--- !u!82 &82000010791195288
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106926}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 1868365e9056f204ea210115137e344d, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 30
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!114 &114000010271454078
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -316,7 +392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e0200000009030000000503000000144465737472756374696f6e4f7065726174696f6e00000000020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000000000004094f7065726174696f6e020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
   isVisible: 0
   inherentKnowledge: 0
 --- !u!114 &114000010480240832

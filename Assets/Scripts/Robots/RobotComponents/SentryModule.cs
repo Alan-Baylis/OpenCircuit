@@ -4,7 +4,9 @@ using UnityEngine.Networking;
 public class SentryModule : AbstractVisualSensor {
 
     public Rotatable rotatable;
+	public AudioSource alertSound;
 
+	private bool alerted = false;
 
 	[ServerCallback]
     void FixedUpdate() {
@@ -30,6 +32,24 @@ public class SentryModule : AbstractVisualSensor {
         }
     }
 
+	[ServerCallback]
+	public void Update() {
+		// play alert sound
+		bool alert = false;
+		if (isComponentAttached() && getSightingCount() > 0) {
+			foreach (Label label in targetMap.Keys) {
+				if (targetMap[label].getSightings() > 0 && label.GetComponent<Player>() != null) {
+					alert = true;
+					break;
+				}
+			}
+		}
+		if (alert != alerted) {
+			RpcSetAlert(alert);
+			alerted = alert;
+		}
+	}
+
 	[Server]
     private void scan() {
         if (Mathf.Abs(Vector3.Dot(rotatable.transform.forward, Vector3.up)) > .0001f) { //if we are not on the horizontal plane
@@ -45,4 +65,28 @@ public class SentryModule : AbstractVisualSensor {
     private void trackTarget(Vector3 pos) {
         rotatable.transform.rotation = Quaternion.RotateTowards(rotatable.transform.rotation, Quaternion.LookRotation(pos - rotatable.transform.position), rotatable.rotationSpeed * Time.deltaTime);
     }
+	
+	protected override void dismantleEffect() {
+		stopAlertSound();
+		alerted = false;
+		base.dismantleEffect();
+	}
+
+	[ClientRpc]
+	private void RpcSetAlert(bool alert) {
+		if (alertSound == null)
+			return;
+		if (alert) {
+			if (!alertSound.isPlaying)
+				alertSound.Play();
+		} else {
+			stopAlertSound();
+		}
+	}
+
+	private void stopAlertSound() {
+		if (alertSound.isPlaying) {
+			alertSound.Stop();
+		}
+	}
 }
