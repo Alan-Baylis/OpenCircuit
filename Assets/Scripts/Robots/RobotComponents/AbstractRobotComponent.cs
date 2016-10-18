@@ -4,7 +4,9 @@ using System.Collections;
 
 public abstract class AbstractRobotComponent : NetworkBehaviour {
 
-    private bool isAttached;
+	public const float lingerTime = 30;
+
+	private bool isAttached;
 
 	private AbstractPowerSource myPowerSource;
 	public AbstractPowerSource powerSource { get {
@@ -46,15 +48,15 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 	}
 
     [Server]
-    public virtual void dismantle() {
-        dismantle(transform);
-        RpcDismantle();
-        isAttached = false;
+    public void dismantle() {
+		RpcDismantle();
+		dismantleEffect();
+		isAttached = false;
     }
 
     [ClientRpc]
     protected void RpcDismantle() {
-        dismantle(transform);
+        dismantleEffect();
         isAttached = false;
     }
 
@@ -68,11 +70,15 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
         return isAttached;
     }
 
-    protected void dismantle(Transform trans) {
+	protected virtual void dismantleEffect() {
+		dismantleEffect(transform);
+	}
+
+    protected void dismantleEffect(Transform trans) {
         trans.parent = null;
         trans.gameObject.hideFlags |= HideFlags.HideInHierarchy;
         while (trans.childCount > 0)
-            dismantle(trans.GetChild(0));
+            dismantleEffect(trans.GetChild(0));
         Collider [] cols = trans.GetComponents<Collider>();
 
         bool hasCollider = false;
@@ -82,30 +88,24 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
                 continue;
             } else {
                 hasCollider = true;
-                //foreach (MonoBehaviour script in trans.GetComponents<MonoBehaviour>()) {
-                //    if (script as NetworkIdentity == null) {
-                //        Destroy(script);
-                //    }
-                //}
                 if (col as MeshCollider != null)
                     ((MeshCollider)col).convex = true;
                 col.enabled = true;
             }
         }
-
-        if (hasCollider) {
-            if (isServer || trans.GetComponent<NetworkIdentity>() == null) {
-                useAsTemporaryDebris(trans);
-            } else {
-                convertToDebris(trans);
-            }
-        } else {
-            Destroy(trans.gameObject);
+		
+        if (isServer || trans.GetComponent<NetworkIdentity>() == null) {
+			if (hasCollider) {
+				useAsTemporaryDebris(trans);
+			} else {
+				Destroy(trans.gameObject, lingerTime);
+			}
+		} else if (hasCollider) {
+			convertToDebris(trans);
         }
     }
 
     protected static void useAsTemporaryDebris(Transform trans) {
-        const float lingerTime = 30;
         convertToDebris(trans);
         Destroy(trans.gameObject, lingerTime);
     }
