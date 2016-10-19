@@ -24,20 +24,10 @@ public class TransformSync : NetworkBehaviour {
 	}
 
 	public void FixedUpdate() {
-		if (isServer) {
-			if (mode != SyncMode.ROTATION)
-				serverPosition = getTransform().position;
-			if (mode != SyncMode.POSITION)
-				serverRotation = getTransform().rotation;
-		} else {
-			if (mode != SyncMode.ROTATION) {
-				Vector3 diff = serverPosition - getTransform().position;
-                getTransform().position += diff *interpolationRate;
-			}
-			if (mode != SyncMode.POSITION) {
-                getTransform().rotation = Quaternion.Lerp(getTransform().rotation, serverRotation, interpolationRate);
-			}
-		}
+        if (mode != SyncMode.ROTATION)
+            syncPosition();
+        if (mode != SyncMode.POSITION)
+            syncRotation();
 	}
 
 	public override int GetNetworkChannel() {
@@ -49,5 +39,22 @@ public class TransformSync : NetworkBehaviour {
             return syncTarget;
         }
         return transform;
+    }
+
+    protected virtual void syncRotation() {
+        if (isServer) {
+            serverRotation = getTransform().rotation;
+        } else {
+            getTransform().rotation = Quaternion.Lerp(getTransform().rotation, serverRotation, interpolationRate);
+        }
+    }
+
+    protected virtual void syncPosition() {
+        if(isServer) {
+            serverPosition = getTransform().position;
+        } else {
+            Vector3 diff = serverPosition - getTransform().position;
+            getTransform().position += diff * interpolationRate;
+        }
     }
 }

@@ -14,8 +14,8 @@ GameObject:
   - 81: {fileID: 8126262}
   - 54: {fileID: 5429542}
   - 114: {fileID: 11482110}
-  - 114: {fileID: 11435124}
   - 114: {fileID: 11411248}
+  - 114: {fileID: 114000013017276130}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -32,6 +32,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -109,20 +110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c31a02391b900c34bb1880e4400d0f8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &11435124
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 135544}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d744924bc1f46b4da2ad8800f9af550, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mode: 1
-  interpolationRate: 0
-  networkChannel: 1
+  setPositionAndRotation: 0
+  positionAndRotation:
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
 --- !u!114 &11482110
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -137,22 +128,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 15
-    i1: 191
-    i2: 200
-    i3: 226
-    i4: 70
-    i5: 40
-    i6: 217
-    i7: 84
-    i8: 42
-    i9: 91
-    i10: 139
-    i11: 9
-    i12: 91
-    i13: 226
-    i14: 97
-    i15: 249
+    i0: 139
+    i1: 158
+    i2: 182
+    i3: 243
+    i4: 131
+    i5: 241
+    i6: 12
+    i7: 4
+    i8: 88
+    i9: 250
+    i10: 13
+    i11: 68
+    i12: 92
+    i13: 66
+    i14: 50
+    i15: 205
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
 --- !u!124 &12490596
@@ -173,3 +164,18 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 135544}
   m_IsPrefabParent: 1
+--- !u!114 &114000013017276130
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 135544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 540b01bc0b986c140b77af80b854aafa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 1
+  interpolationRate: 0.2
+  networkChannel: 1
+  syncTarget: {fileID: 0}
