@@ -59,11 +59,7 @@ public class LevelLoad {
 		Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
 	}
 
-	private static GameObject createPrefab(string assetPath) {
-		return createPrefab(assetPath, null);
-	}
-
-	private static GameObject createPrefab(string assetPath, Transform parent) {
+	private static GameObject createPrefab(string assetPath, Transform parent=null) {
 		GameObject prefab = PrefabUtility.InstantiatePrefab(
 			AssetDatabase.LoadAssetAtPath<GameObject>(assetPath)) as GameObject;
 		prefab.transform.parent = parent;
