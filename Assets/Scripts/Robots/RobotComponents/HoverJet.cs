@@ -35,6 +35,9 @@ public class HoverJet : AbstractRobotComponent {
 	public float speedRegenRate = 5f;
 	public float heightRegenRate = 0.2f;
 
+	[System.NonSerialized]
+	public float speedMultipler = 1;
+
 #if UNITY_EDITOR
 	private GameObject dest;
 #endif
@@ -82,14 +85,17 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	void Update () {
-		if(nav.speed < regularSpeed) {
-			nav.speed = nav.speed + speedRegenRate * Time.deltaTime;
-
-			if(nav.speed > regularSpeed) {
-				nav.speed = regularSpeed;
+		float actualSpeed = regularSpeed * speedMultipler;
+		if(nav.speed < actualSpeed) {
+			nav.speed += speedRegenRate * Time.deltaTime;
+			if(nav.speed > actualSpeed) {
+				nav.speed = actualSpeed;
 			}
-		}
-		chassis.strideLength = regularStrideLength *nav.speed /regularSpeed;
+		} else if (nav.speed > actualSpeed) {
+			nav.speed = actualSpeed;
+        }
+
+		chassis.strideLength = regularStrideLength *nav.speed /actualSpeed;
 		if (nav.baseOffset < regularHeight) {
 			nav.baseOffset = nav.baseOffset + heightRegenRate * Time.deltaTime;
 
