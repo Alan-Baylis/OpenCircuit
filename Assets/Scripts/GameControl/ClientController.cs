@@ -70,13 +70,21 @@ public class ClientController : NetworkBehaviour {
 	
 	[Server]
 	private void spawnPlayerAt(Vector3 position) {
+		playerPrefab.SetActive(false);
 		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
 		GameObject playerCam = Instantiate(playerCamPrefab, position, Quaternion.identity) as GameObject;
+
+		Player playerScript = newPlayer.GetComponent<Player>();
+		playerScript.clientController = this;
+
+		newPlayer.SetActive(true);
 
 		playerCam.transform.parent = newPlayer.transform;
 		playerCam.transform.localPosition = new Vector3(0, .8f, 0);
 
 		newPlayer.name = "player" + Random.Range(1, 20);
+
+
 		NetworkServer.Spawn(newPlayer);
 		NetworkServer.Spawn(playerCam);
 
@@ -124,9 +132,11 @@ public class ClientController : NetworkBehaviour {
 	private void setPlayerId(NetworkInstanceId id) {
 		this.id = id;
 		player = ClientScene.FindLocalObject(id);
-		player.GetComponent<Player>().controller = this;
-		if(!player.GetComponent<Player>().isLocalPlayer) {
+		Player playerScript = player.GetComponent<Player>();
+		playerScript.controller = this;
+		if(!playerScript.isLocalPlayer) {
 			cameras.Add(id);
+			playerScript.clientController = this;
 		}
 	}
 

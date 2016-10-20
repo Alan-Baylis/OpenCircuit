@@ -30,7 +30,7 @@ public class Inventory : NetworkBehaviour {
 	void Awake() {
 		foreach(GameObject itemPrefab in startingItemPrefabs) {
 			GameObject instantiatedItem = Instantiate(itemPrefab);
-			NetworkServer.Spawn(instantiatedItem.gameObject);
+			NetworkServer.SpawnWithClientAuthority(instantiatedItem.gameObject, getPlayer().clientController.gameObject);
 			toTake.Add(instantiatedItem);
 		}
 	}

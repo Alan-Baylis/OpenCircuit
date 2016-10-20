@@ -44,6 +44,8 @@ public class Player : NetworkBehaviour {
 	private float deltaTime;
 
 	public EffectSpec effectSpec;
+
+    private ClientController myClientController;
 	
 	public Attack attacker { get {
 		if(myAttacker == null) {
@@ -93,6 +95,16 @@ public class Player : NetworkBehaviour {
 			myHealth = GetComponent<Health>();
 		}
 		return myHealth; } set { myHealth = value; } }
+
+
+    public ClientController clientController {
+        get {
+            return myClientController;
+        }
+        set {
+            myClientController = value;
+        }
+    }
 
 	void Awake() {		
 		whiteOutTime = 0;
