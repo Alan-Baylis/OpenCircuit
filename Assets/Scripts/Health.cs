@@ -41,6 +41,7 @@ public class Health : NetworkBehaviour {
 		return suffering;
 	}
 
+	[Server]
 	public virtual void destruct() {
 		Label label = GetComponent<Label>();
 		if (label != null)

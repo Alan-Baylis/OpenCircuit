@@ -1,24 +1,20 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Networking;
 
 public class EffectHealth : Health {
 
 	public EffectSpec[] destructEffects;
 	public EffectSpec[] hurtEffects;
 
-	public AudioSource destroySound;
-
 	public bool destroyOnDestruct = false;
 
+	[Server]
 	public override void destruct() {
 		base.destruct();
-		foreach (EffectSpec effect in destructEffects)
-			effect.spawn(transform.position, transform.rotation);
+		RpcSpawnEffects();
 		if(destroyOnDestruct) { 
 			//Destroy(gameObject.GetComponent<MeshRenderer>());
 			//Destroy(gameObject.GetComponent<ParticleEmitter>());
-			if (destroySound != null)
-				destroySound.Play();
 			Destroy(gameObject);
 		}
 	}
@@ -26,6 +22,12 @@ public class EffectHealth : Health {
 	public override void hurt(float pain) {
 		base.hurt(pain);
 		foreach (EffectSpec effect in hurtEffects)
+			effect.spawn(transform.position, transform.rotation);
+	}
+
+	[ClientRpc]
+	private void RpcSpawnEffects() {
+				foreach (EffectSpec effect in destructEffects)
 			effect.spawn(transform.position, transform.rotation);
 	}
 }
