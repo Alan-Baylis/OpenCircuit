@@ -14,6 +14,9 @@ public class Controls : NetworkBehaviour {
 	public bool enableMousePadHacking = false;
 
 
+	private ControlStatus status;
+
+
 	public override int GetNetworkChannel() {
 		return 0;
 	}
@@ -37,111 +40,68 @@ public class Controls : NetworkBehaviour {
 			return;
 
 		/****************MOVEMENT****************/
-        if (!myPlayer.frozen) {
-            float amount = Input.GetAxis("Vertical");
-            myPlayer.mover.setForward(amount);
-            CmdSetForward(amount);
-
-            amount = Input.GetAxis("Horizontal");
-            myPlayer.mover.setRight(amount);
-            CmdSetRight(amount);
-
-            if (Input.GetButtonDown("Jump")) {
-                if (!isServer)
-                    myPlayer.mover.jump();
-                CmdJump();
-            }
-
-            bool sprinting = Input.GetButton("Sprint");
-            setSprinting(sprinting);
-            CmdSetSprint(sprinting);
-
-            bool crouching = Input.GetButton("Crouch");
-            myPlayer.mover.setCrouching(crouching);
-            CmdSetCrouch(crouching);
-        }
-
-		/****************INVENTORY***************/
-		if (!myPlayer.inventory.inContext()) {
-			if (enableMousePadHacking) {
-				if (Input.GetButtonDown("Equip1")) {
-					if (myPlayer.inventory.isSelecting())
-						myPlayer.inventory.doSelect(-1);
-					else
-						myPlayer.inventory.doSelect(0);
-				} else if (Input.GetButtonDown("Equip2")) {
-					if (myPlayer.inventory.isSelecting())
-						myPlayer.inventory.doSelect(-1);
-					else
-						myPlayer.inventory.doSelect(1);
-				} else if (Input.GetButtonDown("Equip3")) {
-					if (myPlayer.inventory.isSelecting())
-						myPlayer.inventory.doSelect(-1);
-					else
-						myPlayer.inventory.doSelect(2);
-				}
-			} else {
-				if (Input.GetButton("Equip1")) {
-					myPlayer.inventory.doSelect(0);
-				} else if (Input.GetButton("Equip2")) {
-					myPlayer.inventory.doSelect(1);
-				} else if (Input.GetButton("Equip3")) {
-					myPlayer.inventory.doSelect(2);
-				} else {
-					myPlayer.inventory.doSelect(-1);
-				}
-			}
+        if (updateStatus(ref status.forward, Input.GetAxis("Vertical"), 0)) {
+			myPlayer.mover.setForward(status.forward);
+			CmdSetForward(status.forward);
+		}
+			
+		if (updateStatus(ref status.right, Input.GetAxis("Horizontal"), 0)) {
+			myPlayer.mover.setRight(status.right);
+			CmdSetRight(status.right);
 		}
 
-		if(Input.GetButtonDown("Reload")) {
+        if (hasControls() && Input.GetButtonDown("Jump")) {
+            if (!isServer)
+                myPlayer.mover.jump();
+            CmdJump();
+        }
+			
+		if (updateStatus(ref status.sprinting, Input.GetButton("Sprint"), status.sprinting)) {
+			setSprinting(status.sprinting);
+			CmdSetSprint(status.sprinting);
+		}
+			
+		if (updateStatus(ref status.crouching, Input.GetButton("Crouch"), status.crouching)) {
+			myPlayer.mover.setCrouching(status.crouching);
+			CmdSetCrouch(status.crouching);
+		}
+
+		if(hasControls() && Input.GetButtonDown("Reload")) {
 			myPlayer.inventory.reloadEquipped();
 			if (!isServer)
 				CmdReloadEquipped();
-        }
-
-		// nothing after this point is done while in menu
-		if(menu.paused()) {
-			return;
 		}
-        if (!myPlayer.frozen) {
-            if (myPlayer.inventory.isSelecting()) {
-                myPlayer.inventory.moveMouse(new Vector2(Input.GetAxis("Look Horizontal"), Input.GetAxis("Look Vertical")));
-            } else {
-                if (invertLook)
-                    myPlayer.looker.rotate(Input.GetAxis("Look Horizontal") * mouseSensitivity, -Input.GetAxis("Look Vertical") * mouseSensitivity);
-                else
-                    myPlayer.looker.rotate(Input.GetAxis("Look Horizontal") * mouseSensitivity, Input.GetAxis("Look Vertical") * mouseSensitivity);
-            }
-        }
 
+		if (hasControls()) {
+			float hori = Input.GetAxis("Look Horizontal") * mouseSensitivity;
+			float verti = Input.GetAxis("Look Vertical") * mouseSensitivity;
+			if (invertLook)
+				verti = -verti;
+			myPlayer.looker.rotate(hori, verti);
+		}
+		
 		/****************ACTION****************/
-        if (!myPlayer.frozen) {
-            if (Input.GetButtonDown("Use")) {
-                myPlayer.inventory.useEquipped();
-                if (!isServer)
-                    CmdUseEquipped();
-            }
-            if (Input.GetButtonDown("Zoom")) {
-                myPlayer.zooming = true;
-                if (!isServer)
-                    CmdSetZooming(true);
-            }
-            if (Input.GetButtonDown("Interact")) {
-                CmdInteract();
-            }
-        }
-            if (Input.GetButtonUp("Use") || myPlayer.frozen) {
-                myPlayer.inventory.stopUsingEquiped();
-                if (!isServer)
-                    CmdStopUsingEquipped();
-            }
+		if (updateStatus(ref status.useEquipment, Input.GetButton("Use"), false)) {
+			if (status.useEquipment) {
+				myPlayer.inventory.useEquipped();
+				if (!isServer)
+					CmdUseEquipped();
+			} else {
+				myPlayer.inventory.stopUsingEquiped();
+				if (!isServer)
+					CmdStopUsingEquipped();
+			}
+		}
 
+		if (updateStatus(ref status.zoom, Input.GetButton("Zoom"), false)) {
+			myPlayer.zooming = status.zoom;
+			if (!isServer)
+				CmdSetZooming(status.zoom);
+		}
 
-            if (Input.GetButtonUp("Zoom") || myPlayer.frozen) {
-                myPlayer.zooming = false;
-                if (!isServer)
-                    CmdSetZooming(false);
-            }
+		if (hasControls() && Input.GetButtonDown("Interact")) {
+			CmdInteract();
+		}
 
 
 	}
@@ -209,5 +169,26 @@ public class Controls : NetworkBehaviour {
 	
 	public void enablePlayerControls() {
 		playerControlsEnabled = true;
+	}
+
+	private bool hasControls() {
+		return !menu.paused() && !myPlayer.frozen;
+	}
+
+	public bool updateStatus<T>(ref T currentValue, T newValue, T defaultValue) {
+		if (!hasControls())
+			newValue = defaultValue;
+		bool changed = !currentValue.Equals(newValue);
+		currentValue = newValue;
+		return changed;
+	}
+
+	private struct ControlStatus {
+		public float forward;
+		public float right;
+		public bool sprinting;
+		public bool crouching;
+		public bool useEquipment;
+		public bool zoom;
 	}
 }
