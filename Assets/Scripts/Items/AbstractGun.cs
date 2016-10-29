@@ -82,7 +82,11 @@ public abstract class AbstractGun : Item {
 
 	public abstract bool addAmmo(int quantity);
 
+	[ClientRpc]
 	protected abstract void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal);
+
+	[ClientRpc]
+	protected abstract void RpcCreateFireEffects();
 
 	[Server]
 	protected abstract void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal);
@@ -132,6 +136,7 @@ public abstract class AbstractGun : Item {
 	[Command]
 	protected virtual void CmdBulletMiss(Vector3 direction) {
 		serverDoBullet(direction);
+		RpcCreateFireEffects();
 	}
 
 	[Server]

@@ -168,6 +168,11 @@ public class AssaultRifle : AbstractGun {
 		}
 	}
 
+	[ClientRpc]
+	protected override void RpcCreateFireEffects() {
+		doFireEffects();
+	}
+
 	protected override void doFireEffects() {
 		playFireSound();
 
