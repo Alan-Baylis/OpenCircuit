@@ -18,7 +18,7 @@ public class AmmoPickup : NetworkBehaviour {
 			if(player != null) {
 				AbstractGun gun = player.GetComponentInChildren<AbstractGun>();
 				if(gun != null) {
-					if(gun.addMags(magazines)) {
+					if(gun.addAmmo(magazines)) {
 						//gameObject.SetActive(false);
 						pickedUp = true;
 						handlePickupEffects();

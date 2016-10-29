@@ -1767,9 +1767,6 @@ MonoBehaviour:
   fireSoundThreatRate: 0.3
   fireSoundVolume: 0.3
   fireDelay: 0.1
-  reloadTime: 1.5
-  magazineSize: 30
-  maxMagazines: 5
   baseInaccuracy: 0.005
   maximumMovementInaccuracy: 0.2
   movementInaccuracySoftness: 10
@@ -1808,6 +1805,10 @@ MonoBehaviour:
     prefab: {fileID: 103590, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
     lifetime: 2
     randomizePitch: 1
+  reloadTime: 1.5
+  magazineSize: 30
+  maxMagazines: 5
+  bulletsRemainingDisplay: 0
 --- !u!114 &11493642
 MonoBehaviour:
   m_ObjectHideFlags: 1
