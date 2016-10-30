@@ -24,7 +24,6 @@ public class AssaultRifle : AbstractGun {
 	private int maxBullets;
 	[SyncVar] 
 	private int bulletsRemaining = 5 * 20;
-	[SyncVar]
 	private int currentMagazineFill;
 
 	private Texture2D myBlackTexture = null;
@@ -46,15 +45,14 @@ public class AssaultRifle : AbstractGun {
 	void Start() {
 		maxBullets = magazineSize * maxMagazines;
 		currentMagazineFill = magazineSize; //one mag loaded
-		bulletsRemaining = (maxMagazines - 1) * magazineSize; //the rest in reserve
+		bulletsRemaining = (maxMagazines) * magazineSize; //the rest in reserve
 	}
 
 	[Server]
 	// The assault rifle ammo unit is magazines
 	public override bool addAmmo(int quantity) {
-		int currentAmmo = bulletsRemaining + currentMagazineFill;
-		if (currentAmmo < maxBullets) {
-			int bulletsNeeded = maxBullets - currentAmmo;
+		if (bulletsRemaining < maxBullets) {
+			int bulletsNeeded = maxBullets - bulletsRemaining;
 			bulletsRemaining += (bulletsNeeded < magazineSize * quantity) ? bulletsNeeded : magazineSize * quantity; 
 			return true;
 		} else {
@@ -68,10 +66,8 @@ public class AssaultRifle : AbstractGun {
 			int bulletsNeeded = magazineSize - currentMagazineFill;
 			if (bulletsRemaining > bulletsNeeded) {
 				currentMagazineFill += bulletsNeeded;
-				bulletsRemaining -= bulletsNeeded;
 			} else {
 				currentMagazineFill += bulletsRemaining;
-				bulletsRemaining = 0;
 			}
 			reloadTimeRemaining += reloadTime;
 		}
@@ -117,7 +113,10 @@ public class AssaultRifle : AbstractGun {
 	}
 
 	protected override void consumeAmmo() {
-		--currentMagazineFill;
+		if (hasAuthority) {
+			--currentMagazineFill;
+		}
+		--bulletsRemaining;
 	}
 
 	[Server]
