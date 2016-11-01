@@ -31,31 +31,16 @@ public abstract class Item : NetworkBehaviour {
 	}
 	protected bool rightStepNext;
 
-	[SyncVar(hook = "onClientTake")]
 	private NetworkInstanceId parent;
 
 	public void Awake() {
 		col = GetComponent<Collider>();
 	}
 
-	public override void OnStartClient() {
-		base.OnStartClient();
-		GameObject parentObj = ClientScene.FindLocalObject(this.parent);
-		if(parentObj != null) {
-			Inventory inventory = parentObj.GetComponent<Inventory>();
-			if(inventory != null) {
-				inventory.take(this);
-			}
-		}
-	}
-
-	public void onClientTake(NetworkInstanceId parent) {
+	public void onTake(NetworkInstanceId parent) {
 		this.parent = parent;
 		transform.parent = ClientScene.FindLocalObject(this.parent).transform;
 		Inventory inventory = transform.parent.GetComponent<Inventory>();
-		if(inventory != null) {
-			inventory.take(this);
-		}
 	}
 
 	public virtual void Update() {

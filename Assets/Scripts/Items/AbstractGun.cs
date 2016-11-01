@@ -25,8 +25,6 @@ public abstract class AbstractGun : Item {
 
 	public GUISkin guiSkin;
 		
-	protected Inventory inventory;
-
 	protected bool shooting = false;
 	protected bool reloading = false;
 
@@ -42,9 +40,9 @@ public abstract class AbstractGun : Item {
 	public override void Update() {
 		base.Update();
 		if (lastFiredTime <= Time.time - fireDelay && shooting && !reloading) {
-			Transform cam = inventory.getPlayer().cam.transform;
+			Transform cam = holder.getPlayer().cam.transform;
 			shoot(cam.position, cam.forward);
-			MouseLook looker = inventory.getPlayer().looker;
+			MouseLook looker = holder.getPlayer().looker;
 			looker.rotate(
 				Random.Range(recoilMinRotation.x, recoilMaxRotation.x),
 				Random.Range(recoilMinRotation.y, recoilMaxRotation.y));
@@ -63,12 +61,10 @@ public abstract class AbstractGun : Item {
 	}
 
 	public override void beginInvoke(Inventory invoker) {
-		this.inventory = invoker;
 		shooting = true;
 	}
 
 	public override void endInvoke(Inventory invoker) {
-		base.endInvoke(invoker);
 		shooting = false;
 	}
 
@@ -113,7 +109,7 @@ public abstract class AbstractGun : Item {
 	protected virtual float getMovementInaccuracy() {
 		// here we use a rational function to get the desired behaviour
 		const float arbitraryValue = 0.2f; // the larger this value is, the faster the player must be moving before it affects his accuracy
-		float speed = inventory.GetComponent<Rigidbody>().velocity.magnitude;
+		float speed = holder.GetComponent<Rigidbody>().velocity.magnitude;
 		float inaccuracy = (maximumMovementInaccuracy * speed -arbitraryValue) / (speed +movementInaccuracySoftness);
 		return Mathf.Max(inaccuracy, 0);
 	}

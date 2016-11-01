@@ -26,6 +26,7 @@ public class Controls : NetworkBehaviour {
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
+	[ClientCallback]
 	void Update () {
 		if(!isLocalPlayer) {
 			return;
