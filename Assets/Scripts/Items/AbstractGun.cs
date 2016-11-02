@@ -10,10 +10,6 @@ public abstract class AbstractGun : Item {
 	public float fireSoundVolume = 1;
 	public float fireDelay = 0.1f;
 
-	public float reloadTime = 1f;
-	public int magazineSize = 20;
-	public int maxMagazines = 5;
-
 	public float baseInaccuracy = 0.1f;
 	public float maximumMovementInaccuracy = 0.1f;
 	public float movementInaccuracySoftness = 10f;
@@ -28,52 +24,25 @@ public abstract class AbstractGun : Item {
 	public EffectSpec fireEffectLight;
 
 	public GUISkin guiSkin;
-	//public Texture bulletIcon;
-
-	protected int maxBullets;
-	[SyncVar]
-	protected int bulletsRemaining = 5 * 20;
-	[SyncVar]
-	protected int currentMagazineFill;
-	
-	protected Inventory inventory;
-
+		
 	protected bool shooting = false;
 	protected bool reloading = false;
 
-	protected float cycleTime = 0;
+	protected float lastFiredTime = 0;
 	protected float reloadTimeRemaining = 0;
 	protected LabelHandle audioLabel;
 	protected float lastShotTime = float.NegativeInfinity;
 
 	public AudioSource gunshotSoundEmitter;
 	public AudioSource reloadSoundEmitter;
-	private Texture2D myBlackTexture = null;
-	private Texture2D blackTexture {
-		get {
-			if (myBlackTexture == null) {
-				myBlackTexture = new Texture2D(1, 1);
-				myBlackTexture.SetPixel(0, 0, Color.black);
-			}
-			return myBlackTexture;
-		}
-	}
-
-	void Start() {
-		maxBullets = magazineSize * maxMagazines;
-		currentMagazineFill = magazineSize; //one mag loaded
-		bulletsRemaining = (maxMagazines - 1) * magazineSize; //the rest in reserve
-	}
 
 	[ClientCallback]
 	public override void Update() {
 		base.Update();
-		if(cycleTime > 0)
-			cycleTime -= Time.deltaTime;
-		if(cycleTime <= 0 && shooting && !reloading) {
-			Transform cam = inventory.getPlayer().cam.transform;
+		if (lastFiredTime <= Time.time - fireDelay && shooting && !reloading) {
+			Transform cam = holder.getPlayer().cam.transform;
 			shoot(cam.position, cam.forward);
-			MouseLook looker = inventory.getPlayer().looker;
+			MouseLook looker = holder.getPlayer().looker;
 			looker.rotate(
 				Random.Range(recoilMinRotation.x, recoilMaxRotation.x),
 				Random.Range(recoilMinRotation.y, recoilMaxRotation.y));
@@ -85,31 +54,6 @@ public abstract class AbstractGun : Item {
 		}
 	}
 
-	[ClientCallback]
-	void OnGUI() {
-		//GUI.Window(0, new Rect(GUI., 5, 50, 50), windowFunction, GUIContent.none);
-		if(transform.parent != null && transform.parent.GetComponent<Player>().isLocalPlayer) {
-
-			GUI.skin = guiSkin;
-
-			int padding = 10;
-			int boxWidth = 80 +padding *3;
-			int boxHeight = 30 +padding *2;
-			int boxCornerX = Screen.width - boxWidth - padding;
-			int boxCornerY = Screen.height - boxHeight - padding;
-			GUI.color = new Color(0, 0, 0, 0.6f);
-			GUI.DrawTexture(new Rect(boxCornerX -2, boxCornerY -2, boxWidth +4, boxHeight +4), blackTexture);
-			GUI.color = Color.white;
-			GUI.Box(new Rect(boxCornerX, boxCornerY, boxWidth, boxHeight), GUIContent.none);
-
-			//int imageWidth = 50;
-			//int imageHeight = 50;
-			//GUI.DrawTexture(new Rect(boxCornerX + padding, boxCornerY + padding * 2 + 20, imageWidth, imageHeight), bulletIcon);
-			GUI.TextArea(new Rect(boxCornerX + padding *2, boxCornerY + padding, 60, 40), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize));
-			GUI.TextArea(new Rect(boxCornerX + padding *2 +40, boxCornerY + padding, 60, 40), "" + currentMagazineFill);
-		}
-	}
-
 	public override HoldPosition getHoldPosition() {
 		if (reloading)
 			return reloadPosition;
@@ -117,79 +61,88 @@ public abstract class AbstractGun : Item {
 	}
 
 	public override void beginInvoke(Inventory invoker) {
-		this.inventory = invoker;
 		shooting = true;
 	}
 
 	public override void endInvoke(Inventory invoker) {
-		base.endInvoke(invoker);
 		shooting = false;
 	}
 
-	public bool addMags(int number) {
-		int currentAmmo = bulletsRemaining + currentMagazineFill;
-		if(currentAmmo < maxBullets) {
-			int bulletsNeeded = maxBullets - currentAmmo;
-			bulletsRemaining += (bulletsNeeded < magazineSize * number) ? bulletsNeeded : magazineSize * number;
-			return true;
-		} else {
-			return false;
-		}
+	public abstract void reload();
 
-	}
+	protected abstract bool isLoaded();
 
-	public void reload() {
-		if(currentMagazineFill < magazineSize) {
-			reloading = true;
-			playReloadSound();
-			int bulletsNeeded = magazineSize - currentMagazineFill;
-			if(bulletsRemaining > bulletsNeeded) {
-				currentMagazineFill += bulletsNeeded;
-				bulletsRemaining -= bulletsNeeded;
-			} else {
-				currentMagazineFill += bulletsRemaining;
-				bulletsRemaining = 0;
-			}
-			reloadTimeRemaining += reloadTime;
-		}
-	}
+	protected abstract void doFireEffects();
 
+	protected abstract void consumeAmmo();
+
+	public abstract bool addAmmo(int quantity);
+
+	[ClientRpc]
+	protected abstract void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal);
+
+	[ClientRpc]
+	protected abstract void RpcCreateFireEffects();
+
+	[Server]
+	protected abstract void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal);
+
+	[Client]
 	protected void shoot(Vector3 position, Vector3 direction) {
-		if(currentMagazineFill > 0) {
-
+		if(isLoaded()) {
+			if (!isServer) {
+				consumeAmmo();
+			}
 			direction = inaccurateDirection(direction, getMovementInaccuracy());
             direction = inaccurateDirection(direction, baseInaccuracy);
             doBullet(position, direction, 1);
-			cycleTime += fireDelay;
-			--currentMagazineFill;
+			lastFiredTime = Time.time;
 			transform.position -= transform.TransformVector(recoilAnimationDistance);
 
 			doFireEffects();
-		} else {
+		} else { 
+			playReloadSound();
 			reload();
 		}
-	}
-
-	protected void doFireEffects() {
-		playFireSound();
-
-		// do fire effects
-		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
-		fireEffect.spawn(effectPosition, -transform.forward);
-		fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
-		fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
-		fireEffectLight.spawn(effectPosition);
 	}
 
 	protected virtual float getMovementInaccuracy() {
 		// here we use a rational function to get the desired behaviour
 		const float arbitraryValue = 0.2f; // the larger this value is, the faster the player must be moving before it affects his accuracy
-		float speed = inventory.GetComponent<Rigidbody>().velocity.magnitude;
+		float speed = holder.GetComponent<Rigidbody>().velocity.magnitude;
 		float inaccuracy = (maximumMovementInaccuracy * speed -arbitraryValue) / (speed +movementInaccuracySoftness);
 		return Mathf.Max(inaccuracy, 0);
 	}
 
+	[Client]
 	protected abstract void doBullet(Vector3 position, Vector3 direction, float power);
+
+	[Command]
+	protected virtual void CmdBulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
+		serverDoBullet(direction, position, normal, hit);
+		RpcCreateShotEffect(HitEffectType.ROBOT, position, normal);
+	}
+
+	[Command]
+	protected virtual void CmdBulletHit(Vector3 direction, Vector3 position, Vector3 normal) {
+		serverDoBullet(direction, position, normal);
+		RpcCreateShotEffect(HitEffectType.DEFAULT, position, normal);
+	}
+
+	[Command]
+	protected virtual void CmdBulletMiss(Vector3 direction) {
+		serverDoBullet(direction);
+		RpcCreateFireEffects();
+	}
+
+	[Server]
+	private void serverDoBullet(Vector3 direction, Vector3? position = null, Vector3? normal = null, NetworkInstanceId? hit = null) {
+		consumeAmmo();
+		if (hit != null) {
+			applyDamage(hit.Value, direction, normal.Value);
+		}
+	}
+
 
 	public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
 		Vector3 randomAngle = Random.onUnitSphere;
@@ -197,37 +150,7 @@ public abstract class AbstractGun : Item {
 		return Vector3.RotateTowards(direction, Random.onUnitSphere, Mathf.PI *angle *inaccuracy, 0);
 	}
 
-	private void playReloadSound() {
-		if(reloadSoundEmitter != null) {
-			reloadSoundEmitter.volume = fireSoundVolume;
-		}
-		playSound(reloadSoundEmitter);
-	}
-
-	private void playFireSound() {
-		// create sound event
-		float volume = gunshotSoundEmitter.volume;
-		if (Time.time - lastShotTime > fireDelay * 5 || audioLabel == null) {
-			audioLabel = new LabelHandle(transform.position, "gunshots");
-			audioLabel.addTag(new Tag(TagEnum.Sound, 0));
-			audioLabel.addTag(new Tag(TagEnum.Threat, 0));
-		}
-		audioLabel.setPosition(transform.position);
-		Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-		Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-		soundTag.severity += (volume *2 - soundTag.severity) * fireSoundThreatRate;
-		threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-		AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-		gunshotEvent.broadcast(soundTag.severity);
-
-		// play sound effect
-		if (gunshotSoundEmitter != null) {
-			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
-		}
-		playSound(gunshotSoundEmitter);
-	}
-
-	private void playSound(AudioSource soundEmitter) {
+	protected void playSound(AudioSource soundEmitter) {
 		if(soundEmitter != null && soundEmitter.clip != null) {
 			soundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 			soundEmitter.Play();
@@ -236,5 +159,12 @@ public abstract class AbstractGun : Item {
 		} else if (soundEmitter.clip == null) {
 			Debug.LogWarning("AudioSource clip missing for the '" + GetType() + "' component attached to '" + gameObject.name + "'");
 		}
+	}
+
+	private void playReloadSound() {
+		if (reloadSoundEmitter != null) {
+			reloadSoundEmitter.volume = fireSoundVolume;
+		}
+		playSound(reloadSoundEmitter);
 	}
 }

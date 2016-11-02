@@ -39,6 +39,7 @@ public class Inventory : NetworkBehaviour {
 	void Start() {
 		foreach(GameObject item in toTake) {
 			take(item);
+			RpcTake(item.GetComponent<NetworkIdentity>().netId);
 		}
 	}
 

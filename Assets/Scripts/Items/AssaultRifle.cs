@@ -1,7 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
-using System;
 
 public class AssaultRifle : AbstractGun {
 
@@ -13,9 +12,65 @@ public class AssaultRifle : AbstractGun {
 	public EffectSpec hitEffect;
 	public EffectSpec robotHitEffect;
 
+	public float reloadTime = 1f;
+	public int magazineSize = 20;
+	public int maxMagazines = 5;
+	public int bulletsRemainingDisplay = 0;
 	public override void onTake(Inventory taker) {
 		base.onTake(taker);
 		taker.equip(this);
+	}
+
+	private int maxBullets;
+	[SyncVar] 
+	private int bulletsRemaining = 5 * 20;
+	private int currentMagazineFill;
+
+	private Texture2D myBlackTexture = null;
+	private Texture2D blackTexture {
+		get {
+			if (myBlackTexture == null) {
+				myBlackTexture = new Texture2D(1, 1);
+				myBlackTexture.SetPixel(0, 0, Color.black);
+			}
+			return myBlackTexture;
+		}
+	}
+
+	void FixedUpdate() {
+		base.Update();
+		bulletsRemainingDisplay = bulletsRemaining;
+	}
+
+	void Start() {
+		maxBullets = magazineSize * maxMagazines;
+		currentMagazineFill = magazineSize; //one mag loaded
+		bulletsRemaining = (maxMagazines) * magazineSize; //the rest in reserve
+	}
+
+	[Server]
+	// The assault rifle ammo unit is magazines
+	public override bool addAmmo(int quantity) {
+		if (bulletsRemaining < maxBullets) {
+			int bulletsNeeded = maxBullets - bulletsRemaining;
+			bulletsRemaining += (bulletsNeeded < magazineSize * quantity) ? bulletsNeeded : magazineSize * quantity; 
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public override void reload() {
+		if (currentMagazineFill < magazineSize) {
+			reloading = true;
+			int bulletsNeeded = magazineSize - currentMagazineFill;
+			if (bulletsRemaining > bulletsNeeded) {
+				currentMagazineFill += bulletsNeeded;
+			} else {
+				currentMagazineFill += bulletsRemaining;
+			}
+			reloadTimeRemaining += reloadTime;
+		}
 	}
 
 	[Client]
@@ -31,10 +86,15 @@ public class AssaultRifle : AbstractGun {
 				rb.AddForceAtPosition(direction * impulse, hitInfo.point);
 			}
 
-			Health health = getParentComponent<Health>(hitInfo.transform);
+			NetworkIdentity identity = getParentComponent<NetworkIdentity>(hitInfo.transform);
+			if (identity != null) {
+				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, identity.netId);
+			} else {
+				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
+			}
+			 
+			Health health = getParentComponent<Health>(hitInfo.transform); 
 			if(health != null) {
-				CmdApplyDamage(health.netId, direction, hitInfo);
-
 				// do ricochet
 				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
 				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
@@ -43,11 +103,24 @@ public class AssaultRifle : AbstractGun {
 			} else {
 				hitEffect.spawn(hitInfo.point, hitInfo.normal);
 			}
+		} else {
+			CmdBulletMiss(direction);
 		}
 	}
 
-	[Command]
-	protected void CmdApplyDamage(NetworkInstanceId hit, Vector3 direction, RaycastHit hitInfo) {
+	protected override bool isLoaded() {
+		return currentMagazineFill > 0;
+	}
+
+	protected override void consumeAmmo() {
+		if (hasAuthority) {
+			--currentMagazineFill;
+		}
+		--bulletsRemaining;
+	}
+
+	[Server]
+	protected override void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
 		GameObject hitObject = ClientScene.FindLocalObject(hit);
 		Health health = hitObject.GetComponent<Health>();
 		NavMeshAgent navAgent = hitObject.GetComponent<NavMeshAgent>();
@@ -62,13 +135,13 @@ public class AssaultRifle : AbstractGun {
 			}
 		}
 		if(health != null) {
-			health.hurt(calculateDamage(direction, hitInfo));
+			health.hurt(calculateDamage(direction, normal));
 		}
 	}
 
 	[Server]
-	protected float calculateDamage(Vector3 trajectory, RaycastHit hitInfo) {
-		float multiplier = Mathf.Pow(Mathf.Max(-Vector3.Dot(trajectory, hitInfo.normal), 0), 20) *5;
+	protected float calculateDamage(Vector3 trajectory, Vector3 normal) {
+		float multiplier = Mathf.Pow(Mathf.Max(-Vector3.Dot(trajectory, normal), 0), 20) *5;
         float calculatedDamage = damage *(1 +multiplier);
 		return calculatedDamage;
 	}
@@ -82,12 +155,79 @@ public class AssaultRifle : AbstractGun {
 		return null;
 	}
 
-	[Client]
-	protected void createHitEffect(Transform hitEffectPrefab, float lifetime, Vector3 location, Vector3 direction) {
-		if (hitEffectPrefab == null)
-			return;
-		Transform effect = (Transform)Instantiate(hitEffectPrefab, location, Quaternion.LookRotation(direction, Vector3.up));
-		effect.hideFlags |= HideFlags.HideInHierarchy;
-		Destroy(effect.gameObject, lifetime);
+	[ClientRpc]
+	protected override void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
+		if (!hasAuthority) {
+			if (type == HitEffectType.DEFAULT) {
+				hitEffect.spawn(location, normal);
+			} else if (type == HitEffectType.ROBOT) {
+				robotHitEffect.spawn(location, normal);
+			}
+			doFireEffects();
+		}
+	}
+
+	[ClientRpc]
+	protected override void RpcCreateFireEffects() {
+		doFireEffects();
+	}
+
+	protected override void doFireEffects() {
+		playFireSound();
+
+		// do fire effects
+		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
+		fireEffect.spawn(effectPosition, -transform.forward);
+		fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
+		fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
+		fireEffectLight.spawn(effectPosition);
+	}
+
+	private void playFireSound() {
+		// create sound event
+		float volume = gunshotSoundEmitter.volume;
+		if (Time.time - lastShotTime > fireDelay * 5 || audioLabel == null) {
+			audioLabel = new LabelHandle(transform.position, "gunshots");
+			audioLabel.addTag(new Tag(TagEnum.Sound, 0));
+			audioLabel.addTag(new Tag(TagEnum.Threat, 0));
+		}
+		audioLabel.setPosition(transform.position);
+		Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+		Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+		soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+		threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+		AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
+		gunshotEvent.broadcast(soundTag.severity);
+
+		// play sound effect
+		if (gunshotSoundEmitter != null) {
+			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+		}
+		playSound(gunshotSoundEmitter);
+	}
+
+	[ClientCallback]
+	void OnGUI() {
+		//GUI.Window(0, new Rect(GUI., 5, 50, 50), windowFunction, GUIContent.none);
+		if (transform.parent != null && transform.parent.GetComponent<Player>().isLocalPlayer) {
+
+			GUI.skin = guiSkin;
+
+			int padding = 10;
+			int boxWidth = 80 + padding * 3;
+			int boxHeight = 30 + padding * 2;
+			int boxCornerX = Screen.width - boxWidth - padding;
+			int boxCornerY = Screen.height - boxHeight - padding;
+			GUI.color = new Color(0, 0, 0, 0.6f);
+			GUI.DrawTexture(new Rect(boxCornerX - 2, boxCornerY - 2, boxWidth + 4, boxHeight + 4), blackTexture);
+			GUI.color = Color.white;
+			GUI.Box(new Rect(boxCornerX, boxCornerY, boxWidth, boxHeight), GUIContent.none);
+
+			//int imageWidth = 50;
+			//int imageHeight = 50;
+			//GUI.DrawTexture(new Rect(boxCornerX + padding, boxCornerY + padding * 2 + 20, imageWidth, imageHeight), bulletIcon);
+			GUI.TextArea(new Rect(boxCornerX + padding * 2, boxCornerY + padding, 60, 40), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize));
+			GUI.TextArea(new Rect(boxCornerX + padding * 2 + 40, boxCornerY + padding, 60, 40), "" + currentMagazineFill);
+		}
 	}
 }

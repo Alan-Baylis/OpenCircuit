@@ -26,6 +26,7 @@ public class Controls : NetworkBehaviour {
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
+	[ClientCallback]
 	void Update () {
 		if(!isLocalPlayer) {
 			return;
@@ -84,12 +85,8 @@ public class Controls : NetworkBehaviour {
 		if (updateStatus(ref status.useEquipment, Input.GetButton("Use"), false)) {
 			if (status.useEquipment) {
 				myPlayer.inventory.useEquipped();
-				if (!isServer)
-					CmdUseEquipped();
 			} else {
 				myPlayer.inventory.stopUsingEquiped();
-				if (!isServer)
-					CmdStopUsingEquipped();
 			}
 		}
 
@@ -139,16 +136,6 @@ public class Controls : NetworkBehaviour {
 	protected void setSprinting(bool sprint) {
 		myPlayer.mover.setSprinting(sprint);
 		myPlayer.inventory.setSprinting(sprint);
-	}
-
-	[Command]
-	protected void CmdUseEquipped() {
-		myPlayer.inventory.useEquipped();
-	}
-
-	[Command]
-	protected void CmdStopUsingEquipped() {
-		myPlayer.inventory.stopUsingEquiped();
 	}
 
 	[Command]
