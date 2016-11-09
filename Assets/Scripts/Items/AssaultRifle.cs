@@ -185,20 +185,26 @@ public class AssaultRifle : AbstractGun {
 
 	private void playFireSound() {
 		// create sound event
-		float volume = gunshotSoundEmitter.volume;
-		if (Time.time - lastShotTime > fireDelay * 5 || audioLabel == null) {
+		//float volume = gunshotSoundEmitter.volume;
+		if (Time.time - lastFiredTime > .5f || audioLabel == null) {
 			audioLabel = new LabelHandle(transform.position, "gunshots");
 			audioLabel.addTag(new Tag(TagEnum.Sound, 0));
 			audioLabel.addTag(new Tag(TagEnum.Threat, 0));
-		}
-		audioLabel.setPosition(transform.position);
-		Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-		Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-		soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-		threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-		AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-		gunshotEvent.broadcast(soundTag.severity);
 
+			audioLabel.setPosition(transform.position);
+			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+			AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
+			gunshotEvent.broadcast(soundTag.severity);
+		} else {
+			audioLabel.setPosition(transform.position);
+			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			//Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+		}
 		// play sound effect
 		if (gunshotSoundEmitter != null) {
 			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
