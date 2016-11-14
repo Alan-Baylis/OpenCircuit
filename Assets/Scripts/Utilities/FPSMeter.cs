@@ -16,7 +16,6 @@ public class FPSMeter : MonoBehaviour {
 
 	void Start () {
 		boxColor = new Texture2D(1, 1);
-		boxColor.alphaIsTransparency = true;
 	}
 	
 	void Update () {
