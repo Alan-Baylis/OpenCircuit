@@ -20,6 +20,7 @@ public class Menu : MonoBehaviour {
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 
+	[System.NonSerialized]
 	public GlobalConfigData serverConfig = GlobalConfigData.getDefault();
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
@@ -73,6 +74,7 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start() {
+		serverConfig = GlobalConfig.globalConfig.configuration;
 		pause();
 		currentMenu = state.MainMenu;
 	}

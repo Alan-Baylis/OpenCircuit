@@ -54,6 +54,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73575c9d3520046a38ae8378239a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  configuration:
+    robotsPerPlayer: 3
+    robotSpawnRatePerSecond: 0.05
+    spawnRateIncreasePerPlayer: 0.03
   centralRobotController: {fileID: 0}
   frozenPlayers: 0
 --- !u!114 &11483592

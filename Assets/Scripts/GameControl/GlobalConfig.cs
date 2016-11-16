@@ -4,7 +4,7 @@ using System.Collections;
 
 public class GlobalConfig : NetworkBehaviour {
 
-	[SyncVar] [System.NonSerialized]
+	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
 	public CentralRobotController centralRobotController;
     public int frozenPlayers = 0;
@@ -19,11 +19,13 @@ public class GlobalConfig : NetworkBehaviour {
     private static GlobalConfig myGlobalConfig = null;
     public static GlobalConfig globalConfig {
         get {
-            if (myGlobalConfig == null)
-                myGlobalConfig = GameObject.FindGameObjectWithTag("GlobalConfig").GetComponent<GlobalConfig>();
             return myGlobalConfig;
         }
     }
+
+	public GlobalConfig() {
+		myGlobalConfig = this;
+	}
 
     [Server]
     public void winGame() {
