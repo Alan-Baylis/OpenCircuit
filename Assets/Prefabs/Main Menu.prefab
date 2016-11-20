@@ -9,6 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 435146}
   - 114: {fileID: 11457940}
+  - 114: {fileID: 114000013160267610}
   m_Layer: 0
   m_Name: Main Menu
   m_TagString: Menu
@@ -40,10 +41,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a9c076ac121ca4998e2524e5c118b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverConfig:
-    robotsPerPlayer: 3
-    robotSpawnRatePerSecond: 0.1
-    spawnRateIncreasePerPlayer: 0.05
   defaultScreenHeight: 1080
   activeAtStart: 0
   skin: {fileID: 11400000, guid: 4c291cb9d9421e040bdbab8ba9af4718, type: 2}
@@ -74,3 +71,24 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 160062}
   m_IsPrefabParent: 1
+--- !u!114 &114000013160267610
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 160062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1553936188, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BroadcastPort: 51245
+  m_BroadcastKey: 2147483647
+  m_BroadcastVersion: 1
+  m_BroadcastSubVersion: 1
+  m_BroadcastInterval: 1000
+  m_UseNetworkManager: 0
+  m_BroadcastData: HELLO
+  m_ShowGUI: 0
+  m_OffsetX: 0
+  m_OffsetY: 0
