@@ -16,20 +16,6 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
     [ServerCallback]
     public virtual void Start() {
-#if UNITY_EDITOR
-        if (this.getController().debug) {
-            float sizeValue = 2f * Mathf.PI / theta_scale;
-            size = (int)sizeValue;
-            size++;
-            lineRenderer = getController().gameObject.GetComponent<LineRenderer>();
-            if (lineRenderer == null) {
-                lineRenderer = getController().gameObject.AddComponent<LineRenderer>();
-            }
-            lineRenderer.material = new Material(Shader.Find("Particles/Additive"));
-            lineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
-            lineRenderer.SetVertexCount(size);
-        }
-#endif
         enableLooking();
     }
 
@@ -150,9 +136,28 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 #if UNITY_EDITOR
 
     private List<GameObject> lines = new List<GameObject>();
-    private LineRenderer lineRenderer;
+    private LineRenderer myLineRenderer;
     private int size; //Total number of points in circle
     private float theta_scale = 0.01f;        //Set lower to add more points
+
+
+	private LineRenderer lineRenderer { get {
+			if (this.getController().debug && myLineRenderer == null) {
+				float sizeValue = 2f * Mathf.PI / theta_scale;
+				size = (int)sizeValue;
+				size++;
+				myLineRenderer = getController().gameObject.GetComponent<LineRenderer>();
+				if (myLineRenderer == null) {
+					myLineRenderer = getController().gameObject.AddComponent<LineRenderer>();
+				}
+				myLineRenderer.material = new Material(Shader.Find("Particles/Additive"));
+				myLineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
+				myLineRenderer.SetVertexCount(size);
+			}
+			return myLineRenderer;
+		}
+	}
+
 
     protected void clearLines() {
         foreach (GameObject line in lines) {
