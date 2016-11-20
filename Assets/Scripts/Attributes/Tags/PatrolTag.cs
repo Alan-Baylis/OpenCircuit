@@ -14,7 +14,7 @@ public class PatrolTag : Tag {
     private bool status = false;
     private int size = 0;
 
-    public PatrolTag (float severity) : base(TagEnum.PatrolRoute, severity) {
+    public PatrolTag (float severity, LabelHandle handle) : base(TagEnum.PatrolRoute, severity, handle) {
 
     }
 
@@ -77,8 +77,8 @@ public class PatrolTag : Tag {
             for (int i = 0; i < getPoints().Count; i++) {
                 getPoints()[i] = ((Label)UnityEditor.EditorGUILayout.ObjectField(getPoints()[i], typeof(Label), true));
                 if (getPoints()[i] != null) {
-                    ObjectReferenceManager.get().deleteReference(getLabel(), getPointsPaths()[i]);
-                    getPointsPaths()[i] = ObjectReferenceManager.get().addReference(getLabel(), getPoints()[i]);
+                    ObjectReferenceManager.get().deleteReference(getLabelHandle().label, getPointsPaths()[i]);
+                    getPointsPaths()[i] = ObjectReferenceManager.get().addReference(getLabelHandle().label, getPoints()[i]);
                 }
             }
         }

@@ -1,5 +1,5 @@
 ﻿public interface MentalModelUpdateListener {
-	void notifySighting(LabelHandle target);
-	void notifySightingLost(LabelHandle target);
+	void addTag(Tag tag);
+	void removeTag(Tag tag);
 	
 }

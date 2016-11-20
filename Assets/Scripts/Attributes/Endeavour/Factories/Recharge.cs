@@ -7,27 +7,25 @@ public class Recharge : EndeavourFactory {
 
 	public float rechargePoint = 1f;
 
-    private List<TagEnum> requiredTags = new List<TagEnum>();
+    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.PowerStation };
 
-    public override Endeavour constructEndeavour(RobotController controller, LabelHandle handle, List<Tag> tags) {
+    protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
 		Battery battery = controller.GetComponentInChildren<Battery>();
-		if (handle == null || battery == null) {
+		if (battery == null) {
             return null;
         }
-		RechargeAction action = new RechargeAction(this, controller, goals, handle.label, battery);
+		RechargeAction action = new RechargeAction(this, controller, goals, tags, battery);
 		action.rechargePoint = rechargePoint;
         return action;
     }
 
     public override List<TagEnum> getRequiredTags() {
-        Debug.LogWarning(GetType().Name + " missing required tags!!!");
         return requiredTags;
     }
 
     public override bool isApplicable(LabelHandle labelHandle) {
-        //TODO: NO!!!
-        Debug.LogWarning(GetType().Name + " isApplicable NYI!!!");
-        return false;
+        
+        return labelHandle.hasTag(TagEnum.PowerStation);
     }
 
 #if UNITY_EDITOR

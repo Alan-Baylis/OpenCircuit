@@ -163,7 +163,7 @@ public class Player : NetworkBehaviour {
     [Server]
     public void unfreeze() {
         frozen = false;
-        GetComponent<Label>().setTag(new Tag(TagEnum.GrabTarget, 0));
+        GetComponent<Label>().setTag(new Tag(TagEnum.GrabTarget, 0, GetComponent<Label>().labelHandle));
         --GlobalConfig.globalConfig.frozenPlayers;
     }
 

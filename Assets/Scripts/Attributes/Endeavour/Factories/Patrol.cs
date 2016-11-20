@@ -7,15 +7,8 @@ public class Patrol : EndeavourFactory {
 
     private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.PatrolRoute };
 
-	public override Endeavour constructEndeavour (RobotController controller, LabelHandle handle, List<Tag> tags) {
-        PatrolTag patrolTag = ((PatrolTag)tags[0]);
-        if (handle == null || patrolTag.getPoints() == null || patrolTag.getPoints().Count == 0) {
-			if(patrolTag.getPoints().Count == 0) {
-				Debug.LogWarning("Patrol route '"+handle.label.name+"' has no route points");
-			}
-			return null;
-		}
-		return new PatrolAction(this, controller, goals, patrolTag.getPointHandles(), handle.label);
+	protected override Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tags) {
+		return new PatrolAction(this, controller, goals, tags);
 	}
 
     public override List<TagEnum> getRequiredTags() {

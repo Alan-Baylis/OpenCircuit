@@ -17,7 +17,9 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
     [ServerCallback]
     public virtual void Update() {
         if (active && !getLabel().hasTag(TagEnum.Active)) {
-            getLabel().setTag(new Tag(TagEnum.Active, 0));
+			Tag newTag = new Tag(TagEnum.Active, 0, getLabel().labelHandle);
+            getLabel().setTag(newTag);
+
         } else if (!active && getLabel().hasTag(TagEnum.Active)) {
             getLabel().clearTag(TagEnum.Active);
         }

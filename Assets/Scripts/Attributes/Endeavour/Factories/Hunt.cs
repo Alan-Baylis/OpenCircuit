@@ -6,8 +6,8 @@ public class Hunt : EndeavourFactory {
 
     private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Player };
 
-    public override Endeavour constructEndeavour(RobotController controller, LabelHandle handle, List<Tag> tags) {
-		return new HuntAction(this, controller, goals, handle.label);
+    protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
+		return new HuntAction(this, controller, goals, tags);
 	}
 
     public override List<TagEnum> getRequiredTags() {

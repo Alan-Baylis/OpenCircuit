@@ -131,7 +131,7 @@ public class HoverJet : AbstractRobotComponent {
 		corners.Add(targetPos);
 		//corners
 		float pathLength = 0;
-		foreach (LabelHandle item in getController().getTrackedTargets()) {
+		foreach (Tag item in getController().getMentalModel().getTagsOfType(TagEnum.Threat)) {
 			//print ("checking path cost against item: " + item.name);
 			//print ("target threatLevel " + item.threatLevel);
 			float minDist = -1;
@@ -143,15 +143,15 @@ public class HoverJet : AbstractRobotComponent {
 					//Debug.Log("adding path length");
 					pathLength += Vector3.Distance(corners[i - 1], vertex);
 				}
-				float curDist = Vector3.Distance(vertex, item.getPosition());
+				float curDist = Vector3.Distance(vertex, item.getLabelHandle().getPosition());
 				if(minDist == -1) {
 					minDist = curDist;
 				} else if(curDist < minDist) {
 					minDist = curDist;
 				}
 			}
-			if(item.hasTag(TagEnum.Threat)) {
-				float threatLevel = item.getTag(TagEnum.Threat).severity;
+			if(item.getLabelHandle().hasTag(TagEnum.Threat)) {
+				float threatLevel = item.getLabelHandle().getTag(TagEnum.Threat).severity;
 
 				RoboEyes eyes = getController().GetComponentInChildren<RoboEyes>();
 				if(eyes != null) {

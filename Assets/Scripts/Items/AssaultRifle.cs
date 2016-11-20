@@ -188,8 +188,8 @@ public class AssaultRifle : AbstractGun {
 		float volume = gunshotSoundEmitter.volume;
 		if (Time.time - lastShotTime > fireDelay * 5 || audioLabel == null) {
 			audioLabel = new LabelHandle(transform.position, "gunshots");
-			audioLabel.addTag(new Tag(TagEnum.Sound, 0));
-			audioLabel.addTag(new Tag(TagEnum.Threat, 0));
+			audioLabel.addTag(new Tag(TagEnum.Sound, 0, audioLabel));
+			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 		}
 		audioLabel.setPosition(transform.position);
 		Tag soundTag = audioLabel.getTag(TagEnum.Sound);

@@ -1,19 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 [AddComponentMenu("Scripts/Robot/Central Robot Controller")]
-public class CentralRobotController : MonoBehaviour, MentalModelUpdateListener {
+public class CentralRobotController : MonoBehaviour {
 
 	public RobotController[] robots;
 	public Label[] locations;
-	
-	private List<RobotController> listeners = new List<RobotController>();
 
 	MentalModel mentalModel = new MentalModel();
 
 	// Use this for initialization
 	void Start () {
-		mentalModel.addUpdateListener (this);
 		for (int i = 0; i < robots.Length; i++) {
 			if (robots[i] == null) {
 					Debug.LogWarning("Null robot attached to CRC with name: " + gameObject.name);
@@ -33,14 +31,6 @@ public class CentralRobotController : MonoBehaviour, MentalModelUpdateListener {
 		}
 	}
 
-	public void notifySighting(LabelHandle target) {
-		broadcastMessage (new EventMessage ("target found", target));
-	}
-
-	public void notifySightingLost(LabelHandle target) {
-		broadcastMessage (new EventMessage ("target lost", target));
-	}
-
 	public void addListener(RobotController listener) {
 		RobotAntenna antenna = listener.getRobotComponent<RobotAntenna>();
 		if (antenna != null) {
@@ -51,13 +41,6 @@ public class CentralRobotController : MonoBehaviour, MentalModelUpdateListener {
 	}
 
 	public void forceAddListener(RobotController listener) {
-		listeners.Add(listener);
 		listener.attachMentalModel(mentalModel);
-	}
-
-	private void broadcastMessage(EventMessage message) {
-		for (int i = 0; i < listeners.Count; i++) {
-			listeners[i].notify(message);
-		}
 	}
 }

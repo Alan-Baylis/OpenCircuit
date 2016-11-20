@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
-public class SearchAction : InherentEndeavour {
+public class SearchAction : Endeavour {
 	
 	public float agePriorityMultiplier = 0.05f;
 	protected float lastSeen = -30;
 
-	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, LabelHandle parent) : base(factory, controller, goals, parent) {
+	private Tag searchPoint;
+
+	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
 		this.name = "search";
+		searchPoint = getTagOfType<Tag>(TagEnum.Searchable);
 	}
 
 	public override System.Type[] getRequiredComponents() {
@@ -23,7 +27,7 @@ public class SearchAction : InherentEndeavour {
 	}
 
 	protected override void onExecute() {
-		controller.getRobotComponent<HoverJet>().setTarget(parent, true);
+		controller.getRobotComponent<HoverJet>().setTarget(searchPoint.getLabelHandle(), true);
 	}
 
 	public override void onMessage(RobotMessage message) {
@@ -44,6 +48,10 @@ public class SearchAction : InherentEndeavour {
 
 	protected override float getCost() {
         HoverJet jet = controller.getRobotComponent<HoverJet>();
-		return (jet == null) ? 0 : jet.calculatePathCost(parent.getPosition()) * 0.5f;
+		return (jet == null) ? 0 : jet.calculatePathCost(searchPoint.getLabelHandle().getPosition()) * 0.5f;
+	}
+
+	public override TagEnum getPrimaryTagType() {
+		return TagEnum.Searchable;
 	}
 }

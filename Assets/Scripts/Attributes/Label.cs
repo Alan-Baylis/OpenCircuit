@@ -56,7 +56,12 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 			addOperation(op, op.getTriggers());
 		}
 
+		tagMap = new Dictionary<TagEnum, Tag>();
 		foreach(Tag tag in tags) {
+			if (tag == null) {
+				Debug.LogWarning("Null tag attached to '" + name + "'");
+			}
+			tag.setLabelHandle(labelHandle);
 			tagMap.Add(tag.type, tag);
 		}
 	}
@@ -142,6 +147,15 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 	public Tag getTag(TagEnum tagName) {
 		return tagMap[tagName];
+	}
+
+	public List<TagEnum> getTagTypes() {
+		List<TagEnum> tags = new List<TagEnum>();
+		foreach (TagEnum tagEnum in tagMap.Keys) {
+			tags.Add(tagEnum);
+		}
+
+		return tags;
 	}
 
 	public GameObject getGameObject() {

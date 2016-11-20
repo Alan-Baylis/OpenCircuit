@@ -48,7 +48,15 @@ public abstract class EndeavourFactory : InspectorListElement {
 		goalEnums = typeList.ToArray();
 	}
 
-	public abstract Endeavour constructEndeavour (RobotController controller, LabelHandle target, List<Tag> tags);
+	public Endeavour constructEndeavour(RobotController controller, List<Tag> tags) {
+		Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
+		foreach (Tag tag in tags) {
+			tagMap.Add(tag.type, tag);
+		}
+		return createEndeavour(controller, tagMap);
+	}
+
+	protected abstract Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tagMap);
 
     public abstract bool isApplicable(LabelHandle labelHandle);
 

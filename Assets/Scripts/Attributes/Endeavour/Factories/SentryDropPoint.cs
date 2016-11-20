@@ -9,8 +9,8 @@ public class SentryDropPoint : EndeavourFactory {
 
     private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.SentryPoint };
 
-    public override Endeavour constructEndeavour(RobotController controller, LabelHandle handle, List<Tag> tags) {
-       return new DropSentryAction(this, controller, goals, handle);
+    protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
+       return new DropSentryAction(this, controller, goals, tags);
     }
     public override List<TagEnum> getRequiredTags() {
         return requiredTags;

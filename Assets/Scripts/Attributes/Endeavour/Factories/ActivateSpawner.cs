@@ -7,9 +7,8 @@ public class ActivateSpawner : EndeavourFactory {
 
     private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Spawner };
 
-    public override Endeavour constructEndeavour(RobotController controller, LabelHandle handle, List<Tag> tags) {
-        //TODO is this the right way to get the robotSpawner??? (Hint: I think not...)
-		return new ActivateSpawnerAction(this, controller, goals, handle, handle.label.GetComponent<RobotSpawner>());
+    protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
+		return new ActivateSpawnerAction(this, controller, goals, tags);
 	}
 
     public override List<TagEnum> getRequiredTags() {

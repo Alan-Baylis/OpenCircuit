@@ -42,9 +42,11 @@ public class LabelGUI : Editor {
 			return;
 		}
 
-		for(int i = 0; i < label.tags.Length; ++i)
-			if(label.tags[i] == null)
+		for (int i = 0; i < label.tags.Length; ++i)
+			if (label.tags[i] == null) {
 				label.tags[i] = Tag.constructDefault();
+				label.tags[i].setLabelHandle(label.labelHandle);
+			}
 		doArrayGUI(ref label.tags);
 		/*
 		int newSize = UnityEditor.EditorGUILayout.IntField("Size:", label.tags.Length);

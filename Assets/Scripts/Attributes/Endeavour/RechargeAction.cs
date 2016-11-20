@@ -5,12 +5,12 @@ using System;
 
 public class RechargeAction : Endeavour {
 
-    private Label powerStation;
+    private Tag powerStation;
 	private Battery battery;
 	public float rechargePoint = 1;
 
-    public RechargeAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target, Battery battery) : base(factory, controller, goals, target.labelHandle) {
-        powerStation = target;
+    public RechargeAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap, Battery battery) : base(factory, controller, goals, tagMap) {
+        powerStation = getTagOfType<Tag>(TagEnum.PowerStation);
         this.name = "recharge";
 		this.battery = battery;
     }
@@ -18,7 +18,7 @@ public class RechargeAction : Endeavour {
 	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
         if (jet != null) {
-            jet.setTarget(powerStation.labelHandle, true);
+            jet.setTarget(powerStation.getLabelHandle(), true);
         }
     }
 
@@ -46,8 +46,12 @@ public class RechargeAction : Endeavour {
     protected override float getCost() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		if(jet != null) {
-			return jet.calculatePathCost(powerStation);
+			return jet.calculatePathCost(powerStation.getLabelHandle().label);
 		}
         return 0f;
     }
+
+	public override TagEnum getPrimaryTagType() {
+		return TagEnum.PowerStation;
+	}
 }

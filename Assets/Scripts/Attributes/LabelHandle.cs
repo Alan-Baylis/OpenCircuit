@@ -6,8 +6,6 @@ public class LabelHandle {
     public Label label;
     public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
 
-    protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();
-
     private Vector3 position;
 
     public LabelHandle(Vector3 pos, string name) {
@@ -29,10 +27,20 @@ public class LabelHandle {
     }
 
     public Tag getTag(TagEnum tagName) {
-        return tagMap[tagName];
+		if (label != null) {
+			return label.getTag(tagName);
+		}
+		if (tagMap.ContainsKey(tagName)) {
+			return tagMap[tagName];
+		} else {
+			return null;
+		}
     }
 
-    public List<TagEnum> getTagsTypes() {
+    public List<TagEnum> getTagTypes() {
+		if (label != null) {
+			return label.getTagTypes();
+		}
         List<TagEnum> tags = new List<TagEnum>();
         foreach (TagEnum tagEnum in tagMap.Keys) {
             tags.Add(tagEnum);
@@ -74,28 +82,5 @@ public class LabelHandle {
 			}
 		}
 		return Vector3.zero;
-	}
-
-	public void addExecution(RobotController executor, System.Type endeavourType) {
-		getExecutors(endeavourType).Add(executor);
-	}
-
-	public void removeExecution(RobotController executor, System.Type endeavourType) {
-		getExecutors(endeavourType).Remove(executor);
-	}
-
-	public int getConcurrentExecutions(RobotController executor, System.Type endeavourType) {
-		HashSet<RobotController> endeavourExecutors = getExecutors(endeavourType);
-		if (endeavourExecutors.Contains(executor)) {
-			return endeavourExecutors.Count - 1;
-		}
-		return endeavourExecutors.Count;
-	}
-
-	private HashSet<RobotController> getExecutors(System.Type endeavourType) {
-		if (!executors.ContainsKey(endeavourType)) {
-			executors[endeavourType] = new HashSet<RobotController>();
-		}
-		return executors[endeavourType];
 	}
 }

@@ -40,7 +40,6 @@ public abstract class Item : NetworkBehaviour {
 	public void onTake(NetworkInstanceId parent) {
 		this.parent = parent;
 		transform.parent = ClientScene.FindLocalObject(this.parent).transform;
-		Inventory inventory = transform.parent.GetComponent<Inventory>();
 	}
 
 	public virtual void Update() {

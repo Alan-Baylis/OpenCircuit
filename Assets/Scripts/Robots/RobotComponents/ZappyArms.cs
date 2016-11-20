@@ -88,7 +88,7 @@ public class ZappyArms : AbstractArms {
 			getController().enqueueMessage(new RobotMessage(
 				RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
 				proposedTarget.labelHandle, proposedTarget.transform.position, null));
-			captured.setTag(new Tag(TagEnum.Grabbed, 0));
+			captured.setTag(new Tag(TagEnum.Grabbed, 0, proposedTarget.labelHandle));
 			attachRigidbody(proposedTarget.gameObject);
 			NetworkIdentity netId = proposedTarget.GetComponent<NetworkIdentity>();
 			if (netId != null)
