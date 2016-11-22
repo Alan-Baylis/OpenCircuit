@@ -2,17 +2,16 @@
 using System;
 
 class DictionaryHeap {
-    SortedDictionary<Prioritizable, Prioritizable> list = new SortedDictionary<Prioritizable, Prioritizable>(new PrioritizableComparer());
+    MaxHeap<Prioritizable> list = new MaxHeap<Prioritizable>(new PrioritizableComparer());
 
-    class PrioritizableComparer : IComparer<Prioritizable> {
+    class PrioritizableComparer : Comparer<Prioritizable> {
 
-
-        public int Compare(Prioritizable a, Prioritizable b) {
+		public override int Compare(Prioritizable a, Prioritizable b) {
             float aPriority = a.getPriority();
             float bPriority = b.getPriority();
-            if (aPriority < bPriority) {
+            if (aPriority > bPriority) {
                 return 1;
-            } else if (aPriority > bPriority) {
+            } else if (aPriority < bPriority) {
                 return -1;
             } else return 0;
         }
@@ -24,33 +23,22 @@ class DictionaryHeap {
         if (p == null) {
             throw new NullReferenceException("PriorityQueue does not accept null objects");
         }
-        list.Add(p, p);
-        count++;
+        list.Add(p);
     }
 
     public Prioritizable Dequeue() {
-        Prioritizable max = null;
-        foreach (KeyValuePair<Prioritizable, Prioritizable> kvp in list) {
-            max = kvp.Key;
-            break;
-        }
-        list.Remove(max);
-        count--;
-        return max;
+		
+        return list.ExtractDominating(); ;
     }
 
     public Prioritizable peek() {
-        Prioritizable result = null;
-        foreach (KeyValuePair<Prioritizable, Prioritizable> kvp in list) {
-            result = kvp.Key;
-            break;
-        }
-        return result;
+
+        return list.GetMin();
     }
 
     public int Count {
         get {
-            return count;
+            return list.Count;
         }
     }
 

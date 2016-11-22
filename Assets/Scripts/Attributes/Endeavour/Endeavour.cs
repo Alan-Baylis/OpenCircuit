@@ -96,6 +96,10 @@ public abstract class Endeavour : Prioritizable {
         }
         return priorityCache;
 	}
+
+	public List<TagEnum> getRequiredTags() {
+		return factory.getRequiredTags();
+	}
 	
 	protected float calculateFinalPriority() {
 		float finalPriority = calculatePriority();
@@ -111,11 +115,6 @@ public abstract class Endeavour : Prioritizable {
 		return name;
 	}
 
-#if UNITY_EDITOR
-	public string getTargetName() {
-		return getTagOfType<Tag>(getPrimaryTagType()).getLabelHandle().getName();
-	}
-#endif
 
 	public RobotController getController() {
 		return controller;
@@ -125,7 +124,18 @@ public abstract class Endeavour : Prioritizable {
 		return controller == endeavour.controller && name.Equals(endeavour.name);
 	}
 
-    protected abstract float getCost();
+	public T getTagOfType<T>(TagEnum tagType) where T : Tag {
+		//Debug.Log("getting tag of type: " + tagType.ToString());
+		return (T)tagMap[tagType];
+	}
+
+#if UNITY_EDITOR
+	public string getTargetName() {
+		return getTagOfType<Tag>(getPrimaryTagType()).getLabelHandle().getName();
+	}
+#endif
+
+	protected abstract float getCost();
 
     protected virtual float calculatePriority() {
 		float calculatedPriority = 0;
@@ -143,11 +153,6 @@ public abstract class Endeavour : Prioritizable {
 		int executors = tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType());
 		return Mathf.Min(factory.maxMobBenefit, factory.maxMobBenefit *(executors + 1f) / factory.optimalMobSize)
 			   -executors * factory.mobCostPerRobot;
-	}
-
-	protected T getTagOfType<T>(TagEnum tagType) where T : Tag {
-		//Debug.Log("getting tag of type: " + tagType.ToString());
-		return (T)tagMap[tagType];
 	}
 
 	private void withdrawExecution() {

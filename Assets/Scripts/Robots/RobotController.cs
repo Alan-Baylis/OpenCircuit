@@ -224,23 +224,18 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
                 tagSets.Add(getMentalModel().getTagsOfType(tagType));
             }
 
-			//List<Tag> primary = tagSets[0];
-			//foreach(Tag tag in primary) {
 			//print("selecting " + tag.type.ToString());
 			if (tagSets.Count > 0) {
 				List<Tag> chosen = new List<Tag>();
 				//chosen.Add(tag);
 				List<Endeavour> endeavours = constructWithCombination(factory, tagSets, chosen, 0);
 				foreach (Endeavour endeavour in endeavours) {
-					//print("adding: " + endeavour.getName());
+					//print("adding: " + endeavour.getName() + " with " + endeavour.getTagOfType<Tag>(endeavour.getPrimaryTagType()).getLabelHandle().getName());
 					availableEndeavours.Add(endeavour);
 				}
 			}
-            //}
-
         }
-
-    }
+	}
 
     private List<Endeavour> constructWithCombination(EndeavourFactory factory, List<List<Tag>> tagset, List<Tag> chosen, int index) {
 		List<Endeavour> results = new List<Endeavour>();
