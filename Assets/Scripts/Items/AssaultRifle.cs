@@ -22,7 +22,7 @@ public class AssaultRifle : AbstractGun {
 	}
 
 	private int maxBullets;
-	[SyncVar] 
+	[SyncVar]
 	private int bulletsRemaining = 5 * 20;
 	private int currentMagazineFill;
 
@@ -80,27 +80,22 @@ public class AssaultRifle : AbstractGun {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
+			Health health = getParentComponent<EffectHealth>(hitInfo.collider.transform);
+			if (health != null) {
+				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
 
-			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
-			if (rb != null) {
-				rb.AddForceAtPosition(direction * impulse, hitInfo.point);
-			}
+				Rigidbody rb = health.GetComponent<Rigidbody>();
+				if (rb != null) {
+					rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+				}
 
-			NetworkIdentity identity = getParentComponent<NetworkIdentity>(hitInfo.transform);
-			if (identity != null) {
-				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, identity.netId);
-			} else {
-				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
-			}
-			 
-			Health health = getParentComponent<Health>(hitInfo.transform); 
-			if(health != null) {
 				// do ricochet
 				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
 				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
 				//}
 				robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
 			} else {
+				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
 				hitEffect.spawn(hitInfo.point, hitInfo.normal);
 			}
 		} else {

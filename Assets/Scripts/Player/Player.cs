@@ -167,18 +167,12 @@ public class Player : NetworkBehaviour {
 	public void die() {
 		if (!alive)
 			return;
-		//alive = false;
-		//blackOutTime = blackOutDuration;
-		//Menu.menu.lose();
-		//effectSpec.spawn(transform.position);
-		//if(controller != null) {
-        GameObject newFreezeLock = GameObject.Instantiate(freezeLock, transform.position + new Vector3(0, 1, 0), freezeLock.transform.rotation) as GameObject;
-        FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
-        freezeLockScript.frozenPlayer = this;
-        NetworkServer.Spawn(newFreezeLock);
-            freeze();
-			//controller.destroyPlayer(connectionToClient, playerControllerId);
-		//}
+		GameObject newFreezeLock = GameObject.Instantiate(freezeLock) as GameObject;
+		newFreezeLock.GetComponent<NetworkParenter>().setParentId(netId);
+		FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
+		freezeLockScript.frozenPlayer = this;
+		NetworkServer.Spawn(newFreezeLock);
+		freeze();
 	}
 
 	public void teleport(Vector3 position) {
