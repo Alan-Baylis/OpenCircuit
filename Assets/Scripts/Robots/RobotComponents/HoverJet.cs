@@ -120,50 +120,22 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	public float calculatePathCost(Vector3 targetPos) {
-		//Debug.Log ("evaluating path cost");
-		//Debug.Log(targetPos);
-		float cost = 0;
+
 		NavMeshPath path = new NavMeshPath ();
 		if (nav.enabled) {
 			nav.CalculatePath (targetPos, path);
 		}
 		List<Vector3> corners = new List<Vector3>(path.corners);
 		corners.Add(targetPos);
-		//corners
 		float pathLength = 0;
-		foreach (Tag item in getController().getMentalModel().getTagsOfType(TagEnum.Threat)) {
-			//print ("checking path cost against item: " + item.name);
-			//print ("target threatLevel " + item.threatLevel);
-			float minDist = -1;
-			//Vector3 prevVertex;
-			//Debug.Log("numCorners: " + corners.Count);
-			for(int i = 0; i < corners.Count; i++) {
-				Vector3 vertex = corners[i];
-				if(i > 0) {
-					//Debug.Log("adding path length");
-					pathLength += Vector3.Distance(corners[i - 1], vertex);
-				}
-				float curDist = Vector3.Distance(vertex, item.getLabelHandle().getPosition());
-				if(minDist == -1) {
-					minDist = curDist;
-				} else if(curDist < minDist) {
-					minDist = curDist;
-				}
-			}
-			if(item.getLabelHandle().hasTag(TagEnum.Threat)) {
-				float threatLevel = item.getLabelHandle().getTag(TagEnum.Threat).severity;
-
-				RoboEyes eyes = getController().GetComponentInChildren<RoboEyes>();
-				if(eyes != null) {
-					cost += threatLevel * (minDist/eyes.sightDistance);	
-				}
+		for (int i = 0; i < corners.Count; i++) {
+			Vector3 vertex = corners[i];
+			if (i > 0) {
+				pathLength += Vector3.Distance(corners[i - 1], vertex);
 			}
 		}
-		//if (cost > 0) {
-		//	print ("path cost: " + cost);
-		//}
-		//Debug.Log("cost for target " + cost +" "+ "("+pathLength +"*" + distanceCost+")");
-		return cost + (pathLength * distanceCost);	
+
+		return (pathLength * distanceCost);	
 	}
 
 	public bool canReach(Label target) {

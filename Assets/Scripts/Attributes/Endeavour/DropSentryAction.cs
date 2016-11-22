@@ -5,15 +5,18 @@ using System;
 
 public class DropSentryAction : Endeavour {
 
+	private Tag sentryPoint;
+
     public DropSentryAction(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
         : base(parentFactory, controller, goals, tags) {
         name = "dropSentry";
+		sentryPoint = getTagOfType<Tag>(TagEnum.SentryPoint);
     }
 
 	protected override void onExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
         if (jet != null) {
-            jet.setTarget(getTagOfType<Tag>(TagEnum.SentryPoint).getLabelHandle(), true);
+            jet.setTarget(sentryPoint.getLabelHandle(), true);
         }
     }
 
@@ -34,7 +37,7 @@ public class DropSentryAction : Endeavour {
 
 	public override bool canExecute() {
         HoverJet legs = controller.getRobotComponent<HoverJet>();
-        return legs != null && legs.canReach(getTagOfType<Tag>(TagEnum.SentryPoint).getLabelHandle().label) && ((SentryDropPoint)factory).sentryModule == null;
+        return legs != null && legs.canReach(sentryPoint.getLabelHandle().label) && ((SentryDropPoint)factory).sentryModule == null;
     }
 
     public override bool singleExecutor() {
@@ -44,9 +47,9 @@ public class DropSentryAction : Endeavour {
     protected override float getCost() {
         HoverJet jet = controller.getRobotComponent<HoverJet>();
         if (jet != null) {
-            return jet.calculatePathCost(getTagOfType<Tag>(TagEnum.SentryPoint).getLabelHandle().label);
-        }
-        return 0;
+			return jet.calculatePathCost(sentryPoint.getLabelHandle().label.transform.position);
+		}
+		return 0;
     }
 
 	public override TagEnum getPrimaryTagType() {
