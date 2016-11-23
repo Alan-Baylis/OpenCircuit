@@ -14,7 +14,7 @@ public class ChassisController : MonoBehaviour {
 	public float maxStepHeight = .8f;
 
 	public float minMoveSpeed = 0.01f;
-	public int minimumFramesPerSwitch = 2;
+	public float minimumTimePerSwitch = 0.02f;
 
 	public AudioSource footstep;
 	public EffectSpec footPlant;
@@ -25,7 +25,7 @@ public class ChassisController : MonoBehaviour {
 	private Vector3 lastPos;
 	private LegController[] plantedGroup = null;
 	private LegController[] steppingGroup = null;
-	private int lastSwitch = 0;
+	private float lastSwitch = 0;
 
 	void Update() {
 		//if (velocity.sqrMagnitude < minMoveSpeed) {
@@ -37,19 +37,18 @@ public class ChassisController : MonoBehaviour {
 			steppingGroup = legGroup2;
 		}
 
-		float stepPercent = calculateStepPercent(plantedGroup);
+		float stepPercent = Mathf.Min(1, calculateStepPercent(plantedGroup));
 		//print(stepPercent);
-		bool isSwitching = stepPercent > 0.99f && lastSwitch >= minimumFramesPerSwitch;
+		updateSteppingGroup(steppingGroup, stepPercent);
+		float time = Application.isPlaying ? Time.time : Time.realtimeSinceStartup;
+		bool isSwitching = stepPercent > 0.99f && lastSwitch <= time - minimumTimePerSwitch;
 		if (isSwitching) {
 			LegController[] temp = plantedGroup;
 			plantedGroup = steppingGroup;
 			steppingGroup = temp;
-			lastSwitch = 0;
-		} else {
-			updateSteppingGroup(steppingGroup, stepPercent);
-			++lastSwitch;
+			lastSwitch = time;
 		}
-		updateLegs(plantedGroup, !isSwitching);
+		updateLegs(plantedGroup, true);
 		updateLegs(steppingGroup, false);
 	}
 
@@ -80,7 +79,9 @@ public class ChassisController : MonoBehaviour {
 
 			target.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
 			Vector3 diff = (target - info.foot);
-			info.foot += diff.normalized * Mathf.Min(Mathf.Max(0.5f, diff.magnitude /3), diff.magnitude);
+			float deltaTime = Application.isPlaying ? Time.deltaTime : 0.03f;
+			float maxDistance = Mathf.Max(10f, diff.magnitude * 20) * deltaTime;
+            info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
 
 #if UNITY_EDITOR
 			if(debug) {
