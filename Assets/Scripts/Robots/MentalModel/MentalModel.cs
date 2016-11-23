@@ -103,13 +103,13 @@ public class MentalModel {
 
     private void notifyListenersTagRemoved(Tag tag) {
         for (int i = 0; i < listeners.Count; i++) {
-            listeners[i].addTag(tag);
+            listeners[i].removeTag(tag);
         }
     }
 
     private void notifyListenersTagAdded(Tag tag) {
         for (int i = 0; i < listeners.Count; i++) {
-            listeners[i].removeTag(tag);
+            listeners[i].addTag(tag);
         }
     }
 

@@ -56,51 +56,28 @@ public abstract class Endeavour : Prioritizable {
 
 		onStopExecution();
     }
-	protected virtual void onStopExecution() {}
 
-	public virtual void onMessage(RobotMessage message) {}
 
 	public bool isReady(Dictionary<System.Type, int> availableComponents) {
 		return (!singleExecutor() || tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType()) == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
-	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
-		foreach(System.Type type in getRequiredComponents()) {
-			if(!availableComponents.ContainsKey(type) || availableComponents[type] < 1) {
-				return false;
-			}
-		}
-
-		foreach(System.Type type in getRequiredComponents()) {
-			int numAvailable = availableComponents[type];
-			if(numAvailable > 0) {
-				--numAvailable;
-				availableComponents[type] = numAvailable;
-			}
-		}
-		return true;
-	}
-
-	public abstract System.Type[] getRequiredComponents();
-
-	public abstract bool canExecute();
-
-	public abstract bool singleExecutor();
-
-	public abstract TagEnum getPrimaryTagType();
-
 	public float getPriority() {
-        if (lastFrameEvaluated != Time.frameCount) {
-            priorityCache = calculateFinalPriority();
-            lastFrameEvaluated = Time.frameCount;
-        }
-        return priorityCache;
+		if (lastFrameEvaluated != Time.frameCount) {
+			priorityCache = calculateFinalPriority();
+			lastFrameEvaluated = Time.frameCount;
+		}
+		return priorityCache;
 	}
 
 	public List<TagEnum> getRequiredTags() {
 		return factory.getRequiredTags();
 	}
-	
+
+	public List<Tag> getTagsInUse() {
+		return new List<Tag>(tagMap.Values);
+	}
+
 	protected float calculateFinalPriority() {
 		float finalPriority = calculatePriority();
 		finalPriority += calculateMobBenefit();
@@ -110,16 +87,15 @@ public abstract class Endeavour : Prioritizable {
 		finalPriority -= getCost();
 		return finalPriority;
 	}
-	
+
 	public string getName() {
 		return name;
 	}
 
-
 	public RobotController getController() {
 		return controller;
 	}
-	
+
 	public bool Equals(Endeavour endeavour) {
 		return controller == endeavour.controller && name.Equals(endeavour.name);
 	}
@@ -129,13 +105,26 @@ public abstract class Endeavour : Prioritizable {
 		return (T)tagMap[tagType];
 	}
 
+	public virtual void onMessage(RobotMessage message) { }
+
+	public abstract System.Type[] getRequiredComponents();
+
+	public abstract bool canExecute();
+
+	public abstract bool singleExecutor();
+
+	public abstract TagEnum getPrimaryTagType();
+
+	protected abstract float getCost();
+
+	protected virtual void onStopExecution() { }
+
+
 #if UNITY_EDITOR
 	public string getTargetName() {
 		return getTagOfType<Tag>(getPrimaryTagType()).getLabelHandle().getName();
 	}
 #endif
-
-	protected abstract float getCost();
 
     protected virtual float calculatePriority() {
 		float calculatedPriority = 0;
@@ -153,6 +142,23 @@ public abstract class Endeavour : Prioritizable {
 		int executors = tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType());
 		return Mathf.Min(factory.maxMobBenefit, factory.maxMobBenefit *(executors + 1f) / factory.optimalMobSize)
 			   -executors * factory.mobCostPerRobot;
+	}
+
+	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
+		foreach (System.Type type in getRequiredComponents()) {
+			if (!availableComponents.ContainsKey(type) || availableComponents[type] < 1) {
+				return false;
+			}
+		}
+
+		foreach (System.Type type in getRequiredComponents()) {
+			int numAvailable = availableComponents[type];
+			if (numAvailable > 0) {
+				--numAvailable;
+				availableComponents[type] = numAvailable;
+			}
+		}
+		return true;
 	}
 
 	private void withdrawExecution() {

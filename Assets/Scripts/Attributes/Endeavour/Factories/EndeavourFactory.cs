@@ -56,6 +56,15 @@ public abstract class EndeavourFactory : InspectorListElement {
 		return createEndeavour(controller, tagMap);
 	}
 
+	public bool usesTagType(TagEnum type) {
+		foreach (TagEnum tagType in getRequiredTags()) {
+			if (tagType == type) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected abstract Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tagMap);
 
     public abstract bool isApplicable(LabelHandle labelHandle);

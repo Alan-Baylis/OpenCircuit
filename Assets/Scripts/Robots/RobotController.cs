@@ -15,6 +15,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	public byte[] serializedData;
 
 	private HashSet<Endeavour> availableEndeavours = new HashSet<Endeavour> (new EndeavourComparer());
+	private Dictionary<Tag, List<Endeavour>> tagUsageMap = new Dictionary<Tag, List<Endeavour>>();
 	private AudioSource soundEmitter;
 	private Health myHealth;
 
@@ -205,32 +206,57 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		return compList[0];
 	}
 
-    public void addTag(Tag tag) {
-        throw new NotImplementedException();
+    public void addTag(Tag newTag) {
+		foreach (EndeavourFactory factory in endeavourFactories) {
+			if (factory.usesTagType(newTag.type)) {
+				List<List<Tag>> tagSets = new List<List<Tag>>();
+				tagSets.Add(new List<Tag> { newTag });
+
+				List<TagEnum> requiredTags = factory.getRequiredTags();
+				foreach(TagEnum tagType in requiredTags) {
+					if (tagType != newTag.type) {
+						tagSets.Add(getMentalModel().getTagsOfType(tagType));
+					}
+				}
+
+				if (tagSets.Count > 0) {
+					List<Tag> chosen = new List<Tag>();
+					List<Endeavour> endeavours = constructWithCombination(factory, tagSets, chosen, 0);
+					foreach (Endeavour endeavour in endeavours) {
+						foreach (Tag tag in endeavour.getTagsInUse()) {
+							addTagUsageEntry(tag, endeavour);
+						}
+						availableEndeavours.Add(endeavour);
+					}
+				}
+			}
+		}
     }
 
     public void removeTag(Tag tag) {
-        throw new NotImplementedException();
+		// No entry for the tag simply means that no endeavours are using that tag
+		if (tagUsageMap.ContainsKey(tag)) {
+			foreach (Endeavour endeavour in tagUsageMap[tag]) {
+				removeEndeavour(endeavour);
+			}
+		}
     }
 
     private void constructAllEndeavours() {
         foreach (EndeavourFactory factory in endeavourFactories) {
 			List<List<Tag>> tagSets = new List<List<Tag>>();
-
-			//print("Adding tags for factory: " + factory.GetType());
             List<TagEnum> requiredTags = factory.getRequiredTags();
             foreach (TagEnum tagType in requiredTags) {
-				//print("Selecting all tags for type: " + tagType.ToString());
                 tagSets.Add(getMentalModel().getTagsOfType(tagType));
             }
 
-			//print("selecting " + tag.type.ToString());
 			if (tagSets.Count > 0) {
 				List<Tag> chosen = new List<Tag>();
-				//chosen.Add(tag);
 				List<Endeavour> endeavours = constructWithCombination(factory, tagSets, chosen, 0);
 				foreach (Endeavour endeavour in endeavours) {
-					//print("adding: " + endeavour.getName() + " with " + endeavour.getTagOfType<Tag>(endeavour.getPrimaryTagType()).getLabelHandle().getName());
+					foreach (Tag tag in endeavour.getTagsInUse()) {
+						addTagUsageEntry(tag, endeavour);
+					}
 					availableEndeavours.Add(endeavour);
 				}
 			}
@@ -250,6 +276,16 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			chosen.RemoveAt(chosen.Count - 1); // Remove it from the end to try the next one
 		}
 		return results;
+	}
+
+	private void addTagUsageEntry(Tag tag, Endeavour endeavour) {
+		if (tagUsageMap.ContainsKey(tag)) {
+			tagUsageMap[tag].Add(endeavour);
+		} else {
+			List<Endeavour> endeavours = new List<Endeavour>();
+			endeavours.Add(endeavour);
+			tagUsageMap.Add(tag, endeavours);
+		}
 	}
 
 	private void evaluateActions() {
@@ -349,6 +385,15 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			}
 		}
 #endif
+	}
+
+	private void removeEndeavour(Endeavour endeavour) {
+		if (availableEndeavours.Contains(endeavour)) {
+			availableEndeavours.Remove(endeavour);
+		} else if (currentEndeavours.Contains(endeavour)) {
+			endeavour.stopExecution();
+			currentEndeavours.Remove(endeavour);
+		}
 	}
 
 	private Dictionary<System.Type, int> getComponentUsageMap() {

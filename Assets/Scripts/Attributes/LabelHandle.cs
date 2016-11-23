@@ -50,12 +50,13 @@ public class LabelHandle {
     }
 
     public List<Tag> getTags() {
-        List<Tag> tags = new List<Tag>();
-        foreach (Tag tag in tagMap.Values) {
-            tags.Add(tag);
+		if (label != null) {
+			return label.getTags();
+		} else {
+			List<Tag> tags = new List<Tag>();
+			tags.AddRange(tagMap.Values);
+			return tags;
         }
-
-        return tags;
     }
 
 	public void addTag(Tag tag) {

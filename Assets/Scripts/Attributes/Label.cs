@@ -149,6 +149,13 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		return tagMap[tagName];
 	}
 
+	public List<Tag> getTags() {
+		List<Tag> tags = new List<Tag>();
+		tags.AddRange(tagMap.Values);
+		return tags;
+	}
+
+
 	public List<TagEnum> getTagTypes() {
 		List<TagEnum> tags = new List<TagEnum>();
 		foreach (TagEnum tagEnum in tagMap.Keys) {
