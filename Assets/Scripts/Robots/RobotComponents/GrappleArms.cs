@@ -40,7 +40,7 @@ public class GrappleArms : AbstractArms {
                 return;
             }
             if (targetCaptured()) {
-                if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
+                if (captured.hasTag(TagEnum.Player) && captured.hasTag(TagEnum.Frozen)) {
                     releaseTarget();
                     return;
                 }

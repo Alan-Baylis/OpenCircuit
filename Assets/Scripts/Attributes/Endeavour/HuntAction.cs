@@ -16,10 +16,10 @@ public class HuntAction : Endeavour {
 	public override bool canExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-        return arms != null
+		return arms != null
 			&& (!target.getLabelHandle().hasTag(TagEnum.Grabbed) || arms.targetCaptured())
-			&& jet != null && jet.canReach(target.getLabelHandle().label)
-			&& target.getLabelHandle().label.GetComponent<Player>() != null && !target.getLabelHandle().label.GetComponent<Player>().frozen;
+			&& !target.getLabelHandle().hasTag(TagEnum.Frozen)
+			&& jet != null && jet.canReach(target.getLabelHandle().label);
 	}
 
 	protected override void onExecute() {

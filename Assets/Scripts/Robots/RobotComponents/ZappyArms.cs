@@ -33,7 +33,7 @@ public class ZappyArms : AbstractArms {
 		} else {
 			collider.enabled = true;
 			if(targetCaptured()) {
-                if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
+                if (captured.hasTag(TagEnum.Player) && captured.hasTag(TagEnum.Frozen)) {
                     releaseTarget();
                     return;
                 }

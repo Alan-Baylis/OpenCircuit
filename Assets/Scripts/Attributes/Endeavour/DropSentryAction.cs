@@ -38,7 +38,7 @@ public class DropSentryAction : Endeavour {
 
 	public override bool canExecute() {
         HoverJet legs = controller.getRobotComponent<HoverJet>();
-        return legs != null && legs.canReach(sentryPoint.getLabelHandle().label) && !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied);
+        return !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied) && legs != null && legs.canReach(sentryPoint.getLabelHandle().label);
     }
 
     public override bool singleExecutor() {
