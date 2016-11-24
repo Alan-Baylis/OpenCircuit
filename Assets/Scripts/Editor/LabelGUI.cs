@@ -32,10 +32,12 @@ public class LabelGUI : Editor {
 	public void doEndeavourInfo(Label label) {
 		EditorGUILayout.LabelField("Used in Actions:");
 		foreach (Tag tag in label.tags) {
-			if (ActionCatalog.availableActionsMap.ContainsKey(tag.type)) {
-				List<System.Type> actionList = ActionCatalog.availableActionsMap[tag.type];
-				foreach (System.Type type in actionList) {
-					EditorGUILayout.LabelField("-->" + type.ToString());
+			if (tag != null) {
+				if (ActionCatalog.availableActionsMap.ContainsKey(tag.type)) {
+					List<System.Type> actionList = ActionCatalog.availableActionsMap[tag.type];
+					foreach (System.Type type in actionList) {
+						EditorGUILayout.LabelField("-->" + type.ToString());
+					}
 				}
 			}
 		}
