@@ -7,7 +7,7 @@ public class Recharge : EndeavourFactory {
 
 	public float rechargePoint = 1f;
 
-    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.PowerStation };
+    private static List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.PowerStation };
 
     protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
 		Battery battery = controller.GetComponentInChildren<Battery>();
@@ -19,7 +19,7 @@ public class Recharge : EndeavourFactory {
         return action;
     }
 
-    public override List<TagEnum> getRequiredTags() {
+    public static new List<TagEnum> getRequiredTags() {
         return requiredTags;
     }
 

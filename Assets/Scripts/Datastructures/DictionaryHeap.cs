@@ -17,8 +17,6 @@ class DictionaryHeap {
         }
     }
 
-    int count = 0;
-
     public void Enqueue(Prioritizable p) {
         if (p == null) {
             throw new NullReferenceException("PriorityQueue does not accept null objects");

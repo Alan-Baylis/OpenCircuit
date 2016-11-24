@@ -71,7 +71,7 @@ public abstract class Endeavour : Prioritizable {
 	}
 
 	public List<TagEnum> getRequiredTags() {
-		return factory.getRequiredTags();
+		return factory.getRequiredTagsList();
 	}
 
 	public List<Tag> getTagsInUse() {

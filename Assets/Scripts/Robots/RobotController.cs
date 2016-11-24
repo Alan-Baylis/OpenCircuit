@@ -212,7 +212,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				List<List<Tag>> tagSets = new List<List<Tag>>();
 				tagSets.Add(new List<Tag> { newTag });
 
-				List<TagEnum> requiredTags = factory.getRequiredTags();
+				List<TagEnum> requiredTags = factory.getRequiredTagsList();
 				foreach(TagEnum tagType in requiredTags) {
 					if (tagType != newTag.type) {
 						tagSets.Add(getMentalModel().getTagsOfType(tagType));
@@ -245,7 +245,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
     private void constructAllEndeavours() {
         foreach (EndeavourFactory factory in endeavourFactories) {
 			List<List<Tag>> tagSets = new List<List<Tag>>();
-            List<TagEnum> requiredTags = factory.getRequiredTags();
+            List<TagEnum> requiredTags = factory.getRequiredTagsList();
             foreach (TagEnum tagType in requiredTags) {
                 tagSets.Add(getMentalModel().getTagsOfType(tagType));
             }

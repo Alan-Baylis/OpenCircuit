@@ -69,7 +69,13 @@ public abstract class EndeavourFactory : InspectorListElement {
 
     public abstract bool isApplicable(LabelHandle labelHandle);
 
-    public abstract List<TagEnum> getRequiredTags();
+    public static List<TagEnum> getRequiredTags() {
+		return null;
+	}
+
+	public List<TagEnum> getRequiredTagsList() {
+		return (List<TagEnum>)GetType().GetMethod("getRequiredTags").Invoke(null, null);
+	}
 
     public void setRobotController(RobotController controller) {
         robotController = controller;

@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class Investigate : EndeavourFactory {
 
-    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Sound };
+    private static List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Sound };
 
     public override bool isApplicable(LabelHandle labelHandel) {
 		return labelHandel.hasTag(TagEnum.Sound);
@@ -14,7 +14,7 @@ public class Investigate : EndeavourFactory {
 		return new InvestigateAction(this, controller, this.goals, tags);
 	}
 
-    public override List<TagEnum> getRequiredTags() {
+    public static new List<TagEnum> getRequiredTags() {
         return requiredTags;
     }
 }
