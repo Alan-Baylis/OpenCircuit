@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 
 [System.Serializable]
-public class  Tag : InspectorListElement {
+public class Tag : InspectorListElement {
 
 	public static Tag constructDefault() {
 		return new Tag((TagEnum)Enum.GetValues(typeof(TagEnum)).GetValue(0), 0, null);

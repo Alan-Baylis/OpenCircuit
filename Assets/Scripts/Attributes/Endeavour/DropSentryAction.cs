@@ -27,7 +27,8 @@ public class DropSentryAction : Endeavour {
 
     public override void onMessage(RobotMessage message) {
         if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(HoverJet.TARGET_REACHED)) {
-            ((SentryDropPoint)factory).sentryModule = getController().getRobotComponent<SentrySpawner>().dropSentry();
+			getController().getRobotComponent<SentrySpawner>().dropSentry();
+			sentryPoint.getLabelHandle().addTag(new Tag(TagEnum.Occupied, 0, sentryPoint.getLabelHandle()));
         }
 	}
 
@@ -37,7 +38,7 @@ public class DropSentryAction : Endeavour {
 
 	public override bool canExecute() {
         HoverJet legs = controller.getRobotComponent<HoverJet>();
-        return legs != null && legs.canReach(sentryPoint.getLabelHandle().label) && ((SentryDropPoint)factory).sentryModule == null;
+        return legs != null && legs.canReach(sentryPoint.getLabelHandle().label) && !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied);
     }
 
     public override bool singleExecutor() {

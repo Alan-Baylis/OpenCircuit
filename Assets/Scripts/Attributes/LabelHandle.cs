@@ -60,6 +60,9 @@ public class LabelHandle {
     }
 
 	public void addTag(Tag tag) {
+		if (label != null) {
+			label.setTag(tag);
+		}
 		tagMap.Add(tag.type, tag);
 	}
 

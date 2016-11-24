@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class GuardTag : Tag {
 
     public const float NUM_STRIPES = 8f;

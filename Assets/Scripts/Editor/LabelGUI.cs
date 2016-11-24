@@ -10,14 +10,6 @@ public class LabelGUI : Editor {
 
 	private bool tagsExpanded = false;
 	private bool operationsExpanded = false;
-	private string[] operationTypeNames;
-	
-	public void OnEnable() {
-		operationTypeNames = new string[Operation.types.Length];
-		for(int i=0; i<operationTypeNames.Length; ++i) {
-			operationTypeNames[i] = Operation.types[i].FullName;
-		}
-	}
 	
 	public override void OnInspectorGUI() {
 		serializedObject.Update();

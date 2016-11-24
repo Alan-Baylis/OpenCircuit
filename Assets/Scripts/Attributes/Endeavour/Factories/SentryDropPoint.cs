@@ -4,9 +4,6 @@ using System.Collections.Generic;
 [System.Serializable]
 public class SentryDropPoint : EndeavourFactory {
 
-    [System.NonSerialized]
-    public SentryModule sentryModule;
-
     private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.SentryPoint };
 
     protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
