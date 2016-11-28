@@ -27,7 +27,7 @@ public class EffectHealth : Health {
 
 	[ClientRpc]
 	private void RpcSpawnEffects() {
-				foreach (EffectSpec effect in destructEffects)
+		foreach (EffectSpec effect in destructEffects)
 			effect.spawn(transform.position, transform.rotation);
 	}
 }

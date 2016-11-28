@@ -22,7 +22,7 @@ public class AssaultRifle : AbstractGun {
 	}
 
 	private int maxBullets;
-	[SyncVar] 
+	[SyncVar]
 	private int bulletsRemaining = 5 * 20;
 	private int currentMagazineFill;
 
@@ -80,27 +80,22 @@ public class AssaultRifle : AbstractGun {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
+			Health health = getParentComponent<EffectHealth>(hitInfo.collider.transform);
+			if (health != null) {
+				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
 
-			Rigidbody rb = getParentComponent<Rigidbody>(hitInfo.transform);
-			if (rb != null) {
-				rb.AddForceAtPosition(direction * impulse, hitInfo.point);
-			}
+				Rigidbody rb = health.GetComponent<Rigidbody>();
+				if (rb != null) {
+					rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+				}
 
-			NetworkIdentity identity = getParentComponent<NetworkIdentity>(hitInfo.transform);
-			if (identity != null) {
-				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, identity.netId);
-			} else {
-				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
-			}
-			 
-			Health health = getParentComponent<Health>(hitInfo.transform); 
-			if(health != null) {
 				// do ricochet
 				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
 				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
 				//}
 				robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
 			} else {
+				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
 				hitEffect.spawn(hitInfo.point, hitInfo.normal);
 			}
 		} else {
@@ -185,20 +180,26 @@ public class AssaultRifle : AbstractGun {
 
 	private void playFireSound() {
 		// create sound event
-		float volume = gunshotSoundEmitter.volume;
-		if (Time.time - lastShotTime > fireDelay * 5 || audioLabel == null) {
+		//float volume = gunshotSoundEmitter.volume;
+		if (Time.time - lastFiredTime > .5f || audioLabel == null) {
 			audioLabel = new LabelHandle(transform.position, "gunshots");
 			audioLabel.addTag(new Tag(TagEnum.Sound, 0, audioLabel));
 			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
-		}
-		audioLabel.setPosition(transform.position);
-		Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-		Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-		soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-		threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-		AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-		gunshotEvent.broadcast(soundTag.severity);
 
+			audioLabel.setPosition(transform.position);
+			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+			AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
+			gunshotEvent.broadcast(soundTag.severity);
+		} else {
+			audioLabel.setPosition(transform.position);
+			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			//Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+		}
 		// play sound effect
 		if (gunshotSoundEmitter != null) {
 			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
