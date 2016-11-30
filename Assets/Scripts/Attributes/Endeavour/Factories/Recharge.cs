@@ -23,11 +23,6 @@ public class Recharge : EndeavourFactory {
         return requiredTags;
     }
 
-    public override bool isApplicable(LabelHandle labelHandle) {
-        
-        return labelHandle.hasTag(TagEnum.PowerStation);
-    }
-
 #if UNITY_EDITOR
     public override void doGUI() {
 		rechargePoint = UnityEditor.EditorGUILayout.FloatField("Recharge Point", rechargePoint);

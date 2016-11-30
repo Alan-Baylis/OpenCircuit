@@ -12,8 +12,4 @@ public class Search : EndeavourFactory {
     public override List<TagEnum> getRequiredTags() {
         return requiredTags; 
     }
-
-    public override bool isApplicable(LabelHandle labelHandle) {
-        return labelHandle.hasTag(TagEnum.Searchable);
-    }
 }

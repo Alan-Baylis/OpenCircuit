@@ -67,8 +67,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 
 	protected abstract Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tagMap);
 
-    public abstract bool isApplicable(LabelHandle labelHandle);
-
     public abstract List<TagEnum> getRequiredTags();
 
     public void setRobotController(RobotController controller) {
