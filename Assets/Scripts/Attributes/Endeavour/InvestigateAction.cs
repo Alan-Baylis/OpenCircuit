@@ -30,11 +30,9 @@ public class InvestigateAction : Endeavour {
 
 		RoboEyes eyes = controller.GetComponentInChildren<RoboEyes>();
 		bool canSee = false;
-		if(eyes != null) {
-			canSee = (eyes.lookAt(sound.getLabelHandle().getPosition()) == null);
-			if(canSee) {
-				controller.enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null));
-			}
+		canSee = (eyes.lookAt(sound.getLabelHandle().getPosition()) == null);
+		if(canSee) {
+			controller.enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null));
 		}
 		return canSee && Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 5f;
 	}
@@ -59,9 +57,7 @@ public class InvestigateAction : Endeavour {
 
 	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			jet.setTarget(sound.getLabelHandle(), false);
-		}
+		jet.setTarget(sound.getLabelHandle(), false);
 	}
 
 	public override bool singleExecutor() {
@@ -70,13 +66,11 @@ public class InvestigateAction : Endeavour {
 
 	protected override float getCost() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			System.Nullable<Vector3> pos = controller.getLastKnownPosition(sound.getLabelHandle());
-			if(pos.HasValue) {
-				float cost = jet.calculatePathCost(pos.Value);
-				//Debug.Log("investigate path cost: " + cost);
-				return cost;
-			}
+		System.Nullable<Vector3> pos = controller.getLastKnownPosition(sound.getLabelHandle());
+		if(pos.HasValue) {
+			float cost = jet.calculatePathCost(pos.Value);
+			//Debug.Log("investigate path cost: " + cost);
+			return cost;
 		}
 		return 0;
 	}

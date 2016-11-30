@@ -13,9 +13,7 @@ public class GuardAction : Endeavour {
 
 	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null ) {
-			jet.setTarget(guardLocation.getLabelHandle(), true, true);
-		}
+		jet.setTarget(guardLocation.getLabelHandle(), true, true);
 	}
 
 	public override bool isStale() {
@@ -40,10 +38,7 @@ public class GuardAction : Endeavour {
 
 	protected override float getCost() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			return jet.calculatePathCost(guardLocation.getLabelHandle().label);
-		}
-		return 0;
+		return jet.calculatePathCost(guardLocation.getLabelHandle().label);
 	}
 
 	public override TagEnum getPrimaryTagType() {
