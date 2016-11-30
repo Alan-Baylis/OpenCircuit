@@ -28,7 +28,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 				List<System.Type> pairedTypes = new List<System.Type>();
 				System.Type targetType = typeof(EndeavourFactory);
 				foreach (System.Type t in ts) {
-					if (t.IsSubclassOf(targetType))
+					if (t.IsSubclassOf(targetType) && !t.IsAbstract)
 						pairedTypes.Add(t);
 				}
 				eTypes = pairedTypes.ToArray();
