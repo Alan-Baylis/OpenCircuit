@@ -4,7 +4,9 @@ using System.Collections.Generic;
 public class MentalModel {
 
 	Dictionary<LabelHandle, SensoryInfo> targetSightings = new Dictionary<LabelHandle, SensoryInfo>();
-    Dictionary<TagEnum, List<Tag>> knownTags = new Dictionary<TagEnum, List<Tag>>();
+	Dictionary<LabelHandle, SensoryInfo> staleTargetSightings = new Dictionary<LabelHandle, SensoryInfo>();
+	Dictionary<TagEnum, List<Tag>> knownTags = new Dictionary<TagEnum, List<Tag>>();
+	Dictionary<TagEnum, List<Tag>> previouslyKnownTags = new Dictionary<TagEnum, List<Tag>>();
 
 	List<MentalModelUpdateListener> listeners = new List<MentalModelUpdateListener> ();
 
@@ -24,8 +26,13 @@ public class MentalModel {
 			info.updatePosition(position);
 			info.updateDirection(direction);
 		} else {
-			targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, 1);
-            registerTags(target);
+			if (staleTargetSightings.ContainsKey(target)) {
+				targetSightings.Add(target, staleTargetSightings[target]);
+				
+			} else {
+				targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, 1);
+				registerTags(target);
+			}
 			notifyListenersTargetFound(target);
 		}
 	}
@@ -54,12 +61,14 @@ public class MentalModel {
 	}
 
 	public bool knowsTarget(LabelHandle target) {
-		return targetSightings.ContainsKey(target);
+		return targetSightings.ContainsKey(target) || staleTargetSightings.ContainsKey(target);
 	}
 
 	public System.Nullable<Vector3> getLastKnownPosition(LabelHandle target) {
 		if (targetSightings.ContainsKey(target)) {
 			return targetSightings[target].getPosition();
+		} else if (staleTargetSightings.ContainsKey(target)) {
+			return staleTargetSightings[target].getPosition();
 		}
 		return null;
 	}
@@ -88,6 +97,10 @@ public class MentalModel {
         }
         return tags;
     }
+
+	private void updateSensoryInfo() {
+
+	}
 
     private void notifyListenersTargetLost(LabelHandle target) {
         foreach (Tag tag in target.getTags()) {
