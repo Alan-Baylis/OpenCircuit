@@ -96,10 +96,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-    public virtual void drawGizmo() {
-    }
-
-
         InspectorListElement InspectorListElement.doListElementGUI() {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());
