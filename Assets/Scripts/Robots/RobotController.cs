@@ -236,8 +236,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
     public void removeTag(Tag tag) {
 		// No entry for the tag simply means that no endeavours are using that tag
 		if (tagUsageMap.ContainsKey(tag)) {
-			foreach (Endeavour endeavour in tagUsageMap[tag]) {
-				removeEndeavour(endeavour);
+			List<Endeavour> endeavours = tagUsageMap[tag];
+			while (endeavours.Count > 0) {
+				removeEndeavour(endeavours[endeavours.Count - 1]);
 			}
 		}
     }
@@ -393,6 +394,11 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		} else if (currentEndeavours.Contains(endeavour)) {
 			endeavour.stopExecution();
 			currentEndeavours.Remove(endeavour);
+		}
+		foreach(Tag tag in endeavour.getTagsInUse()) {
+			if (tagUsageMap.ContainsKey(tag)) {
+				tagUsageMap[tag].Remove(endeavour);
+			}
 		}
 	}
 
