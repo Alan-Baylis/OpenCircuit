@@ -1,20 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class GuardAction : Endeavour {
 
-	Label guardLocation;
+	Tag guardLocation;
 
-	public GuardAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label guardLocation) : base(factory, controller, goals, guardLocation.labelHandle){
-		this.guardLocation = guardLocation;
+	public GuardAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) : base(factory, controller, goals, tagMap){
+		this.guardLocation = getTagOfType<Tag>(TagEnum.GuardPoint);
 		this.name = "guard";
 	}
 
 	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null ) {
-			jet.setTarget(guardLocation.labelHandle, true, true);
-		}
+		jet.setTarget(guardLocation.getLabelHandle(), true, true);
 	}
 
 	public override bool isStale() {
@@ -27,7 +26,7 @@ public class GuardAction : Endeavour {
 
 	public override bool canExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(this.active && !jet.hasTarget() && !jet.hasReachedTarget(guardLocation.labelHandle)) {
+		if(this.active && !jet.hasTarget() && !jet.hasReachedTarget(guardLocation.getLabelHandle())) {
 			this.active = false;
 		}
 		return true;
@@ -39,9 +38,10 @@ public class GuardAction : Endeavour {
 
 	protected override float getCost() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			return jet.calculatePathCost(guardLocation);
-		}
-		return 0;
+		return jet.calculatePathCost(guardLocation.getLabelHandle().label);
+	}
+
+	public override TagEnum getPrimaryTagType() {
+		return TagEnum.GuardPoint;
 	}
 }

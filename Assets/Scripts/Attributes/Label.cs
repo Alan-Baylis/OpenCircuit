@@ -18,9 +18,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 	[SerializeField]
 	public byte[] serializedData;
 
-
-	[System.NonSerialized]
-	public EndeavourFactory[] endeavours = new EndeavourFactory[0];
 	[System.NonSerialized]
 	public Operation[] operations = new Operation[0];
 
@@ -37,7 +34,16 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 	[System.NonSerialized]
 	public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
 
-	public void Awake() {
+#if UNITY_EDITOR
+    void Update() {
+        if (tagMap.Count > tags.Length) {
+            tags = new Tag[tagMap.Count];
+            tagMap.Values.CopyTo(tags, 0);
+        }
+    }
+#endif
+
+    public void Awake() {
 		labelHandle = new LabelHandle(transform.position, name);
 		labelHandle.label = this;
 
@@ -50,11 +56,12 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 			addOperation(op, op.getTriggers());
 		}
 
-		foreach (EndeavourFactory endeavour in endeavours) {
-			endeavour.setParent(this);
-		}
-
+		tagMap = new Dictionary<TagEnum, Tag>();
 		foreach(Tag tag in tags) {
+			if (tag == null) {
+				Debug.LogWarning("Null tag attached to '" + name + "'");
+			}
+			tag.setLabelHandle(labelHandle);
 			tagMap.Add(tag.type, tag);
 		}
 	}
@@ -86,17 +93,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		}
 	}
 
-	public virtual List<Endeavour> getAvailableEndeavours (RobotController controller) {
-		List<Endeavour> availableEndeavours = new List<Endeavour> ();
-		foreach (EndeavourFactory endeavour in endeavours) {
-			Endeavour newEndeavour = endeavour.constructEndeavour(controller);
-			if(newEndeavour != null) {
-				availableEndeavours.Add(newEndeavour);
-			}
-		}
-		return availableEndeavours;
-	}
-
 	public void OnDestroy() {
 		Label.labels.Remove(this);
 	}
@@ -108,7 +104,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 			formatter.Serialize(stream, tags);
 			formatter.Serialize(stream, operations);
-			formatter.Serialize(stream, endeavours);
 
 			serializedData = stream.ToArray();
 			stream.Close();
@@ -122,16 +117,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 			tags = (Tag[])formatter.Deserialize(stream);
 			operations = (Operation[]) formatter.Deserialize(stream);
-			endeavours = (EndeavourFactory[]) formatter.Deserialize(stream);
 
-			foreach (EndeavourFactory factory in endeavours) {
-				if(factory != null) {
-					factory.setParent(this);
-					if(factory.goals == null) {
-						factory.goals = new List<Goal>();
-					}
-				}
-			}
 			stream.Close();
 		}
 	}
@@ -152,6 +138,22 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		return tagMap[tagName];
 	}
 
+	public List<Tag> getTags() {
+		List<Tag> tags = new List<Tag>();
+		tags.AddRange(tagMap.Values);
+		return tags;
+	}
+
+
+	public List<TagEnum> getTagTypes() {
+		List<TagEnum> tags = new List<TagEnum>();
+		foreach (TagEnum tagEnum in tagMap.Keys) {
+			tags.Add(tagEnum);
+		}
+
+		return tags;
+	}
+
 	public GameObject getGameObject() {
 		return gameObject;
 	}
@@ -162,11 +164,11 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 			Gizmos.color = Color.green;
 			Gizmos.DrawSphere(transform.position, .2f);
 		}
-		foreach(EndeavourFactory factory in endeavours) {
-            if (factory == null)
+        foreach (Tag tag in tags) {
+            if (tag == null)
                 continue;
-			factory.drawGizmo();
-		}
+            tag.drawGizmo();
+        }
 	}
 #endif
 }

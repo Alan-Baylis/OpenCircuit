@@ -1,41 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class PatrolAction : Endeavour {
 
-	//private PatrolRoute route;
-	//private List<Label> points;
 	private List<LabelHandle> routePoints;
 	private int currentDestination;
 
-	public PatrolAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, List<LabelHandle> route, Label target)
-		: base(factory, controller, goals, target.labelHandle) {
-		//this.route = route;
+	public PatrolAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap)
+		: base(factory, controller, goals, tagMap) {
 		this.name = "patrol";
-		//this.points = route;
-		//routePoints = new List<Label> ();
-		routePoints = route;
-		/*foreach (GameObject point in points) {
-			Label label = point.GetComponent<Label>();
-			if (label != null) {
-				routePoints.Add(label);
-			}
-		}*/
+
+		PatrolTag patrolTag = getTagOfType<PatrolTag>(TagEnum.PatrolRoute);
+		if (patrolTag.getPoints() == null || patrolTag.getPoints().Count == 0) {
+			Debug.LogWarning("Patrol route '" + patrolTag.getLabelHandle().label.name + "' has no route points");
+		}
+		routePoints = patrolTag.getPointHandles();
 	}
 
 	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
-		if (jet != null) {
-			currentDestination = getNearest(controller.transform.position);
-			jet.setTarget(routePoints[currentDestination], false);
-		}
+		currentDestination = getNearest(controller.transform.position);
+		jet.setTarget(routePoints[currentDestination], false);
 	}
 
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals (HoverJet.TARGET_REACHED)) {
 			HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
-			if (jet != null && routePoints[currentDestination] == message.Target) {
+			if (routePoints[currentDestination] == message.Target) {
 				++currentDestination;
 				if (currentDestination == routePoints.Count) {
 					currentDestination = 0;
@@ -74,10 +67,7 @@ public class PatrolAction : Endeavour {
 
 	protected override float getCost() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
-		if (jet != null) {
-			return jet.calculatePathCost(routePoints[currentDestination].label);
-		}
-		return 0;
+		return jet.calculatePathCost(routePoints[currentDestination].label);
 	}
 
 	public override System.Type[] getRequiredComponents() {
@@ -90,5 +80,9 @@ public class PatrolAction : Endeavour {
 
 	public override bool canExecute() {
 		return true;
+	}
+
+	public override TagEnum getPrimaryTagType() {
+		return TagEnum.PatrolRoute;
 	}
 }

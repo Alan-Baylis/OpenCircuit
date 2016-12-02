@@ -40,7 +40,7 @@ public class GrappleArms : AbstractArms {
                 return;
             }
             if (targetCaptured()) {
-                if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
+                if (captured.hasTag(TagEnum.Player) && captured.hasTag(TagEnum.Frozen)) {
                     releaseTarget();
                     return;
                 }
@@ -178,7 +178,7 @@ public class GrappleArms : AbstractArms {
 			getController().enqueueMessage(new RobotMessage(
 			RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
 			proposedTarget.labelHandle, proposedTarget.transform.position, null));
-			captured.setTag(new Tag(TagEnum.Grabbed, 0));
+			captured.setTag(new Tag(TagEnum.Grabbed, 0, proposedTarget.labelHandle));
 		}
 	}
 

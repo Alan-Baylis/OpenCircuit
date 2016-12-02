@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class ElectrocuteAction : Endeavour {
 
-	public ElectrocuteAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target)
-		: base(factory, controller, goals, target.labelHandle) {
+	public ElectrocuteAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap)
+		: base(factory, controller, goals, tagMap) {
 		this.name = "electrocute";
 	}
 
@@ -36,4 +37,7 @@ public class ElectrocuteAction : Endeavour {
 		return 0;
 	}
 
+	public override TagEnum getPrimaryTagType() {
+		return TagEnum.None;
+	}
 }

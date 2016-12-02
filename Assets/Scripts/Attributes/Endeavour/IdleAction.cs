@@ -5,7 +5,7 @@ using System;
 
 public class IdleAction : Endeavour {
 
-    public IdleAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Label target) : base(factory, controller, goals, target.labelHandle) {
+    public IdleAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
 
     }
 
@@ -30,5 +30,9 @@ public class IdleAction : Endeavour {
 
 	public override bool singleExecutor() {
 		return false;
+	}
+
+	public override TagEnum getPrimaryTagType() {
+		return TagEnum.None;
 	}
 }

@@ -10,15 +10,6 @@ public class LabelGUI : Editor {
 
 	private bool tagsExpanded = false;
 	private bool operationsExpanded = false;
-	private bool endeavoursExpanded = true;
-	private string[] operationTypeNames;
-	
-	public void OnEnable() {
-		operationTypeNames = new string[Operation.types.Length];
-		for(int i=0; i<operationTypeNames.Length; ++i) {
-			operationTypeNames[i] = Operation.types[i].FullName;
-		}
-	}
 	
 	public override void OnInspectorGUI() {
 		serializedObject.Update();
@@ -27,7 +18,6 @@ public class LabelGUI : Editor {
         EditorGUILayout.PropertyField(serializedObject.FindProperty("inherentKnowledge"));
 		doTagList(label);
 		doOperationList(label);
-		doEndeavourList(label);
 		serializedObject.ApplyModifiedProperties();
 
 		
@@ -44,9 +34,11 @@ public class LabelGUI : Editor {
 			return;
 		}
 
-		for(int i = 0; i < label.tags.Length; ++i)
-			if(label.tags[i] == null)
+		for (int i = 0; i < label.tags.Length; ++i)
+			if (label.tags[i] == null) {
 				label.tags[i] = Tag.constructDefault();
+				label.tags[i].setLabelHandle(label.labelHandle);
+			}
 		doArrayGUI(ref label.tags);
 		/*
 		int newSize = UnityEditor.EditorGUILayout.IntField("Size:", label.tags.Length);
@@ -88,20 +80,6 @@ public class LabelGUI : Editor {
 			if (label.operations[i] == null)
 				label.operations[i] = Operation.constructDefault();
 		doArrayGUI(ref label.operations);
-	}
-	
-	public void doEndeavourList(Label label) {
-		listFoldout(ref endeavoursExpanded, ref label.endeavours, "Endeavours");
-		if (!endeavoursExpanded) {
-			return;
-		}
-
-		for (int i=0; i<label.endeavours.Length; ++i) {
-			if (label.endeavours [i] == null) {
-				label.endeavours [i] = EndeavourFactory.constructDefault ();
-			}
-		}
-		doArrayGUI(ref label.endeavours);
 	}
 
 	private static void doArrayGUI<T>(ref T[] array) where T:InspectorListElement {

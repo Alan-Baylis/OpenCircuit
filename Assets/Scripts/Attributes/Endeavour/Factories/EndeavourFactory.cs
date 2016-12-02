@@ -8,15 +8,15 @@ using System;
 public abstract class EndeavourFactory : InspectorListElement {
 
 	public List<Goal> goals = new List<Goal> ();
-	private bool status = false;
+    public float maxMobBenefit = 0;
+    public int optimalMobSize = 1;
+    public float mobCostPerRobot = 10;
+
+    private bool status = false;
 	private int size = 0;
 
-	public float maxMobBenefit = 0;
-	public int optimalMobSize = 1;
-	public float mobCostPerRobot = 10;
-
-	[System.NonSerialized]
-	protected Label parent;
+    [System.NonSerialized]
+    private RobotController robotController;
 
 	private static string[] typeNames = null;
 
@@ -28,7 +28,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 				List<System.Type> pairedTypes = new List<System.Type>();
 				System.Type targetType = typeof(EndeavourFactory);
 				foreach (System.Type t in ts) {
-					if (t.IsSubclassOf(targetType))
+					if (t.IsSubclassOf(targetType) && !t.IsAbstract)
 						pairedTypes.Add(t);
 				}
 				eTypes = pairedTypes.ToArray();
@@ -48,13 +48,36 @@ public abstract class EndeavourFactory : InspectorListElement {
 		goalEnums = typeList.ToArray();
 	}
 
-	public void setParent(Label parent) {
-		this.parent = parent;
+	public Endeavour constructEndeavour(RobotController controller, List<Tag> tags) {
+		Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
+		foreach (Tag tag in tags) {
+			tagMap.Add(tag.type, tag);
+		}
+		return createEndeavour(controller, tagMap);
 	}
 
-	public abstract Endeavour constructEndeavour (RobotController controller);
+	public bool usesTagType(TagEnum type) {
+		foreach (TagEnum tagType in getRequiredTags()) {
+			if (tagType == type) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-	public static EndeavourFactory constructDefault() {
+	protected abstract Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tagMap);
+
+    public abstract List<TagEnum> getRequiredTags();
+
+    public void setRobotController(RobotController controller) {
+        robotController = controller;
+    }
+
+    public RobotController getRobotController() {
+        return robotController;
+    }
+
+    public static EndeavourFactory constructDefault() {
 		EndeavourFactory factory = (EndeavourFactory) types[0].GetConstructor(new System.Type[0]).Invoke(new object[0]);
 		factory.goals = new List<Goal> ();
 		return factory;
@@ -71,12 +94,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-	public virtual void drawGizmo() {
-		Gizmos.color = Color.green;
-		Gizmos.DrawSphere(parent.transform.position, .2f);
-	}
-
-	InspectorListElement InspectorListElement.doListElementGUI() {
+        InspectorListElement InspectorListElement.doListElementGUI() {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());
 		if (newSelectedType != selectedType) {

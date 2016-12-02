@@ -4,9 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System;
 
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
-public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver {
+public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver, MentalModelUpdateListener {
 
 	public static int controllerCount = 0;
 
@@ -14,7 +15,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	public byte[] serializedData;
 
 	private HashSet<Endeavour> availableEndeavours = new HashSet<Endeavour> (new EndeavourComparer());
-	private List<LabelHandle> trackedTargets = new List<LabelHandle> ();
+	private Dictionary<Tag, List<Endeavour>> tagUsageMap = new Dictionary<Tag, List<Endeavour>>();
 	private AudioSource soundEmitter;
 	private Health myHealth;
 
@@ -34,7 +35,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 	public Label[] locations;
     public Goal[] goals;
 	[System.NonSerialized]
-	public InherentEndeavourFactory[] inherentEndeavours = new InherentEndeavourFactory[0];
+	public EndeavourFactory[] endeavourFactories = new EndeavourFactory[0];
 	[System.NonSerialized]
 	public Dictionary<GoalEnum, Goal> goalMap = new Dictionary<GoalEnum, Goal>();
 
@@ -63,6 +64,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	[ServerCallback]
 	void Start() {
+        mentalModel.addUpdateListener(this);
 		myHealth = GetComponent<Health>();
 		soundEmitter = gameObject.AddComponent<AudioSource>();
         foreach(Goal goal in goals) {
@@ -87,6 +89,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			addKnownLocation(location);
 		}
 		InvokeRepeating ("evaluateActions", .1f, evaluatePeriod);
+		constructAllEndeavours();
 	}
 
     public Dictionary<System.Type, List<AbstractRobotComponent>> componentMap {
@@ -135,11 +138,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 					soundEmitter.PlayOneShot(targetSightedSound);
 				}
 				sightingFound(message.Target, message.TargetPos, message.TargetVelocity);
-				trackTarget(message.Target);
 				//evaluateActions();
 			} else if(message.Type == RobotMessage.MessageType.TARGET_LOST) {
 				sightingLost(message.Target, message.TargetPos, message.TargetVelocity);
-				trackedTargets.Remove(message.Target);
 				//evaluateActions();
 			}
 			else if (message.Type == RobotMessage.MessageType.ACTION) {
@@ -155,16 +156,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	public void addKnownLocation(Label location) {
 		mentalModel.addSighting(location.labelHandle, location.transform.position, null);
-		trackTarget(location.labelHandle);
-	}
-
-	public void notify (EventMessage message){
-		if (message.Type.Equals ("target found")) {
-			trackTarget(message.Target);
-		} else if (message.Type.Equals ("target lost")) {
-			trackedTargets.Remove(message.Target);
-		}
-		dirty = true;
 	}
 	
 	public void addEndeavour(Endeavour action) {
@@ -183,6 +174,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	public void attachMentalModel(MentalModel model) {
 		externalMentalModel = model;
+        externalMentalModel.addUpdateListener(this);
 	}
 
 	public void enqueueMessage(RobotMessage message) {
@@ -214,27 +206,86 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		return compList[0];
 	}
 
-	public List<LabelHandle> getTrackedTargets() {
-		return trackedTargets;
-	}
+    public void addTag(Tag newTag) {
+		foreach (EndeavourFactory factory in endeavourFactories) {
+			if (factory.usesTagType(newTag.type)) {
+				List<List<Tag>> tagSets = new List<List<Tag>>();
+				tagSets.Add(new List<Tag> { newTag });
 
-	private void trackTarget(LabelHandle target) {
-		trackedTargets.Add(target);
-		foreach(InherentEndeavourFactory factory in inherentEndeavours) {
-			if(factory.isApplicable(target)) {
-				Endeavour action = factory.constructEndeavour(this, target);
-				if(action != null) {
-					availableEndeavours.Add(action);
-					dirty = true;
+				List<TagEnum> requiredTags = factory.getRequiredTags();
+				foreach(TagEnum tagType in requiredTags) {
+					if (tagType != newTag.type) {
+						tagSets.Add(getMentalModel().getTagsOfType(tagType));
+					}
+				}
+
+				if (tagSets.Count > 0) {
+					List<Tag> chosen = new List<Tag>();
+					List<Endeavour> endeavours = constructWithCombination(factory, tagSets, chosen, 0);
+					foreach (Endeavour endeavour in endeavours) {
+						foreach (Tag tag in endeavour.getTagsInUse()) {
+							addTagUsageEntry(tag, endeavour);
+						}
+						availableEndeavours.Add(endeavour);
+					}
 				}
 			}
 		}
-		if(target.label != null) {
-			foreach(Endeavour action in target.label.getAvailableEndeavours(this)) {
-				availableEndeavours.Add(action);
-				dirty = true;
+    }
 
+    public void removeTag(Tag tag) {
+		// No entry for the tag simply means that no endeavours are using that tag
+		if (tagUsageMap.ContainsKey(tag)) {
+			List<Endeavour> endeavours = tagUsageMap[tag];
+			while (endeavours.Count > 0) {
+				removeEndeavour(endeavours[endeavours.Count - 1]);
 			}
+		}
+    }
+
+    private void constructAllEndeavours() {
+        foreach (EndeavourFactory factory in endeavourFactories) {
+			List<List<Tag>> tagSets = new List<List<Tag>>();
+            List<TagEnum> requiredTags = factory.getRequiredTags();
+            foreach (TagEnum tagType in requiredTags) {
+                tagSets.Add(getMentalModel().getTagsOfType(tagType));
+            }
+
+			if (tagSets.Count > 0) {
+				List<Tag> chosen = new List<Tag>();
+				List<Endeavour> endeavours = constructWithCombination(factory, tagSets, chosen, 0);
+				foreach (Endeavour endeavour in endeavours) {
+					foreach (Tag tag in endeavour.getTagsInUse()) {
+						addTagUsageEntry(tag, endeavour);
+					}
+					availableEndeavours.Add(endeavour);
+				}
+			}
+        }
+	}
+
+    private List<Endeavour> constructWithCombination(EndeavourFactory factory, List<List<Tag>> tagset, List<Tag> chosen, int index) {
+		List<Endeavour> results = new List<Endeavour>();
+        foreach (Tag tag in tagset[index]) {
+			chosen.Add(tag); // We have chosen this tag
+			//base case - do not recurse
+			if (index == tagset.Count - 1) {
+				results.Add(factory.constructEndeavour(this, new List<Tag>(chosen)));
+			} else {
+				results.AddRange(constructWithCombination(factory, tagset, chosen, ++index));
+			}
+			chosen.RemoveAt(chosen.Count - 1); // Remove it from the end to try the next one
+		}
+		return results;
+	}
+
+	private void addTagUsageEntry(Tag tag, Endeavour endeavour) {
+		if (tagUsageMap.ContainsKey(tag)) {
+			tagUsageMap[tag].Add(endeavour);
+		} else {
+			List<Endeavour> endeavours = new List<Endeavour>();
+			endeavours.Add(endeavour);
+			tagUsageMap.Add(tag, endeavours);
 		}
 	}
 
@@ -302,7 +353,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 						localMinPriority = priority;
 					}
 				}
-				debugText.Add(new DecisionInfoObject(action.getName(), action.getParent().getName(), priority, isReady));
+				debugText.Add(new DecisionInfoObject(action.getName(), action.getTargetName(), priority, isReady));
 			}
 #endif
 			if (isReady) {
@@ -335,6 +386,20 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			}
 		}
 #endif
+	}
+
+	private void removeEndeavour(Endeavour endeavour) {
+		if (availableEndeavours.Contains(endeavour)) {
+			availableEndeavours.Remove(endeavour);
+		} else if (currentEndeavours.Contains(endeavour)) {
+			endeavour.stopExecution();
+			currentEndeavours.Remove(endeavour);
+		}
+		foreach(Tag tag in endeavour.getTagsInUse()) {
+			if (tagUsageMap.ContainsKey(tag)) {
+				tagUsageMap[tag].Remove(endeavour);
+			}
+		}
 	}
 
 	private Dictionary<System.Type, int> getComponentUsageMap() {
@@ -565,10 +630,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 
 	public void OnBeforeSerialize() {
 		lock(this) {
-
 			MemoryStream stream = new MemoryStream();
 			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, inherentEndeavours);
+			formatter.Serialize(stream, endeavourFactories);
 
 			serializedData = stream.ToArray();
 			stream.Close();
@@ -579,9 +643,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 		lock(this) {
 			MemoryStream stream = new MemoryStream(serializedData);
 			BinaryFormatter formatter = new BinaryFormatter();
-			inherentEndeavours = (InherentEndeavourFactory[])formatter.Deserialize(stream);
+			endeavourFactories = (EndeavourFactory[])formatter.Deserialize(stream);
 
-			foreach(InherentEndeavourFactory factory in inherentEndeavours) {
+			foreach(EndeavourFactory factory in endeavourFactories) {
 				if(factory != null) {
 					if(factory.goals == null) {
 						factory.goals = new List<Goal>();
@@ -590,9 +654,5 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver 
 			}
 			stream.Close();
 		}
-
-
-		}	
-
-
+	}
 }

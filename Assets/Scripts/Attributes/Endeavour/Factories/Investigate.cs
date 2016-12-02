@@ -1,14 +1,16 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
-public class Investigate : InherentEndeavourFactory {
+public class Investigate : EndeavourFactory {
 
-	public override bool isApplicable(LabelHandle labelHandel) {
-		return labelHandel.hasTag(TagEnum.Sound);
+    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Sound };
+
+	protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
+		return new InvestigateAction(this, controller, this.goals, tags);
 	}
 
-	public override Endeavour constructEndeavour(RobotController controller, LabelHandle target) {
-		return new InvestigateAction(this, controller, this.goals, target);
-	}
+    public override List<TagEnum> getRequiredTags() {
+        return requiredTags;
+    }
 }

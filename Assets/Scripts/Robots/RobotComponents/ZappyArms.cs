@@ -33,7 +33,7 @@ public class ZappyArms : AbstractArms {
 		} else {
 			collider.enabled = true;
 			if(targetCaptured()) {
-                if (captured.GetComponent<Player>() != null && captured.GetComponent<Player>().frozen) {
+                if (captured.hasTag(TagEnum.Player) && captured.hasTag(TagEnum.Frozen)) {
                     releaseTarget();
                     return;
                 }
@@ -88,7 +88,7 @@ public class ZappyArms : AbstractArms {
 			getController().enqueueMessage(new RobotMessage(
 				RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
 				proposedTarget.labelHandle, proposedTarget.transform.position, null));
-			captured.setTag(new Tag(TagEnum.Grabbed, 0));
+			captured.setTag(new Tag(TagEnum.Grabbed, 0, proposedTarget.labelHandle));
 			attachRigidbody(proposedTarget.gameObject);
 			NetworkIdentity netId = proposedTarget.GetComponent<NetworkIdentity>();
 			if (netId != null)

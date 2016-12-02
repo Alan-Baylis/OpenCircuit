@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class SentryDropPoint : EndeavourFactory {
 
-    [System.NonSerialized]
-    public SentryModule sentryModule;
+    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.SentryPoint };
 
-    public override Endeavour constructEndeavour(RobotController controller) {
-       return new DropSentryAction(this, controller, goals, parent.labelHandle);
+    protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
+       return new DropSentryAction(this, controller, goals, tags);
+    }
+    public override List<TagEnum> getRequiredTags() {
+        return requiredTags;
     }
 }

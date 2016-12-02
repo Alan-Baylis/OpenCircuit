@@ -12,10 +12,20 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public GameObject[] componentPrefabs;
 
 	private GlobalConfig config;
+    private Label label;
 
+    [ServerCallback]
+    public virtual void Update() {
+        if (active && !getLabel().hasTag(TagEnum.Active)) {
+			Tag newTag = new Tag(TagEnum.Active, 0, getLabel().labelHandle);
+            getLabel().setTag(newTag);
 
+        } else if (!active && getLabel().hasTag(TagEnum.Active)) {
+            getLabel().clearTag(TagEnum.Active);
+        }
+    }
 
-	[Server]
+    [Server]
 	protected void spawnRobot() {
         ++RobotController.controllerCount;
 		if (bodyPrefab != null) {
@@ -94,4 +104,11 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			controller.addKnownLocation(player.GetComponent<Label>());
 		}
 	}
+
+    private Label getLabel() {
+        if (label == null) {
+            label = GetComponent<Label>();
+        }
+        return label;
+    }
 }

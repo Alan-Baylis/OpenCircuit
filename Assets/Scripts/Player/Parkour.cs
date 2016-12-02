@@ -184,8 +184,8 @@ public class Parkour : MovementController {
 				float volume = 0.8f -(0.8f / (1 + currentSpeed /100));
 				playFootstep(volume);
 				LabelHandle audioLabel = new LabelHandle(transform.position, "footsteps");
-				audioLabel.addTag(new Tag(TagEnum.Sound, volume));
-				audioLabel.addTag(new Tag(TagEnum.Threat, 5f));
+				audioLabel.addTag(new Tag(TagEnum.Sound, volume, audioLabel));
+				audioLabel.addTag(new Tag(TagEnum.Threat, 5f, audioLabel));
 				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
 				footStepsEvent.broadcast(volume);
 				player.inventory.doStep(volume);

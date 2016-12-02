@@ -2,5 +2,5 @@
 using System.Collections;
 
 public enum TagEnum {
-	Threat, GrabTarget, Sound, Grabbed
+	Active, Inactive, Player, Spawner, Threat, GrabTarget, Sound, Grabbed, GuardPoint, PatrolRoute, PowerStation, Searchable, SentryPoint, None, Occupied, Frozen
 }
