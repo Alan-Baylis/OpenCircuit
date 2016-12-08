@@ -31,7 +31,6 @@ public abstract class AbstractGun : Item {
 	protected float lastFiredTime = 0;
 	protected float reloadTimeRemaining = 0;
 	protected LabelHandle audioLabel;
-	protected float lastShotTime = float.NegativeInfinity;
 
 	public AudioSource gunshotSoundEmitter;
 	public AudioSource reloadSoundEmitter;

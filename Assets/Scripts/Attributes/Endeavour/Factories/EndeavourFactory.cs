@@ -28,7 +28,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 				List<System.Type> pairedTypes = new List<System.Type>();
 				System.Type targetType = typeof(EndeavourFactory);
 				foreach (System.Type t in ts) {
-					if (t.IsSubclassOf(targetType))
+					if (t.IsSubclassOf(targetType) && !t.IsAbstract)
 						pairedTypes.Add(t);
 				}
 				eTypes = pairedTypes.ToArray();
@@ -67,8 +67,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 
 	protected abstract Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tagMap);
 
-    public abstract bool isApplicable(LabelHandle labelHandle);
-
     public static List<TagRequirement> getRequiredTags() {
 		return null;
 	}
@@ -102,10 +100,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-    public virtual void drawGizmo() {
-    }
-
-
         InspectorListElement InspectorListElement.doListElementGUI() {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());

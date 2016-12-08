@@ -16,31 +16,26 @@ public class HuntAction : Endeavour {
 	public override bool canExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-		return arms != null
-			&& (!target.getLabelHandle().hasTag(TagEnum.Grabbed) || arms.targetCaptured())
+		return (!target.getLabelHandle().hasTag(TagEnum.Grabbed) || arms.targetCaptured())
 			&& !target.getLabelHandle().hasTag(TagEnum.Frozen)
-			&& jet != null && jet.canReach(target.getLabelHandle().label);
+			&& jet.canReach(target.getLabelHandle().label);
 	}
 
 	protected override void onExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-		if (jet != null && arms != null && target != null) {
-			jet.pursueTarget(target.getLabelHandle(), false);
-			arms.setTarget(target.getLabelHandle().label);
-		}
+		jet.pursueTarget(target.getLabelHandle(), false);
+		arms.setTarget(target.getLabelHandle().label);
 	}
 
 	public override bool isStale() {
-		return target == null || !controller.knowsTarget(target.getLabelHandle());
+		return !controller.knowsTarget(target.getLabelHandle());
 	}
 
 	public override void onMessage(RobotMessage message) {
 		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
             HoverJet jet = controller.getRobotComponent<HoverJet>();
-            if (jet != null) {
-                jet.stop();
-            }
+            jet.stop();
 		}
 	}
 
@@ -53,14 +48,8 @@ public class HuntAction : Endeavour {
 	}
 
 	protected override float getCost() {
-        if (target == null) {
-            return float.PositiveInfinity;
-        }
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
-		if(jet != null) {
-			return jet.calculatePathCost(target.getLabelHandle().label);
-		}
-		return 0;
+		return jet.calculatePathCost(target.getLabelHandle().label);
 	}
 
 	public override TagEnum getPrimaryTagType() {

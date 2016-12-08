@@ -30,22 +30,16 @@ public class LabelHandle {
 		if (label != null) {
 			return label.getTag(tagName);
 		}
-		if (tagMap.ContainsKey(tagName)) {
-			return tagMap[tagName];
-		} else {
-			return null;
-		}
+		Tag value = null;
+		tagMap.TryGetValue(tagName, out value);
+		return value;
     }
 
     public List<TagEnum> getTagTypes() {
 		if (label != null) {
 			return label.getTagTypes();
 		}
-        List<TagEnum> tags = new List<TagEnum>();
-        foreach (TagEnum tagEnum in tagMap.Keys) {
-            tags.Add(tagEnum);
-        }
-
+        List<TagEnum> tags = new List<TagEnum>(tagMap.Keys);
         return tags;
     }
 
@@ -53,8 +47,7 @@ public class LabelHandle {
 		if (label != null) {
 			return label.getTags();
 		} else {
-			List<Tag> tags = new List<Tag>();
-			tags.AddRange(tagMap.Values);
+			List<Tag> tags = new List<Tag>(tagMap.Values);
 			return tags;
         }
     }

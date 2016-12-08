@@ -14,7 +14,6 @@ public class Player : NetworkBehaviour {
 	public AudioClip teleportSound;
 	public float whiteOutDuration;
 	public float blackOutDuration;
-	public bool showFPSMeter = false;
     [SyncVar]
     public bool frozen = false;
 
@@ -41,7 +40,6 @@ public class Player : NetworkBehaviour {
 	private Texture2D whiteOutTexture;
 
 	private bool alive = true;
-	private float deltaTime;
 
 	public EffectSpec effectSpec;
 
@@ -132,8 +130,6 @@ public class Player : NetworkBehaviour {
                     breathingSource.Stop();
                 }
             }
-
-            deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         }
 	}
 
@@ -172,18 +168,12 @@ public class Player : NetworkBehaviour {
 	public void die() {
 		if (!alive)
 			return;
-		//alive = false;
-		//blackOutTime = blackOutDuration;
-		//Menu.menu.lose();
-		//effectSpec.spawn(transform.position);
-		//if(controller != null) {
-        GameObject newFreezeLock = GameObject.Instantiate(freezeLock, transform.position + new Vector3(0, 1, 0), freezeLock.transform.rotation) as GameObject;
-        FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
-        freezeLockScript.frozenPlayer = this;
-        NetworkServer.Spawn(newFreezeLock);
-            freeze();
-			//controller.destroyPlayer(connectionToClient, playerControllerId);
-		//}
+		GameObject newFreezeLock = GameObject.Instantiate(freezeLock) as GameObject;
+		newFreezeLock.GetComponent<NetworkParenter>().setParentId(netId);
+		FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
+		freezeLockScript.frozenPlayer = this;
+		NetworkServer.Spawn(newFreezeLock);
+		freeze();
 	}
 
 	public void teleport(Vector3 position) {
@@ -238,13 +228,6 @@ public class Player : NetworkBehaviour {
 			GUI.Label(new Rect(Screen.width /2 -100, Screen.height /2 -15, 200, 30),
 				"Paused", style);
 			GUI.color = Color.white;
-		}
-
-		if (showFPSMeter) {
-			float msec = deltaTime * 1000;
-			float fps = 1f / deltaTime;
-			string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-			GUI.Label(new Rect(0, 0, 100, 20), text);
 		}
 
 		//// draw the player's oxygen level

@@ -15,10 +15,8 @@ public class DropSentryAction : Endeavour {
 
 	protected override void onExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
-        if (jet != null) {
-            jet.setTarget(sentryPoint.getLabelHandle(), true);
-        }
-    }
+        jet.setTarget(sentryPoint.getLabelHandle(), true);
+	}
 
 
     public override bool isStale() {
@@ -38,7 +36,7 @@ public class DropSentryAction : Endeavour {
 
 	public override bool canExecute() {
         HoverJet legs = controller.getRobotComponent<HoverJet>();
-        return !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied) && legs != null && legs.canReach(sentryPoint.getLabelHandle().label);
+        return !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied) && legs.canReach(sentryPoint.getLabelHandle().label);
     }
 
     public override bool singleExecutor() {
@@ -47,10 +45,7 @@ public class DropSentryAction : Endeavour {
 
     protected override float getCost() {
         HoverJet jet = controller.getRobotComponent<HoverJet>();
-        if (jet != null) {
-			return jet.calculatePathCost(sentryPoint.getLabelHandle().label.transform.position);
-		}
-		return 0;
+		return jet.calculatePathCost(sentryPoint.getLabelHandle().label.transform.position);
     }
 
 	public override TagEnum getPrimaryTagType() {

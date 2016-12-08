@@ -13,8 +13,4 @@ public class Guard : EndeavourFactory {
     public static new List<TagRequirement> getRequiredTags() {
         return requiredTags;
     }
-
-    public override bool isApplicable(LabelHandle labelHandle) {
-        return labelHandle.hasTag(TagEnum.GuardPoint);
-    }
 }

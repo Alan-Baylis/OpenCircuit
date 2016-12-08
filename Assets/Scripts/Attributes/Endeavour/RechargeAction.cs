@@ -17,9 +17,7 @@ public class RechargeAction : Endeavour {
 
 	protected override void onExecute() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-        if (jet != null) {
-            jet.setTarget(powerStation.getLabelHandle(), true);
-        }
+         jet.setTarget(powerStation.getLabelHandle(), true);
     }
 
     public override bool isStale() {
@@ -45,10 +43,7 @@ public class RechargeAction : Endeavour {
 
     protected override float getCost() {
 		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(jet != null) {
-			return jet.calculatePathCost(powerStation.getLabelHandle().label);
-		}
-        return 0f;
+		return jet.calculatePathCost(powerStation.getLabelHandle().label);
     }
 
 	public override TagEnum getPrimaryTagType() {

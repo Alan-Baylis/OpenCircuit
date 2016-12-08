@@ -25,7 +25,7 @@ public class ActivateSpawnerAction : Endeavour {
 	}
 
 	public override bool isStale() {
-		return spawner == null || spawner.active;
+		return spawner.active;
 	}
 
 	public override void onMessage(RobotMessage message) {

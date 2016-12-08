@@ -93,17 +93,6 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		}
 	}
 
-	/*public virtual List<Endeavour> getAvailableEndeavours (RobotController controller) {
-		List<Endeavour> availableEndeavours = new List<Endeavour> ();
-		foreach (EndeavourFactory endeavour in endeavours) {
-			Endeavour newEndeavour = endeavour.constructEndeavour(controller);
-			if(newEndeavour != null) {
-				availableEndeavours.Add(newEndeavour);
-			}
-		}
-		return availableEndeavours;
-	}*/
-
 	public void OnDestroy() {
 		Label.labels.Remove(this);
 	}
