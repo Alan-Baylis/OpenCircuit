@@ -12,8 +12,8 @@ public class EndeavourComparer : IEqualityComparer<Endeavour> {
 	public int GetHashCode(Endeavour a) {
 		int hash = 17;
 		hash = hash * 31 + a.getName ().GetHashCode ();
-		foreach(TagEnum tagType in a.getRequiredTags()) {
-			hash = hash * 31 + a.getTagOfType<Tag>(tagType).GetHashCode();
+		foreach(TagRequirement tagType in a.getRequiredTags()) {
+			hash = hash * 31 + a.getTagOfType<Tag>(tagType.getType()).GetHashCode();
 		}
 
 		//hash = hash * 31 + a.getPrimaryTagType().GetHashCode ();

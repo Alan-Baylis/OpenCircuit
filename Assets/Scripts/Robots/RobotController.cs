@@ -134,9 +134,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			RobotMessage message = messageQueue.Dequeue();
 
 			if (message.Type == RobotMessage.MessageType.TARGET_SIGHTED) {
-				if(targetSightedSound != null && message.Target.getName().Equals("Player") && (!getMentalModel().knowsTarget (message.Target) || (System.DateTime.Now - getMentalModel().getLastSightingTime(message.Target).Value).Seconds > timeoutSeconds)) {
-					soundEmitter.PlayOneShot(targetSightedSound);
-				}
 				sightingFound(message.Target, message.TargetPos, message.TargetVelocity);
 				//evaluateActions();
 			} else if(message.Type == RobotMessage.MessageType.TARGET_LOST) {
@@ -212,10 +209,10 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				List<List<Tag>> tagSets = new List<List<Tag>>();
 				tagSets.Add(new List<Tag> { newTag });
 
-				List<TagEnum> requiredTags = factory.getRequiredTagsList();
-				foreach(TagEnum tagType in requiredTags) {
-					if (tagType != newTag.type) {
-						tagSets.Add(getMentalModel().getTagsOfType(tagType));
+				List<TagRequirement> requiredTags = factory.getRequiredTagsList();
+				foreach(TagRequirement tagType in requiredTags) {
+					if (tagType.getType() != newTag.type) {
+						tagSets.Add(getMentalModel().getTagsOfType(tagType.getType(), tagType.isStale()));
 					}
 				}
 
@@ -245,9 +242,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
     private void constructAllEndeavours() {
         foreach (EndeavourFactory factory in endeavourFactories) {
 			List<List<Tag>> tagSets = new List<List<Tag>>();
-            List<TagEnum> requiredTags = factory.getRequiredTagsList();
-            foreach (TagEnum tagType in requiredTags) {
-                tagSets.Add(getMentalModel().getTagsOfType(tagType));
+            List<TagRequirement> requiredTags = factory.getRequiredTagsList();
+            foreach (TagRequirement tagType in requiredTags) {
+                tagSets.Add(getMentalModel().getTagsOfType(tagType.getType(), tagType.isStale()));
             }
 
 			if (tagSets.Count > 0) {
