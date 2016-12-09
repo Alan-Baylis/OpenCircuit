@@ -57,7 +57,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 	public bool usesTagType(TagEnum type) {
-		foreach (TagRequirement tagType in getRequiredTags()) {
+		foreach (TagRequirement tagType in getRequiredTagsList()) {
 			if (tagType.getType() == type) {
 				return true;
 			}
