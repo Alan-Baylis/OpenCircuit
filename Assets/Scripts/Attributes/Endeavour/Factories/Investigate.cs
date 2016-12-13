@@ -4,13 +4,13 @@ using UnityEngine;
 [System.Serializable]
 public class Investigate : EndeavourFactory {
 
-    private List<TagEnum> requiredTags = new List<TagEnum> { TagEnum.Sound };
+    private static List<TagRequirement> requiredTags = new List<TagRequirement> { new TagRequirement(TagEnum.Sound, false) };
 
 	protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
 		return new InvestigateAction(this, controller, this.goals, tags);
 	}
 
-    public override List<TagEnum> getRequiredTags() {
+    public static new List<TagRequirement> getRequiredTags() {
         return requiredTags;
     }
 }

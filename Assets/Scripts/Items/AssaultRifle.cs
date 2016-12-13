@@ -80,7 +80,7 @@ public class AssaultRifle : AbstractGun {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
-			Health health = getParentComponent<EffectHealth>(hitInfo.collider.transform);
+			Health health = getParentComponent<Health>(hitInfo.collider.transform);
 			if (health != null) {
 				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
 

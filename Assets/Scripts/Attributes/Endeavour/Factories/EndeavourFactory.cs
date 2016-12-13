@@ -57,8 +57,8 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 	public bool usesTagType(TagEnum type) {
-		foreach (TagEnum tagType in getRequiredTags()) {
-			if (tagType == type) {
+		foreach (TagRequirement tagType in getRequiredTagsList()) {
+			if (tagType.getType() == type) {
 				return true;
 			}
 		}
@@ -67,7 +67,13 @@ public abstract class EndeavourFactory : InspectorListElement {
 
 	protected abstract Endeavour createEndeavour (RobotController controller, Dictionary<TagEnum, Tag> tagMap);
 
-    public abstract List<TagEnum> getRequiredTags();
+    public static List<TagRequirement> getRequiredTags() {
+		return null;
+	}
+
+	public List<TagRequirement> getRequiredTagsList() {
+		return (List<TagRequirement>)GetType().GetMethod("getRequiredTags").Invoke(null, null);
+	}
 
     public void setRobotController(RobotController controller) {
         robotController = controller;

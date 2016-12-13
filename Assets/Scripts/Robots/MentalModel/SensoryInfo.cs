@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class SensoryInfo {
 
@@ -8,24 +8,38 @@ public class SensoryInfo {
 	private Vector3? direction;
 	private System.DateTime lastSighting;
 
-	public SensoryInfo(Vector3 position, Vector3? direction, System.DateTime time, int sightingCount) {
+	private List<Tag> attachedTags;
+
+	public SensoryInfo(Vector3 position, Vector3? direction, System.DateTime time, List<Tag> tags, int sightingCount) {
 		this.sensorCount = sightingCount;
 		this.position = position;
 		this.direction = direction;
 		this.lastSighting = time;
-
+		this.attachedTags = tags;
+		
 	}
 
-	public void updatePosition(Vector3 pos) {
-		this.position = pos;
+	public void updateInfo(LabelHandle target) {
+		if (getSightings() > 0) {
+			updatePosition(target.getPosition());
+			updateTime(System.DateTime.Now);
+			updateAttachedTags(target.getTags());
+			if (target.getDirection() != null) {
+				updateDirection(target.getDirection());
+			}
+		}
 	}
 
-	public void updateDirection(Vector3? dir) {
-		this.direction = dir;
+	public void updateInfo(Vector3 position, System.DateTime lastSeenTime, Vector3? direction) {
+		updatePosition(position);
+		updateTime(lastSeenTime);
+		if (direction != null) {
+			updateDirection(direction);
+		}
 	}
 
-	public void updateTime(System.DateTime time) {
-		this.lastSighting = time;
+	public List<Tag> getAttachedTags() {
+		return attachedTags;
 	}
 
 	public void addSighting() {
@@ -50,5 +64,21 @@ public class SensoryInfo {
 
 	public System.DateTime getSightingTime() {
 		return lastSighting;
+	}
+
+	private void updateAttachedTags(List<Tag> tags) {
+		attachedTags = tags;
+	}
+
+	private void updatePosition(Vector3 pos) {
+		this.position = pos;
+	}
+
+	private void updateDirection(Vector3? dir) {
+		this.direction = dir;
+	}
+
+	private void updateTime(System.DateTime time) {
+		this.lastSighting = time;
 	}
 }

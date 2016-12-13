@@ -18,6 +18,7 @@ public class LabelGUI : Editor {
         EditorGUILayout.PropertyField(serializedObject.FindProperty("inherentKnowledge"));
 		doTagList(label);
 		doOperationList(label);
+		doEndeavourInfo(label);
 		serializedObject.ApplyModifiedProperties();
 
 		
@@ -26,6 +27,20 @@ public class LabelGUI : Editor {
 		EditorUtility.SetDirty(target);
 		serializedObject.Update();	
 		serializedObject.ApplyModifiedProperties();
+	}
+
+	public void doEndeavourInfo(Label label) {
+		EditorGUILayout.LabelField("Used in Actions:");
+		foreach (Tag tag in label.tags) {
+			if (tag != null) {
+				if (ActionCatalog.availableActionsMap.ContainsKey(tag.type)) {
+					List<System.Type> actionList = ActionCatalog.availableActionsMap[tag.type];
+					foreach (System.Type type in actionList) {
+						EditorGUILayout.LabelField("-->" + type.ToString());
+					}
+				}
+			}
+		}
 	}
 
 	public void doTagList(Label label) {
