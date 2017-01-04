@@ -24,7 +24,7 @@ public class HuntAction : Endeavour {
 	protected override void onExecute() {
 		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
-		jet.pursueTarget(target.getLabelHandle(), false);
+		jet.setTarget(target.getLabelHandle(), false);
 		arms.setTarget(target.getLabelHandle().label);
 	}
 

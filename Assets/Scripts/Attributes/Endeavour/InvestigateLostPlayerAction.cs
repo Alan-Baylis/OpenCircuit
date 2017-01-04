@@ -1,12 +1,18 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class InvestigateLostPlayerAction : Endeavour {
 
 	private Tag player;
 
 	public InvestigateLostPlayerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
-		this.name = "investigateListPlayer";
+		this.name = "investigateLostPlayer";
 		this.player = getTagOfType<Tag>(TagEnum.Player);
+	}
+
+	public override void update() {
+		HoverJet jet = getController().getRobotComponent<HoverJet>();
+		jet.goToPosition(getController().getMentalModel().getLastKnownPosition(player.getLabelHandle()), false);
 	}
 
 	public override bool canExecute() {
@@ -34,7 +40,6 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 
 	protected override void onExecute() {
-		HoverJet jet = getController().getRobotComponent<HoverJet>();
-				
+
 	}
 }

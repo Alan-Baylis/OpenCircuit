@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+[System.Serializable]
 public class InvestigateLostPlayer : EndeavourFactory {
 
 	private static List<TagRequirement> requiredTags = new List<TagRequirement> { new TagRequirement(TagEnum.Player, true) };

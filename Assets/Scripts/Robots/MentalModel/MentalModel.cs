@@ -96,13 +96,21 @@ public class MentalModel {
         foreach (Tag tag in target.getTags()) {
             notifyListenersTagRemoved(tag);
         }
+
+		foreach(Tag tag in target.getTags()) {
+			notifyListenersTagAdded(tag);
+		}
     }
 
     private void notifyListenersTargetFound(LabelHandle target) {
-        foreach (Tag tag in target.getTags()) {
+		foreach (Tag tag in target.getTags()) {
+			notifyListenersTagRemoved(tag);
+		}
+
+		foreach (Tag tag in target.getTags()) {
             notifyListenersTagAdded(tag);
         }
-    }
+	}
 
     private void notifyListenersTagRemoved(Tag tag) {
         for (int i = 0; i < listeners.Count; i++) {

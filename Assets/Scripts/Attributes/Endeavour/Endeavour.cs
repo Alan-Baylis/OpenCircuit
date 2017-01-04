@@ -33,6 +33,10 @@ public abstract class Endeavour : Prioritizable {
 		this.tagMap = tagMap;
 	}
 
+	public virtual void update() {
+
+	}
+
 	public abstract bool isStale();
 
 	public void execute() {

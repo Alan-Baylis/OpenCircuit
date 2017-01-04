@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Robot/Hover Jet")]
@@ -23,7 +22,6 @@ public class HoverJet : AbstractRobotComponent {
 	private Animation myAnimator;
 
 	private bool matchTargetRotation = false;
-	private bool isPursuit = false;
 
 	public float animSpeedAdjust = 1f;
 
@@ -35,6 +33,8 @@ public class HoverJet : AbstractRobotComponent {
 	public float speedRegenRate = 5f;
 	public float heightRegenRate = 0.2f;
 
+	private Vector3 ? targetLocation = null;
+
 	[System.NonSerialized]
 	public float speedMultipler = 1;
 
@@ -45,27 +45,34 @@ public class HoverJet : AbstractRobotComponent {
 	private float regularStrideLength;
 	private ChassisController chassis;
 
+	public void goToPosition(Vector3 ? pos, bool autoBrake) {
+		nav.autoBraking = autoBrake;
+		if (pos == null) {
+			stop();
+		} else {
+			targetLocation = pos;
+
+			if (nav.enabled) {
+				nav.Resume();
+			}
+		}
+	}
+
 	public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
 		matchTargetRotation = matchRotation;
-		if(target == null) {
+		nav.autoBraking = autoBrake;
+		if (target == null) {
             stop();
 		} else {
             this.target = target;
 			if(hasReachedTargetLocation() && hasMatchedTargetRotation()) {
 				this.target = null;
-				//print("bailing...");
 				return;
 			}
 			if(nav.enabled) {
 				nav.Resume();
 			}
 		}
-		nav.autoBraking = autoBrake;
-	}
-
-	public void pursueTarget(LabelHandle target, bool autoBrake) {
-		setTarget(target, autoBrake);
-		isPursuit = true;
 	}
 
 	public bool hasTarget() {
@@ -107,11 +114,7 @@ public class HoverJet : AbstractRobotComponent {
 			Debug.LogWarning(getController().name + " is missing a power source.");
 			return;
 		}
-		if(isPursuit) {
-			pursueTarget();
-		} else {
-			goToTarget();
-		}
+		goToTarget();
 		nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
 	}
 
@@ -143,37 +146,19 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	public bool canReach(Vector3 pos) {
-		//if(nav.enabled) {
-		//	//Debug.Log("got here");
-		//	NavMeshPath path = new NavMeshPath();
-
-		//	nav.CalculatePath(pos, path);
-		//	List<Vector3> corners = new List<Vector3>(path.corners);
-		//	corners.Add(pos);
-		//	for(int i = 0; i < corners.Count - 1; i++) {
-		//		NavMeshHit hit = new NavMeshHit();
-
-		//		if(NavMesh.Raycast(corners[i], corners[i + 1], out hit, NavMesh.AllAreas)) {
-		//			return false;
-		//		}
-		//	}
-		//	return true;
-		//} else {
-		//	return false;
-		//}
 		return true;
 	}
 
 	public bool hasReachedTarget(LabelHandle target) {
-		return hasReachedTargetLocation(target) && hasMatchedTargetRotation(target);
+		return hasReachedTargetLocation(target.getPosition()) && hasMatchedTargetRotation(target.label.transform.forward);
 	}
 
     public void stop() {
         this.target = null;
+		this.targetLocation = null;
         if (nav.enabled) {
             nav.Stop();
         }
-        isPursuit = false;
     }
 
 	public override void release() {
@@ -182,14 +167,10 @@ public class HoverJet : AbstractRobotComponent {
 
 	private void goToTarget() {
 		if(target != null) {
-
 			if(hasReachedTargetLocation()) {
-				//print("Target reached...matching rotation");
 				if(!hasMatchedTargetRotation()) {
-					//print("attempting to match target rotation");
 					getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
 				} else {
-					//print("rotation matched");
 					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, target.getPosition(), null));
 					target = null;
 					nav.Stop();
@@ -198,11 +179,15 @@ public class HoverJet : AbstractRobotComponent {
 			}
 
 			if(nav.enabled) {
-				//nav.speed = regularSpeed;
-				nav.SetDestination(target.getPosition());
+				if (targetLocation != null) {
+					print("Setting nav destination");
+					nav.SetDestination(targetLocation.Value);
+				} else {
+					nav.SetDestination(target.getPosition());
+				}
 
 #if UNITY_EDITOR
-				if(getController().debug) {
+				if (getController().debug) {
 					Destroy(dest);
 					GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 					cube.transform.position = target.getPosition();
@@ -216,65 +201,24 @@ public class HoverJet : AbstractRobotComponent {
 		}
 	}
 
-	private void pursueTarget() {
-		if(target != null) {
-			if(hasReachedTargetLocation()) {
-				if(!hasMatchedTargetRotation()) {
-					getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
-				} else {
-                    getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, target.getPosition(), null));
-					target = null;
-					return;
-				}
-			}
-
-			if(nav.enabled) {
-				//nav.speed = pursueSpeed;
-				if(target.getDirection().HasValue && Vector3.Distance(getController().transform.position, target.getPosition()) > target.getDirection().Value.magnitude) {
-					nav.SetDestination((target.getPosition()));// + 
-						//target.getDirection().Value
-						//* .08f
-						//* (1 + Vector3.Dot(target.getDirection().Value.normalized, (target.getPosition() - roboController.transform.position).normalized))
-						//*(target.getDirection().Value.magnitude/nav.speed) 
-						//* Vector3.Distance(roboController.transform.position, target.getPosition())));
-				} else {
-					nav.SetDestination(target.getPosition());
-				}
-
-#if UNITY_EDITOR
-				if(getController().debug) {
-					Destroy(dest);
-					GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-					cube.transform.position = nav.destination;
-					cube.GetComponent<MeshRenderer>().material.color = Color.green;
-					Destroy(cube.GetComponent<BoxCollider>());
-					cube.transform.localScale = new Vector3(.3f, .3f, .3f);
-					dest = cube;
-
-				}
-#endif
-			}
-		}
-	}
-
 	private void animate() {
 		if(myAnimator != null) {
 			if(!myAnimator.isPlaying) {
 				myAnimator.Play();
 			}
 
-			myAnimator["Armature.003|walk"].speed = nav.velocity.magnitude * animSpeedAdjust;//, nav.velocity * animSpeedAdjust, nav.velocity * animSpeedAdjust);
+			myAnimator["Armature.003|walk"].speed = nav.velocity.magnitude * animSpeedAdjust;
 		}
 	}
 
 	private bool hasReachedTargetLocation() {
-		return hasReachedTargetLocation(target);
+		return hasReachedTargetLocation(target.getPosition());
 	}
 
-	private bool hasReachedTargetLocation(LabelHandle targetLocation) {
+	private bool hasReachedTargetLocation(Vector3 targetLocation) {
 		float xzDist = Vector2.Distance(new Vector2(getController().transform.position.x, getController().transform.position.z),
-								new Vector2(targetLocation.getPosition().x, targetLocation.getPosition().z));
-		float yDist = Mathf.Abs((getController().transform.position.y - .4f) - targetLocation.getPosition().y);
+								new Vector2(targetLocation.x, targetLocation.z));
+		float yDist = Mathf.Abs((getController().transform.position.y - .4f) - targetLocation.y);
 		if(xzDist < .5f && yDist < 2.5f) {
 			return true;
 		}
@@ -282,14 +226,13 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	private bool hasMatchedTargetRotation() {
-		return hasMatchedTargetRotation(target);
+		return hasMatchedTargetRotation(target.label.transform.forward);
 	}
 
-	private bool hasMatchedTargetRotation(LabelHandle targetRotation) {
+	private bool hasMatchedTargetRotation(Vector3 forward) {
 		if(!matchTargetRotation) {
-			//print("not attempting to match target rotation");
 			return true;
 		}
-		return (1 - Vector3.Dot(getController().transform.forward, targetRotation.label.transform.forward) < .0001f);
+		return (1 - Vector3.Dot(getController().transform.forward, forward) < .0001f);
 	}
 }
