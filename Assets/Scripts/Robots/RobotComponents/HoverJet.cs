@@ -46,12 +46,14 @@ public class HoverJet : AbstractRobotComponent {
 	private ChassisController chassis;
 
 	public void goToPosition(Vector3 ? pos, bool autoBrake) {
+		stop();
 		nav.autoBraking = autoBrake;
-		if (pos == null) {
-			stop();
-		} else {
+		if (pos != null) {
 			targetLocation = pos;
-
+			if (hasReachedTargetLocation(pos.Value)) {
+				this.target = null;
+				return;
+			}
 			if (nav.enabled) {
 				nav.Resume();
 			}
@@ -59,13 +61,12 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
+		stop();
 		matchTargetRotation = matchRotation;
 		nav.autoBraking = autoBrake;
-		if (target == null) {
-            stop();
-		} else {
+		if (target != null) {
             this.target = target;
-			if(hasReachedTargetLocation() && hasMatchedTargetRotation()) {
+			if(hasReachedTargetLocation(this.target) && hasMatchedTargetRotation()) {
 				this.target = null;
 				return;
 			}
@@ -167,7 +168,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	private void goToTarget() {
 		if(target != null) {
-			if(hasReachedTargetLocation()) {
+			if(hasReachedTargetLocation(target)) {
 				if(!hasMatchedTargetRotation()) {
 					getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
 				} else {
@@ -211,8 +212,8 @@ public class HoverJet : AbstractRobotComponent {
 		}
 	}
 
-	private bool hasReachedTargetLocation() {
-		return hasReachedTargetLocation(target.getPosition());
+	private bool hasReachedTargetLocation(LabelHandle labelHandle) {
+		return hasReachedTargetLocation(labelHandle.getPosition());
 	}
 
 	private bool hasReachedTargetLocation(Vector3 targetLocation) {
