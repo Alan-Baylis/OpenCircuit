@@ -11,9 +11,9 @@ public class ActionCatalog {
 				System.Type[] types = System.Reflection.Assembly.GetAssembly(typeof(EndeavourFactory)).GetTypes();
 				foreach (System.Type type in types) {
 					if (!type.IsAbstract && type.IsClass && type.IsSubclassOf(typeof(EndeavourFactory))) {
-						List<TagEnum> requiredTags = (List<TagEnum>)type.GetMethod("getRequiredTags").Invoke(null, null);
-						foreach (TagEnum tagType in requiredTags) {
-							addEntry(tagType, type);
+						List<TagRequirement> requiredTags = (List<TagRequirement>)type.GetMethod("getRequiredTags").Invoke(null, null);
+						foreach (TagRequirement tagType in requiredTags) {
+							addEntry(tagType.getType(), type);
 						}
 					}
 				}
