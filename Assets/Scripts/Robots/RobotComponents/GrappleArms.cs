@@ -9,6 +9,7 @@ public class GrappleArms : AbstractArms {
 
 	public float damagePerSecond = 1f;
 	public float range = 10;
+	public float maxGrappleAngle = 45;
 	public float checkTargetRate = 0.1f;
 	public float reelSpeed = 5;
 	public float reelForce = 1;
@@ -148,6 +149,11 @@ public class GrappleArms : AbstractArms {
 	private System.Nullable<RaycastHit> getHitLocation(Label target) {
 		Vector3 position = transform.TransformPoint(HOLD_POSITION);
 		Vector3 diff = target.transform.position - position;
+
+		// check angle
+		if (Vector3.Angle(transform.forward, diff) > maxGrappleAngle) {
+			return null;
+		}
 
 		// check distance
 		if (diff.sqrMagnitude > range * range) {

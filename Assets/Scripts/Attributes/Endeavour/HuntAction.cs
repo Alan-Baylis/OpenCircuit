@@ -36,6 +36,9 @@ public class HuntAction : Endeavour {
 		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
             HoverJet jet = controller.getRobotComponent<HoverJet>();
             jet.stop();
+		} else if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.RELEASED_CAPTURED_MESSAGE)) {
+			HoverJet jet = controller.getRobotComponent<HoverJet>();
+			jet.pursueTarget(target.getLabelHandle(), false);
 		}
 	}
 
