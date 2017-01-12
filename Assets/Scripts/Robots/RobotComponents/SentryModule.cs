@@ -38,7 +38,9 @@ public class SentryModule : AbstractVisualSensor {
 		bool alert = false;
 		if (isComponentAttached() && getSightingCount() > 0) {
 			foreach (Label label in targetMap.Keys) {
-				if (targetMap[label].getSightings() > 0 && label.hasTag(TagEnum.Player)) {
+				if (targetMap[label].getSightings() > 0
+					&& label.hasTag(TagEnum.Player)
+					&& !label.hasTag(TagEnum.Frozen)) {
 					alert = true;
 					break;
 				}
