@@ -167,39 +167,52 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	private void goToTarget() {
-		if(target != null) {
-			if(hasReachedTargetLocation(target)) {
-				if(!hasMatchedTargetRotation()) {
-					getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
-				} else {
-					getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, target.getPosition(), null));
-					target = null;
-					nav.Stop();
-					return;
+		if(target != null || targetLocation != null) {
+			Vector3 ? goal = target != null ? target.getPosition() : targetLocation.Value;
+			goal = getNearestNavPos(goal.Value);
+			if (goal != null) {
+				if (hasReachedTargetLocation(goal.Value)) {
+					if (target != null && !hasMatchedTargetRotation()) {
+						getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
+					} else {
+						getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, goal.Value, null));
+						target = null;
+						targetLocation = null;
+						nav.Stop();
+						return;
+					}
 				}
-			}
 
-			if(nav.enabled) {
-				if (targetLocation != null) {
-					print("Setting nav destination");
-					nav.SetDestination(targetLocation.Value);
-				} else {
-					nav.SetDestination(target.getPosition());
+				if (nav.enabled) {
+					nav.SetDestination(goal.Value);
 				}
 
 #if UNITY_EDITOR
 				if (getController().debug) {
 					Destroy(dest);
 					GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-					cube.transform.position = target.getPosition();
+					cube.transform.position = goal.Value;
 					cube.GetComponent<MeshRenderer>().material.color = Color.green;
 					Destroy(cube.GetComponent<BoxCollider>());
 					cube.transform.localScale = new Vector3(.3f, .3f, .3f);
 					dest = cube;
 				}
 #endif
+
+			} else {
+				//TODO: Send an action message if point is unreachable
+
 			}
 		}
+	}
+
+	private Vector3? getNearestNavPos(Vector3 pos) {
+		NavMeshHit hit;
+		NavMesh.SamplePosition(pos, out hit, 5f, NavMesh.AllAreas);
+		if (hit.hit) {
+			return hit.position;
+		} 
+		return null;
 	}
 
 	private void animate() {
