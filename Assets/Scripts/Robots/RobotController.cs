@@ -59,9 +59,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	[System.NonSerialized]
 	private bool dirty = false;
 
-	[System.NonSerialized]
-	private float timeoutSeconds = 10;
-
 	[ServerCallback]
 	void Start() {
         mentalModel.addUpdateListener(this);
@@ -146,6 +143,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				}
 			}
 		}
+		foreach(Endeavour endeavour in currentEndeavours) {
+			endeavour.update();
+		}
 		if (dirty) {
 			evaluateActions();
 		}
@@ -205,7 +205,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
     public void addTag(Tag newTag) {
 		foreach (EndeavourFactory factory in endeavourFactories) {
-			if (factory.usesTagType(newTag.type)) {
+			if (factory.usesTagType(new TagRequirement(newTag.type, !getMentalModel().canSee(newTag.getLabelHandle())))) {
 				List<List<Tag>> tagSets = new List<List<Tag>>();
 				tagSets.Add(new List<Tag> { newTag });
 

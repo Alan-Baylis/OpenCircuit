@@ -56,9 +56,9 @@ public abstract class EndeavourFactory : InspectorListElement {
 		return createEndeavour(controller, tagMap);
 	}
 
-	public bool usesTagType(TagEnum type) {
+	public bool usesTagType(TagRequirement type) {
 		foreach (TagRequirement tagType in getRequiredTagsList()) {
-			if (tagType.getType() == type) {
+			if (tagType.getType() == type.getType() && type.isStale() == tagType.isStale()) {
 				return true;
 			}
 		}
