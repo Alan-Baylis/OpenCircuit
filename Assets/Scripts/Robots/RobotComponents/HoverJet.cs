@@ -19,8 +19,6 @@ public class HoverJet : AbstractRobotComponent {
 		}
 	}
 
-	private Animation myAnimator;
-
 	private bool matchTargetRotation = false;
 
 	public float animSpeedAdjust = 1f;
@@ -82,7 +80,6 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	public void Start() {
-		myAnimator = GetComponent<Animation>();
 		chassis = GetComponentInChildren<ChassisController>();
 		regularSpeed += Random.Range(-0.5f, 0.5f);
 		pursueSpeed += Random.Range(-0.5f, 0.5f);
@@ -157,6 +154,7 @@ public class HoverJet : AbstractRobotComponent {
     public void stop() {
         this.target = null;
 		this.targetLocation = null;
+		this.matchTargetRotation = false;
         if (nav.enabled) {
             nav.Stop();
         }
@@ -213,16 +211,6 @@ public class HoverJet : AbstractRobotComponent {
 			return hit.position;
 		} 
 		return null;
-	}
-
-	private void animate() {
-		if(myAnimator != null) {
-			if(!myAnimator.isPlaying) {
-				myAnimator.Play();
-			}
-
-			myAnimator["Armature.003|walk"].speed = nav.velocity.magnitude * animSpeedAdjust;
-		}
 	}
 
 	private bool hasReachedTargetLocation(LabelHandle labelHandle) {

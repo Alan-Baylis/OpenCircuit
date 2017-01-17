@@ -5,6 +5,7 @@ public class InvestigateLostPlayerAction : Endeavour {
 
 	private Tag player;
 	private bool reached = false;
+	private HoverJet jet;
 
 #if UNITY_EDITOR
 	private GameObject mySphere;
@@ -22,10 +23,10 @@ public class InvestigateLostPlayerAction : Endeavour {
 	public InvestigateLostPlayerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
 		this.name = "investigateLostPlayer";
 		this.player = getTagOfType<Tag>(TagEnum.Player);
+		jet = getController().getRobotComponent<HoverJet>();
 	}
 
 	public override void update() {
-		HoverJet jet = getController().getRobotComponent<HoverJet>();
 		jet.goToPosition(getController().getMentalModel().getLastKnownPosition(player.getLabelHandle()), false);
 #if UNITY_EDITOR
 		sphere.transform.position = getController().getMentalModel().getLastKnownPosition(player.getLabelHandle()).Value;
