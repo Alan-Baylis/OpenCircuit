@@ -141,6 +141,12 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 480132, guid: e62a4f3f58a05da4db91326fb09c6a9b, type: 2}
   m_PrefabInternal: {fileID: 44577046}
+--- !u!114 &44577048 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
+    type: 2}
+  m_PrefabInternal: {fileID: 44577046}
+  m_Script: {fileID: 11500000, guid: ded6bca8f6f4e8347a6e90b69c6bc885, type: 3}
 --- !u!1 &110902475
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +370,7 @@ Prefab:
     - target: {fileID: 11460716, guid: 71c2b24eb311b0e4b84685bc99ef5ee0, type: 2}
       propertyPath: centralRobotController
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 44577048}
     - target: {fileID: 11460716, guid: 71c2b24eb311b0e4b84685bc99ef5ee0, type: 2}
       propertyPath: robotsPerPlayer
       value: 5
