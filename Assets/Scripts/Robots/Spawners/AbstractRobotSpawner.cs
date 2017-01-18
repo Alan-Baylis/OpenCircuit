@@ -101,7 +101,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	protected void applyPlayerKnowledge(RobotController controller) {
 		Player[] players = FindObjectsOfType<Player>();
 		foreach(Player player in players) {
-			controller.addKnownLocation(player.GetComponent<Label>());
+			Label playerLabel =player.GetComponent<Label>();
+            controller.sightingFound(playerLabel.labelHandle, playerLabel.transform.position, playerLabel.GetComponent<Rigidbody>().velocity);
 		}
 	}
 

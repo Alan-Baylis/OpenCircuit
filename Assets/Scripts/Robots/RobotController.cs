@@ -73,7 +73,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
         Label[] labels = FindObjectsOfType<Label>();
         foreach (Label label in labels) {
             if (label.inherentKnowledge) {
-                addKnownLocation(label);
+                sightingFound(label.labelHandle, label.transform.position, null);
             }
         }
 
@@ -83,7 +83,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				Debug.LogWarning("Null location attached to AI with name: " + gameObject.name);
 				continue;
 			}
-			addKnownLocation(location);
+			sightingFound(location.labelHandle, location.transform.position, null);
 		}
 		InvokeRepeating ("evaluateActions", .1f, evaluatePeriod);
 		constructAllEndeavours();
@@ -151,10 +151,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		}
 	}
 
-	public void addKnownLocation(Label location) {
-		mentalModel.addSighting(location.labelHandle, location.transform.position, null);
-	}
-	
 	public void addEndeavour(Endeavour action) {
 		availableEndeavours.Add (action);
 		//evaluateActions ();
@@ -415,14 +411,14 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		return componentUsageMap;
 	}
 
-	private void sightingLost(LabelHandle target, Vector3 lastKnownPos, Vector3? lastKnownVelocity) {
+	public void sightingLost(LabelHandle target, Vector3 lastKnownPos, Vector3? lastKnownVelocity) {
 		if (externalMentalModel != null) {
 			externalMentalModel.removeSighting(target, lastKnownPos, lastKnownVelocity);
 		}
 		mentalModel.removeSighting(target, lastKnownPos, lastKnownVelocity);
 	}
 
-	private void sightingFound(LabelHandle target, Vector3 pos, Vector3? dir) {
+	public void sightingFound(LabelHandle target, Vector3 pos, Vector3? dir) {
 		if (externalMentalModel != null) {
 			externalMentalModel.addSighting(target, pos, dir);
 		}
