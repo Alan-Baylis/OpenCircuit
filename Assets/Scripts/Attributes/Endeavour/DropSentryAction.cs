@@ -6,15 +6,16 @@ using System;
 public class DropSentryAction : Endeavour {
 
 	private Tag sentryPoint;
+	private HoverJet jet;
 
     public DropSentryAction(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
         : base(parentFactory, controller, goals, tags) {
         name = "dropSentry";
 		sentryPoint = getTagOfType<Tag>(TagEnum.SentryPoint);
+		jet = getController().getRobotComponent<HoverJet>();
     }
 
 	protected override void onExecute() {
-		HoverJet jet = controller.getRobotComponent<HoverJet>();
         jet.setTarget(sentryPoint.getLabelHandle(), true);
 	}
 
@@ -35,8 +36,7 @@ public class DropSentryAction : Endeavour {
 	}
 
 	public override bool canExecute() {
-        HoverJet legs = controller.getRobotComponent<HoverJet>();
-        return !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied) && legs.canReach(sentryPoint.getLabelHandle().label);
+        return !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied) && jet.canReach(sentryPoint.getLabelHandle().label);
     }
 
     public override bool singleExecutor() {
@@ -44,7 +44,6 @@ public class DropSentryAction : Endeavour {
     }
 
     protected override float getCost() {
-        HoverJet jet = controller.getRobotComponent<HoverJet>();
 		return jet.calculatePathCost(sentryPoint.getLabelHandle().label.transform.position);
     }
 

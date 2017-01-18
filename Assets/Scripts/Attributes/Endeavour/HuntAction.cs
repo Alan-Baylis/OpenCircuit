@@ -6,24 +6,24 @@ using System;
 public class HuntAction : Endeavour {
 
 	private Tag target;
+	private HoverJet jet;
+	private AbstractArms arms;
 
 	public HuntAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
 		: base(factory, controller, goals, tags) {
 		target = getTagOfType<Tag>(TagEnum.Player);
 		this.name = "hunt";
+		jet = getController().getRobotComponent<HoverJet>();
+		arms = getController().getRobotComponent<AbstractArms>();
 	}
 
 	public override bool canExecute() {
-		HoverJet jet = controller.getRobotComponent<HoverJet>();
-		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
 		return (!target.getLabelHandle().hasTag(TagEnum.Grabbed) || arms.targetCaptured())
 			&& !target.getLabelHandle().hasTag(TagEnum.Frozen)
 			&& jet.canReach(target.getLabelHandle().label);
 	}
 
 	protected override void onExecute() {
-		HoverJet jet = controller.getRobotComponent<HoverJet>();
-		AbstractArms arms = controller.getRobotComponent<AbstractArms>();
 		jet.setTarget(target.getLabelHandle(), false);
 		arms.setTarget(target.getLabelHandle().label);
 	}
@@ -34,10 +34,8 @@ public class HuntAction : Endeavour {
 
 	public override void onMessage(RobotMessage message) {
 		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
-            HoverJet jet = controller.getRobotComponent<HoverJet>();
             jet.stop();
 		} else if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.RELEASED_CAPTURED_MESSAGE)) {
-			HoverJet jet = controller.getRobotComponent<HoverJet>();
 			jet.setTarget(target.getLabelHandle(), false);
 		}
 	}
@@ -51,7 +49,6 @@ public class HuntAction : Endeavour {
 	}
 
 	protected override float getCost() {
-		HoverJet jet = controller.getRobotComponent<HoverJet>();
 		return jet.calculatePathCost(target.getLabelHandle().label);
 	}
 

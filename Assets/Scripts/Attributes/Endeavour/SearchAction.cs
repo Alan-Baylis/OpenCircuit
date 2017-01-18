@@ -8,10 +8,12 @@ public class SearchAction : Endeavour {
 	protected float lastSeen = -30;
 
 	private Tag searchPoint;
+	private HoverJet jet;
 
 	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
 		this.name = "search";
 		searchPoint = getTagOfType<Tag>(TagEnum.Searchable);
+		jet = getController().getRobotComponent<HoverJet>();
 	}
 
 	public override System.Type[] getRequiredComponents() {
@@ -27,7 +29,7 @@ public class SearchAction : Endeavour {
 	}
 
 	protected override void onExecute() {
-		controller.getRobotComponent<HoverJet>().setTarget(searchPoint.getLabelHandle(), true);
+		jet.setTarget(searchPoint.getLabelHandle(), true);
 	}
 
 	public override void onMessage(RobotMessage message) {
@@ -47,7 +49,6 @@ public class SearchAction : Endeavour {
     }
 
 	protected override float getCost() {
-        HoverJet jet = controller.getRobotComponent<HoverJet>();
 		return (jet == null) ? 0 : jet.calculatePathCost(searchPoint.getLabelHandle().getPosition()) * 0.5f;
 	}
 

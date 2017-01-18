@@ -6,10 +6,13 @@ using System;
 public class ActivateSpawnerAction : Endeavour {
 
 	RobotSpawner spawner;
+	HoverJet jet;
 
 	public ActivateSpawnerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) : base(factory, controller, goals, tagMap) {
 		name = "ActivateSpawner";
 		spawner = getTagOfType<Tag>(TagEnum.Spawner).getLabelHandle().label.GetComponentInChildren<RobotSpawner>();
+		jet = getController().getRobotComponent<HoverJet>();
+		
 	}
 
 	public override System.Type[] getRequiredComponents() {
@@ -43,7 +46,7 @@ public class ActivateSpawnerAction : Endeavour {
 	}
 
 	private HoverJet getHoverJet() {
-		return controller.getRobotComponent<HoverJet>();
+		return jet;
 	}
 
 	public override TagEnum getPrimaryTagType() {

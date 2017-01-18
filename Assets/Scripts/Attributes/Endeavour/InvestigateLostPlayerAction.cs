@@ -61,7 +61,7 @@ public class InvestigateLostPlayerAction : Endeavour {
 
 
 	protected override float getCost() {
-		return getController().getRobotComponent<HoverJet>().calculatePathCost(getController().getMentalModel().getLastKnownPosition(player.getLabelHandle()).Value);
+		return jet.calculatePathCost(getController().getMentalModel().getLastKnownPosition(player.getLabelHandle()).Value);
 	}
 
 	protected override void onExecute() {
