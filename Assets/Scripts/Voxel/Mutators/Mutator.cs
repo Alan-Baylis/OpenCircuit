@@ -14,7 +14,7 @@ namespace Vox {
 
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
-			apply(app, target.getHead(), new Index());
+			apply(app, target.head, new Index());
 			watch.Stop();
 			UnityEngine.MonoBehaviour.print("Mutator Apply Time: " +watch.Elapsed.TotalSeconds);
 			foreach(VoxelJob job in app.jobs)
@@ -39,14 +39,14 @@ namespace Vox {
 					continue;
 
 				// recurse or set full voxel
-				if (childPos.depth < app.tree.maximumDetail && (maskAction.doTraverse || action.doTraverse))
+				if (childPos.depth < app.tree.maxDepth && (maskAction.doTraverse || action.doTraverse))
 					apply(app, block.expand(childPos.xLocal, childPos.yLocal, childPos.zLocal), childPos);
 				else
 					block.children[childPos.xLocal, childPos.yLocal, childPos.zLocal] =
 						mutate(app, childPos, action, block.children[childPos.xLocal, childPos.yLocal, childPos.zLocal].toVoxel());
 
 				// update meshes if appropriate
-				if (childPos.depth == app.tree.maximumDetail - VoxelRenderer.VOXEL_COUNT_POWER) {
+				if (childPos.depth == app.tree.maxDepth - VoxelRenderer.VOXEL_COUNT_POWER) {
 					UpdateCheckJob job = new UpdateCheckJob(block, app.tree, childPos.depth);
 					job.setOffset((byte)childPos.x, (byte)childPos.y, (byte)childPos.z);
 					job.setForce(true);
@@ -79,7 +79,7 @@ namespace Vox {
 				return new Action(false, true);
 
 			// check against each mask
-			int voxelSize = 1 << (tree.maximumDetail - p.depth);
+			int voxelSize = 1 << (tree.maxDepth - p.depth);
 			Action action = new Action(false, true); 
 			foreach (VoxelMask mask in tree.masks) {
 				if (mask.active) {

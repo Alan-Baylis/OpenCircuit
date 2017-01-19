@@ -25,7 +25,7 @@ namespace Vox {
 		public abstract Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original);
 
 		public static float calculateVoxelSize(Application app, Index p) {
-			return 1 << (app.tree.maximumDetail - p.depth);
+			return 1 << (app.tree.maxDepth - p.depth);
 		}
 
 		public static Vector3 calculateDiff(Vector3 position, Index p, float voxelSize) {

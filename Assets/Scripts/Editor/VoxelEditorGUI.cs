@@ -82,7 +82,7 @@ public class VoxelEditorGUI : Editor {
 			doGenerationGUI(editor);
 			return;
 		} else {
-			if (!editor.hasVoxelData())
+			if (!editor.hasVoxelData)
 				GUI.enabled = false;
 			editor.selectedMode = GUILayout.Toolbar(editor.selectedMode, modes, tabsBigFont, GUILayout.Height(30));
 			GUI.enabled = true;
@@ -161,7 +161,7 @@ public class VoxelEditorGUI : Editor {
             ++EditorGUI.indentLevel;
             editor.gridUseVoxelUnits = EditorGUILayout.Toggle("Use Voxel Units", editor.gridUseVoxelUnits);
 			if (editor.gridUseVoxelUnits) {
-				float voxelSize = editor.width / (1 << editor.maximumDetail);
+				float voxelSize = editor.width / (1 << editor.maxDepth);
                 editor.gridSize = EditorGUILayout.FloatField("Grid Spacing (Voxels)", editor.gridSize /voxelSize) *voxelSize;
 			} else {
                 editor.gridSize = EditorGUILayout.FloatField("Grid Spacing (Meters)", editor.gridSize);
@@ -249,27 +249,27 @@ public class VoxelEditorGUI : Editor {
 			generationParameters = new VoxelEditorParameters();
             generationParameters.setFrom(editor);
         }
-		if (editor.hasVoxelData()) {
+		if (editor.hasVoxelData) {
 			if (GUILayout.Button("Erase")) {
 				if (EditorUtility.DisplayDialog("Erase Voxels?", "Are you sure you want to erase all voxel data?", "Erase", "Cancel")) {
 					editor.wipe();
 				}
 			}
-			if (GUILayout.Button(editor.hasRenderers()? "Reskin": "Skin", buttonBigFont) && validateSubstances(editor)) {
+			if (GUILayout.Button(editor.hasRenderers? "Reskin": "Skin", buttonBigFont) && validateSubstances(editor)) {
 				editor.generateRenderers();
 			}
-			if (editor.hasRenderers() && GUILayout.Button("Clear Skin") && validateSubstances(editor)) {
+			if (editor.hasRenderers && GUILayout.Button("Clear Skin") && validateSubstances(editor)) {
 				editor.clearRenderers();
 			}
 			if (GUILayout.Button("Compress Data")) {
 				Vox.Voxel v;
-				int count = editor.getHead().canSimplify(out v);
+				int count = editor.head.canSimplify(out v);
 				editor.dirty = true;
 				EditorUtility.DisplayDialog("Compression Result", "Compression removed " +count +" nodes from the voxel tree.", "OK");
 			}
 			if (GUILayout.Button("Clean Artifacts")) {
 				Vox.Voxel v;
-				int count = editor.getHead().cleanArtifacts(out v, editor.getHead(), 0, editor.maximumDetail, 0, 0, 0);
+				int count = editor.head.cleanArtifacts(out v, editor.head, 0, editor.maxDepth, 0, 0, 0);
 				editor.dirty = true;
 				EditorUtility.DisplayDialog("Artifact Cleaning Result", "Artifact cleaning removed " +count +" artifacts from the voxel tree.", "OK");
 			}
@@ -283,7 +283,7 @@ public class VoxelEditorGUI : Editor {
 			}
 		}
 
-		if (!editor.hasVoxelData())
+		if (!editor.hasVoxelData)
 			return;
 
 		GUILayout.Label("Properties", labelBigFont);
@@ -375,9 +375,9 @@ public class VoxelEditorGUI : Editor {
 
 	protected void doTreeSizeGUI(Vox.VoxelEditor editor) {
 		// world detail
-		EditorGUILayout.LabelField("Voxel Power", editor.maximumDetail.ToString());
+		EditorGUILayout.LabelField("Voxel Power", editor.maxDepth.ToString());
 
-		long dimension = 1 << editor.maximumDetail;
+		long dimension = 1 << editor.maxDepth;
 		++EditorGUI.indentLevel;
 		EditorGUILayout.LabelField("Voxels Per Side", dimension.ToString(numFormInt));
 		EditorGUILayout.LabelField("Max Voxel Count", Mathf.Pow(dimension, 3).ToString(numFormInt));
@@ -443,13 +443,12 @@ public class VoxelEditorGUI : Editor {
 		if (editor.reduceMeshes) {
 			reductionAmount = doSliderFloatField("Mesh Reduction Level", editor.reductionAmount, 0, 0.5f);
 		}
-		byte maxDetail = (byte)EditorGUILayout.IntField(new GUIContent("Voxel Power"), editor.maximumDetail);
-		if (maxDetail != editor.maximumDetail || createColliders != editor.createColliders ||
+		byte maxDetail = (byte)EditorGUILayout.IntField(new GUIContent("Voxel Power"), editor.maxDepth);
+		if (maxDetail != editor.maxDepth || createColliders != editor.createColliders ||
 			saveMeshes != editor.saveMeshes || reductionAmount != editor.reductionAmount ||
 			useStaticMeshes != editor.useStaticMeshes || reduceMeshes != editor.reduceMeshes) {
-			if (maxDetail != editor.maximumDetail) {
-				editor.maximumDetail = maxDetail;
-				editor.setupLookupTables();
+			if (maxDetail != editor.maxDepth) {
+				editor.maxDepth = maxDetail;
 			}
 			editor.createColliders = createColliders;
 			editor.useStaticMeshes = useStaticMeshes;
@@ -505,7 +504,6 @@ public class VoxelEditorGUI : Editor {
     public void generateVoxels(Vox.VoxelEditor editor) {
         editor.wipe();
         generationParameters.setTo(editor);
-        editor.initialize();
         switch (selectedGenerationMode) {
         case 0:
             editor.setToHeight();
@@ -599,7 +597,7 @@ public class VoxelEditorGUI : Editor {
 	}
 
 	protected static float maxBrushSize(Vox.VoxelEditor editor) {
-		return Mathf.Max(editor.voxelSize() *20, 50);
+		return Mathf.Max(editor.voxelSize *20, 50);
     }
 
     protected class VoxelEditorParameters {
@@ -626,7 +624,7 @@ public class VoxelEditorGUI : Editor {
 
         public void setFrom(Vox.VoxelEditor editor) {
             baseSize = editor.width;
-            maxDetail = editor.maximumDetail;
+            maxDetail = editor.maxDepth;
             maxChange = editor.maxChange;
             proceduralSeed = editor.proceduralSeed;
             createColliders = editor.createColliders;
@@ -640,7 +638,7 @@ public class VoxelEditorGUI : Editor {
 
 		public void setTo(Vox.VoxelEditor editor) {
 			editor.width = baseSize;
-            editor.maximumDetail = maxDetail;
+            editor.maxDepth = maxDetail;
 			editor.maxChange = maxChange;
 			editor.proceduralSeed = proceduralSeed;
             editor.createColliders = createColliders;

@@ -61,7 +61,7 @@ public class TooltipTrigger : MonoBehaviour {
 		GUI.skin = skin;
 		Color lastColor = GUI.color;
 		GUI.color = new Color(1, 1, 1, opacity);
-		GUI.Label(new Rect(Screen.width /6, Screen.height /6, 400, 150), tooltip);
+		GUI.Label(new Rect(Screen.width /2 -200, Screen.height /4, 400, 150), tooltip);
 		GUI.color = lastColor;
 	}
 }

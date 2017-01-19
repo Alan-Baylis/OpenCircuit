@@ -65,8 +65,7 @@ namespace Vox {
 		public override void execute() {
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
-			Vector3 pos = rend.position / rend.size;
-			if (VoxelBlock.isRenderLod(pos.x, pos.y, pos.z, rend.size, rend.control) || VoxelBlock.isRenderSize(rend.size, rend.control))
+			if (VoxelBlock.isRenderSize(rend.size, rend.control))
 				rend.applyMesh();
 			watch.Stop();
 			lock(rend.control) {

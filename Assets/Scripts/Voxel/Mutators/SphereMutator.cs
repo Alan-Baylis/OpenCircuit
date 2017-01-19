@@ -19,15 +19,15 @@ namespace Vox {
 		}
 
 		public override Application setup(OcTree target) {
-			float radius = worldRadius / target.voxelSize();
+			float radius = worldRadius / target.voxelSize;
 			Vector3 radiusCube = new Vector3(radius, radius, radius);
 			Vector3 center = target.globalToVoxelPosition(worldPosition);
 			Vector3 exactMin = center - radiusCube;
 			Vector3 exactMax = center + radiusCube;
 			SphereApp app = new SphereApp();
 			app.tree = target;
-			app.min = new Index(target.maximumDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maximumDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+			app.min = new Index(target.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(target.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.position = center;
 			app.radius = radius;
 			return app;

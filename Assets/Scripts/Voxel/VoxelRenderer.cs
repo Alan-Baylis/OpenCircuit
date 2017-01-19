@@ -45,9 +45,9 @@ namespace Vox {
 
 		public VoxelRenderer(Index index, OcTree control):
 			this(index, control, new Vector3(
-				index.x * control.sizes[index.depth],
-				index.y * control.sizes[index.depth],
-				index.z * control.sizes[index.depth])) {
+				index.x * control.getVoxelSize(index.depth),
+				index.y * control.getVoxelSize(index.depth),
+				index.z * control.getVoxelSize(index.depth))) {
 		}
 
 		public VoxelRenderer(Index index, OcTree control, Vector3 localPosition) {
@@ -69,7 +69,7 @@ namespace Vox {
 			if (control == null)
 				return;
 
-			size = control.sizes[index.depth];
+			size = control.getVoxelSize(index.depth);
 
 			Queue<int[]> triangleSet = new Queue<int[]>();
 			Dictionary<int, Vector3> actualVertices = new Dictionary<int, Vector3>();

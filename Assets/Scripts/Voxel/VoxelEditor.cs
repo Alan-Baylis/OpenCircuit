@@ -47,13 +47,14 @@ namespace Vox {
 		public bool showPositionHandles = false;
 
 		public void Start() {
-			if (hasVoxelData() && findRendererObjects().Count < 1) {
+			if (hasVoxelData && findRendererObjects().Count < 1) {
 				generateRenderers();
 				pauseForGeneration();
 			}
 		}
 
 		public void setToHeightmap() {
+			initialize();
 			int dimension = heightmaps[0].height;
 
 			for (int index = 0; index < heightmaps.Length; ++index ) {
@@ -64,12 +65,13 @@ namespace Vox {
 						map[j, i] = ((pix.r + pix.g + pix.b) / 3.0f) * dimension;
 					}
 				}
-				head.setToHeightmap(maximumDetail, 0, 0, 0, ref map, heightmapSubstances[index], this);
+				head.setToHeightmap(maxDepth, 0, 0, 0, ref map, heightmapSubstances[index], this);
 			}
 		}
 		
 		public void setToHeight() {
-			int dimension = 1 << maximumDetail;
+			initialize();
+			int dimension = 1 << maxDepth;
 			float height = heightPercentage / 100f * dimension;
 			float[,] map = new float[dimension, dimension];
 			for (int i = 0; i < dimension; i++) {
@@ -77,10 +79,11 @@ namespace Vox {
 					map[j, i] = height;
 				}
 			}
-			head.setToHeightmap(maximumDetail, 0, 0, 0, ref map, 0, this);
+			head.setToHeightmap(maxDepth, 0, 0, 0, ref map, 0, this);
 		}
 		
 		public void setToSphere() {
+			initialize();
 			VoxelMask[] masks = this.masks;
 			this.masks = new VoxelMask[0];
 			float radius = spherePercentage / 200f * width;
@@ -93,10 +96,11 @@ namespace Vox {
 		// currently it just uses a "height map" system.  This is fine for initial generation, but
 		// then more passes need to be done for cliffs, caves, streams, etc.
 		public virtual void setToProcedural() {
+			initialize();
 
 			// the following generates terrain from a height map
 			UnityEngine.Random.seed = proceduralSeed;
-			int dimension = 1 << maximumDetail;
+			int dimension = 1 << maxDepth;
 			float acceleration = 0;
 			float height = dimension * 0.6f;
 			float[,] heightMap = new float[dimension, dimension];
@@ -131,7 +135,7 @@ namespace Vox {
 					accelMap[x, z] = acceleration;
 				}
 			}
-			head.setToHeightmap(maximumDetail, 0, 0, 0, ref heightMap, matMap, this);
+			head.setToHeightmap(maxDepth, 0, 0, 0, ref heightMap, matMap, this);
 
 			// generate trees
 			//for (int x = 0; x < dimension; ++x) {
@@ -146,23 +150,7 @@ namespace Vox {
 			//}
 		}
 
-		// public void saveData() {
-		// 	BinaryFormatter b = new BinaryFormatter();
-		// 	FileStream f = File.Create(Application.persistentDataPath + "/heightmap.dat");
-		// 	b.Serialize(f, heightmap);
-		// 	f.Close();
-		// }
-
-		public bool hasVoxelData() {
-			return getHead() != null;
-		}
-
-		public bool hasRenderers() {
-			lock(renderers) {
-				return renderers.Count > 0;
-			}
-		}
-
+#if UNITY_EDITOR
 		public static System.Nullable<Vector3> getRayCollision(Ray ray) {
 			RaycastHit firstHit = new RaycastHit();
 			firstHit.distance = float.PositiveInfinity;
@@ -199,39 +187,6 @@ namespace Vox {
 			}
 		}
 
-		protected Mesh generateRectangleMesh(Vector3 scale) {
-			Mesh mesh = new Mesh();
-            scale = scale / 2;
-            Vector3[] vertices = new Vector3[] {
-				new Vector3(-scale.x, -scale.y, -scale.z),
-				new Vector3( scale.x, -scale.y, -scale.z),
-				new Vector3(-scale.x,  scale.y, -scale.z),
-				new Vector3( scale.x,  scale.y, -scale.z),
-				new Vector3(-scale.x, -scale.y,  scale.z),
-				new Vector3( scale.x, -scale.y,  scale.z),
-				new Vector3(-scale.x,  scale.y,  scale.z),
-				new Vector3( scale.x,  scale.y,  scale.z),
-			};
-			mesh.vertices = vertices;
-			mesh.normals = new Vector3[vertices.Length];
-			mesh.triangles = new int[] {
-				0, 1, 5,
-				5, 4, 0,
-				2, 7, 3,
-				7, 2, 6,
-				0, 3, 1,
-				2, 3, 0,
-				4, 5, 7,
-				6, 4, 7,
-				1, 3, 5,
-				5, 3, 7,
-				0, 4, 2,
-				4, 6, 2,
-			};
-			return mesh;
-		}
-
-#if UNITY_EDITOR
 		public static VoxelEditor createEmpty() {
 			GameObject ob = new GameObject();
 			ob.name = "Voxel Object";
@@ -296,7 +251,7 @@ namespace Vox {
 				foreach (VoxelMask mask in masks) {
 					if (!mask.active)
 						continue;
-					Gizmos.DrawMesh(generateRectangleMesh(new Vector3(width, 0, width)), transform.TransformPoint(width / 2, mask.yPosition * voxelSize(), width / 2));
+					Gizmos.DrawMesh(generateRectangleMesh(new Vector3(width, 0, width)), transform.TransformPoint(width / 2, mask.yPosition * voxelSize, width / 2));
 				}
 				Gizmos.color = Color.gray;
 			}
@@ -318,7 +273,7 @@ namespace Vox {
 
 		protected void drawPathPoint(Vector3 point) {
 			Gizmos.color = Color.yellow;
-			Gizmos.DrawWireCube(point, new Vector3(0.5f, 0.5f, 0.5f) *voxelSize());
+			Gizmos.DrawWireCube(point, new Vector3(0.5f, 0.5f, 0.5f) *voxelSize);
 		}
 
 		protected Color getBrushColor() {
@@ -333,6 +288,39 @@ namespace Vox {
 					return isSubtracting() ? brushGhostSubtractColor : brushGhostColor;
 			}
 			return brushGhostColor;
+		}
+
+
+		protected Mesh generateRectangleMesh(Vector3 scale) {
+			Mesh mesh = new Mesh();
+			scale = scale / 2;
+			Vector3[] vertices = new Vector3[] {
+				new Vector3(-scale.x, -scale.y, -scale.z),
+				new Vector3( scale.x, -scale.y, -scale.z),
+				new Vector3(-scale.x,  scale.y, -scale.z),
+				new Vector3( scale.x,  scale.y, -scale.z),
+				new Vector3(-scale.x, -scale.y,  scale.z),
+				new Vector3( scale.x, -scale.y,  scale.z),
+				new Vector3(-scale.x,  scale.y,  scale.z),
+				new Vector3( scale.x,  scale.y,  scale.z),
+			};
+			mesh.vertices = vertices;
+			mesh.normals = new Vector3[vertices.Length];
+			mesh.triangles = new int[] {
+				0, 1, 5,
+				5, 4, 0,
+				2, 7, 3,
+				7, 2, 6,
+				0, 3, 1,
+				2, 3, 0,
+				4, 5, 7,
+				6, 4, 7,
+				1, 3, 5,
+				5, 3, 7,
+				0, 4, 2,
+				4, 6, 2,
+			};
+			return mesh;
 		}
 #endif
 

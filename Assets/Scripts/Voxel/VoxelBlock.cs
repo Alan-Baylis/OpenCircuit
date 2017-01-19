@@ -247,7 +247,7 @@ namespace Vox {
 		public void updateAll(uint x, uint y, uint z, byte detailLevel, OcTree control, bool force = false) {
 			// check if this is a high enough detail level.  If not, call the childrens' update methods
 			VoxelRenderer renderer = control.getRenderer(new Index(detailLevel, x, y, z));
-			if (!isRenderSize(control.sizes[detailLevel], control) && (!isRenderLod(x, y, z, control.sizes[detailLevel], control))) {
+			if (!isRenderSize(control.getVoxelSize(detailLevel), control)) {
 				for (byte xi = 0; xi < CHILD_DIMENSION; ++xi) {
 					for (byte yi = 0; yi < CHILD_DIMENSION; ++yi) {
 						for (byte zi = 0; zi < CHILD_DIMENSION; ++zi) {
@@ -277,13 +277,7 @@ namespace Vox {
 		}
 
 		public static bool isRenderSize(float size, OcTree control) {
-			return control.sizes[control.maximumDetail - VoxelRenderer.VOXEL_COUNT_POWER] == size;
-		}
-
-		public static bool isRenderLod(float x, float y, float z, float size, OcTree control) {
-			if (!control.useLod)
-				return size == control.sizes[control.maximumDetail];
-			return getDistSquare(control.getLocalCamPosition(), new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), size) >= size * size * control.getLodDetail();
+			return control.getVoxelSize(control.maxDepth - VoxelRenderer.VOXEL_COUNT_POWER) == size;
 		}
 
 		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {

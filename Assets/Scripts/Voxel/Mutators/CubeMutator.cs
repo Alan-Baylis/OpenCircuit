@@ -21,16 +21,16 @@ namespace Vox {
 		}
 
 		public override Application setup(OcTree target) {
-			Vector3 halfDimension = worldDimensions / target.voxelSize() /2f;
-			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize();
+			Vector3 halfDimension = worldDimensions / target.voxelSize /2f;
+			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize;
 			Vector3 exactMin = center - halfDimension;
 			Vector3 exactMax = center + halfDimension;
 
 			CubeApp app = new CubeApp();
 			app.tree = target;
 			app.halfDimension = halfDimension;
-			app.min = new Index(target.maximumDetail, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maximumDetail, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+			app.min = new Index(target.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(target.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.position = center;
 			return app;
 		}
@@ -38,7 +38,7 @@ namespace Vox {
 		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize) {
 			CubeApp cApp = (CubeApp)app;
 			CubeAction action = new CubeAction();
-			if (p.depth >= app.tree.maximumDetail)
+			if (p.depth >= app.tree.maxDepth)
 				voxelSize *= 0.5f;
 
 			action.percentInside = 1;

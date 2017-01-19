@@ -19,15 +19,15 @@ namespace Vox {
 		[System.NonSerialized]
 		public readonly static HashSet<OcTree> generatingTrees = new HashSet<OcTree>();
 
-		// basic stats
+
+
+		// configuration
 		public byte isoLevel = 127;
 		public float lodDetail = 1;
 		public bool useLod = false;
 		public GameObject trees;
 		public float treeDensity = 0.02f;
 		public float treeSlopeTolerance = 5;
-		[HideInInspector]
-		public Camera cam;
 		public float curLodDetail = 10f;
 		public VoxelSubstance[] voxelSubstances;
 		public VoxelMask[] masks;
@@ -36,99 +36,128 @@ namespace Vox {
 		public bool saveMeshes = false;
 		public bool reduceMeshes = false;
 		public float reductionAmount = 0.1f;
-
-		public byte maximumDetail {
-			get { return maxDetail; }
-			set { maxDetail = value; setupLookupTables(); }
-		}
-		public float width {
-			get { return baseSize; }
-			set { baseSize = value; setupLookupTables(); }
-		}
+		public byte maxDepth = 7;
+		public float width = 128;
 
 
-		// performance stats
-//		private int treeCount = 0;
 
 		// voxel data
-		[HideInInspector]
-		public VoxelBlock head;
-		[HideInInspector]
-		public float[] sizes;
-		[HideInInspector]
-		public uint dimmension;
+		private VoxelBlock realHead;
 		[System.NonSerialized]
 		public RendererDict renderers = new RendererDict();
-		public byte[] voxelData = new byte[0];
 		[System.NonSerialized]
 		public bool dirty = true;
+		[SerializeField]
+		private byte[] voxelData = new byte[0];
+		[System.NonSerialized]
+		private Queue<VoxelJob> jobQueue = new Queue<VoxelJob>(100);
+		[System.NonSerialized]
+		private bool generationPaused = false;
+
+
+
+		// polygonization stats
 		[System.NonSerialized]
 		public int vertexCount = 0;
 		[System.NonSerialized]
 		public int triangleCount = 0;
-
 		[System.NonSerialized]
 		public double meshGenTime = 0;
 		[System.NonSerialized]
 		public double meshGenArrayTime = 0;
 		[System.NonSerialized]
 		public double meshApplyTime = 0;
-
 		[System.NonSerialized]
 		public int meshGenCount = 0;
 		[System.NonSerialized]
 		public int meshApplyCount = 0;
-
-		[SerializeField]
-		private byte maxDetail = 7;
-		[SerializeField]
-		private float baseSize = 128;
-
 		[System.NonSerialized]
-		private Queue<VoxelJob> jobQueue = new Queue<VoxelJob>(100);
-		private Vector3 localCamPosition;
-		[System.NonSerialized]
-		private int updateCheckJobs;
-		[System.NonSerialized]
-		private bool generationPaused = false;
-
-		public void Awake() {
-			setupLookupTables();
-		}
-		
-
-		public virtual void initialize() {
-
-			//			float startTime = Time.realtimeSinceStartup;
-
-			// setup lookup tables, etc.
-			setupLookupTables();
-			updateCheckJobs = 0;
-
-			// initialize voxels
-			head = new VoxelBlock();
-//			genData(0);
-
-//			float endTime = Time.realtimeSinceStartup;
+		private int updateCheckJobs = 0;
 
 
-//			print("Voxel Gen time:                   " + (endTime - startTime));
-//			print("Average Voxel Opacity:            " + head.averageOpacity());
-//			print("Total Voxel Blocks:               " + VoxelHolder.blockCount);
-//			print("Total Tree Count:                 " + treeCount);
-//			print("Renderer Count:                   " + VoxelRenderer.rendCount);
-//			print("Duplicate Triangle Count:         " + VoxelRenderer.duplicateTriangleCount);
+
+		// read operations
+
+		public float getVoxelSize(int depth) {
+			return width / (1 << depth);
 		}
 
-		public void setupLookupTables() {
-			sizes = new float[maximumDetail + 1];
-			float s = baseSize;
-			for (int i = 0; i <= maximumDetail; ++i) {
-				sizes[i] = s;
-				s /= 2;
+		public uint dimmension { get {
+			return (uint)(1 << maxDepth);
+        } }
+
+		public float voxelSize { get {
+			return getVoxelSize(maxDepth);
+		} }
+
+		public VoxelBlock head { get {
+			return realHead;
+		} }
+
+		public bool hasVoxelData { get {
+			return realHead != null;
+		} }
+
+		public bool hasRenderers { get {
+			return renderers.Count > 0;
+		} }
+
+		public VoxelRenderer getRenderer(Index index) {
+			VoxelRenderer rend = null;
+			return renderers.TryGetValue(index, out rend)?
+				rend : null;
+		}
+
+		public Vector3 globalToVoxelPosition(Vector3 globalPosition) {
+			return transform.InverseTransformPoint(globalPosition) / voxelSize;
+		}
+
+		public Vector3 voxelToGlobalPosition(Vector3 voxelPosition) {
+			return transform.TransformPoint(voxelPosition * voxelSize);
+		}
+
+		public Voxel[,,] getArray(uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
+			if (xMax > dimmension)  xMax = dimmension;
+			if (yMax > dimmension)  yMax = dimmension;
+			if (zMax > dimmension)  zMax = dimmension;
+			Voxel[,,] array = new Voxel[xMax -xMin, yMax -yMin, zMax -zMin];
+			head.putInArray(ref array, new Index(maxDepth), xMin, yMin, zMin, xMax, yMax, zMax);
+			return array;
+		}
+
+		public bool generating() {
+			return VoxelThread.getJobCount() > 0 || jobQueue.Count > 0;
+		}
+
+		public int getJobCount() {
+			return jobQueue.Count;
+		}
+
+		public Dictionary<Index, List<GameObject>> findRendererObjects() {
+			Dictionary<Index, List<GameObject>> meshes = new Dictionary<Index, List<GameObject>>();
+			foreach (Transform child in transform) {
+				VoxelMeshObject meshObject = child.GetComponent<VoxelMeshObject>();
+				if (meshObject == null)
+					continue;
+				List<GameObject> objects;
+				meshes.TryGetValue(meshObject.index, out objects);
+				if (objects == null) {
+					objects = new List<GameObject>();
+					meshes[meshObject.index] = objects;
+				}
+				objects.Add(meshObject.gameObject);
 			}
-			dimmension = (uint)(1 << maximumDetail);
-        }
+			return meshes;
+		}
+
+
+
+		// command operations
+
+		public void initialize() {
+			if (realHead == null)
+				realHead = new VoxelBlock();
+		}
 
 		public void Update() {
 			applyQueuedMeshes();
@@ -161,64 +190,12 @@ namespace Vox {
 			watch.Stop();
 		}
 
-		public float getLodDetail() {
-			return curLodDetail;
-		}
-
-		public VoxelBlock getHead() {
-			return head;
-		}
-
-		public VoxelRenderer getRenderer(Index index) {
-			VoxelRenderer rend = null;
-			return renderers.TryGetValue(index, out rend)?
-				rend : null;
-		}
-
-//		public void updateLocalCamPosition() {
-//			lock(this) {
-//				cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
-//			}
-//			localCamPosition = transform.TransformPoint(cam.transform.position);
-//		}
-
-		public Vector3 getLocalCamPosition() {
-//			lock(this) {
-//				return localCamPosition;
-//			}
-			return Vector3.zero;
-		}
-
-		public Vector3 globalToVoxelPosition(Vector3 globalPosition) {
-			return transform.InverseTransformPoint(globalPosition) / voxelSize();
-		}
-
-		public Vector3 voxelToGlobalPosition(Vector3 voxelPosition) {
-			return transform.TransformPoint(voxelPosition * voxelSize());
-		}
-
-		public float voxelSize() {
-			return sizes[maximumDetail];
-		}
-
-		public Voxel[,,] getArray(uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
-			if (xMax > dimmension)
-				xMax = dimmension;
-			if (yMax > dimmension)
-				yMax = dimmension;
-			if (zMax > dimmension)
-				zMax = dimmension;
-			Voxel[,,] array = new Voxel[xMax -xMin, yMax -yMin, zMax -zMin];
-			head.putInArray(ref array, new Index(maximumDetail), xMin, yMin, zMin, xMax, yMax, zMax);
-			return array;
-		}
-
-		internal void addUpdateCheckJob() {
-			++updateCheckJobs;
-		}
-
-		internal void removeUpdateCheckJob() {
-			--updateCheckJobs;
+		public void wipe() {
+			clearRenderers();
+			if (head != null) {
+				realHead = null;
+			}
+			dirty = true;
 		}
 
 		public void clearRenderers() {
@@ -247,86 +224,14 @@ namespace Vox {
 
 		public void generateRenderers() {
 			clearRenderers();
-			//updateLocalCamPosition();
 			enqueueCheck(new UpdateCheckJob(head, this, 0));
-		}
-
-		public void wipe() {
-			clearRenderers();
-			if (head != null) {
-				head = null;
-			}
-			dirty = true;
-		}
-
-		//public void OnGUI() {
-		//	GUI.Label(new Rect(0, 200, 200, 20), "Voxel Triangle Count: " + VoxelRenderer.triangleCount);
-		//	GUI.Label(new Rect(0, 220, 200, 20), "Voxel Vertex Count: " + VoxelRenderer.vertexCount);
-		//	GUI.Label(new Rect(0, 240, 200, 20), "Voxel Duplicate Triangle Count: " + VoxelRenderer.duplicateTriangleCount);
-		//}
-
-		public void OnBeforeSerialize() {
-			lock(this) {
-				//print("Serializing Voxels");
-				if (voxelData.Length < 1 || dirty || head == null) {
-					//print("Voxels dirty");
-					dirty = false;
-					voxelData = new byte[0];
-					if (getHead() != null) {
-						MemoryStream stream = new MemoryStream();
-						BinaryWriter writer = new BinaryWriter(stream);
-						getHead().serialize(writer);
-						voxelData = stream.ToArray();
-						stream.Close();
-					}
-				}
-			}
-		}
-
-		public void OnAfterDeserialize() {
-			//			clearRenderers();
-			//print("Deserializing");
-			lock(this) {
-				if (voxelData.Length > 0) {
-					MemoryStream stream = new MemoryStream(voxelData);
-					BinaryReader reader = new BinaryReader(stream);
-					head = (VoxelBlock)VoxelHolder.deserialize(reader);
-					stream.Close();
-				}
-
-				// relink renderers
-				//relinkRenderers();
-				enqueueJob(new LinkRenderersJob(this));
-			}
-		}
-
-		public Dictionary<Index, List<GameObject>> findRendererObjects() {
-			Dictionary<Index, List<GameObject>> meshes = new Dictionary<Index, List<GameObject>>();
-			foreach (Transform child in transform) {
-				VoxelMeshObject meshObject = child.GetComponent<VoxelMeshObject>();
-				if (meshObject == null)
-					continue;
-				List<GameObject> objects;
-				//if (meshObject.index == null) {
-				//	print("wow");
-				//	continue;
-				//}
-				//print("Found valid child");
-				meshes.TryGetValue(meshObject.index, out objects);
-				if (objects == null) {
-					objects = new List<GameObject>();
-					meshes[meshObject.index] = objects;
-				}
-				objects.Add(meshObject.gameObject);
-			}
-			return meshes;
 		}
 
 		public void relinkRenderers() {
 			relinkRenderers(findRendererObjects());
 		}
 
-		public void relinkRenderers(Dictionary<Index, List<GameObject>> meshes) {
+		private void relinkRenderers(Dictionary<Index, List<GameObject>> meshes) {
 			lock(this) {
 				//print("Start Renderers: " + renderers.Count);
 				foreach (Index index in meshes.Keys) {
@@ -346,56 +251,86 @@ namespace Vox {
 			}
 		}
 
+		public void OnBeforeSerialize() {
+			lock (this) {
+				if (voxelData.Length < 1 || dirty || head == null) {
+					dirty = false;
+					voxelData = new byte[0];
+					if (head != null) {
+						MemoryStream stream = new MemoryStream();
+						BinaryWriter writer = new BinaryWriter(stream);
+						head.serialize(writer);
+						voxelData = stream.ToArray();
+						stream.Close();
+					}
+				}
+			}
+		}
+
+		public void OnAfterDeserialize() {
+			lock (this) {
+				if (voxelData.Length > 0) {
+					initialize();
+					MemoryStream stream = new MemoryStream(voxelData);
+					BinaryReader reader = new BinaryReader(stream);
+					realHead = (VoxelBlock)VoxelHolder.deserialize(reader);
+					stream.Close();
+				}
+
+				// relink renderers
+				enqueueJob(new LinkRenderersJob(this));
+			}
+		}
+
 		public bool import(string fileName) {
-			clearRenderers();
 			Stream stream = File.OpenRead(fileName);
 			BinaryReader reader = new BinaryReader(stream);
+			bool successful = read(reader);
+			stream.Close();
+			return successful;
+		}
+
+		public void export(string fileName) {
+			if (head != null) {
+				Stream stream = File.Create(fileName);
+				BinaryWriter writer = new BinaryWriter(stream);
+				writer.Write(FILE_FORMAT_VERSION);
+				write(writer);
+				stream.Close();
+			}
+		}
+
+		public bool read(BinaryReader reader) {
 			ulong fileFormatVersion = reader.ReadUInt64();
+			// check format compatibility
 			if (fileFormatVersion != FILE_FORMAT_VERSION
 				&& fileFormatVersion != 1) {
-				stream.Close ();
-				print("Wrong voxel file format version: " +fileFormatVersion +", should be " +FILE_FORMAT_VERSION);
+				print("Wrong voxel data format version: " +fileFormatVersion +", should be " +FILE_FORMAT_VERSION);
 				return false;
 			} else {
+				wipe();
 				// read meta data
 				if (fileFormatVersion > 1) {
-					maximumDetail = reader.ReadByte();
+					maxDepth = reader.ReadByte();
 					int substanceCount = reader.ReadInt32();
 					if (substanceCount > voxelSubstances.Length)
 						System.Array.Resize(ref voxelSubstances, substanceCount);
-					setupLookupTables();
 				}
 
 				// read voxel data
-				head = (VoxelBlock)VoxelHolder.deserialize(reader);
+				realHead = (VoxelBlock)VoxelHolder.deserialize(reader);
 				dirty = true;
-				stream.Close();
 				return true;
 			}
 		}
 
-		public void export(string fileName) {
-			if (getHead() != null) {
-				Stream stream = File.Create(fileName);
-				BinaryWriter writer = new BinaryWriter(stream);
+		public void write(BinaryWriter writer) {
+			// write meta data
+			writer.Write(maxDepth);
+			writer.Write(voxelSubstances.Length);
 
-				// write meta data
-				writer.Write(FILE_FORMAT_VERSION);
-				writer.Write(maxDetail);
-				writer.Write(voxelSubstances.Length);
-
-				// write voxel data
-				getHead().serialize(writer);
-				stream.Close();
-			}
-		}
-
-		public bool generating() {
-			return VoxelThread.getJobCount() > 0 || jobQueue.Count > 0;
-		}
-
-		public int getJobCount() {
-			return jobQueue.Count;
+			// write voxel data
+			head.serialize(writer);
 		}
 
 		public void pauseForGeneration() {
@@ -405,7 +340,15 @@ namespace Vox {
 			Time.timeScale = 0;
 		}
 
-		internal  void enqueueJob(VoxelJob job) {
+		internal void addUpdateCheckJob() {
+			++updateCheckJobs;
+		}
+
+		internal void removeUpdateCheckJob() {
+			--updateCheckJobs;
+		}
+
+		internal void enqueueJob(VoxelJob job) {
 			lock(this) {
 				generatingTrees.Add(this);
 				jobQueue.Enqueue(job);
