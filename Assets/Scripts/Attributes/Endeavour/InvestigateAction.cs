@@ -32,7 +32,7 @@ public class InvestigateAction : Endeavour {
 		bool canSee = false;
 		canSee = (eyes.lookAt(sound.getLabelHandle().getPosition()) == null);
 		if(canSee) {
-			controller.enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null));
+			controller.sightingLost(sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null);
 		}
 		return canSee && Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 5f;
 	}
@@ -41,7 +41,7 @@ public class InvestigateAction : Endeavour {
 		if(message.Type == RobotMessage.MessageType.ACTION) {
 			if(message.Target == sound.getLabelHandle()) {
 				completed = true;
-				controller.enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null));
+				controller.sightingLost(sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null);
 			}
 		}
 	}

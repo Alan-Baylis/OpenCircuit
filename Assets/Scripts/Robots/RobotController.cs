@@ -130,14 +130,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		while (messageQueue.Count > 0) {
 			RobotMessage message = messageQueue.Dequeue();
 
-			if (message.Type == RobotMessage.MessageType.TARGET_SIGHTED) {
-				sightingFound(message.Target, message.TargetPos, message.TargetVelocity);
-				//evaluateActions();
-			} else if(message.Type == RobotMessage.MessageType.TARGET_LOST) {
-				sightingLost(message.Target, message.TargetPos, message.TargetVelocity);
-				//evaluateActions();
-			}
-			else if (message.Type == RobotMessage.MessageType.ACTION) {
+		if (message.Type == RobotMessage.MessageType.ACTION) {
 				foreach( Endeavour action in currentEndeavours) {
 					action.onMessage(message);
 				}

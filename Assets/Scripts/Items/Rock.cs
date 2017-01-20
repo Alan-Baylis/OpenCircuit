@@ -43,9 +43,7 @@ public class Rock : MonoBehaviour {
 			LabelHandle audioLabel = new LabelHandle(transform.position, "rock");
 			audioLabel.addTag(new Tag(TagEnum.Sound, volume, audioLabel));
 			audioLabel.addTag(new Tag(TagEnum.Threat, 5f, audioLabel));
-			AudioEvent rockCollisionSound = new AudioEvent(transform.position, audioLabel, transform.position);
-			rockCollisionSound.broadcast(volume);
-
+			AudioBroadcaster.broadcast(audioLabel, volume);
 		}
 	}
 }

@@ -97,7 +97,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
     }
 
     private void registerSightingFound(Label label) {
-        getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_SIGHTED, "target sighted", label.labelHandle, label.transform.position, targetMap[label].getDirection()));
+		getController().sightingFound(label.labelHandle, label.transform.position, targetMap[label].getDirection());
         targetMap[label].addSighting();
         ++visibleTargetCount;
     }
@@ -120,7 +120,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
     private void clearSighting(Label label) {
         if (targetMap.ContainsKey(label) && targetMap[label].getSightings() == 1) {
             //print("target lost: " + label.name);
-            getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.TARGET_LOST, "target lost", label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection()));
+			getController().sightingLost(label.labelHandle, targetMap[label].getPosition(), targetMap[label].getDirection());
             targetMap[label].removeSighting();
             --visibleTargetCount;
         }

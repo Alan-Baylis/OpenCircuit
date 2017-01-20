@@ -3,7 +3,7 @@
 public class RobotMessage {
 
 	public enum MessageType {
-		TARGET_SIGHTED, TARGET_LOST, ACTION
+		ACTION
 	}
 
 	string message;

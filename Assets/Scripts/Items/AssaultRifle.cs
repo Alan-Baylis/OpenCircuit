@@ -191,8 +191,7 @@ public class AssaultRifle : AbstractGun {
 			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
 			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
 			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-			AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-			gunshotEvent.broadcast(soundTag.severity);
+			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
 		} else {
 			audioLabel.setPosition(transform.position);
 			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);
