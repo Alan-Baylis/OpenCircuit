@@ -11,6 +11,9 @@ public class MentalModel {
 	private List<MentalModelUpdateListener> listeners = new List<MentalModelUpdateListener> ();
 
 	public void addSighting(LabelHandle target, Vector3 position, Vector3? direction) {
+		if (!target.hasTags()) {
+			return;
+		}
 		if (targetSightings.ContainsKey (target)) {
 			SensoryInfo info = targetSightings[target];
 			info.addSighting();

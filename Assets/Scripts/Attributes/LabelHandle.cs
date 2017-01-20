@@ -25,6 +25,13 @@ public class LabelHandle {
         return tagMap.ContainsKey(tagName);
     }
 
+	public bool hasTags() {
+		if (label != null) {
+			return label.hasTags();
+		}
+		return tagMap != null && tagMap.Count > 0;
+	}
+
     public Tag getTag(TagEnum tagName) {
 		if (label != null) {
 			return label.getTag(tagName);
