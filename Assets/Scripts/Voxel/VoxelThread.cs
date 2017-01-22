@@ -84,7 +84,11 @@ namespace Vox {
 
 		private static void updateThreadReader() {
 			while (running) {
-				updateQueue.dequeue().execute();
+				try {
+					updateQueue.dequeue().execute();
+				} catch (System.Exception e) {
+					Debug.LogException(e);
+				}
 				if (updateQueue.count < 1)
 					lock(jobStartCountLock)
 						jobStartCount = 0;
