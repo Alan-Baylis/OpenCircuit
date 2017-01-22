@@ -244,18 +244,21 @@ namespace Vox {
 			control.dirty = true;
 		}
 
-		public void updateAll(uint x, uint y, uint z, byte detailLevel, OcTree control, bool force = false) {
+		public void updateAll(Index index, OcTree control, bool force = false) {
 			// check if this is a high enough detail level.  If not, call the childrens' update methods
-			VoxelRenderer renderer = control.getRenderer(new Index(detailLevel, x, y, z));
-			if (!isRenderSize(control.getVoxelSize(detailLevel), control)) {
+			VoxelRenderer renderer = control.getRenderer(index);
+			if (!isRenderDepth(index.depth, control)) {
 				for (byte xi = 0; xi < CHILD_DIMENSION; ++xi) {
 					for (byte yi = 0; yi < CHILD_DIMENSION; ++yi) {
 						for (byte zi = 0; zi < CHILD_DIMENSION; ++zi) {
 							if (children[xi, yi, zi].GetType() == typeof(Voxel)) {
 								children[xi, yi, zi] = new VoxelBlock((Voxel)children[xi, yi, zi]);
 							}
-							UpdateCheckJob job = new UpdateCheckJob((VoxelBlock)children[xi, yi, zi], control, (byte)(detailLevel + 1));
-							job.setOffset((byte)(x * CHILD_DIMENSION + xi), (byte)(y * CHILD_DIMENSION + yi), (byte)(z * CHILD_DIMENSION + zi));
+							Index subIndex = new Index((byte)(index.depth +1),
+								(byte)(index.x * CHILD_DIMENSION + xi),
+								(byte)(index.y * CHILD_DIMENSION + yi),
+								(byte)(index.z * CHILD_DIMENSION + zi));
+							UpdateCheckJob job = new UpdateCheckJob((VoxelBlock)children[xi, yi, zi], control, subIndex);
 							control.enqueueCheck(job);
 						}
 					}
@@ -265,34 +268,37 @@ namespace Vox {
 
 			// check if we already have a mesh
 			if (renderer == null) {
-				renderer = new VoxelRenderer(new Index(detailLevel, x, y, z), control);
+				renderer = new VoxelRenderer(index, control);
 			} else if (!force) {
 				return;
 			}
 
 			// We should generate a mesh
-			GenMeshJob updateJob = new GenMeshJob(this, control, detailLevel);
-			updateJob.setOffset(x, y, z);
+			GenMeshJob updateJob = new GenMeshJob(this, control, index);
 			control.enqueueUpdate(updateJob);
 		}
 
-		public static bool isRenderSize(float size, OcTree control) {
-			return control.getVoxelSize(control.maxDepth - VoxelRenderer.VOXEL_COUNT_POWER) == size;
+		public static bool isRenderDepth(byte depth, OcTree control) {
+			return control.renderDepth - VoxelRenderer.VOXEL_COUNT_POWER == depth;
 		}
 
 		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
+			if (position.depth == 0) {
+				array[position.x -xMin, position.y -yMin, position.z -zMin] = toVoxel();
+				return;
+			}
 			uint size = 1u << (CHILD_COUNT_POWER *position.depth -CHILD_COUNT_POWER);
 			for(uint xi=0; xi<CHILD_DIMENSION; ++xi) {
 				uint xPos = position.x +xi *size;
-				if (xPos > xMax || xPos +size < xMin)
+				if (xPos >= xMax || xPos +size <= xMin)
 					continue;
 				for (uint yi=0; yi<CHILD_DIMENSION; ++yi) {
 					uint yPos = position.y +yi *size;
-					if (yPos > yMax || yPos +size < yMin)
+					if (yPos >= yMax || yPos +size <= yMin)
 						continue;
 					for (uint zi=0; zi<CHILD_DIMENSION; ++zi) {
 						uint zPos = position.z +zi *size;
-						if (zPos > zMax || zPos +size < zMin)
+						if (zPos >= zMax || zPos +size <= zMin)
 							continue;
 						children[xi, yi, zi].putInArray(ref array, new Index((byte)(position.depth -1), xPos, yPos, zPos), xMin, yMin, zMin, xMax, yMax, zMax);
 					}

@@ -4,6 +4,8 @@ namespace Vox {
 	[System.Serializable]
 	public struct Index {
 
+		public static readonly Index zero = new Index(0);
+
 		public byte depth;
 		public uint x, y, z;
 

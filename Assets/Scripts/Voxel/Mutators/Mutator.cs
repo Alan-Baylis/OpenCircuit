@@ -47,8 +47,7 @@ namespace Vox {
 
 				// update meshes if appropriate
 				if (childPos.depth == app.tree.maxDepth - VoxelRenderer.VOXEL_COUNT_POWER) {
-					UpdateCheckJob job = new UpdateCheckJob(block, app.tree, childPos.depth);
-					job.setOffset((byte)childPos.x, (byte)childPos.y, (byte)childPos.z);
+					UpdateCheckJob job = new UpdateCheckJob(block, app.tree, childPos);
 					job.setForce(true);
 					app.jobs.Add(job);
 				}

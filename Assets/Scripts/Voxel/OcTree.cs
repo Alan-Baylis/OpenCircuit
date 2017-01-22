@@ -37,6 +37,7 @@ namespace Vox {
 		public bool reduceMeshes = false;
 		public float reductionAmount = 0.1f;
 		public byte maxDepth = 7;
+		public byte renderDepth = 7;
 		public float width = 128;
 
 
@@ -90,6 +91,10 @@ namespace Vox {
 			return getVoxelSize(maxDepth);
 		} }
 
+		public float voxelRenderSize { get {
+			return getVoxelSize(renderDepth);
+		} }
+
 		public VoxelBlock head { get {
 			return realHead;
 		} }
@@ -108,6 +113,10 @@ namespace Vox {
 				rend : null;
 		}
 
+		public uint getDimmension(byte depth) {
+			return (uint)(1 << depth);
+		}
+
 		public Vector3 globalToVoxelPosition(Vector3 globalPosition) {
 			return transform.InverseTransformPoint(globalPosition) / voxelSize;
 		}
@@ -116,12 +125,13 @@ namespace Vox {
 			return transform.TransformPoint(voxelPosition * voxelSize);
 		}
 
-		public Voxel[,,] getArray(uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
-			if (xMax > dimmension)  xMax = dimmension;
-			if (yMax > dimmension)  yMax = dimmension;
-			if (zMax > dimmension)  zMax = dimmension;
+		public Voxel[,,] getArray(uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax, byte depth) {
+			uint dim = getDimmension(depth);
+			if (xMax > dim)  xMax = dim;
+			if (yMax > dim)  yMax = dim;
+			if (zMax > dim)  zMax = dim;
 			Voxel[,,] array = new Voxel[xMax -xMin, yMax -yMin, zMax -zMin];
-			head.putInArray(ref array, new Index(maxDepth), xMin, yMin, zMin, xMax, yMax, zMax);
+			head.putInArray(ref array, new Index(depth), xMin, yMin, zMin, xMax, yMax, zMax);
 			return array;
 		}
 
@@ -224,7 +234,7 @@ namespace Vox {
 
 		public void generateRenderers() {
 			clearRenderers();
-			enqueueCheck(new UpdateCheckJob(head, this, 0));
+			enqueueCheck(new UpdateCheckJob(head, this, Index.zero));
 		}
 
 		public void relinkRenderers() {

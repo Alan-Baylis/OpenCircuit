@@ -6,15 +6,14 @@ namespace Vox {
 
 	public class GenMeshJob : VoxelJob {
 
-		public uint xOff, yOff, zOff;
-		public byte detailLevel;
+		public Index index;
 		private VoxelBlock block;
 		private OcTree control;
 
-		public GenMeshJob(VoxelBlock block, OcTree control, byte detailLevel) {
+		public GenMeshJob(VoxelBlock block, OcTree control, Index index) {
 			this.block = block;
 			this.control = control;
-			this.detailLevel = detailLevel;
+			this.index = index;
 		}
 
 		public override void execute() {
@@ -23,12 +22,13 @@ namespace Vox {
 				watch.Start();
 
 				Voxel[,,] array = control.getArray(
-					xOff *VoxelRenderer.VOXEL_DIMENSION,
-					yOff *VoxelRenderer.VOXEL_DIMENSION,
-					zOff *VoxelRenderer.VOXEL_DIMENSION,
-					(xOff +1) *VoxelRenderer.VOXEL_DIMENSION +1,
-					(yOff +1) *VoxelRenderer.VOXEL_DIMENSION +1,
-					(zOff +1) *VoxelRenderer.VOXEL_DIMENSION +1);
+					index.x *VoxelRenderer.VOXEL_DIMENSION,
+					index.y *VoxelRenderer.VOXEL_DIMENSION,
+					index.z *VoxelRenderer.VOXEL_DIMENSION,
+					(index.x +1) *VoxelRenderer.VOXEL_DIMENSION +1,
+					(index.y +1) *VoxelRenderer.VOXEL_DIMENSION +1,
+					(index.z +1) *VoxelRenderer.VOXEL_DIMENSION +1,
+					control.renderDepth);
 				getRenderer().genMesh(array);
 
 				watch.Stop();
@@ -43,15 +43,8 @@ namespace Vox {
 		}
 
 		public VoxelRenderer getRenderer() {
-			Index i = new Index(detailLevel, xOff, yOff, zOff);
-			return control.getRenderer(i);
+			return control.getRenderer(index);
         }
-
-		public void setOffset(uint xOff, uint yOff, uint zOff) {
-			this.xOff = xOff;
-			this.yOff = yOff;
-			this.zOff = zOff;
-		}
 	}
 
 	public class ApplyMeshJob : VoxelJob {
@@ -65,7 +58,7 @@ namespace Vox {
 		public override void execute() {
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
-			if (VoxelBlock.isRenderSize(rend.size, rend.control))
+			if (VoxelBlock.isRenderDepth(rend.index.depth, rend.control))
 				rend.applyMesh();
 			watch.Stop();
 			lock(rend.control) {
@@ -77,30 +70,23 @@ namespace Vox {
 
 	public class UpdateCheckJob : VoxelJob {
 
-		public byte xOff, yOff, zOff;
-		public byte detailLevel;
-		public bool force = false;
+		public Index index;
+        public bool force = false;
 		private VoxelBlock block;
 		private OcTree control;
 		
-		public UpdateCheckJob(VoxelBlock block, OcTree control, byte detailLevel) {
+		public UpdateCheckJob(VoxelBlock block, OcTree control, Index index) {
 			this.block = block;
 			this.control = control;
-			this.detailLevel = detailLevel;
+			this.index = index;
 			control.addUpdateCheckJob();
 		}
 
 		public override void execute() {
 			lock (control) {
-				block.updateAll(xOff, yOff, zOff, detailLevel, control, force);
+				block.updateAll(index, control, force);
 				control.removeUpdateCheckJob();
 			}
-		}
-
-		public void setOffset(byte xOff, byte yOff, byte zOff) {
-			this.xOff = xOff;
-			this.yOff = yOff;
-			this.zOff = zOff;
 		}
 
 		public void setForce(bool force) {

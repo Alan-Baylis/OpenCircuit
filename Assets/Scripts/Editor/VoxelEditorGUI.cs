@@ -403,7 +403,14 @@ public class VoxelEditorGUI : Editor {
 			maxDetail = 16;
 		else if (maxDetail < 4)
 			maxDetail = 4;
-		editor.maxDetail = (byte)maxDetail;
+
+		int maxRenderDetail = Mathf.Min(EditorGUILayout.IntField("Voxel Render Power", editor.maxRenderDetail), maxDetail);
+		if (editor.maxDetail != maxDetail && editor.maxRenderDetail == maxRenderDetail && editor.maxDetail == editor.maxRenderDetail) {
+			editor.maxRenderDetail = (byte) maxDetail;
+		} else {
+			editor.maxRenderDetail = (byte) maxRenderDetail;
+		}
+		editor.maxDetail = (byte) maxDetail;
 
 		long dimension = 1 << editor.maxDetail;
 		++EditorGUI.indentLevel;
@@ -444,12 +451,23 @@ public class VoxelEditorGUI : Editor {
 			reductionAmount = doSliderFloatField("Mesh Reduction Level", editor.reductionAmount, 0, 0.5f);
 		}
 		byte maxDetail = (byte)EditorGUILayout.IntField(new GUIContent("Voxel Power"), editor.maxDepth);
-		if (maxDetail != editor.maxDepth || createColliders != editor.createColliders ||
-			saveMeshes != editor.saveMeshes || reductionAmount != editor.reductionAmount ||
-			useStaticMeshes != editor.useStaticMeshes || reduceMeshes != editor.reduceMeshes) {
-			if (maxDetail != editor.maxDepth) {
-				editor.maxDepth = maxDetail;
+		byte maxRenderDetail = (byte)Mathf.Min(EditorGUILayout.IntField(new GUIContent("Voxel Render Power"), editor.renderDepth), maxDetail);
+		float width = EditorGUILayout.FloatField("World Size (m)", editor.width);
+		if (editor.width < 0)
+			editor.width = 0;
+		if (maxDetail != editor.maxDepth || maxRenderDetail != editor.renderDepth ||
+			createColliders != editor.createColliders || saveMeshes != editor.saveMeshes ||
+			reductionAmount != editor.reductionAmount || useStaticMeshes != editor.useStaticMeshes ||
+			reduceMeshes != editor.reduceMeshes || width != editor.width) {
+			if (editor.maxDepth != maxDetail &&
+				editor.renderDepth == maxRenderDetail &&
+				editor.renderDepth == editor.maxDepth) {
+				editor.renderDepth = maxDetail;
+			} else {
+				editor.renderDepth = maxRenderDetail;
 			}
+			editor.width = width;
+			editor.maxDepth = maxDetail;
 			editor.createColliders = createColliders;
 			editor.useStaticMeshes = useStaticMeshes;
 			editor.saveMeshes = saveMeshes;
@@ -603,6 +621,7 @@ public class VoxelEditorGUI : Editor {
     protected class VoxelEditorParameters {
 		public float baseSize = 32;
 		public byte maxDetail = 6;
+		public byte maxRenderDetail = 6;
 		// public byte isoLevel = 127;
 		// public float lodDetail = 1;
 		// public bool useLod = false;
@@ -625,7 +644,8 @@ public class VoxelEditorGUI : Editor {
         public void setFrom(Vox.VoxelEditor editor) {
             baseSize = editor.width;
             maxDetail = editor.maxDepth;
-            maxChange = editor.maxChange;
+            maxRenderDetail = editor.renderDepth;
+			maxChange = editor.maxChange;
             proceduralSeed = editor.proceduralSeed;
             createColliders = editor.createColliders;
             useStaticMeshes = editor.useStaticMeshes;
@@ -639,6 +659,7 @@ public class VoxelEditorGUI : Editor {
 		public void setTo(Vox.VoxelEditor editor) {
 			editor.width = baseSize;
             editor.maxDepth = maxDetail;
+            editor.renderDepth = maxRenderDetail;
 			editor.maxChange = maxChange;
 			editor.proceduralSeed = proceduralSeed;
             editor.createColliders = createColliders;
