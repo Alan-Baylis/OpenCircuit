@@ -11,10 +11,10 @@ public class HoverJet : AbstractRobotComponent {
 
 	private LabelHandle target = null;
 
-	private NavMeshAgent myNav;
-	public NavMeshAgent nav { get {
+	private UnityEngine.AI.NavMeshAgent myNav;
+	public UnityEngine.AI.NavMeshAgent nav { get {
 			if (myNav == null)
-				myNav = getController().GetComponent<NavMeshAgent>();
+				myNav = getController().GetComponent<UnityEngine.AI.NavMeshAgent>();
 			return myNav;
 		}
 	}
@@ -122,7 +122,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public float calculatePathCost(Vector3 targetPos) {
 
-		NavMeshPath path = new NavMeshPath ();
+		UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath ();
 		if (nav.enabled) {
 			nav.CalculatePath (targetPos, path);
 		}
@@ -205,8 +205,8 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	private Vector3? getNearestNavPos(Vector3 pos) {
-		NavMeshHit hit;
-		NavMesh.SamplePosition(pos, out hit, 5f, NavMesh.AllAreas);
+		UnityEngine.AI.NavMeshHit hit;
+		UnityEngine.AI.NavMesh.SamplePosition(pos, out hit, 5f, UnityEngine.AI.NavMesh.AllAreas);
 		if (hit.hit) {
 			return hit.position;
 		} 

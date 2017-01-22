@@ -118,7 +118,7 @@ public class AssaultRifle : AbstractGun {
 	protected override void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
 		GameObject hitObject = ClientScene.FindLocalObject(hit);
 		Health health = hitObject.GetComponent<Health>();
-		NavMeshAgent navAgent = hitObject.GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent navAgent = hitObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if(navAgent != null) {
 			navAgent.speed -= 2f;
 			if(navAgent.speed < 1f) {
