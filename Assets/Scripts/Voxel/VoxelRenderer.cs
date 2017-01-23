@@ -339,7 +339,6 @@ namespace Vox {
 
 			m.SetTriangles(triangleArray, 0);
 			m.RecalculateBounds();
-			m.Optimize();
 			rend.enabled = true;
 
 			// add a collider for the mesh
@@ -356,7 +355,6 @@ namespace Vox {
 					mesh.normals = colNorms;
 					mesh.SetTriangles(triangles, 0);
 					mesh.RecalculateBounds();
-					mesh.Optimize();
 					collider.sharedMesh = mesh;
 				} else {
 					collider.sharedMesh = m;
