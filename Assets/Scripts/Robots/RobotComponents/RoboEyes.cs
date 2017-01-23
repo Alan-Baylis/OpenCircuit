@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
-using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Robot/Robo Eyes")]
 public class RoboEyes : AbstractVisualSensor {

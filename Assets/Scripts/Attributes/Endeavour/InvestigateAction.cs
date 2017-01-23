@@ -9,7 +9,7 @@ public class InvestigateAction : Endeavour {
 
 	//private System.DateTime creationTime;
 	private float creationTime;
-	private bool completed = false;
+	private bool sighted = false;
 	private Tag sound;
 
 	public InvestigateAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
@@ -20,30 +20,23 @@ public class InvestigateAction : Endeavour {
 		sound = getTagOfType<Tag>(TagEnum.Sound);
 	}
 
-	public override bool isStale() {
-		UnityEngine.AI.NavMeshAgent nav = controller.GetComponent<UnityEngine.AI.NavMeshAgent>();
-
-		return (active && nav.remainingDistance < 2f) || completed || (isComplete()) || !((Time.time - creationTime) < InvestigateAction.expirationTimeSeconds) || Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 1.8f;
-	}
-
-	public bool isComplete() {
-
+	public override void update() {
 		RoboEyes eyes = controller.GetComponentInChildren<RoboEyes>();
 		bool canSee = false;
 		canSee = (eyes.lookAt(sound.getLabelHandle().getPosition()) == null);
-		if(canSee) {
+		if (canSee) {
 			controller.sightingLost(sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null);
 		}
-		return canSee && Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 5f;
+		sighted = canSee && Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 5f;
 	}
 
-	public override void onMessage(RobotMessage message) {
-		if(message.Type == RobotMessage.MessageType.ACTION) {
-			if(message.Target == sound.getLabelHandle()) {
-				completed = true;
-				controller.sightingLost(sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null);
-			}
-		}
+	public override bool isStale() {
+		UnityEngine.AI.NavMeshAgent nav = controller.GetComponent<UnityEngine.AI.NavMeshAgent>();
+
+		return (active && nav.remainingDistance < 2f) 
+			|| sighted 
+			|| !((Time.time - creationTime) < InvestigateAction.expirationTimeSeconds) 
+			|| Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 1.8f;
 	}
 
 	public override System.Type[] getRequiredComponents() {
