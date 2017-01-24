@@ -11,7 +11,7 @@ namespace Vox {
 		public Vector3 worldPosition;
 		public float worldRadius;
 
-		public BlurMutator(OcTree control, Vector3 worldPosition, float worldRadius, float strength) {
+		public BlurMutator(Vector3 worldPosition, float worldRadius, float strength) {
 			this.strength = strength;
 			this.worldPosition = worldPosition;
 			this.worldRadius = worldRadius;

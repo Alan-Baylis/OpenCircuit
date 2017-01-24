@@ -531,14 +531,15 @@ public class VoxelEditorGUI : Editor {
             break;
         case 2:
             editor.setToProcedural();
-            break;
+			editor.generateRenderers();
+			break;
 		case 3:
 			editor.heightmaps = generationParameters.heightmaps;
 			editor.heightmapSubstances = generationParameters.heightmapSubstances;
 			editor.setToHeightmap();
+			editor.generateRenderers();
 			break;
         }
-        editor.generateRenderers();
         setupGeneration = false;
     }
 
@@ -588,11 +589,11 @@ public class VoxelEditorGUI : Editor {
 				sphereMod.overwriteShape = !editor.sphereSubstanceOnly;
 				return sphereMod;
 			case 1:
-				Vox.CubeMutator cubeMod = new Vox.CubeMutator(editor, point, editor.cubeBrushDimensions, new Vox.Voxel(editor.cubeBrushSubstance, opacity), true);
+				Vox.CubeMutator cubeMod = new Vox.CubeMutator(point, editor.cubeBrushDimensions, new Vox.Voxel(editor.cubeBrushSubstance, opacity));
 				cubeMod.overwriteShape = !editor.cubeSubstanceOnly;
 				return cubeMod;
 			default:
-				Vox.BlurMutator blurMod = new Vox.BlurMutator(editor, point, editor.smoothBrushSize, editor.smoothBrushStrength);
+				Vox.BlurMutator blurMod = new Vox.BlurMutator(point, editor.smoothBrushSize, editor.smoothBrushStrength);
 				blurMod.blurRadius = editor.smoothBrushBlurRadius;
 				return blurMod;
 		}

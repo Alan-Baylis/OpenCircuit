@@ -4,6 +4,8 @@ namespace Vox {
 
 	public abstract class Mutator {
 
+		public bool ignoreMasks = false;
+
 		/// <summary>
 		/// Applies mutator as configured to a voxel tree.
 		/// </summary>
@@ -73,8 +75,8 @@ namespace Vox {
 		protected abstract Voxel mutate(Application app, Index pos, Action action, Voxel original);
 
 		protected Action checkMasks(OcTree tree, Index p) {
-			// skip if no masks
-			if (tree.masks == null)
+			// skip if no masks or if ignoring masks
+			if (ignoreMasks || tree.masks == null)
 				return new Action(false, true);
 
 			// check against each mask

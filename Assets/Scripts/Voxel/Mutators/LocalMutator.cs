@@ -4,8 +4,6 @@ using System.Collections;
 namespace Vox {
 	public abstract class LocalMutator: Mutator {
 
-		protected Vector3 position;
-
 		protected override Action checkMutation(Application app, Index p) {
 			LocalApplication lApp = (LocalApplication)app;
 			float voxelSize = calculateVoxelSize(app, p);

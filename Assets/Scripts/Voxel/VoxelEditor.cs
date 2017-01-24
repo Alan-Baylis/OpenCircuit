@@ -71,25 +71,19 @@ namespace Vox {
 		
 		public void setToHeight() {
 			initialize();
-			int dimension = 1 << maxDepth;
-			float height = heightPercentage / 100f * dimension;
-			float[,] map = new float[dimension, dimension];
-			for (int i = 0; i < dimension; i++) {
-				for (int j = 0; j < dimension; j++) {
-					map[j, i] = height;
-				}
-			}
-			head.setToHeightmap(maxDepth, 0, 0, 0, ref map, 0, this);
+			Vector3 widthVector = new Vector3(width, width *heightPercentage /100, width);
+            CubeMutator mut = new CubeMutator(transform.position +widthVector /2, widthVector, Voxel.full);
+			mut.ignoreMasks = true;
+			mut.apply(this);
 		}
 		
 		public void setToSphere() {
 			initialize();
-			VoxelMask[] masks = this.masks;
-			this.masks = new VoxelMask[0];
 			float radius = spherePercentage / 200f * width;
 			float center = width /2f;
-			new SphereMutator(transform.TransformPoint(center, center, center), radius, new Voxel(0, byte.MaxValue)).apply(this);
-			this.masks = masks;
+			SphereMutator mut = new SphereMutator(transform.TransformPoint(center, center, center), radius, new Voxel(0, byte.MaxValue));
+			mut.ignoreMasks = true;
+			mut.apply(this);
 		}
 
 		// this functions sets the values of the voxels, doing all of the procedural generation work
@@ -99,7 +93,7 @@ namespace Vox {
 			initialize();
 
 			// the following generates terrain from a height map
-			UnityEngine.Random.seed = proceduralSeed;
+			Random.seed = proceduralSeed;
 			int dimension = 1 << maxDepth;
 			float acceleration = 0;
 			float height = dimension * 0.6f;
@@ -128,7 +122,7 @@ namespace Vox {
 					else
 						percent = height / (dimension * 0.4f);
 					float roughness = maxChange + 0.2f * (1 - edgeDistancePercent);
-					acceleration += UnityEngine.Random.Range(-roughness * percent, roughness * (1 - percent));
+					acceleration += Random.Range(-roughness * percent, roughness * (1 - percent));
 					acceleration = Mathf.Min(Mathf.Max(acceleration, -roughness * 7), roughness * 7);
 					height = Mathf.Min(Mathf.Max(height + acceleration, 0), dimension);
 					heightMap[x, z] = height;

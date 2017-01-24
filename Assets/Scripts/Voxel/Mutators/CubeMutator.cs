@@ -14,7 +14,7 @@ namespace Vox {
 		public Vector3 worldPosition;
 		private Vector3 worldDimensions;
 
-		public CubeMutator(OcTree control, Vector3 worldPosition, Vector3 worldDimensions, VoxelHolder value, bool updateMesh) {
+		public CubeMutator(Vector3 worldPosition, Vector3 worldDimensions, VoxelHolder value) {
 			this.worldPosition = worldPosition;
 			this.worldDimensions = worldDimensions;
 			this.value = value.toVoxel();
