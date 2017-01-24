@@ -2,18 +2,12 @@
 
 public class RobotMessage {
 
-	public enum MessageType {
-		ACTION
-	}
-
 	string message;
-	MessageType type;
 	LabelHandle target;
 	Vector3 targetPos;
 	Vector3? targetVelocity;
 
-	public RobotMessage(MessageType type, string message, LabelHandle target, Vector3 targetPos, Vector3? velocity) {
-		this.type = type;
+	public RobotMessage(string message, LabelHandle target, Vector3 targetPos, Vector3? velocity) {
 		this.message = message;
 		this.target = target;
 		this.targetPos = targetPos;
@@ -31,15 +25,6 @@ public class RobotMessage {
 		}
 		set {
 			message = value;
-		}
-	}
-
-	public MessageType Type {
-		get {
-			return type;
-		}
-		set {
-			type = value;
 		}
 	}
 

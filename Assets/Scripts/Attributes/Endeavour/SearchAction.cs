@@ -33,7 +33,7 @@ public class SearchAction : Endeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if (message.Type == RobotMessage.MessageType.ACTION && message.Message == HoverJet.TARGET_REACHED) {
+		if (message.Message == HoverJet.TARGET_REACHED) {
 			lastSeen = Time.time;
 		}
 	}

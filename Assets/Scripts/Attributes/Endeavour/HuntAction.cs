@@ -33,9 +33,9 @@ public class HuntAction : Endeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
+		if(message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
             jet.stop();
-		} else if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.RELEASED_CAPTURED_MESSAGE)) {
+		} else if (message.Message.Equals(AbstractArms.RELEASED_CAPTURED_MESSAGE)) {
 			jet.setTarget(target.getLabelHandle(), false);
 		}
 	}

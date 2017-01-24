@@ -173,11 +173,7 @@ public class HoverJet : AbstractRobotComponent {
 					if (target != null && !hasMatchedTargetRotation()) {
 						getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
 					} else {
-						getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, goal.Value, null));
-						target = null;
-						targetLocation = null;
-						nav.Stop();
-						return;
+						getController().enqueueMessage(new RobotMessage(TARGET_REACHED, target, goal.Value, null));
 					}
 				}
 

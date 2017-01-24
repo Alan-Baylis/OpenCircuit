@@ -62,7 +62,7 @@ public class GrappleArms : AbstractArms {
 	public override void releaseCaptured() {
 		if (captured != null) {
 			captured.clearTag(TagEnum.Grabbed);
-			getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, RELEASED_CAPTURED_MESSAGE, captured.labelHandle, captured.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(RELEASED_CAPTURED_MESSAGE, captured.labelHandle, captured.transform.position, null));
 
             NetworkIdentity netId = captured.GetComponent<NetworkIdentity>();
             if (targetReeledIn) {
@@ -181,9 +181,8 @@ public class GrappleArms : AbstractArms {
             NetworkIdentity netId = proposedTarget.GetComponent<NetworkIdentity>();
             captureRigidBody(proposedTarget);
             RpcCaptureTarget(netId.netId);
-			getController().enqueueMessage(new RobotMessage(
-			RobotMessage.MessageType.ACTION, TARGET_CAPTURED_MESSAGE,
-			proposedTarget.labelHandle, proposedTarget.transform.position, null));
+			getController().enqueueMessage(new RobotMessage(TARGET_CAPTURED_MESSAGE,
+				proposedTarget.labelHandle, proposedTarget.transform.position, null));
 			captured.setTag(new Tag(TagEnum.Grabbed, 0, proposedTarget.labelHandle));
 		}
 	}
