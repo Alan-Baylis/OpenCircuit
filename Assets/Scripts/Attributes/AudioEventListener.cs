@@ -3,6 +3,6 @@ using System.Collections;
 
 public interface AudioEventListener {
 
-    void processAudioEvent(AudioEvent eventMessage);
+    void processAudioEvent(LabelHandle audioLabelHandle);
 
 }

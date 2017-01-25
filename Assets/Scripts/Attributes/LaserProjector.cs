@@ -49,7 +49,7 @@ public class LaserProjector : MonoBehaviour {
 			if(currentController == null) {
 				currentController = GetComponentInParent<RobotController>();
 			}
-			currentController.enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, "target scanned", null, new Vector3(), null));
+			currentController.enqueueMessage(new RobotMessage("target scanned", null, new Vector3(), null));
 		}
 
 

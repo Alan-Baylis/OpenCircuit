@@ -71,7 +71,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 				}
 			}
 
-			NavMeshAgent navAgent = body.GetComponent<NavMeshAgent>();
+			UnityEngine.AI.NavMeshAgent navAgent = body.GetComponent<UnityEngine.AI.NavMeshAgent>();
 			navAgent.avoidancePriority = Random.Range(0, 100);
 			navAgent.enabled = true;
 

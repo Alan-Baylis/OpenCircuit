@@ -118,7 +118,7 @@ public class AssaultRifle : AbstractGun {
 	protected override void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
 		GameObject hitObject = ClientScene.FindLocalObject(hit);
 		Health health = hitObject.GetComponent<Health>();
-		NavMeshAgent navAgent = hitObject.GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent navAgent = hitObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if(navAgent != null) {
 			navAgent.speed -= 2f;
 			if(navAgent.speed < 1f) {
@@ -191,8 +191,7 @@ public class AssaultRifle : AbstractGun {
 			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
 			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
 			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-			AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-			gunshotEvent.broadcast(soundTag.severity);
+			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
 		} else {
 			audioLabel.setPosition(transform.position);
 			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);

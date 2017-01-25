@@ -130,6 +130,10 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		tagMap.Remove(type);
 	}
 
+	public bool hasTags() {
+		return tagMap != null && tagMap.Count > 0;
+	}
+
 	public bool hasTag(TagEnum tagName) {
 		return tagMap.ContainsKey(tagName);
 	}

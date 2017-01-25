@@ -186,8 +186,7 @@ public class Parkour : MovementController {
 				LabelHandle audioLabel = new LabelHandle(transform.position, "footsteps");
 				audioLabel.addTag(new Tag(TagEnum.Sound, volume, audioLabel));
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f, audioLabel));
-				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-				footStepsEvent.broadcast(volume);
+				AudioBroadcaster.broadcast(audioLabel, volume);
 				player.inventory.doStep(volume);
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);

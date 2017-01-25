@@ -9,9 +9,9 @@ public class AudioSensor : AbstractRobotComponent {
 
     public static HashSet<AudioSensor> sensors = new HashSet<AudioSensor>();
 
-	public void processAudioEvent(AudioEvent eventMessage) {
+	public void processAudioEvent(LabelHandle soundLabelHandle) {
 		if(hasPower) {
-			getController().enqueueMessage(eventMessage);
+			getController().sightingFound(soundLabelHandle, soundLabelHandle.getPosition(), null);
 		}
 	}
 

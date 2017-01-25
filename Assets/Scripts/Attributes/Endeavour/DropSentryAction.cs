@@ -25,7 +25,7 @@ public class DropSentryAction : Endeavour {
     }
 
     public override void onMessage(RobotMessage message) {
-        if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(HoverJet.TARGET_REACHED)) {
+        if (message.Message.Equals(HoverJet.TARGET_REACHED) && !sentryPoint.getLabelHandle().hasTag(TagEnum.Occupied)) {
 			getController().getRobotComponent<SentrySpawner>().dropSentry();
 			sentryPoint.getLabelHandle().addTag(new Tag(TagEnum.Occupied, 0, sentryPoint.getLabelHandle()));
         }

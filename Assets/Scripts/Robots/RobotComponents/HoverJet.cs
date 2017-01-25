@@ -10,11 +10,12 @@ public class HoverJet : AbstractRobotComponent {
 	public float distanceCost = 1;
 
 	private LabelHandle target = null;
+	private bool hasSentReachedMessage = false;
 
-	private NavMeshAgent myNav;
-	public NavMeshAgent nav { get {
+	private UnityEngine.AI.NavMeshAgent myNav;
+	public UnityEngine.AI.NavMeshAgent nav { get {
 			if (myNav == null)
-				myNav = getController().GetComponent<NavMeshAgent>();
+				myNav = getController().GetComponent<UnityEngine.AI.NavMeshAgent>();
 			return myNav;
 		}
 	}
@@ -45,6 +46,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public void goToPosition(Vector3 ? pos, bool autoBrake) {
 		stop();
+		hasSentReachedMessage = false;
 		nav.autoBraking = autoBrake;
 		if (pos != null) {
 			targetLocation = pos;
@@ -60,6 +62,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
 		stop();
+		hasSentReachedMessage = false;
 		matchTargetRotation = matchRotation;
 		nav.autoBraking = autoBrake;
 		if (target != null) {
@@ -122,7 +125,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public float calculatePathCost(Vector3 targetPos) {
 
-		NavMeshPath path = new NavMeshPath ();
+		UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath ();
 		if (nav.enabled) {
 			nav.CalculatePath (targetPos, path);
 		}
@@ -172,13 +175,12 @@ public class HoverJet : AbstractRobotComponent {
 				if (hasReachedTargetLocation(goal.Value)) {
 					if (target != null && !hasMatchedTargetRotation()) {
 						getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
-					} else {
-						getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, goal.Value, null));
-						target = null;
-						targetLocation = null;
-						nav.Stop();
-						return;
+					} else if (!hasSentReachedMessage) {
+						getController().enqueueMessage(new RobotMessage(TARGET_REACHED, target, goal.Value, null));
+						hasSentReachedMessage = true;
 					}
+				} else {
+					hasSentReachedMessage = false;
 				}
 
 				if (nav.enabled) {
@@ -205,8 +207,8 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	private Vector3? getNearestNavPos(Vector3 pos) {
-		NavMeshHit hit;
-		NavMesh.SamplePosition(pos, out hit, 5f, NavMesh.AllAreas);
+		UnityEngine.AI.NavMeshHit hit;
+		UnityEngine.AI.NavMesh.SamplePosition(pos, out hit, 5f, UnityEngine.AI.NavMesh.AllAreas);
 		if (hit.hit) {
 			return hit.position;
 		} 

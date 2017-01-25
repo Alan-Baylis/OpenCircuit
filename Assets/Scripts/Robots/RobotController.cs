@@ -54,9 +54,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	MentalModel externalMentalModel = null;
 
 	[System.NonSerialized]
-	Queue<RobotMessage> messageQueue = new Queue<RobotMessage>();
-
-	[System.NonSerialized]
 	private bool dirty = false;
 
 	[ServerCallback]
@@ -127,22 +124,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //			}
 //		}
 //#endif
-		while (messageQueue.Count > 0) {
-			RobotMessage message = messageQueue.Dequeue();
 
-			if (message.Type == RobotMessage.MessageType.TARGET_SIGHTED) {
-				sightingFound(message.Target, message.TargetPos, message.TargetVelocity);
-				//evaluateActions();
-			} else if(message.Type == RobotMessage.MessageType.TARGET_LOST) {
-				sightingLost(message.Target, message.TargetPos, message.TargetVelocity);
-				//evaluateActions();
-			}
-			else if (message.Type == RobotMessage.MessageType.ACTION) {
-				foreach( Endeavour action in currentEndeavours) {
-					action.onMessage(message);
-				}
-			}
-		}
 		foreach(Endeavour endeavour in currentEndeavours) {
 			endeavour.update();
 		}
@@ -171,7 +153,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public void enqueueMessage(RobotMessage message) {
-		messageQueue.Enqueue (message);
+		foreach (Endeavour action in currentEndeavours) {
+			action.onMessage(message);
+		}
 	}
 
 	public Dictionary<GoalEnum, Goal> getGoals() {
