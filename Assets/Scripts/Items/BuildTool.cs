@@ -12,9 +12,9 @@ public class BuildTool : ContextItem {
 		Transform cam = holder.getPlayer().cam.transform;
 
 		RaycastHit hitInfo;
-		if (Physics.Raycast (cam.position, cam.forward, hitInfo, range)) {
-			Instantiate(structureBase, hitInfo.point);
-			invoker.popContext(this);
+		if (Physics.Raycast (cam.position, cam.forward, out hitInfo, range)) {
+			Instantiate(structureBase, hitInfo.point, Quaternion.identity);
+			invoker.popContext(this.GetType());
 		}
 	}
 
