@@ -101,10 +101,11 @@ public class Controls : NetworkBehaviour {
 		}
 
 		if (hasControls() && Input.GetButtonDown("Build")) {
-			if (myPlayer.inventory.inContext())
+			if (!myPlayer.inventory.inContext()) {
 				myPlayer.inventory.pushContext(typeof(BuildTool));
-			else
+			} else {
 				myPlayer.inventory.popContext(typeof(BuildTool));
+			}
 		}
 
 

@@ -55,6 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerPrefab: {fileID: 1320519335677618, guid: 6537c4d4a5d624b3caca81e82f2b35a5,
     type: 2}
+  offset: {x: 0, y: 1, z: 0}
 --- !u!114 &114130357571481062
 MonoBehaviour:
   m_ObjectHideFlags: 1

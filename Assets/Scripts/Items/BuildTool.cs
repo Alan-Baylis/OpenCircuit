@@ -13,7 +13,8 @@ public class BuildTool : ContextItem {
 
 		RaycastHit hitInfo;
 		if (Physics.Raycast (cam.position, cam.forward, out hitInfo, range)) {
-			Instantiate(structureBase, hitInfo.point, Quaternion.identity);
+			Label towerBase = (Instantiate(structureBase, hitInfo.point, Quaternion.identity) as GameObject).GetComponent<Label>();
+			GlobalConfig.globalConfig.centralRobotController.sightingFound(towerBase.labelHandle, towerBase.transform.position, null);
 			invoker.popContext(this.GetType());
 		}
 	}
