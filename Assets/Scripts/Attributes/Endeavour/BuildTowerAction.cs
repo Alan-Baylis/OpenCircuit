@@ -39,6 +39,7 @@ public class BuildTowerAction : Endeavour {
 
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals(HoverJet.TARGET_REACHED)) {
+			MonoBehaviour.Destroy(towerBase.getLabelHandle().label.gameObject);
 			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition());
 		}
 	}
