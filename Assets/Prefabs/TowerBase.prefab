@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33428689187969106}
   - component: {fileID: 23210385548278734}
   - component: {fileID: 114893335454119522}
+  - component: {fileID: 114661138521519986}
   m_Layer: 0
   m_Name: TowerBase
   m_TagString: Untagged
@@ -80,6 +81,38 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1095805329720462}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &114661138521519986
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095805329720462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 5
+    i1: 176
+    i2: 90
+    i3: 112
+    i4: 247
+    i5: 226
+    i6: 245
+    i7: 132
+    i8: 56
+    i9: 213
+    i10: 184
+    i11: 106
+    i12: 59
+    i13: 156
+    i14: 25
+    i15: 80
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114893335454119522
 MonoBehaviour:
   m_ObjectHideFlags: 1

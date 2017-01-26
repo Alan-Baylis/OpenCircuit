@@ -5,10 +5,10 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 443534}
-  - 114: {fileID: 11462160}
+  - component: {fileID: 443534}
+  - component: {fileID: 11462160}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -25,10 +25,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 63.48, y: 120.09, z: 62.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &11462160
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -70,6 +70,9 @@ MonoBehaviour:
   - {fileID: 128374, guid: 513924346bbb5814c8b8b5ea37c37576, type: 2}
   - {fileID: 1000011511779768, guid: e0a02f1e9ed63c94387809e019af9502, type: 2}
   - {fileID: 1000012390531196, guid: 4058d0703e17c9c4fa0723e7936363ed, type: 2}
+  - {fileID: 1482100421143698, guid: 41101aa4c0e18c349857c197c7fc2cfd, type: 2}
+  - {fileID: 1320519335677618, guid: 6537c4d4a5d624b3caca81e82f2b35a5, type: 2}
+  - {fileID: 1095805329720462, guid: 05b05a70f7e2f58438d5b86a3b9c1950, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:

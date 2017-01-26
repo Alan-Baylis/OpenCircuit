@@ -6,12 +6,14 @@ public class BuildTowerAction : Endeavour {
 
 	private Tag towerBase;
 	private HoverJet jet;
+	private TowerSpawner towerSpawner;
 
 	public BuildTowerAction (EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
 		: base(factory, controller, goals, tags) {
 		towerBase = getTagOfType<Tag>(TagEnum.BuildDirective);
 		this.name = "build tower";
 		jet = getController().getRobotComponent<HoverJet>();
+		towerSpawner = getController().getRobotComponent<TowerSpawner>();
 
 	}
 
@@ -24,7 +26,7 @@ public class BuildTowerAction : Endeavour {
 	}
 
 	public override Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new System.Type[] { typeof(HoverJet), typeof(TowerSpawner) };
 	}
 
 	public override bool isStale() {
@@ -37,7 +39,7 @@ public class BuildTowerAction : Endeavour {
 
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals(HoverJet.TARGET_REACHED)) {
-			//TODO build a tower
+			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition());
 		}
 	}
 
