@@ -41,7 +41,7 @@ namespace Vox {
 					continue;
 
 				// recurse or set full voxel
-				if (childPos.depth < app.tree.maxDepth && (maskAction.doTraverse || action.doTraverse))
+				if (canTraverse(childPos, app) && (maskAction.doTraverse || action.doTraverse))
 					apply(app, block.expand(childPos.xLocal, childPos.yLocal, childPos.zLocal), childPos);
 				else
 					block.children[childPos.xLocal, childPos.yLocal, childPos.zLocal] =
@@ -104,6 +104,10 @@ namespace Vox {
             int min = voxelPos * voxelSize;
 			int max = min + voxelSize;
 			return min >= pos ? -1: (max <= pos ? 1 : 0);
+		}
+
+		protected static bool canTraverse(Index pos, Application app) {
+			return pos.depth < app.tree.maxDepth;
 		}
 
 		/// <summary>

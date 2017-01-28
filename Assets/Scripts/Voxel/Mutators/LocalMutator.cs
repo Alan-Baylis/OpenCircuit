@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Vox {
 	public abstract class LocalMutator: Mutator {
@@ -8,7 +7,7 @@ namespace Vox {
 			LocalApplication lApp = (LocalApplication)app;
 			float voxelSize = calculateVoxelSize(app, p);
 			Vector3 diff = calculateDiff(lApp.position, p, voxelSize);
-			LocalAction action = checkMutation(lApp, p, diff, voxelSize);
+			LocalAction action = checkMutation(lApp, p, diff, voxelSize, canTraverse(p, app));
 			action.voxelSize = voxelSize;
 			action.diff = diff;
 			return action;
@@ -18,7 +17,7 @@ namespace Vox {
 			return mutate((LocalApplication)app, p, (LocalAction)action, original);
 		}
 
-		public abstract LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize);
+		public abstract LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse);
 
 		public abstract Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original);
 

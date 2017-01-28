@@ -531,13 +531,11 @@ public class VoxelEditorGUI : Editor {
             break;
         case 2:
             editor.setToProcedural();
-			editor.generateRenderers();
 			break;
 		case 3:
 			editor.heightmaps = generationParameters.heightmaps;
 			editor.heightmapSubstances = generationParameters.heightmapSubstances;
 			editor.setToHeightmap();
-			editor.generateRenderers();
 			break;
         }
         setupGeneration = false;

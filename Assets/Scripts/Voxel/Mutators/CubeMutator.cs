@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System;
 
 namespace Vox {
 
@@ -35,7 +33,7 @@ namespace Vox {
 			return app;
 		}
 
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize) {
+		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
 			CubeApp cApp = (CubeApp)app;
 			CubeAction action = new CubeAction();
 			if (p.depth >= app.tree.maxDepth)
@@ -63,7 +61,7 @@ namespace Vox {
 
 		public override Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original) {
 			CubeAction cAction = (CubeAction)action;
-			byte newOpacity = (byte)((original.averageOpacity() * (1 - cAction.percentInside) + value.averageOpacity() * (cAction.percentInside)));
+			byte newOpacity = (byte)(original.averageOpacity() * (1 - cAction.percentInside) + value.averageOpacity() * cAction.percentInside);
 			byte newSubstance = original.averageMaterialType();
 			if (overwriteSubstance && cAction.percentInside > 0.5)
 				newSubstance = value.averageMaterialType();
@@ -74,8 +72,6 @@ namespace Vox {
 
 		protected double percentOverlapping(double lower, double upper, double halfVoxelSize, ref bool outside, ref bool inside) {
             if (upper > lower + halfVoxelSize) {
-				outside |= false;
-				inside &= true;
 				return 1;
 			} else if (upper < lower - halfVoxelSize) {
 				outside = true;

@@ -32,16 +32,16 @@ namespace Vox {
 			LocalApplication lApp = (LocalApplication)app;
 			float voxelSize = calculateVoxelSize(app, p);
 			Vector3 diff = calculateDiff(lApp.position, p, voxelSize);
-			LocalAction action = checkMutation(lApp, p, diff, voxelSize);
+			LocalAction action = checkMutation(lApp, p, diff, voxelSize, canTraverse(p, app));
 			action.voxelSize = voxelSize;
 			return action;
 		}
 
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize) {
+		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
 			LineApplication lApp = (LineApplication) app;
 			Vector3 cp = closestPointToPath(lApp.points, diff);
 			Vector3 virtualDiff = diff - cp;
-			LocalAction action = child.checkMutation(((LineApplication)app).childApp, p, virtualDiff, voxelSize);
+			LocalAction action = child.checkMutation(((LineApplication)app).childApp, p, virtualDiff, voxelSize, canTraverse);
 			action.diff = virtualDiff;
 			return action;
 		}

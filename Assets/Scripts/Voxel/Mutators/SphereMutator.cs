@@ -33,7 +33,7 @@ namespace Vox {
 			return app;
 		}
 
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize) {
+		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
 			SphereApp sApp = (SphereApp)app;
 			SphereAction action = new SphereAction();
 			action.disSqr = diff.sqrMagnitude;

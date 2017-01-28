@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using Random = UnityEngine.Random;
 
 
 namespace Vox {
@@ -57,15 +59,18 @@ namespace Vox {
 			initialize();
 			int dimension = heightmaps[0].height;
 
+			Vector3 cube = Vector3.one * width;
 			for (int index = 0; index < heightmaps.Length; ++index ) {
-				float[,] map = new float[dimension, dimension];
+				double[,] map = new double[dimension, dimension];
 				for (int i = 0; i < heightmaps[index].height; i++) {
 					for (int j = 0; j < heightmaps[index].width; j++) {
-						Color pix = heightmaps[index].GetPixel((dimension - 1) - i, j);
-						map[j, i] = ((pix.r + pix.g + pix.b) / 3.0f) * dimension;
+						Color pix = heightmaps[index].GetPixel(dimension - 1 - i, j);
+						map[j, i] = (pix.r + pix.g + pix.b) / 3.0;
 					}
 				}
-				head.setToHeightmap(maxDepth, 0, 0, 0, ref map, heightmapSubstances[index], this);
+				HeightmapMutator mut = new HeightmapMutator(transform.position + cube /2, cube, map, heightmapSubstances[index]);
+				mut.ignoreMasks = true;
+				mut.apply(this);
 			}
 		}
 		
@@ -95,10 +100,10 @@ namespace Vox {
 			// the following generates terrain from a height map
 			Random.seed = proceduralSeed;
 			int dimension = 1 << maxDepth;
-			float acceleration = 0;
-			float height = dimension * 0.6f;
-			float[,] heightMap = new float[dimension, dimension];
-			float[,] accelMap = new float[dimension, dimension];
+			double acceleration = 0;
+			double height = dimension * 0.6f;
+			double[,] heightMap = new double[dimension, dimension];
+			double[,] accelMap = new double[dimension, dimension];
 			byte[,] matMap = new byte[dimension, dimension];
 			for (int x = 0; x < dimension; ++x) {
 				for (int z = 0; z < dimension; ++z) {
@@ -116,20 +121,30 @@ namespace Vox {
 					}
 					float edgeDistance = Mathf.Max(Mathf.Abs(dimension / 2 - x - 10), Mathf.Abs(dimension / 2 - z - 10));
 					float edgeDistancePercent = 1 - edgeDistance / (dimension / 2);
-					float percent;
+					double percent;
 					if (edgeDistancePercent < 0.2)
 						percent = height / (dimension * 0.6f) - 0.4f;
 					else
 						percent = height / (dimension * 0.4f);
 					float roughness = maxChange + 0.2f * (1 - edgeDistancePercent);
-					acceleration += Random.Range(-roughness * percent, roughness * (1 - percent));
-					acceleration = Mathf.Min(Mathf.Max(acceleration, -roughness * 7), roughness * 7);
-					height = Mathf.Min(Mathf.Max(height + acceleration, 0), dimension);
+					acceleration += Random.Range((float)(-roughness * percent), (float)(roughness * (1 - percent)));
+					acceleration = Math.Min(Math.Max(acceleration, -roughness * 7), roughness * 7);
+					height = Math.Min(Math.Max(height + acceleration, 0), dimension);
 					heightMap[x, z] = height;
 					accelMap[x, z] = acceleration;
 				}
 			}
-			head.setToHeightmap(maxDepth, 0, 0, 0, ref heightMap, matMap, this);
+
+			for (int x = 0; x < dimension; ++x) {
+				for (int z = 0; z < dimension; ++z) {
+					heightMap[x, z] /= dimension;
+				}
+			}
+
+			Vector3 cube = Vector3.one * width;
+			HeightmapMutator mut = new HeightmapMutator(transform.position + cube /2, cube, heightMap, matMap);
+			mut.ignoreMasks = true;
+			mut.apply(this);
 
 			// generate trees
 			//for (int x = 0; x < dimension; ++x) {

@@ -31,16 +31,16 @@ namespace Vox {
 
 
 		public void clear() {
-				if (control != null) {
-					lock(control) {
-						control.renderers.Remove(index);
-					}
+			if (control != null) {
+				lock(control) {
+					control.renderers.Remove(index);
 				}
-				removePolyCount();
-				if (obs != null)
-					foreach (GameObject ob in obs) {
-						GameObject.DestroyImmediate(ob);
-					}
+			}
+			removePolyCount();
+			if (obs != null)
+				foreach (GameObject ob in obs) {
+					GameObject.DestroyImmediate(ob);
+				}
 		}
 
 		public VoxelRenderer(Index index, OcTree control):
