@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System;
 
 namespace Vox {
 
@@ -57,7 +55,7 @@ namespace Vox {
 			float percentInside = Mathf.Min((sAction.maxRadius -dis) /(sAction.maxRadius -sAction.minRadius), 1);
 			byte newOpacity = (byte)(original.averageOpacity() * (1 -percentInside) + value.averageOpacity() * percentInside);
 			byte newSubstance = original.averageMaterialType();
-			if (overwriteSubstance && (dis < sApp.radius || percentInside > 0.5f))
+			if (overwriteSubstance && (dis < sApp.radius || percentInside * byte.MaxValue > original.averageOpacity() *0.5f))
 				newSubstance = value.averageMaterialType();
 			if (!overwriteShape)
 				newOpacity = original.averageOpacity();
