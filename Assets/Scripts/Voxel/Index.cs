@@ -8,8 +8,8 @@ namespace Vox {
 
 		public static readonly Index ZERO = new Index(0);
 
-		public readonly byte depth;
-		public readonly uint x, y, z;
+		public byte depth;
+		public uint x, y, z;
 
 		public uint xLocal {get {
 			return x % VoxelBlock.CHILD_DIMENSION;
@@ -84,6 +84,21 @@ namespace Vox {
 			return new Index(lDepth, x >> diff, y >> diff, z >> diff);
 		}
 
+		public void setLevel(byte lDepth) {
+			int diff = lDepth - depth;
+			depth = lDepth;
+			if (diff >= 0) {
+				x <<= diff;
+				y <<= diff;
+				z <<= diff;
+			} else {
+				diff = -diff;
+				x >>= diff;
+				y >>= diff;
+				z >>= diff;
+			}
+		}
+
 		public override bool Equals(object ob) {
 			if (ob == null || GetType() != ob.GetType())
 				return false;
@@ -105,36 +120,26 @@ namespace Vox {
 
 		public static void normalizeDepth(ref Index one, ref Index two) {
 			if (one.depth < two.depth) {
-				one = one.getLevel(two.depth);
+				one.setLevel(two.depth);
 			} else if (one.depth > two.depth) {
-				two = two.getLevel(one.depth);
+				two.setLevel(one.depth);
 			}
 		}
 
-		public static Index maxMerge(params Index[] indices) {
-			Index max = ZERO;
-			foreach(Index index in indices) {
-				Index i = index;
-				normalizeDepth(ref max, ref i);
-				max = new Index(max.depth,
-					Math.Max(i.x, max.x),
-					Math.Max(i.y, max.y),
-					Math.Max(i.z, max.z));
-			}
-			return max;
+		public static Index maxMerge(Index one, Index two) {
+			normalizeDepth(ref one, ref two);
+			return new Index(one.depth,
+				Math.Max(one.x, two.x),
+				Math.Max(one.y, two.y),
+				Math.Max(one.z, two.z));
 		}
 
-		public static Index minMerge(params Index[] indices) {
-			Index min = new Index(0, uint.MaxValue);
-			foreach(Index index in indices) {
-				Index i = index;
-				normalizeDepth(ref min, ref i);
-				min = new Index(min.depth,
-					Math.Min(i.x, min.x),
-					Math.Min(i.y, min.y),
-					Math.Min(i.z, min.z));
-			}
-			return min;
+		public static Index minMerge(Index one, Index two) {
+			normalizeDepth(ref one, ref two);
+			return new Index(one.depth,
+				Math.Min(one.x, two.x),
+				Math.Min(one.y, two.y),
+				Math.Min(one.z, two.z));
 		}
 
 		public Index limit(uint max) {

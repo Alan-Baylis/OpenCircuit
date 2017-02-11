@@ -50,9 +50,14 @@ namespace Vox {
 		}
 
 		protected void readVoxel(ArrayReading reading, VoxelHolder voxel, Index position) {
+			Voxel value = voxel.toVoxel();
+			if (position.depth == min.depth) {
+				Index i = position - min;
+				reading.array[i.x, i.y, i.z] = value;
+				return;
+			}
 			Index start = Index.maxMerge(position, min) -min;
 			Index end = Index.minMerge(position.getNeighbor(1, 1, 1), max) -min;
-			Voxel value = voxel.toVoxel();
 			for(uint xi=start.x; xi<end.x; ++xi) {
 				for(uint yi=start.y; yi<end.y; ++yi) {
 					for(uint zi=start.z; zi<end.z; ++zi) {
