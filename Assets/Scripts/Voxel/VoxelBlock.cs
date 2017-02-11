@@ -1,19 +1,15 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.IO;
-using System;
 
 namespace Vox {
 
 	[ExecuteInEditMode]
 	public class VoxelBlock : VoxelHolder {
 
-		public static int totalConsolidations = 0;
-		public static int skippedSubdivisions = 0;
+		public static int totalConsolidations;
+		public static int skippedSubdivisions;
 		public const byte CHILD_COUNT_POWER = 1;
-		public const int CHILD_DIMENSION = 1 << (CHILD_COUNT_POWER);
+		public const int CHILD_DIMENSION = 1 << CHILD_COUNT_POWER;
 		public const int CHILD_COUNT = CHILD_DIMENSION *CHILD_DIMENSION *CHILD_DIMENSION;
 
 		public VoxelHolder[, ,] children;
@@ -280,30 +276,6 @@ namespace Vox {
 
 		public static bool isRenderDepth(byte depth, OcTree control) {
 			return control.renderDepth - VoxelRenderer.VOXEL_COUNT_POWER == depth;
-		}
-
-		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
-			if (position.depth == 0) {
-				array[position.x -xMin, position.y -yMin, position.z -zMin] = toVoxel();
-				return;
-			}
-			uint size = 1u << (CHILD_COUNT_POWER *position.depth -CHILD_COUNT_POWER);
-			for(uint xi=0; xi<CHILD_DIMENSION; ++xi) {
-				uint xPos = position.x +xi *size;
-				if (xPos >= xMax || xPos +size <= xMin)
-					continue;
-				for (uint yi=0; yi<CHILD_DIMENSION; ++yi) {
-					uint yPos = position.y +yi *size;
-					if (yPos >= yMax || yPos +size <= yMin)
-						continue;
-					for (uint zi=0; zi<CHILD_DIMENSION; ++zi) {
-						uint zPos = position.z +zi *size;
-						if (zPos >= zMax || zPos +size <= zMin)
-							continue;
-						children[xi, yi, zi].putInArray(ref array, new Index((byte)(position.depth -1), xPos, yPos, zPos), xMin, yMin, zMin, xMax, yMax, zMax);
-					}
-				}
-			}
 		}
 
 		public override int canSimplify(out Voxel simplification) {

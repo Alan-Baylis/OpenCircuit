@@ -28,8 +28,6 @@ namespace Vox {
 
 		public abstract void serialize(BinaryWriter writer);
 
-		public abstract void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax);
-
 		public abstract int canSimplify(out Voxel simplification);
 
 		public abstract int cleanArtifacts(out Voxel simplified, VoxelHolder head, byte level, byte maxLevel, int x, int y, int z);

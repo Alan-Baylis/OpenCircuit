@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.IO;
-using System;
 
 namespace Vox {
 
@@ -55,23 +53,6 @@ namespace Vox {
 			return this;
 		}
 
-		public override void putInArray(ref Voxel[,,] array, Index position, uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax) {
-			uint size = 1u << (VoxelBlock.CHILD_COUNT_POWER *position.depth);
-			uint xStart = (uint)Mathf.Max(position.x, xMin) -xMin;
-			uint xEnd = (uint)Mathf.Min(position.x +size, xMax) -xMin;
-			uint yStart = (uint)Mathf.Max(position.y, yMin) -yMin;
-			uint yEnd = (uint)Mathf.Min(position.y +size, yMax) -yMin;
-			uint zStart = (uint)Mathf.Max(position.z, zMin) -zMin;
-			uint zEnd = (uint)Mathf.Min(position.z +size, zMax) -zMin;
-			for(uint xi=xStart; xi<xEnd; ++xi) {
-				for(uint yi=yStart; yi<yEnd; ++yi) {
-					for(uint zi=zStart; zi<zEnd; ++zi) {
-						array[xi, yi, zi] = this;
-					}
-				}
-			}
-		}
-
 		public override int canSimplify(out Voxel simplification) {
 			simplification = this;
 			return 0;
@@ -82,7 +63,7 @@ namespace Vox {
 			if (level < maxLevel)
 				return 0;
 			Voxel[,,] array = new Voxel[3, 3, 3];
-			head.putInArray(ref array, new Index(level), (uint)x -1, (uint)y -1, (uint)z -1, (uint)x +2, (uint)y +2, (uint)z +2);
+//			head.putInArray(ref array, new Index(level), (uint)x -1, (uint)y -1, (uint)z -1, (uint)x +2, (uint)y +2, (uint)z +2);
 			bool solid = isSolid();
 			foreach(Voxel vox in array) {
 				if (vox != null && vox.isSolid() != solid)
