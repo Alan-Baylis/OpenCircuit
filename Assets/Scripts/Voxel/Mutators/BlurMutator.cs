@@ -68,7 +68,7 @@ namespace Vox {
 			public float radius;
 
 			public void setOriginal(OcTree target) {
-				original = target.getArray(min.x, min.y, min.z, max.x + 1, max.y + 1, max.z + 1, target.maxDepth);
+				original = new ArrayReader(min, max.getNeighbor(1, 1, 1)).read(target);
 			}
 		}
 

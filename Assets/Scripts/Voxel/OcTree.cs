@@ -17,14 +17,14 @@ namespace Vox {
 		public const ulong FILE_FORMAT_VERSION = 2;
 
 		[System.NonSerialized]
-		public readonly static HashSet<OcTree> generatingTrees = new HashSet<OcTree>();
+		public static readonly HashSet<OcTree> generatingTrees = new HashSet<OcTree>();
 
 
 
 		// configuration
 		public byte isoLevel = 127;
 		public float lodDetail = 1;
-		public bool useLod = false;
+		public bool useLod;
 		public GameObject trees;
 		public float treeDensity = 0.02f;
 		public float treeSlopeTolerance = 5;
@@ -33,8 +33,8 @@ namespace Vox {
 		public VoxelMask[] masks;
 		public bool createColliders = true;
 		public bool useStaticMeshes = true;
-		public bool saveMeshes = false;
-		public bool reduceMeshes = false;
+		public bool saveMeshes;
+		public bool reduceMeshes;
 		public float reductionAmount = 0.1f;
 		public byte maxDepth = 7;
 		public byte renderDepth = 7;
@@ -123,16 +123,6 @@ namespace Vox {
 
 		public Vector3 voxelToGlobalPosition(Vector3 voxelPosition) {
 			return transform.TransformPoint(voxelPosition * voxelSize);
-		}
-
-		public Voxel[,,] getArray(uint xMin, uint yMin, uint zMin, uint xMax, uint yMax, uint zMax, byte depth) {
-			uint dim = getDimmension(depth);
-			if (xMax > dim)  xMax = dim;
-			if (yMax > dim)  yMax = dim;
-			if (zMax > dim)  zMax = dim;
-			Voxel[,,] array = new Voxel[xMax -xMin, yMax -yMin, zMax -zMin];
-			head.putInArray(ref array, new Index(depth), xMin, yMin, zMin, xMax, yMax, zMax);
-			return array;
 		}
 
 		public bool generating() {
@@ -234,7 +224,7 @@ namespace Vox {
 
 		public void generateRenderers() {
 			clearRenderers();
-			enqueueCheck(new UpdateCheckJob(head, this, Index.zero));
+			enqueueCheck(new UpdateCheckJob(head, this, Index.ZERO));
 		}
 
 		public void relinkRenderers() {

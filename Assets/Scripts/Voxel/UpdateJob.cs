@@ -1,14 +1,11 @@
-using UnityEngine;
-using System.Collections;
-using System;
 
 namespace Vox {
 
 	public class GenMeshJob : VoxelJob {
 
-		public Index index;
-		private VoxelBlock block;
-		private OcTree control;
+		private readonly Index index;
+		private readonly VoxelBlock block;
+		private readonly OcTree control;
 
 		public GenMeshJob(VoxelBlock block, OcTree control, Index index) {
 			this.block = block;
@@ -21,14 +18,8 @@ namespace Vox {
 				System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 				watch.Start();
 
-				Voxel[,,] array = control.getArray(
-					index.x *VoxelRenderer.VOXEL_DIMENSION,
-					index.y *VoxelRenderer.VOXEL_DIMENSION,
-					index.z *VoxelRenderer.VOXEL_DIMENSION,
-					(index.x +1) *VoxelRenderer.VOXEL_DIMENSION +1,
-					(index.y +1) *VoxelRenderer.VOXEL_DIMENSION +1,
-					(index.z +1) *VoxelRenderer.VOXEL_DIMENSION +1,
-					control.renderDepth);
+				Voxel[,,] array = new ArrayReader(index.getLevel(control.renderDepth),
+					VoxelRenderer.VOXEL_DIMENSION +1).read(control);
 				getRenderer().genMesh(array);
 
 				watch.Stop();
