@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
 
 [CustomEditor(typeof(Label), true)]
 public class LabelGUI : Editor {

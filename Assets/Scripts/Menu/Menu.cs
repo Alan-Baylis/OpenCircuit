@@ -250,6 +250,7 @@ public class Menu : MonoBehaviour {
 		// configuration
 		adjustFontSize(skin.label, 0.03f);
 		adjustFontSize(skin.textField, 0.03f);
+		adjustFontSize(skin.button, 0.03f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Server Name: ");
 		serverName = GUI.TextField(convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), serverName);
 		GUI.Label(convertRect(new Rect(0.05f, 0.45f, 0.3f, 0.03f), false), "Robot Spawn Rate: ");
@@ -258,6 +259,13 @@ public class Menu : MonoBehaviour {
 		serverConfig.spawnRateIncreasePerPlayer = numberField(new Rect(0.35f, 0.5f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
 		GUI.Label(convertRect(new Rect(0.05f, 0.55f, 0.3f, 0.03f), false), "Robots per Player: ");
 		serverConfig.robotsPerPlayer = numberField(new Rect(0.35f, 0.55f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
+		GameMode.GameModes [] modes = (GameMode.GameModes[])System.Enum.GetValues(typeof(GameMode.GameModes));
+		List<string> modeStrings = new List<string>();
+		foreach (GameMode.GameModes mode in modes) {
+			modeStrings.Add(mode.ToString());
+		}
+		serverConfig.gameMode = (GameMode.GameModes)System.Enum.Parse(typeof(GameMode.GameModes), "" + dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode)); 
+        
 
 		// back button
 		adjustFontSize(skin.button, backRect.height * 0.8f);
@@ -280,7 +288,7 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, 0.04f);
 		int position = 0;
 		foreach(NetworkBroadcastResult server in servers) {
-			string serverName = System.Text.Encoding.Unicode.GetString(server.broadcastData);
+			string serverName = System.Text.Encoding.Unicode.GetString(server.broadcastData);  
 			if (GUI.Button(convertRect(new Rect(0, 0.05f * position, 0.5f, 0.05f), false), serverName + "   -   " + server.serverAddress)) {
 				host = server.serverAddress;
 				join();
@@ -305,6 +313,11 @@ public class Menu : MonoBehaviour {
 			currentMenu = menuHistory.Pop();
 		}
 	}
+
+	private int dropDownSelector(Rect relativePosition, List<string> options, int startValue) {
+		return GUI.SelectionGrid(convertRect(relativePosition, false), startValue, options.ToArray(), options.Count);
+	}
+
 
 	private float numberField(Rect relativePosition, float startValue) {
 		try {
