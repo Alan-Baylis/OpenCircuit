@@ -84,8 +84,10 @@ public class Menu : MonoBehaviour {
 	// Use this for initialization
 	public void Start() {
 		serverConfig = GlobalConfig.globalConfig.configuration;
-		pause();
-		currentMenu = state.MainMenu;
+		if (activeAtStart) {
+			pause();
+			currentMenu = state.MainMenu;
+		}
     }
 
 	public void OnGUI() {
@@ -355,6 +357,8 @@ public class Menu : MonoBehaviour {
 
 	private void begin() {
 		NetworkManager manager = NetworkManager.singleton;
+		//SceneManager.LoadScene(1);
+
 		manager.StartHost();
 		//player.gameObject.SetActive(true);
 		//GetComponent<Camera>().enabled = false;
@@ -365,6 +369,7 @@ public class Menu : MonoBehaviour {
 		networkDiscovery.Initialize();
 		networkDiscovery.broadcastData = serverName;
 		networkDiscovery.StartAsServer();
+		
 	}
 
     private void quit() {
