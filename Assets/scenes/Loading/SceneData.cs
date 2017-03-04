@@ -1,0 +1,18 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public struct SceneData {
+
+	public string path;
+	public GlobalConfigData configuration;
+	public List<GameMode.GameModes> supportedGameModes;
+
+	public SceneData (string path, GlobalConfigData configuration) {
+		this.path = path;
+		this.configuration = configuration;
+		this.supportedGameModes = new List<GameMode.GameModes>();
+	}
+
+}

@@ -83,7 +83,6 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start() {
-		serverConfig = GlobalConfig.globalConfig.configuration;
 		if (activeAtStart) {
 			pause();
 			currentMenu = state.MainMenu;
@@ -239,6 +238,15 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void doHost() {
+
+		SceneCatalog sceneCatalog = Resources.Load("SceneCatalog") as SceneCatalog;
+		SceneData ? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
+		if (sceneData != null)
+			serverConfig = sceneData.Value.configuration;
+		else
+			serverConfig = GlobalConfigData.getDefault();
+		
+
 		adjustFontSize(skin.label, 0.07f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Configure Server");
 
