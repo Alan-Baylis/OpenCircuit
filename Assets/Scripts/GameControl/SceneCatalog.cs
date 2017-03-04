@@ -5,7 +5,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SceneCatalog", menuName = "SceneCatalog")]
 public class SceneCatalog : ScriptableObject {
 
-	public List<SceneData> scenes;
+	private static SceneCatalog myInstance;
+	public static SceneCatalog sceneCatalog { get {
+			if (myInstance == null) {
+				myInstance = Resources.Load("SceneCatalog") as SceneCatalog;
+			}
+			return myInstance;
+		}
+	}
+
+	public List<SceneData> scenes = new List<SceneData>();
 
 	private Dictionary<string, SceneData> mySceneMap = null;
 

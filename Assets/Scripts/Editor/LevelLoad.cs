@@ -28,8 +28,8 @@ public class LevelLoad {
 		Transform environment = new GameObject("Environment").transform;
 
 
-		// create network manager
-		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab", gameControl);
+		// create SceneLoader
+		createPrefab("Assets/Prefabs/GameControl/SceneLoader.prefab");
 
 		// create game controller
 		CentralRobotController crc = createPrefab("Assets/Prefabs/Robots/CRC.prefab", gameControl)
@@ -50,9 +50,6 @@ public class LevelLoad {
 
 		// create scene camera
 		createPrefab("Assets/Prefabs/GameControl/SceneCamera.prefab", gameControl);
-
-		// create menu
-		createPrefab("Assets/Prefabs/Main Menu.prefab", gameControl);
 
 		// set lighting mode
 		Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;

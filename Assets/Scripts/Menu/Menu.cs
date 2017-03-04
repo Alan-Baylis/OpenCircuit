@@ -239,7 +239,7 @@ public class Menu : MonoBehaviour {
 
 	private void doHost() {
 
-		SceneCatalog sceneCatalog = Resources.Load("SceneCatalog") as SceneCatalog;
+		SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
 		SceneData ? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
 		if (sceneData != null)
 			serverConfig = sceneData.Value.configuration;
@@ -365,7 +365,6 @@ public class Menu : MonoBehaviour {
 
 	private void begin() {
 		NetworkManager manager = NetworkManager.singleton;
-		//SceneManager.LoadScene(1);
 
 		manager.StartHost();
 		//player.gameObject.SetActive(true);

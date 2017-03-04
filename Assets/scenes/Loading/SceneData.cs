@@ -15,4 +15,8 @@ public struct SceneData {
 		this.supportedGameModes = new List<GameMode.GameModes>();
 	}
 
+	public bool isLoadingScene () {
+		return supportedGameModes == null || supportedGameModes.Count == 0;
+	}
+
 }
