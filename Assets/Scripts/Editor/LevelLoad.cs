@@ -27,10 +27,6 @@ public class LevelLoad {
 		Transform gameControl = new GameObject("Game Control").transform;
 		Transform environment = new GameObject("Environment").transform;
 
-
-		// create SceneLoader
-		createPrefab("Assets/Prefabs/GameControl/SceneLoader.prefab");
-
 		// create game controller
 		CentralRobotController crc = createPrefab("Assets/Prefabs/Robots/CRC.prefab", gameControl)
 			.GetComponent<CentralRobotController>();

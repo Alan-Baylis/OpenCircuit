@@ -18,7 +18,7 @@ MonoBehaviour:
       robotSpawnRatePerSecond: 1
       spawnRateIncreasePerPlayer: 0.1
       gameMode: 1
-    supportedGameModes: 
+    supportedGameModes: 01000000
   - path: Assets/scenes/Loading/Loading.unity
     configuration:
       robotsPerPlayer: 3
@@ -26,10 +26,3 @@ MonoBehaviour:
       spawnRateIncreasePerPlayer: 0.1
       gameMode: 1
     supportedGameModes: 
-  - path: Assets/scenes/newleveltest/newleveltest.unity
-    configuration:
-      robotsPerPlayer: 3
-      robotSpawnRatePerSecond: 1
-      spawnRateIncreasePerPlayer: 0.1
-      gameMode: 1
-    supportedGameModes: 00000000
