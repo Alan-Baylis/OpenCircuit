@@ -18,52 +18,53 @@ namespace Vox {
 			this.value = value.toVoxel();
 		}
 
-		public override Application setup(OcTree target) {
-			Vector3 halfDimension = worldDimensions / target.voxelSize /2f;
-			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize;
+		public override App init(OcTree tree) {
+			CubeApp app = new CubeApp(tree);
+			Vector3 halfDimension = worldDimensions / tree.voxelSize /2f;
+			Vector3 center = tree.transform.InverseTransformPoint(worldPosition) / tree.voxelSize;
 			Vector3 exactMin = center - halfDimension;
 			Vector3 exactMax = center + halfDimension;
 
-			CubeApp app = new CubeApp();
-			app.tree = target;
+			app.min = new Index(tree.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(tree.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.halfDimension = halfDimension;
-			app.min = new Index(target.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.position = center;
 			return app;
 		}
 
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
-			CubeApp cApp = (CubeApp)app;
-			CubeAction action = new CubeAction();
+		public override Act checkMutation(App application, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
+			CubeApp app = (CubeApp) application;
+			ActCache actCache = new ActCache();
+			Act act = new Act(actCache);
 			if (p.depth >= app.tree.maxDepth)
 				voxelSize *= 0.5f;
 
-			action.percentInside = 1;
+			actCache.percentInside = 1;
 			bool outside = false;
 			bool inside = true;
 
-			action.percentInside *= 1 - (2 - percentOverlapping(diff.x, cApp.halfDimension.x, voxelSize, ref outside, ref inside)
-				- percentOverlapping(-diff.x, cApp.halfDimension.x, voxelSize, ref outside, ref inside));
-			if (outside) return action;
-			action.percentInside *= 1 - (2 - percentOverlapping(diff.y, cApp.halfDimension.y, voxelSize, ref outside, ref inside)
-				- percentOverlapping(-diff.y, cApp.halfDimension.y, voxelSize, ref outside, ref inside));
-			if (outside) return action;
-			action.percentInside *= 1 - (2 - percentOverlapping(diff.z, cApp.halfDimension.z, voxelSize, ref outside, ref inside)
-				- percentOverlapping(-diff.z, cApp.halfDimension.z, voxelSize, ref outside, ref inside));
-			if (outside) return action;
+			actCache.percentInside *= 1 - (2 - percentOverlapping(diff.x, app.halfDimension.x, voxelSize, ref outside, ref inside)
+				- percentOverlapping(-diff.x, app.halfDimension.x, voxelSize, ref outside, ref inside));
+			if (outside) return act;
+			actCache.percentInside *= 1 - (2 - percentOverlapping(diff.y, app.halfDimension.y, voxelSize, ref outside, ref inside)
+				- percentOverlapping(-diff.y, app.halfDimension.y, voxelSize, ref outside, ref inside));
+			if (outside) return act;
+			actCache.percentInside *= 1 - (2 - percentOverlapping(diff.z, app.halfDimension.z, voxelSize, ref outside, ref inside)
+				- percentOverlapping(-diff.z, app.halfDimension.z, voxelSize, ref outside, ref inside));
+			if (outside) return act;
 
-			action.modify = true;
+			act.modify = true;
 			if (!overwriteShape || !inside)
-				action.doTraverse = true;
-			return action;
+				act.doTraverse = true;
+			return act;
 		}
 
-		public override Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original) {
-			CubeAction cAction = (CubeAction)action;
-			byte newOpacity = (byte)(original.averageOpacity() * (1 - cAction.percentInside) + value.averageOpacity() * cAction.percentInside);
+		public override Voxel mutate(App app, Index p, Act act, Voxel original) {
+			ActCache actCache = (ActCache) act.cache;
+			byte newOpacity = (byte)(original.averageOpacity() * (1 - actCache.percentInside) +
+			                         value.averageOpacity() * actCache.percentInside);
 			byte newSubstance = original.averageMaterialType();
-			if (overwriteSubstance && cAction.percentInside > 0.5)
+			if (overwriteSubstance && actCache.percentInside > 0.5)
 				newSubstance = value.averageMaterialType();
 			if (!overwriteShape)
 				newOpacity = original.averageOpacity();
@@ -78,18 +79,18 @@ namespace Vox {
 				inside = false;
 				return 0;
 			}
-			outside |= false;
 			inside = false;
 			return (upper - lower + halfVoxelSize) /halfVoxelSize /2.0;
 		}
 
-		protected class CubeApp : LocalApplication {
+		public class CubeApp : LocalApp {
 			public Vector3 halfDimension;
+
+			public CubeApp(OcTree tree) : base(tree) { }
 		}
 
-		protected class CubeAction: LocalAction {
+		public class ActCache: LocalActCache {
 			public double percentInside;
-			public CubeAction() : base(false, false) { }
 		}
 
 	}

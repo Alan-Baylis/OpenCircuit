@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Vox {
 
@@ -11,37 +12,49 @@ namespace Vox {
 		/// </summary>
 		/// <param name="target">the voxel tree to apply the mutator to</param>
 		public void apply(OcTree target) {
-			Application app = setup(target);
-			//applyMasksToApplication(app, target);
+			App app = init(target);
+			//applyMasksToApplication(cache, target);
 
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
 			apply(app, target.head, new Index());
 			watch.Stop();
-			UnityEngine.MonoBehaviour.print("Mutator Apply Time: " +watch.Elapsed.TotalSeconds);
+			MonoBehaviour.print("Mutator Apply Time: " +watch.Elapsed.TotalSeconds);
 			foreach(VoxelJob job in app.jobs)
 				job.execute();
 			target.dirty = true;
 		}
 
-		protected void apply(Application app, VoxelBlock block, Index pos) {
+		/// <summary>
+		/// Initializes an Application.
+		/// </summary>
+		/// <param name="app">the mutator application to initialize/setup</param>
+		public virtual App init(OcTree tree) {
+			return new App(tree);
+		}
+
+		public abstract Act checkMutation(App app, Index pos);
+
+		public abstract Voxel mutate(App app, Index pos, Act act, Voxel original);
+
+		protected void apply(App app, VoxelBlock block, Index pos) {
 			Index cornerChild = pos.getChild();
 			for(byte c = 0; c<VoxelBlock.CHILD_COUNT; ++c) {
 				// TODO: use min and max to reduce number of values considered
 				Index childPos = cornerChild.getNeighbor(c);
-				Action action = checkMutation(app, childPos);
+				Act action = checkMutation(app, childPos);
 
 				// check if voxel is outside of modifier area
 				if (!action.modify)
 					continue;
 
 				// check if voxel is inside of masked area
-				Action maskAction = checkMasks(app.tree, childPos);
+				Act maskAction = checkMasks(app.tree, childPos);
 				if (!maskAction.modify)
 					continue;
 
 				// recurse or set full voxel
-				if (canTraverse(childPos, app) && (maskAction.doTraverse || action.doTraverse))
+				if (canTraverse(childPos, app.tree) && (maskAction.doTraverse || action.doTraverse))
 					apply(app, block.expand(childPos.xLocal, childPos.yLocal, childPos.zLocal), childPos);
 				else
 					block.children[childPos.xLocal, childPos.yLocal, childPos.zLocal] =
@@ -56,32 +69,14 @@ namespace Vox {
 			}
 		}
 
-		/// <summary>
-		/// Sets up an Application.
-		/// </summary>
-		/// <param name="target">the voxel tree to setup for applying to</param>
-		/// <returns>the setup Application</returns>
-		public virtual Application setup(OcTree target) {
-			Application app = new Application();
-			app.tree = target;
-			//uint width = (uint)(1 << (target.maximumDetail)) - 1;
-			//app.min = new Index(target.maxDetail);
-			//app.max = new Index(target.maxDetail, width, width, width);
-			return app;
-		}
-
-		protected abstract Action checkMutation(Application app, Index pos);
-
-		protected abstract Voxel mutate(Application app, Index pos, Action action, Voxel original);
-
-		protected Action checkMasks(OcTree tree, Index p) {
+		protected Act checkMasks(OcTree tree, Index p) {
 			// skip if no masks or if ignoring masks
 			if (ignoreMasks || tree.masks == null)
-				return new Action(false, true);
+				return new Act(false, true);
 
 			// check against each mask
 			int voxelSize = 1 << (tree.maxDepth - p.depth);
-			Action action = new Action(false, true); 
+			Act action = new Act(false, true);
 			foreach (VoxelMask mask in tree.masks) {
 				if (mask.active) {
 
@@ -94,7 +89,7 @@ namespace Vox {
 					if (comparison == 0)
 						action.doTraverse = true;
 					else if (comparison < 0)
-						return new Action(false, false);
+						return new Act(false, false);
 				}
 			}
 			return action;
@@ -106,30 +101,55 @@ namespace Vox {
 			return min >= pos ? -1: (max <= pos ? 1 : 0);
 		}
 
-		protected static bool canTraverse(Index pos, Application app) {
-			return pos.depth < app.tree.maxDepth;
+		protected static bool canTraverse(Index pos, OcTree tree) {
+			return pos.depth < tree.maxDepth;
+		}
+
+		protected static float calculateVoxelSize(App app, Index p) {
+			return 1 << (app.tree.maxDepth - p.depth);
+		}
+
+		protected static Vector3 calculateDiff(Vector3 position, Index p, float voxelSize) {
+			return new Vector3(p.x + 0.5f, p.y + 0.5f, p.z + 0.5f) * voxelSize -position;
 		}
 
 		/// <summary>
 		/// Stores data about a specific application of a modifier to a voxel tree.
 		/// </summary>
-		public class Application {
+		public class App {
 			public bool updateMesh;
 			public Index min, max;
-			public OcTree tree;
-			public List<VoxelJob> jobs = new List<VoxelJob>();
+			public readonly OcTree tree;
+			public List<VoxelJob> jobs;
+
+			public App(OcTree tree) {
+				this.tree = tree;
+				updateMesh = false;
+				min = Index.ZERO;
+				max = Index.ZERO;
+				jobs = new List<VoxelJob>();
+			}
 		}
 
 		/// <summary>
-		/// The action to take for a particular voxel in the tree. This means Whether
-		/// to traverse to a lower detail, modify the whole voxel, or leave it alone.
+		/// The action to take for a particular voxel in the tree. This means whether
+		/// to traverse to a higher detail, modify the whole voxel, or leave it alone.
 		/// </summary>
-		public class Action {
+		public struct Act {
 			public bool doTraverse;
 			public bool modify;
-			public Action(bool doTraverse, bool modify) {
+			public object cache;
+
+			public Act(bool doTraverse, bool modify) {
 				this.doTraverse = doTraverse;
 				this.modify = modify;
+				cache = null;
+			}
+
+			public Act(object cache, bool modify=false, bool doTraverse=false) {
+				this.doTraverse = doTraverse;
+				this.modify = modify;
+				this.cache = cache;
 			}
 		}
 

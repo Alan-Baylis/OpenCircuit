@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Vox {
 
@@ -17,65 +16,50 @@ namespace Vox {
 			this.worldRadius = worldRadius;
 		}
 
-		public override Application setup(OcTree target) {
-			float radius = worldRadius / target.voxelSize;
+		public override App init(OcTree tree) {
+			BlurApp app = new BlurApp(tree);
+			float radius = worldRadius / tree.voxelSize;
 			Vector3 radiusCube = new Vector3(radius, radius, radius);
-			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize;
+			Vector3 center = tree.transform.InverseTransformPoint(worldPosition) / tree.voxelSize;
 			Vector3 exactMin = center - radiusCube;
 			Vector3 exactMax = center + radiusCube;
-			BlurApp app = new BlurApp();
-			app.tree = target;
-			app.min = new Index(target.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+			app.min = new Index(tree.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
+			app.max = new Index(tree.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.minRadius = radius - 1;
 			app.maxRadius = radius + 1;
 			app.position = center;
 			app.radius = radius;
-			app.setOriginal(target);
+			app.setOriginal();
 			return app;
 		}
 
-		protected override Action checkMutation(Application app, Index pos) {
-			BlurApp bApp = (BlurApp)app;
-			BlurAction action = new BlurAction();
-			float voxelSize = LocalMutator.calculateVoxelSize(app, pos);
-			Vector3 diff = LocalMutator.calculateDiff(bApp.position, pos, voxelSize);
+		public override Act checkMutation(App application, Index pos) {
+			BlurApp app = (BlurApp) application;
+			Act act = new Act();
+			ActCache actCache = new ActCache();
+			act.cache = actCache;
+			float voxelSize = calculateVoxelSize(app, pos);
+			Vector3 diff = calculateDiff(app.position, pos, voxelSize);
 
-			action.disSqr = diff.sqrMagnitude;
-			float maxRadius = bApp.radius + voxelSize;
+			actCache.disSqr = diff.sqrMagnitude;
+			float maxRadius = app.radius + voxelSize;
 			float maxRadSqr = maxRadius * maxRadius;
-			if (action.disSqr > maxRadSqr)
-				return action;
-			action.doTraverse = true;
-			action.modify = true;
-			return action;
+			if (actCache.disSqr > maxRadSqr)
+				return act;
+			act.doTraverse = true;
+			act.modify = true;
+			return act;
 		}
 
-		protected override Voxel mutate(Application app, Index pos, Action action, Voxel original) {
-			BlurApp bApp = (BlurApp)app;
-			BlurAction bAction = (BlurAction)action;
-			float dis = Mathf.Sqrt(bAction.disSqr);
-			float actualStrength = strength * (1 - (dis / bApp.radius));
+		public override Voxel mutate(App application, Index pos, Act act, Voxel original) {
+			BlurApp app = (BlurApp) application;
+			ActCache actCache = (ActCache) act.cache;
+			float dis = Mathf.Sqrt(actCache.disSqr);
+			float actualStrength = strength * (1 - dis / app.radius);
 			if (actualStrength <= 0)
 				return original;
-			byte newOpacity = calculateOpacity(bApp.original, pos.x - app.min.x, pos.y - app.min.y, pos.z - app.min.z, actualStrength);
+			byte newOpacity = calculateOpacity(app.original, pos.x - app.min.x, pos.y - app.min.y, pos.z - app.min.z, actualStrength);
 			return new Voxel(original.averageMaterialType(), newOpacity);
-		}
-
-		protected class BlurApp: LocalMutator.LocalApplication {
-			public float minRadius, maxRadius;
-			public Voxel[,,] original;
-			public float radius;
-
-			public void setOriginal(OcTree target) {
-				original = new ArrayReader(min, max.getNeighbor(1, 1, 1)).read(target);
-			}
-		}
-
-		protected class BlurAction: Action {
-			public float disSqr;
-
-			public BlurAction() : base(false, false) { }
 		}
 
 		protected byte calculateOpacity(Voxel[,,] original, uint x, uint y, uint z, float strength) {
@@ -91,7 +75,7 @@ namespace Vox {
 				for (int yi = minY; yi < maxY; ++yi) {
 					for (int zi = minZ; zi < maxZ; ++zi) {
 						++count;
-						Vector3 diff = new Vector3(x - xi, y - yi, z - zi); 
+						Vector3 diff = new Vector3(x - xi, y - yi, z - zi);
 						float dis = diff.magnitude;
 						Voxel value = original[xi, yi, zi];
 						if (dis < 0.5f || value == null)
@@ -102,6 +86,23 @@ namespace Vox {
 				}
 			}
 			return (byte)Mathf.Min((float)opacity, byte.MaxValue);
+		}
+
+		public class BlurApp : App {
+			public Vector3 position;
+			public float minRadius, maxRadius;
+			public Voxel[,,] original;
+			public float radius;
+
+			public BlurApp(OcTree tree) : base(tree) { }
+
+			public void setOriginal() {
+				original = new ArrayReader(min, max.getNeighbor(1, 1, 1)).read(tree);
+			}
+		}
+
+		public class ActCache {
+			public float disSqr;
 		}
 	}
 }

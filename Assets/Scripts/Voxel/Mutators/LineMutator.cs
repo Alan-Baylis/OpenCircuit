@@ -14,47 +14,36 @@ namespace Vox {
 			this.child = child;
 		}
 
-		public override Application setup(OcTree target) {
-
-			LineApplication app = new LineApplication();
-			app.tree = target;
-			app.position = target.globalToVoxelPosition(globalPoints[0]);
+		public override App init(OcTree tree) {
+			LineApp app = new LineApp(tree);
+			app.position = tree.globalToVoxelPosition(globalPoints[0]);
 			app.points = new Vector3[globalPoints.Length];
 			for (int i = 0; i < globalPoints.Length; ++i)
-				app.points[i] = target.globalToVoxelPosition(globalPoints[i]) -app.position;
-            app.childApp = (LocalApplication) child.setup(target);
+				app.points[i] = tree.globalToVoxelPosition(globalPoints[i]) -app.position;
+			app.childApp = child.init(tree);
 			// TODO: set min, max and updateMesh.
-
 			return app;
 		}
 
-		protected override Action checkMutation(Application app, Index p) {
-			LocalApplication lApp = (LocalApplication)app;
-			float voxelSize = calculateVoxelSize(app, p);
-			Vector3 diff = calculateDiff(lApp.position, p, voxelSize);
-			LocalAction action = checkMutation(lApp, p, diff, voxelSize, canTraverse(p, app));
-			action.voxelSize = voxelSize;
-			return action;
-		}
-
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
-			LineApplication lApp = (LineApplication) app;
-			Vector3 cp = closestPointToPath(lApp.points, diff);
+		public override Act checkMutation(App application, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
+			LineApp app = (LineApp) application;
+			Vector3 cp = closestPointToPath(app.points, diff);
 			Vector3 virtualDiff = diff - cp;
-			LocalAction action = child.checkMutation(((LineApplication)app).childApp, p, virtualDiff, voxelSize, canTraverse);
-			action.diff = virtualDiff;
-			return action;
+			Act act = child.checkMutation(app.childApp, p, virtualDiff, voxelSize, canTraverse);
+			((LocalActCache)act.cache).diff = virtualDiff;
+			return act;
 		}
 
-		public override Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original) {
-			return child.mutate(((LineApplication)app).childApp, p, action, original);
+		public override Voxel mutate(App application, Index p, Act act, Voxel original) {
+			LineApp app = (LineApp) application;
+			return child.mutate(app.childApp, p, act, original);
 		}
 
 		protected Vector3 closestPointToPath(Vector3[] points, Vector3 point) {
 			float leastSqrDistance = float.PositiveInfinity;
 			Vector3 closestPoint = Vector3.zero;
 			for (int i = 0; i < points.Length - 1; ++i) {
-				Vector3 newClosestPoint = this.closestPointToLine(points[i], points[i + 1], point);
+				Vector3 newClosestPoint = closestPointToLine(points[i], points[i + 1], point);
 				float sqrDistance = (point - newClosestPoint).sqrMagnitude;
 				if (sqrDistance < leastSqrDistance) {
 					leastSqrDistance = sqrDistance;
@@ -72,10 +61,11 @@ namespace Vox {
 			return closest;
 		}
 
-		protected class LineApplication : LocalApplication {
+		public class LineApp : LocalApp {
 			public Vector3[] points;
-			public LocalApplication childApp;
-		}
+			public App childApp;
 
+			public LineApp(OcTree tree) : base(tree) { }
+		}
 	}
 }

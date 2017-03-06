@@ -3,43 +3,35 @@
 namespace Vox {
 	public abstract class LocalMutator: Mutator {
 
-		protected override Action checkMutation(Application app, Index p) {
-			LocalApplication lApp = (LocalApplication)app;
+		public override Act checkMutation(App application, Index p) {
+			LocalApp app = (LocalApp)application;
 			float voxelSize = calculateVoxelSize(app, p);
-			Vector3 diff = calculateDiff(lApp.position, p, voxelSize);
-			LocalAction action = checkMutation(lApp, p, diff, voxelSize, canTraverse(p, app));
-			action.voxelSize = voxelSize;
-			action.diff = diff;
+			Vector3 diff = calculateDiff(app.position, p, voxelSize);
+			Act action = checkMutation(app, p, diff, voxelSize, canTraverse(p, app.tree));
+			if (!action.modify)
+				return action;
+			if (action.cache == null) {
+				action.cache = new LocalActCache();
+			}
+			LocalActCache actCache = action.cache as LocalActCache;
+			if (actCache != null) {
+				actCache.voxelSize = voxelSize;
+				actCache.diff = diff;
+			}
 			return action;
 		}
 
-		protected override Voxel mutate(Application app, Index p, Action action, Voxel original) {
-			return mutate((LocalApplication)app, p, (LocalAction)action, original);
-		}
+		public abstract Act checkMutation(App app, Index p, Vector3 diff, float voxelSize, bool canTraverse);
 
-		public abstract LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse);
-
-		public abstract Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original);
-
-		public static float calculateVoxelSize(Application app, Index p) {
-			return 1 << (app.tree.maxDepth - p.depth);
-		}
-
-		public static Vector3 calculateDiff(Vector3 position, Index p, float voxelSize) {
-			Vector3 diff = new Vector3(p.x + 0.5f, p.y + 0.5f, p.z + 0.5f) * voxelSize -position;
-			return diff;
-		}
-
-		public class LocalApplication: Application {
+		public class LocalApp : App {
 			public Vector3 position;
+
+			public LocalApp(OcTree tree) : base(tree) {}
 		}
 
-		public class LocalAction: Action {
-
+		public class LocalActCache {
 			public float voxelSize;
 			public Vector3 diff;
-
-			public LocalAction(bool doTraverse, bool modified): base(doTraverse, modified) {}
 		}
 
 	}

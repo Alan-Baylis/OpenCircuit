@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
 
 [CustomEditor(typeof(Vox.VoxelEditor))]
@@ -13,7 +10,7 @@ public class VoxelEditorGUI : Editor {
 	protected static readonly GUIContent[] modes = {new GUIContent("Manage"), new GUIContent("Sculpt"), new GUIContent("Mask")};
 	protected static readonly GUIContent[] brushes = {new GUIContent("Sphere"), new GUIContent("Rectangle"), new GUIContent("Smooth")};
 	protected static readonly GUIContent[] generationModes = {new GUIContent("Flat"), new GUIContent("Sphere"), new GUIContent("Procedural"), new GUIContent("Heightmaps")};
-	
+
 	private GUIStyle labelBigFont = null;
 	private GUIStyle foldoutBigFont = null;
 	private GUIStyle buttonBigFont = null;
@@ -52,7 +49,7 @@ public class VoxelEditorGUI : Editor {
 		buttonBigFont.fontSize = 14;
 		tabsBigFont = new GUIStyle(GUI.skin.button);
 		tabsBigFont.fixedHeight = 30;
-		
+
 		Vox.VoxelEditor editor = (Vox.VoxelEditor)target;
 
 		if (editor.generating()) {
@@ -111,30 +108,30 @@ public class VoxelEditorGUI : Editor {
 
 		if (editor.pathPoints != null && editor.pathPoints.Length > 0 && editor.isSelectedBrushPathable() && editor.showPositionHandles) {
 			for (int i = 0; i < editor.pathPoints.Length; ++i)
-				editor.pathPoints[i] = UnityEditor.Handles.PositionHandle(editor.pathPoints[i], Quaternion.identity);
+				editor.pathPoints[i] = Handles.PositionHandle(editor.pathPoints[i], Quaternion.identity);
 		}
 
 		int controlId = GUIUtility.GetControlID(FocusType.Passive);
-		switch(UnityEngine.Event.current.GetTypeForControl(controlId)) {
+		switch(Event.current.GetTypeForControl(controlId)) {
 		case EventType.MouseDown:
-			if (UnityEngine.Event.current.button == 0) {
+			if (Event.current.button == 0) {
 				GUIUtility.hotControl = controlId;
-				applyBrush(editor, HandleUtility.GUIPointToWorldRay(UnityEngine.Event.current.mousePosition));
-				UnityEngine.Event.current.Use();
+				applyBrush(editor, HandleUtility.GUIPointToWorldRay(Event.current.mousePosition));
+				Event.current.Use();
 			}
 			break;
 
 		case EventType.MouseUp:
-			if (UnityEngine.Event.current.button == 0) {
+			if (Event.current.button == 0) {
 				GUIUtility.hotControl = 0;
-				UnityEngine.Event.current.Use();
+				Event.current.Use();
 			}
 			break;
 		case EventType.MouseMove:
 			SceneView.RepaintAll();
 			break;
 		case EventType.KeyDown:
-			if (UnityEngine.Event.current.keyCode == KeyCode.Escape)
+			if (Event.current.keyCode == KeyCode.Escape)
 				editor.pathPoints = null;
 			break;
 		}
@@ -155,7 +152,7 @@ public class VoxelEditorGUI : Editor {
 	protected void doSculptGUI(Vox.VoxelEditor editor) {
 		// brush ghost
 		editor.ghostBrushAlpha = doSliderFloatField("Brush Ghost Opacity", editor.ghostBrushAlpha, 0, 1);
-		
+
 		editor.gridEnabled = EditorGUILayout.Toggle("Snap to Grid", editor.gridEnabled);
         if (editor.gridEnabled) {
             ++EditorGUI.indentLevel;
@@ -196,7 +193,7 @@ public class VoxelEditorGUI : Editor {
 			editor.cubeBrushDimensions.y = EditorGUILayout.FloatField(editor.cubeBrushDimensions.y);
 			editor.cubeBrushDimensions.z = EditorGUILayout.FloatField(editor.cubeBrushDimensions.z);
 			GUILayout.EndHorizontal();
-			
+
 			editor.cubeSubstanceOnly = GUILayout.Toggle(editor.cubeSubstanceOnly, "Change Substance Only");
 			GUILayout.Label("Substance", labelBigFont);
 			editor.cubeBrushSubstance = (byte)GUILayout.SelectionGrid(editor.cubeBrushSubstance, substances, 1);

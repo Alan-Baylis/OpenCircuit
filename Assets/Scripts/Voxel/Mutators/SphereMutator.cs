@@ -16,60 +16,65 @@ namespace Vox {
 			this.worldRadius = worldRadius;
 		}
 
-		public override Application setup(OcTree target) {
-			float radius = worldRadius / target.voxelSize;
+		public override App init(OcTree tree) {
+			SphereApp app = new SphereApp(tree);
+			float radius = worldRadius / tree.voxelSize;
 			Vector3 radiusCube = new Vector3(radius, radius, radius);
-			Vector3 center = target.globalToVoxelPosition(worldPosition);
+			Vector3 center = tree.globalToVoxelPosition(worldPosition);
 			Vector3 exactMin = center - radiusCube;
 			Vector3 exactMax = center + radiusCube;
-			SphereApp app = new SphereApp();
-			app.tree = target;
-			app.min = new Index(target.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
+
+			app.min = new Index(tree.maxDepth, (uint) exactMin.x, (uint) exactMin.y, (uint) exactMin.z);
+			app.max = new Index(tree.maxDepth, (uint) exactMax.x, (uint) exactMax.y, (uint) exactMax.z);
 			app.position = center;
 			app.radius = radius;
 			return app;
 		}
 
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
-			SphereApp sApp = (SphereApp)app;
-			SphereAction action = new SphereAction();
-			action.disSqr = diff.sqrMagnitude;
-			action.maxRadius = sApp.radius + voxelSize;
-			float maxRadSqr = action.maxRadius * action.maxRadius;
-			if (action.disSqr > maxRadSqr)
-				return action;
-			action.modify = true;
-			action.minRadius = Mathf.Max(0, sApp.radius - voxelSize);
-			float minRadSqr = action.minRadius * action.minRadius;
-			if (!overwriteShape || action.disSqr >= minRadSqr)
-				action.doTraverse = true;
-			return action;
+		public override Act checkMutation(App application, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
+			SphereApp app = (SphereApp) application;
+			float maxVoxelWidth = voxelSize *0.8f;
+			float maxRadius = app.radius + maxVoxelWidth;
+			float dis = diff.magnitude;
+			float minRadius = Mathf.Max(0, app.radius - maxVoxelWidth);
+			float percentInside = Mathf.Min((maxRadius -dis) /(maxRadius -minRadius), 1);
+
+			// check if completely outside
+			if (percentInside <= 0.01f)//disSqr > maxRadius * maxRadius)
+				return new Act(false, false);
+
+			// setup cache in case needed later
+			ActCache actCache = new ActCache {
+				dis = dis,
+				percentInside = percentInside
+			};
+			Act act = new Act(actCache, true, !overwriteShape || percentInside < 0.99f);
+			return act;
 		}
 
-		public override Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original) {
-			SphereApp sApp = (SphereApp)app;
-			SphereAction sAction = (SphereAction)action;
+		public override Voxel mutate(App application, Index p, Act act, Voxel original) {
+			SphereApp app = (SphereApp) application;
+			ActCache actCache = (ActCache) act.cache;
 
-			float dis = Mathf.Sqrt(sAction.disSqr);
-			float percentInside = Mathf.Min((sAction.maxRadius -dis) /(sAction.maxRadius -sAction.minRadius), 1);
-			byte newOpacity = (byte)(original.averageOpacity() * (1 -percentInside) + value.averageOpacity() * percentInside);
+//			float dis = Mathf.Sqrt(actCache.disSqr);
+//			float percentInside = Mathf.Min((actCache.maxRadius -dis) /(actCache.maxRadius -actCache.minRadius), 1);
+			byte newOpacity = (byte)(original.averageOpacity() * (1 -actCache.percentInside) + value.averageOpacity() * actCache.percentInside);
 			byte newSubstance = original.averageMaterialType();
-			if (overwriteSubstance && (dis < sApp.radius || percentInside * byte.MaxValue > original.averageOpacity() *0.5f))
+			if (overwriteSubstance && (actCache.dis < app.radius || actCache.percentInside * byte.MaxValue > original.averageOpacity() *0.5f))
 				newSubstance = value.averageMaterialType();
 			if (!overwriteShape)
 				newOpacity = original.averageOpacity();
 			return new Voxel(newSubstance, newOpacity);
 		}
 
-		protected class SphereApp: LocalApplication {
+		public class SphereApp: LocalApp {
 			public float radius;
+
+			public SphereApp(OcTree tree) : base(tree) { }
 		}
 
-		protected class SphereAction: LocalAction {
-			public float disSqr, minRadius, maxRadius;
-
-			public SphereAction(): base(false, false) {}
+		public class ActCache: LocalActCache {
+			public float dis, percentInside;//, minRadius, maxRadius;
 		}
 
 	}

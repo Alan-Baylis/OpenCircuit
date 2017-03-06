@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System;
-using System.Deployment.Internal;
+
 
 namespace Vox {
 
@@ -25,55 +25,55 @@ namespace Vox {
 		public HeightmapMutator(Vector3 worldPosition, Vector3 worldDimensions, double[,] heightmap, byte substance)
 			: this(worldPosition, worldDimensions, heightmap, new byte[1, 1] { { substance } }) { }
 
-		public override Application setup(OcTree target) {
-			Vector3 halfDimension = worldDimensions / target.voxelSize /2f;
-			Vector3 center = target.transform.InverseTransformPoint(worldPosition) / target.voxelSize;
+		public override App init(OcTree tree) {
+			HeightApp app = new HeightApp(tree);
+			Vector3 halfDimension = worldDimensions / app.tree.voxelSize /2f;
+			Vector3 center = app.tree.transform.InverseTransformPoint(worldPosition) / app.tree.voxelSize;
 			Vector3 exactMin = center - halfDimension;
 			Vector3 exactMax = center + halfDimension;
 
-			HeightApp app = new HeightApp();
-			app.tree = target;
+			app.min = new Index(app.tree.maxDepth, (uint) exactMin.x, (uint) exactMin.y, (uint) exactMin.z);
+			app.max = new Index(app.tree.maxDepth, (uint) exactMax.x, (uint) exactMax.y, (uint) exactMax.z);
 			app.halfDimension = halfDimension;
-			app.min = new Index(target.maxDepth, (uint)exactMin.x, (uint)exactMin.y, (uint)exactMin.z);
-			app.max = new Index(target.maxDepth, (uint)exactMax.x, (uint)exactMax.y, (uint)exactMax.z);
 			app.position = center;
 			return app;
 		}
 
-		public override LocalAction checkMutation(LocalApplication app, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
-			HeightApp hApp = (HeightApp)app;
-			HeightAction action = new HeightAction();
+		public override Act checkMutation(App application, Index p, Vector3 diff, float voxelSize, bool canTraverse) {
+			HeightApp app = (HeightApp) application;
+			ActCache actCache = new ActCache();
+			Act act = new Act(actCache);
 			if (p.depth >= app.tree.maxDepth)
 				voxelSize *= 0.5f;
 
-			action.percentInside = 1;
+			actCache.percentInside = 1;
 			bool outside = false;
 			bool inside = true;
 
-			action.percentInside *= -1 + percentOverlapping(diff.x, hApp.halfDimension.x, voxelSize, ref outside, ref inside)
-				+ percentOverlapping(-diff.x, hApp.halfDimension.x, voxelSize, ref outside, ref inside);
-			if (outside) return action;
+			actCache.percentInside *= -1 + percentOverlapping(diff.x, app.halfDimension.x, voxelSize, ref outside, ref inside)
+				+ percentOverlapping(-diff.x, app.halfDimension.x, voxelSize, ref outside, ref inside);
+			if (outside) return act;
 
-			action.percentInside *= -1 + percentOverlapping(diff.z, hApp.halfDimension.z, voxelSize, ref outside, ref inside)
-				+ percentOverlapping(-diff.z, hApp.halfDimension.z, voxelSize, ref outside, ref inside);
-			if (outside) return action;
+			actCache.percentInside *= -1 + percentOverlapping(diff.z, app.halfDimension.z, voxelSize, ref outside, ref inside)
+				+ percentOverlapping(-diff.z, app.halfDimension.z, voxelSize, ref outside, ref inside);
+			if (outside) return act;
 
-			action.percentInside *= -1 + percentInMap(diff, hApp.halfDimension, voxelSize, ref outside, ref inside, canTraverse)
-				+ percentOverlapping(-diff.y, hApp.halfDimension.y, voxelSize, ref outside, ref inside);
-			if (outside) return action;
+			actCache.percentInside *= -1 + percentInMap(diff, app.halfDimension, voxelSize, ref outside, ref inside, canTraverse)
+				+ percentOverlapping(-diff.y, app.halfDimension.y, voxelSize, ref outside, ref inside);
+			if (outside) return act;
 
-			action.modify = true;
+			act.modify = true;
 			if (!overwriteShape || !inside)
-				action.doTraverse = true;
-			return action;
+				act.doTraverse = true;
+			return act;
 		}
 
-		public override Voxel mutate(LocalApplication app, Index p, LocalAction action, Voxel original) {
-			HeightAction hAction = (HeightAction)action;
-            byte newOpacity = (byte)(original.averageOpacity() * (1 - hAction.percentInside) + Voxel.full.averageOpacity() *hAction.percentInside);
+		public override Voxel mutate(App application, Index p, Act act, Voxel original) {
+			ActCache actCache = (ActCache) act.cache;
+            byte newOpacity = (byte)(original.averageOpacity() * (1 - actCache.percentInside) + Voxel.full.averageOpacity() *actCache.percentInside);
 			byte newSubstance = original.averageMaterialType();
-			if (overwriteSubstance && hAction.percentInside > 0.5)
-				newSubstance = hAction.averageSubstance;
+			if (overwriteSubstance && actCache.percentInside > 0.5)
+				newSubstance = actCache.averageSubstance;
 			if (!overwriteShape)
 				newOpacity = original.averageOpacity();
 			return new Voxel(newSubstance, newOpacity);
@@ -129,15 +129,15 @@ namespace Vox {
 		}
 
 
-		protected class HeightApp : LocalApplication {
-			//public byte depth;
+		public class HeightApp : LocalApp {
 			public Vector3 halfDimension;
+
+			public HeightApp(OcTree tree) : base(tree) { }
 		}
 
-		protected class HeightAction : LocalAction {
+		public class ActCache : LocalActCache {
 			public double percentInside;
 			public byte averageSubstance;
-			public HeightAction() : base(false, false) { }
 		}
 
 	}
