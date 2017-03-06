@@ -167,7 +167,7 @@ namespace Vox {
 			for (int xi = 0; xi<CHILD_DIMENSION; ++xi) {
 				for (int yi = 0; yi<CHILD_DIMENSION; ++yi) {
 					for (int zi = 0; zi<CHILD_DIMENSION; ++zi) {
-						Voxel child = null;
+						Voxel child;
 						count += children[xi, yi, zi].canSimplify(out child);
 						if (child != null) {
 							children[xi, yi, zi] = child;
@@ -206,7 +206,6 @@ namespace Vox {
 
 		private static float getDistSquare(Vector3 otherPos, Vector3 myPos, float size) {
 			return (otherPos - myPos * size).sqrMagnitude;
-			//return Mathf.Max(Mathf.Max(Mathf.Abs(dif.x) - size * 0.5f, Mathf.Abs(dif.y) - size * 0.5f), Mathf.Abs(dif.z) - size * 0.5f);
 		}
 
 	}

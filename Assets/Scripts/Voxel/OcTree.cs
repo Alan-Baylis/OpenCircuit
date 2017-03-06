@@ -1,7 +1,5 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.IO;
 
 namespace Vox {
@@ -233,21 +231,16 @@ namespace Vox {
 
 		private void relinkRenderers(Dictionary<Index, List<GameObject>> meshes) {
 			lock(this) {
-				//print("Start Renderers: " + renderers.Count);
 				foreach (Index index in meshes.Keys) {
 					List<GameObject> objects = meshes[index];
-					//print("Mesh object count: " + objects.Count);
 					VoxelRenderer rend;
 					renderers.TryGetValue(index, out rend);
 					if (rend == null) {
 						rend = new VoxelRenderer(index, this);
 						renderers[index] = rend;
-					//} else {
-					//	print("already had renderer");
 					}
 					rend.obs = objects.ToArray();
 				}
-				//print("End Renderers: " + renderers.Count);
 			}
 		}
 
