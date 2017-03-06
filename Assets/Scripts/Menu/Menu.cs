@@ -39,10 +39,6 @@ public class Menu : MonoBehaviour {
 	public Vector3 endCamPosition;
 	public Vector3 endCamRotation;
 
-	//public static Player player {
-	//	get { return GameObject.FindGameObjectWithTag("Player").GetComponent<Player>(); }
-	//}
-
 	private static Menu myMenu = null;
 	public static Menu menu { get {
 			if (myMenu == null)
@@ -237,16 +233,7 @@ public class Menu : MonoBehaviour {
 		}
 	}
 
-	private void doHost() {
-
-		SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
-		SceneData ? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
-		if (sceneData != null)
-			serverConfig = sceneData.Value.configuration;
-		else
-			serverConfig = GlobalConfigData.getDefault();
-		
-
+	private void doHost() {	
 		adjustFontSize(skin.label, 0.07f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Configure Server");
 
@@ -254,7 +241,6 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, hostRect.height * 0.8f);
 		if (GUI.Button(convertRect(hostRect, false), "Start Hosting")) {
 			begin();
-			GlobalConfig.globalConfig.configuration = serverConfig;
         }
 
 		// configuration
@@ -274,8 +260,9 @@ public class Menu : MonoBehaviour {
 		foreach (GameMode.GameModes mode in modes) {
 			modeStrings.Add(mode.ToString());
 		}
-		serverConfig.gameMode = (GameMode.GameModes)System.Enum.Parse(typeof(GameMode.GameModes), "" + dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode)); 
-        
+
+		int returnValue = dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
+        serverConfig.gameMode = (GameMode.GameModes)System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
 
 		// back button
 		adjustFontSize(skin.button, backRect.height * 0.8f);
@@ -325,7 +312,7 @@ public class Menu : MonoBehaviour {
 	}
 
 	private int dropDownSelector(Rect relativePosition, List<string> options, int startValue) {
-		return GUI.SelectionGrid(convertRect(relativePosition, false), startValue, options.ToArray(), options.Count);
+		return GUI.SelectionGrid(convertRect(relativePosition, false), startValue, options.ToArray(), 2);
 	}
 
 
@@ -364,8 +351,16 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void begin() {
+		string activeScenePath = SceneManager.GetActiveScene().path;
+		SceneData? sceneData = SceneCatalog.sceneCatalog.getSceneData(activeScenePath);
+		if (sceneData == null || !sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
+			List<SceneData> scenes = SceneCatalog.sceneCatalog.getScenesForGameMode(serverConfig.gameMode);
+			if (scenes.Count == 0) {
+				return;
+			}
+			SceneLoader.sceneLoader.loadScene(scenes[0].path);
+		}
 		NetworkManager manager = NetworkManager.singleton;
-
 		manager.StartHost();
 		//player.gameObject.SetActive(true);
 		//GetComponent<Camera>().enabled = false;
@@ -376,10 +371,10 @@ public class Menu : MonoBehaviour {
 		networkDiscovery.Initialize();
 		networkDiscovery.broadcastData = serverName;
 		networkDiscovery.StartAsServer();
-		
+		GlobalConfig.globalConfig.configuration = serverConfig;
 	}
 
-    private void quit() {
+	private void quit() {
         Application.Quit();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

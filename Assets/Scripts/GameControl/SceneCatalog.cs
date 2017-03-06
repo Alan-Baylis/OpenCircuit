@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 [CreateAssetMenu(fileName = "SceneCatalog", menuName = "SceneCatalog")]
 public class SceneCatalog : ScriptableObject {
@@ -14,7 +16,9 @@ public class SceneCatalog : ScriptableObject {
 		}
 	}
 
-	public List<SceneData> scenes = new List<SceneData>();
+	public List<SceneData> sceneData = new List<SceneData>();
+
+	public List<string> scenes = new List<string>();
 
 	private Dictionary<string, SceneData> mySceneMap = null;
 
@@ -22,7 +26,7 @@ public class SceneCatalog : ScriptableObject {
 		get {
 			if (mySceneMap == null) {
 				mySceneMap = new Dictionary<string, SceneData>();
-				foreach (SceneData data in scenes) {
+				foreach (SceneData data in sceneData) {
 					mySceneMap.Add(data.path, data);
 				}
 			}
@@ -30,15 +34,26 @@ public class SceneCatalog : ScriptableObject {
 		}
 	}
 
+	public void clearSceneList() {
+		scenes = new List<string>();
+	}
+
 	public void addScene(string path) {
+		scenes.Add(path);
+	}
+
+	public string getScenePath(int index) {
+		if (index >= 0 && index < scenes.Count ) {
+			return scenes[index];
+		}
+		return null;
+	}
+
+	public void addSceneData(string path) {
 		if (!sceneMap.ContainsKey(path)) {
 			SceneData data = new SceneData(path, GlobalConfigData.getDefault());
-			scenes.Add(data);
+			sceneData.Add(data);
 			sceneMap.Add(path, data);
-		} else {
-			if (GlobalConfig.globalConfig != null) {
-				sceneMap[path] = new SceneData(path, GlobalConfig.globalConfig.configuration);
-			}
 		}
 	}
 
@@ -47,4 +62,18 @@ public class SceneCatalog : ScriptableObject {
 			return sceneMap[path];
 		return null;
 	}
+
+
+	public List<SceneData> getScenesForGameMode(GameMode.GameModes mode) {
+		List<SceneData> results = new List<SceneData>();
+		foreach (string scenePath in scenes) {
+			if (sceneMap.ContainsKey(scenePath)) {
+				SceneData data = sceneMap[scenePath];
+				if (data.supportedGameModes.Contains(mode)) {
+					results.Add(data);
+				}
+			}
+		}
+		return results;
+	} 
 }

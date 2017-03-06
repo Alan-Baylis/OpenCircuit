@@ -27,14 +27,6 @@ public class LevelLoad {
 		Transform gameControl = new GameObject("Game Control").transform;
 		Transform environment = new GameObject("Environment").transform;
 
-		// create game controller
-		CentralRobotController crc = createPrefab("Assets/Prefabs/Robots/CRC.prefab", gameControl)
-			.GetComponent<CentralRobotController>();
-
-		// create game controller
-		createPrefab("Assets/Prefabs/GameControl/GameController.prefab", gameControl)
-			.GetComponent<GlobalConfig>().centralRobotController = crc;
-
 		// create start point
 		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab", gameControl);
 

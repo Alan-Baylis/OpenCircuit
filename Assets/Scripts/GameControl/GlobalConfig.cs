@@ -9,6 +9,9 @@ public class GlobalConfig : NetworkBehaviour {
 	public CentralRobotController centralRobotController;
     public int frozenPlayers = 0;
 
+	private GameMode gamemode = null;
+	
+
     [ServerCallback]
     void Update() {
         if (frozenPlayers >= ClientController.numPlayers) {
@@ -25,6 +28,18 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GlobalConfig() {
 		myGlobalConfig = this;
+	}
+
+	public void startGame() {
+		//TODO: Do this better
+		switch (configuration.gameMode) {
+			case GameMode.GameModes.BASES:
+				gamemode = gameObject.AddComponent<Bases>();
+				break;
+			case GameMode.GameModes.SPAWNER_HUNT:
+				gamemode = gameObject.AddComponent<SpawnerHunt>();
+				break;
+		}
 	}
 
     [Server]

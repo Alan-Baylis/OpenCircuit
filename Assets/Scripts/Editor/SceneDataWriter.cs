@@ -8,7 +8,7 @@ public class SceneDataWriter : UnityEditor.AssetModificationProcessor {
 		foreach (string path in paths) {
 			if (path.EndsWith(".unity")) {
 				SceneCatalog sceneCatalog = AssetDatabase.LoadAssetAtPath("Assets/Resources/SceneCatalog.asset", typeof(SceneCatalog)) as SceneCatalog;
-				sceneCatalog.addScene(path);
+				sceneCatalog.addSceneData(path);
 			}
 		}
 		return paths;
