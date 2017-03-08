@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
 [RequireComponent(typeof(NetworkDiscovery))]
-public class Menu : MonoBehaviour {
+public class Menu : MonoBehaviour, SceneLoadListener {
 
 	private Rect hostRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
@@ -41,8 +40,6 @@ public class Menu : MonoBehaviour {
 
 	private static Menu myMenu = null;
 	public static Menu menu { get {
-			if (myMenu == null)
-				myMenu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 			return myMenu;
 	}}
 	
@@ -79,6 +76,8 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start() {
+	    DontDestroyOnLoad(gameObject);
+	    myMenu = this;
 		if (activeAtStart) {
 			pause();
 			currentMenu = state.MainMenu;
@@ -351,27 +350,18 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void begin() {
+	    activeAtStart = false;
 		string activeScenePath = SceneManager.GetActiveScene().path;
 		SceneData? sceneData = SceneCatalog.sceneCatalog.getSceneData(activeScenePath);
-		if (sceneData == null || !sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
-			List<SceneData> scenes = SceneCatalog.sceneCatalog.getScenesForGameMode(serverConfig.gameMode);
-			if (scenes.Count == 0) {
-				return;
-			}
-			SceneLoader.sceneLoader.loadScene(scenes[0].path);
-		}
-		NetworkManager manager = NetworkManager.singleton;
-		manager.StartHost();
-		//player.gameObject.SetActive(true);
-		//GetComponent<Camera>().enabled = false;
-		//GetComponent<AudioListener>().enabled = false;
-		menuHistory.Clear();
-		activeAtStart = false;
-		Cursor.lockState = CursorLockMode.Locked;
-		networkDiscovery.Initialize();
-		networkDiscovery.broadcastData = serverName;
-		networkDiscovery.StartAsServer();
-		GlobalConfig.globalConfig.configuration = serverConfig;
+	    if (sceneData == null || !sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
+	        List<SceneData> scenes = SceneCatalog.sceneCatalog.getScenesForGameMode(serverConfig.gameMode);
+	        if (scenes.Count == 0) {
+	            return;
+	        }
+	        SceneLoader.sceneLoader.loadScene(scenes[0].path, this);
+	    } else if (sceneData != null && sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
+            startGame();
+	    }
 	}
 
 	private void quit() {
@@ -379,5 +369,29 @@ public class Menu : MonoBehaviour {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    public void onSceneLoaded() {
+        SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
+        SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
+        if (sceneData != null)
+            menu.serverConfig = sceneData.Value.configuration;
+        GlobalConfig.globalConfig.configuration = serverConfig;
+        startGame();
+
+    }
+
+    private void startGame() {
+        NetworkManager manager = NetworkManager.singleton;
+        manager.StartHost();
+        //player.gameObject.SetActive(true);
+        //GetComponent<Camera>().enabled = false;
+        //GetComponent<AudioListener>().enabled = false;
+        menuHistory.Clear();
+        activeAtStart = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        networkDiscovery.Initialize();
+        networkDiscovery.broadcastData = serverName;
+        networkDiscovery.StartAsServer();
     }
 }

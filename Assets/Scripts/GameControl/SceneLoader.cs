@@ -4,17 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 
-public class SceneLoader : MonoBehaviour {
+public class SceneLoader : MonoBehaviour, SceneLoadListener {
 
 	public static SceneLoader sceneLoader;
 
-	public Menu menuPrefab;
-	public NetworkManager networkManagerPrefab;
-	public GlobalConfig gameControllerPrefab;
-
 	private AsyncOperation async;
 	private bool loading = false;
-	private Menu menu = null;
 	private List<Scene> scenes = new List<Scene>();
 
 	private int nextScene;
@@ -22,74 +17,53 @@ public class SceneLoader : MonoBehaviour {
 
 	private bool delayLoad = true;
 	private float loadDelaySeconds = 10f;
-	private float timer = 0f;
+    private SceneLoadListener sceneLoadListener;
 
-	// Use this for initialization
+    // Use this for initialization
 	void Start() {
 		DontDestroyOnLoad(gameObject);
 		sceneLoader = this;
-		if (NetworkManager.singleton == null) {
-			Instantiate(networkManagerPrefab.gameObject, Vector3.zero, Quaternion.identity);
-		}
-		DontDestroyOnLoad(Instantiate(gameControllerPrefab.gameObject, Vector3.zero, Quaternion.identity));
-		menu = Instantiate(menuPrefab, Vector3.zero, Quaternion.identity) as Menu;
-		
-		DontDestroyOnLoad(menu.gameObject);
+
+
 
 		SceneData ? activeScene = SceneCatalog.sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
 
 		if (activeScene == null || activeScene.Value.isLoadingScene()) {
-			loadScene(1);
-			menu.activeAtStart = false;
+			loadScene(1, this);
+			Menu.menu.activeAtStart = false;
 		} else {
-			menu.activeAtStart = true;
+			Menu.menu.activeAtStart = true;
 		}
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if (loading) {
-			timer += Time.deltaTime;
-			//print("timer: " + timer);
-		}
-		if (async != null && loading && async.progress >= .9f && !async.isDone && timer > loadDelaySeconds ) {
-			Debug.Log("activate scene after " + timer + " seconds.");
+		if (async != null && loading && async.progress >= .9f && !async.isDone) {
 			ActivateScene();
 		} else if (async != null && loading && async.isDone) {
 			async = null;
 			loading = false;
-			GlobalConfig.globalConfig.startGame();
-			SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
-			SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
-			if (sceneData != null)
-				menu.serverConfig = sceneData.Value.configuration;
-			menu.activeAtStart = true;
+		    sceneLoadListener.onSceneLoaded();
+
 		}
 	}
 
-	public void loadScene(int index) {
-		timer = 0;
-		nextScene = index;
-		string scenePath = SceneCatalog.sceneCatalog.getScenePath(0);
-		SceneData? sceneData = SceneCatalog.sceneCatalog.getSceneData(scenePath);
-		if (sceneData != null && sceneData.Value.isLoadingScene() && !SceneManager.GetActiveScene().path.Equals(sceneData.Value.path)) {
-			SceneManager.LoadScene(0);
-		}
+	public void loadScene(int index, SceneLoadListener listener) {
+	    sceneLoadListener = listener;
+	    nextScene = index;
+	    cutToLoadScene();
 		StartCoroutine("load");
 	}
 
-	public void loadScene(string path) {
-		timer = 0;
+	public void loadScene(string path, SceneLoadListener listener) {
+	    sceneLoadListener = listener;
 		nextScenePath = path;
-		string scenePath = SceneCatalog.sceneCatalog.getScenePath(0);
-		SceneData ? sceneData = SceneCatalog.sceneCatalog.getSceneData(scenePath);
-		if (sceneData != null && sceneData.Value.isLoadingScene() && !SceneManager.GetActiveScene().path.Equals(sceneData.Value.path)) {
-			SceneManager.LoadScene(0);
-		}
+        cutToLoadScene();
 		StartCoroutine("loadByPath");
 	}
 
 	IEnumerator load() {
+	    yield return new WaitForSeconds(loadDelaySeconds);
 		if (nextScene < SceneManager.sceneCountInBuildSettings) {
 			loading = true;
 			async = SceneManager.LoadSceneAsync(nextScene);
@@ -101,6 +75,7 @@ public class SceneLoader : MonoBehaviour {
 	}
 
 	IEnumerator loadByPath() {
+	    yield return new WaitForSeconds(loadDelaySeconds);
 		if (nextScene < SceneManager.sceneCountInBuildSettings) {
 			loading = true;
 			async = SceneManager.LoadSceneAsync(nextScenePath);
@@ -114,4 +89,16 @@ public class SceneLoader : MonoBehaviour {
 	public void ActivateScene() {
 		async.allowSceneActivation = true;
 	}
+
+    private void cutToLoadScene() {
+        string scenePath = SceneCatalog.sceneCatalog.getScenePath(0);
+        SceneData ? sceneData = SceneCatalog.sceneCatalog.getSceneData(scenePath);
+		if (sceneData != null && sceneData.Value.isLoadingScene() && !SceneManager.GetActiveScene().path.Equals(sceneData.Value.path)) {
+			SceneManager.LoadScene(0);
+		}
+    }
+
+    public void onSceneLoaded() {
+        Menu.menu.activeAtStart = true;
+    }
 }

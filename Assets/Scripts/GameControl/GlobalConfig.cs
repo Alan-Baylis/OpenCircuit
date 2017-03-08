@@ -10,7 +10,11 @@ public class GlobalConfig : NetworkBehaviour {
     public int frozenPlayers = 0;
 
 	private GameMode gamemode = null;
-	
+
+    [ServerCallback]
+    void Start() {
+        startGame();
+    }
 
     [ServerCallback]
     void Update() {

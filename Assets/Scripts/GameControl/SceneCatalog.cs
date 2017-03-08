@@ -50,11 +50,18 @@ public class SceneCatalog : ScriptableObject {
 	}
 
 	public void addSceneData(string path) {
-		if (!sceneMap.ContainsKey(path)) {
-			SceneData data = new SceneData(path, GlobalConfigData.getDefault());
-			sceneData.Add(data);
-			sceneMap.Add(path, data);
-		}
+	    SceneData data;
+	    if (sceneMap.ContainsKey(path) && GlobalConfig.globalConfig != null) {
+	        data = new SceneData(path, GlobalConfig.globalConfig.configuration);
+	        sceneData.Add(data);
+	        sceneMap.Add(path, data);
+	    } else if (!sceneMap.ContainsKey(path)) {
+	        data = GlobalConfig.globalConfig != null
+	            ? new SceneData(path, GlobalConfig.globalConfig.configuration)
+	            : new SceneData(path, GlobalConfigData.getDefault());
+	        sceneData.Add(data);
+	        sceneMap.Add(path, data);
+	    }
 	}
 
 	public SceneData? getSceneData(string path) {
