@@ -12,11 +12,6 @@ public class GlobalConfig : NetworkBehaviour {
 	private GameMode gamemode = null;
 
     [ServerCallback]
-    void Start() {
-        startGame();
-    }
-
-    [ServerCallback]
     void Update() {
         if (frozenPlayers >= ClientController.numPlayers) {
             RpcLoseGame();
