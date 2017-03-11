@@ -376,9 +376,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
         SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
         if (sceneData != null)
             menu.serverConfig = sceneData.Value.configuration;
-        GlobalConfig.globalConfig.configuration = serverConfig;
         startGame();
-
     }
 
     private void startGame() {
@@ -393,5 +391,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
         networkDiscovery.Initialize();
         networkDiscovery.broadcastData = serverName;
         networkDiscovery.StartAsServer();
+        GlobalConfig.globalConfig.configuration = serverConfig;
+        GlobalConfig.globalConfig.startGame();
     }
 }
