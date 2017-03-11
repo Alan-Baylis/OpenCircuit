@@ -191,8 +191,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 				List<TagRequirement> requiredTags = factory.getRequiredTagsList();
 				foreach(TagRequirement tagType in requiredTags) {
-					if (tagType.getType() != newTag.type) {
-						tagSets.Add(getMentalModel().getTagsOfType(tagType.getType(), tagType.isStale()));
+					if (tagType.type != newTag.type) {
+						tagSets.Add(getMentalModel().getTagsOfType(tagType.type, tagType.stale));
 					}
 				}
 
@@ -225,7 +225,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			List<List<Tag>> tagSets = new List<List<Tag>>();
             List<TagRequirement> requiredTags = factory.getRequiredTagsList();
             foreach (TagRequirement tagType in requiredTags) {
-                tagSets.Add(getMentalModel().getTagsOfType(tagType.getType(), tagType.isStale()));
+                tagSets.Add(getMentalModel().getTagsOfType(tagType.type, tagType.stale));
             }
 
 			if (tagSets.Count > 0) {
