@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 
 [ExecuteInEditMode]
-public class ChassisController : MonoBehaviour {
+public class LocomotionController : MonoBehaviour {
 
-	public LegController[] legGroup1;
-	public LegController[] legGroup2;
+	public SpiderLegController[] legGroup1;
+	public SpiderLegController[] legGroup2;
 
 	public float stanceWidth = 2;
 	public float stanceHeight = 3;
@@ -21,10 +21,10 @@ public class ChassisController : MonoBehaviour {
 
 	public bool debug = false;
 
-	private Dictionary<LegController, LegInfo> legInfo = new Dictionary<LegController, LegInfo>();
+	private Dictionary<SpiderLegController, LegInfo> legInfo = new Dictionary<SpiderLegController, LegInfo>();
 	private Vector3 lastPos;
-	private LegController[] plantedGroup = null;
-	private LegController[] steppingGroup = null;
+	private SpiderLegController[] plantedGroup = null;
+	private SpiderLegController[] steppingGroup = null;
 	private float lastSwitch = 0;
 
 	void Update() {
@@ -43,7 +43,7 @@ public class ChassisController : MonoBehaviour {
 		float time = Application.isPlaying ? Time.time : Time.realtimeSinceStartup;
 		bool isSwitching = stepPercent > 0.99f && lastSwitch <= time - minimumTimePerSwitch;
 		if (isSwitching) {
-			LegController[] temp = plantedGroup;
+			SpiderLegController[] temp = plantedGroup;
 			plantedGroup = steppingGroup;
 			steppingGroup = temp;
 			lastSwitch = time;
@@ -52,9 +52,9 @@ public class ChassisController : MonoBehaviour {
 		updateLegs(steppingGroup, false);
 	}
 
-	protected float calculateStepPercent(LegController[] plantedGroup) {
+	protected float calculateStepPercent(SpiderLegController[] plantedGroup) {
 		float offsetMagnitude = 0;
-		foreach (LegController leg in plantedGroup) {
+		foreach (SpiderLegController leg in plantedGroup) {
 			LegInfo info = getLegInfo(leg);
 
 			// maybe the following should be added back in?
@@ -68,8 +68,8 @@ public class ChassisController : MonoBehaviour {
 		return offsetMagnitude / 2;
 	}
 
-	protected void updateSteppingGroup(LegController[] steppingGroup, float stepPercent) {
-		foreach (LegController leg in steppingGroup) {
+	protected void updateSteppingGroup(SpiderLegController[] steppingGroup, float stepPercent) {
+		foreach (SpiderLegController leg in steppingGroup) {
 			LegInfo info = getLegInfo(leg);
 			Vector3 stepOffset = leg.getDefaultPos() +info.getVelocity().normalized * strideLength;
 
@@ -104,7 +104,7 @@ public class ChassisController : MonoBehaviour {
 	}
 #endif
 
-	protected float calculateAltitudeAdjustment(Vector3 stepOffset, LegController leg) {
+	protected float calculateAltitudeAdjustment(Vector3 stepOffset, SpiderLegController leg) {
 		Vector3 maxStepPos = stepOffset + new Vector3(0, maxStepHeight, 0);
 		RaycastHit hitInfo = new RaycastHit();
 		float yOffset = 0f;
@@ -122,8 +122,8 @@ public class ChassisController : MonoBehaviour {
 	}
 
 
-	protected void updateLegs(LegController[] group, bool planted) {
-		foreach(LegController leg in group) {
+	protected void updateLegs(SpiderLegController[] group, bool planted) {
+		foreach(SpiderLegController leg in group) {
 			LegInfo info = getLegInfo(leg);
 			leg.setPosition(getLegInfo(leg).foot);
 			info.setPlanted(planted);
@@ -131,7 +131,7 @@ public class ChassisController : MonoBehaviour {
 		}
 	}
 
-	protected LegInfo getLegInfo(LegController leg) {
+	protected LegInfo getLegInfo(SpiderLegController leg) {
 		LegInfo info;
 		if (!legInfo.TryGetValue(leg, out info)) {
 			info = new LegInfo(this, leg);
@@ -147,10 +147,10 @@ public class ChassisController : MonoBehaviour {
 		public Vector3 foot = Vector3.zero;
 		public Vector3 lastDefault = Vector3.zero;
 		public Vector3 lastPlanted = Vector3.zero;
-		public ChassisController chassis;
-		public LegController leg;
+		public LocomotionController chassis;
+		public SpiderLegController leg;
 
-		public LegInfo(ChassisController chassis, LegController leg) {
+		public LegInfo(LocomotionController chassis, SpiderLegController leg) {
 			this.chassis = chassis;
 			this.leg = leg;
 			foot = leg.getDefaultPos();

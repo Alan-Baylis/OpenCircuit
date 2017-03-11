@@ -1,10 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [ExecuteInEditMode]
-public class LegController : MonoBehaviour {
-
-	public Vector3 defaultPos = new Vector3(2, -3, 2);
+public class SpiderLegController : LimbController {
 
 	public float hipMinRotation = -90;
 	public float hipMaxRotation = 90;
@@ -36,18 +33,7 @@ public class LegController : MonoBehaviour {
 		setPosition(getDefaultPos());
 	}
 
-	public Vector3 getDefaultPos() {
-		return leg.TransformPoint(defaultPos);
-	}
-
-	//void Update() {
-	//	if (target == null)
-	//		return;
-	//	setPosition(target.position);
-	//	setPosition(getDefaultPos());
-	//}
-
-	public bool setPosition(Vector3 worldPos) {
+	public override bool setPosition(Vector3 worldPos) {
 		bool canReach = true;
 
 		// calculate hip rotation
@@ -62,8 +48,10 @@ public class LegController : MonoBehaviour {
 		return canReach;
 	}
 
-	public Vector3 deducePosition() {
-		return lowerLeg.TransformVector(rotate(new Vector3(0, 0, -lowerLegLength), new Vector3(0, -lowerAngleOffset, 0)) +lowerOffset) +lowerLeg.position;
+	public override Vector3 deducePosition() {
+		return lowerLeg.TransformVector(
+			       rotate(new Vector3(0, 0, -lowerLegLength), new Vector3(0, -lowerAngleOffset, 0))
+			       +lowerOffset) +lowerLeg.position;
 	}
 
 	private bool calculatHipRotation(Vector3 worldPos) {
@@ -137,49 +125,5 @@ public class LegController : MonoBehaviour {
 		lowerLeg.localPosition += rotate(-lowerOffset, new Vector3(0, eulerAngles.y, 0));
 		lowerLeg.localEulerAngles = eulerAngles;
 		return canReach;
-	}
-
-	// TODO: add unit test
-	private double circleMidPointDistance(Vector2 p1, Vector2 p2, double r1, double r2) {
-		// ax + by + c = 0 is the equation for the line that passes through the circle intersection points
-		double a = 2 * (p1.x - p2.x);
-		double b = 2 * (p1.y - p2.y);
-		double c = (r1 * r1 - r2 * r2) - (p1.x *p1.x -p2.x *p2.x) - (p1.y * p1.y - p2.y * p2.y);
-
-		//return System.Math.Abs(a * p1.x + b * p1.y + c) /System.Math.Sqrt(a *a + b *b);
-
-		Vector2 point = new Vector2(
-			(float)(b *(b *p1.x - a *p1.y) - a *c),
-			(float)(a *(a *p1.y - b *p1.x) - b *c)
-			) /(float)(a *a + b * b);
-
-		double sign = Vector2.Dot(point -p1, p2 -p1);
-		double distance = (point - p1).magnitude;
-		return sign > 0 ? distance : -distance;
-	}
-
-	// TODO: add unit test
-	private Vector3 rotate(Vector3 vector, Vector3 angle) {
-		return Quaternion.Euler(angle) *vector;
-	}
-
-	// TODO: add unit test
-	private float getVectorAngle(float x, float y) {
-		return Mathf.Atan2(y, x) *Mathf.Rad2Deg;
-    }
-
-	// TODO: add unit test
-	private float flipAngle(float angle) {
-		return (angle +360) %360 -180;
-	}
-
-	// TODO: add unit test
-	private float clampAngle(float startAngle, float min, float max) {
-		if (startAngle < max) {
-			startAngle = max - ((max - startAngle) % 360);
-		} else if (startAngle > min) {
-			startAngle = min + ((startAngle - min) % 360);
-		}
-		return Mathf.Clamp(startAngle, min, max);
 	}
 }

@@ -10,14 +10,14 @@ public class BodyController : MonoBehaviour {
 	protected bool rotating;
 
 	private Player myPlayer;
-	private ChassisController myLegs;
+	private LocomotionController myLegs;
 
 	protected Player player {
 		get { return myPlayer ?? (myPlayer = transform.GetComponentInParent<Player>()); }
 	}
 
-	protected ChassisController legs {
-		get { return myLegs ?? (myLegs = GetComponent<ChassisController>()); }
+	protected LocomotionController legs {
+		get { return myLegs ?? (myLegs = GetComponent<LocomotionController>()); }
 	}
 
 

@@ -42,7 +42,7 @@ public class HoverJet : AbstractRobotComponent {
 #endif
 	private float regularHeight;
 	private float regularStrideLength;
-	private ChassisController chassis;
+	private LocomotionController chassis;
 
 	public void goToPosition(Vector3 ? pos, bool autoBrake) {
 		stop();
@@ -83,7 +83,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	public void Start() {
-		chassis = GetComponentInChildren<ChassisController>();
+		chassis = GetComponentInChildren<LocomotionController>();
 		regularSpeed += Random.Range(-0.5f, 0.5f);
 		pursueSpeed += Random.Range(-0.5f, 0.5f);
 		nav.speed = regularSpeed;
