@@ -36,7 +36,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 #if UNITY_EDITOR
     void Update() {
-        if (tagMap.Count > tags.Length) {
+        if (tagMap.Count != tags.Length) {
             tags = new Tag[tagMap.Count];
             tagMap.Values.CopyTo(tags, 0);
         }
