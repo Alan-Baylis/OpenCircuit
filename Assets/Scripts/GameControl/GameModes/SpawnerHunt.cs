@@ -8,8 +8,6 @@ public class SpawnerHunt : GameMode {
 	[ServerCallback]
 	public void Start() {
 		spawners = GameObject.FindObjectsOfType<RobotSpawner>();
-		if (spawners.Length < 1)
-			enabled = false;
 	}
 
 	[Server]
