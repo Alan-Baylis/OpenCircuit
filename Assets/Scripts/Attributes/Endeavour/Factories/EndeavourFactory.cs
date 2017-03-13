@@ -58,7 +58,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 
 	public bool usesTagType(TagRequirement type) {
 		foreach (TagRequirement tagType in getRequiredTagsList()) {
-			if (tagType.getType() == type.getType() && type.isStale() == tagType.isStale()) {
+			if (tagType.type == type.type && type.stale == tagType.stale) {
 				return true;
 			}
 		}
