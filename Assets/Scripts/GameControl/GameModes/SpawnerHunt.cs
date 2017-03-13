@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 public class SpawnerHunt : GameMode {
 
 	private RobotSpawner[] spawners;
-	private bool hasWon = false;
 
 	[ServerCallback]
 	public void Start() {
@@ -15,7 +14,7 @@ public class SpawnerHunt : GameMode {
 
 	[Server]
 	public override bool winConditionMet() {
-		if (hasWon || spawners.Length < 1)
+		if (spawners.Length < 1)
 			return true;
 		foreach (RobotSpawner spawner in spawners) {
 			if (spawner != null)
