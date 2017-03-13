@@ -10,8 +10,6 @@ namespace Vox {
 			if (!isSavingScene(paths))
 				return paths;
 
-
-			MonoBehaviour.print("Saving scene.");
 			return paths;
 		}
 

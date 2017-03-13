@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
 [RequireComponent(typeof(NetworkDiscovery))]
-public class Menu : MonoBehaviour {
+public class Menu : MonoBehaviour, SceneLoadListener {
 
 	private Rect hostRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
@@ -39,14 +38,8 @@ public class Menu : MonoBehaviour {
 	public Vector3 endCamPosition;
 	public Vector3 endCamRotation;
 
-	//public static Player player {
-	//	get { return GameObject.FindGameObjectWithTag("Player").GetComponent<Player>(); }
-	//}
-
 	private static Menu myMenu = null;
 	public static Menu menu { get {
-			if (myMenu == null)
-				myMenu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 			return myMenu;
 	}}
 	
@@ -83,9 +76,12 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start() {
-		serverConfig = GlobalConfig.globalConfig.configuration;
-		pause();
-		currentMenu = state.MainMenu;
+	    DontDestroyOnLoad(gameObject);
+	    myMenu = this;
+		if (activeAtStart) {
+			pause();
+			currentMenu = state.MainMenu;
+		}
     }
 
 	public void OnGUI() {
@@ -236,7 +232,7 @@ public class Menu : MonoBehaviour {
 		}
 	}
 
-	private void doHost() {
+	private void doHost() {	
 		adjustFontSize(skin.label, 0.07f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Configure Server");
 
@@ -244,12 +240,12 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, hostRect.height * 0.8f);
 		if (GUI.Button(convertRect(hostRect, false), "Start Hosting")) {
 			begin();
-			GlobalConfig.globalConfig.configuration = serverConfig;
         }
 
 		// configuration
 		adjustFontSize(skin.label, 0.03f);
 		adjustFontSize(skin.textField, 0.03f);
+		adjustFontSize(skin.button, 0.03f);
 		GUI.Label(convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Server Name: ");
 		serverName = GUI.TextField(convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), serverName);
 		GUI.Label(convertRect(new Rect(0.05f, 0.45f, 0.3f, 0.03f), false), "Robot Spawn Rate: ");
@@ -258,6 +254,14 @@ public class Menu : MonoBehaviour {
 		serverConfig.spawnRateIncreasePerPlayer = numberField(new Rect(0.35f, 0.5f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
 		GUI.Label(convertRect(new Rect(0.05f, 0.55f, 0.3f, 0.03f), false), "Robots per Player: ");
 		serverConfig.robotsPerPlayer = numberField(new Rect(0.35f, 0.55f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
+		GameMode.GameModes [] modes = (GameMode.GameModes[])System.Enum.GetValues(typeof(GameMode.GameModes));
+		List<string> modeStrings = new List<string>();
+		foreach (GameMode.GameModes mode in modes) {
+			modeStrings.Add(mode.ToString());
+		}
+
+		int returnValue = dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
+        serverConfig.gameMode = (GameMode.GameModes)System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
 
 		// back button
 		adjustFontSize(skin.button, backRect.height * 0.8f);
@@ -280,7 +284,7 @@ public class Menu : MonoBehaviour {
 		adjustFontSize(skin.button, 0.04f);
 		int position = 0;
 		foreach(NetworkBroadcastResult server in servers) {
-			string serverName = System.Text.Encoding.Unicode.GetString(server.broadcastData);
+			string serverName = System.Text.Encoding.Unicode.GetString(server.broadcastData);  
 			if (GUI.Button(convertRect(new Rect(0, 0.05f * position, 0.5f, 0.05f), false), serverName + "   -   " + server.serverAddress)) {
 				host = server.serverAddress;
 				join();
@@ -305,6 +309,11 @@ public class Menu : MonoBehaviour {
 			currentMenu = menuHistory.Pop();
 		}
 	}
+
+	private int dropDownSelector(Rect relativePosition, List<string> options, int startValue) {
+		return GUI.SelectionGrid(convertRect(relativePosition, false), startValue, options.ToArray(), 2);
+	}
+
 
 	private float numberField(Rect relativePosition, float startValue) {
 		try {
@@ -341,23 +350,48 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void begin() {
-		NetworkManager manager = NetworkManager.singleton;
-		manager.StartHost();
-		//player.gameObject.SetActive(true);
-		//GetComponent<Camera>().enabled = false;
-		//GetComponent<AudioListener>().enabled = false;
-		menuHistory.Clear();
-		activeAtStart = false;
-		Cursor.lockState = CursorLockMode.Locked;
-		networkDiscovery.Initialize();
-		networkDiscovery.broadcastData = serverName;
-		networkDiscovery.StartAsServer();
+	    activeAtStart = false;
+		string activeScenePath = SceneManager.GetActiveScene().path;
+		SceneData? sceneData = SceneCatalog.sceneCatalog.getSceneData(activeScenePath);
+	    if (sceneData == null || !sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
+	        List<SceneData> scenes = SceneCatalog.sceneCatalog.getScenesForGameMode(serverConfig.gameMode);
+	        if (scenes.Count == 0) {
+	            return;
+	        }
+	        SceneLoader.sceneLoader.loadScene(scenes[0].path, this);
+	    } else if (sceneData != null && sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
+            startGame();
+	    }
 	}
 
-    private void quit() {
+	private void quit() {
         Application.Quit();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    public void onSceneLoaded() {
+        SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
+        SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
+        if (sceneData != null)
+            menu.serverConfig = sceneData.Value.configuration;
+        startGame();
+    }
+
+    private void startGame() {
+        NetworkManager manager = NetworkManager.singleton;
+        manager.StartHost();
+        //player.gameObject.SetActive(true);
+        //GetComponent<Camera>().enabled = false;
+        //GetComponent<AudioListener>().enabled = false;
+        menuHistory.Clear();
+        activeAtStart = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        networkDiscovery.Initialize();
+        networkDiscovery.broadcastData = serverName;
+        networkDiscovery.StartAsServer();
+        GlobalConfig.globalConfig.configuration = serverConfig;
+        GlobalConfig.globalConfig.startGame();
     }
 }

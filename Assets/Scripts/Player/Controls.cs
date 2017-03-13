@@ -100,6 +100,14 @@ public class Controls : NetworkBehaviour {
 			CmdInteract();
 		}
 
+		if (hasControls() && Input.GetButtonDown("Build")) {
+			if (!myPlayer.inventory.inContext()) {
+				myPlayer.inventory.pushContext(typeof(BuildTool));
+			} else {
+				myPlayer.inventory.popContext(typeof(BuildTool));
+			}
+		}
+
 
 	}
 
