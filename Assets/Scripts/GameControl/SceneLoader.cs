@@ -16,7 +16,7 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 	private string nextScenePath;
 
 	private bool delayLoad = true;
-	private float loadDelaySeconds = 10f;
+	private float loadDelaySeconds = 0f;
     private SceneLoadListener sceneLoadListener;
 
     // Use this for initialization
