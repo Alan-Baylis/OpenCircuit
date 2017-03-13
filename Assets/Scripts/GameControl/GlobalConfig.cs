@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections.Generic;
+﻿using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
 
@@ -30,15 +28,7 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
 	public void startGame() {
-		//TODO: Do this better
-		switch (configuration.gameMode) {
-			case GameMode.GameModes.BASES:
-				gamemode = gameObject.AddComponent<Bases>();
-				break;
-			case GameMode.GameModes.SPAWNER_HUNT:
-				gamemode = gameObject.AddComponent<SpawnerHunt>();
-				break;
-		}
+	    GameMode.constructGameMode(gameObject, configuration.gameMode);
 	}
 
     [Server]
