@@ -175,6 +175,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		if (GUI.Button(convertRect(hostRect, false), "Host", skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Host;
+		    loadDefaultSceneConfiguration();
 		}
 		adjustFontSize(skin.button, joinRect.height * 0.8f);
 		if(GUI.Button(convertRect(joinRect, false), "Join", skin.button)) {
@@ -372,10 +373,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
     }
 
     public void onSceneLoaded() {
-        SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
-        SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
-        if (sceneData != null)
-            menu.serverConfig = sceneData.Value.configuration;
+        loadDefaultSceneConfiguration();
         startGame();
     }
 
@@ -393,5 +391,12 @@ public class Menu : MonoBehaviour, SceneLoadListener {
         networkDiscovery.StartAsServer();
         GlobalConfig.globalConfig.configuration = serverConfig;
         GlobalConfig.globalConfig.startGame();
+    }
+
+    private void loadDefaultSceneConfiguration() {
+        SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
+        SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
+        if (sceneData != null)
+            menu.serverConfig = sceneData.Value.configuration;
     }
 }
