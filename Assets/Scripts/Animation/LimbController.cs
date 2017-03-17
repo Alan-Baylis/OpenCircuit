@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
 [ExecuteInEditMode]
@@ -53,22 +53,42 @@ public abstract class LimbController : MonoBehaviour {
 	// TODO: add unit tests
 	protected float clampAngle(float startAngle, float min, float max) {
 		if (startAngle < max) {
-			startAngle = max - ((max - startAngle) % 360);
+			startAngle = max - (max - startAngle) % 360;
 		} else if (startAngle > min) {
-			startAngle = min + ((startAngle - min) % 360);
+			startAngle = min + (startAngle - min) % 360;
 		}
 		return Mathf.Clamp(startAngle, min, max);
 	}
 
 	[Serializable]
-	public struct SegmentInfo {
-		[NonSerialized] public Transform trans;
+	public struct SegmentConfig {
 		public Vector3 offset, tip;
-		public float minRotation, maxRotation;
-		[NonSerialized] public float length;
+		public float deadzone, minRotation, maxRotation;
+	}
 
-		public void setLength() {
-			length = (tip - offset).magnitude;
+	protected class Segment {
+		public SegmentConfig config;
+		public Transform trans;
+		public Segment parent;
+
+		public Segment(SegmentConfig config, Transform trans, Segment parent=null) {
+			this.config = config;
+			this.trans = trans;
+			this.parent = parent;
+		}
+
+		public Vector3 getTip() {
+			return trans.TransformPoint(config.tip);
+		}
+
+		public float getLength() {
+			return (config.tip - config.offset).magnitude;
+		}
+
+		public void reposition() {
+			trans.localPosition = trans.localRotation * -config.offset;
+			if (parent != null)
+				trans.localPosition += parent.config.tip;
 		}
 	}
 

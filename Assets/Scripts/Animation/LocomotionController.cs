@@ -58,7 +58,7 @@ public class LocomotionController : MonoBehaviour {
 			LegInfo info = getLegInfo(leg);
 
 			// maybe the following should be added back in?
-			//if (info.planted)
+			//if (config.planted)
 			//	continue;
 
 			Vector3 normalizedVelocity = info.getVelocity().normalized;
