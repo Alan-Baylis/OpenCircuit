@@ -79,12 +79,13 @@ public class MentalModel {
 	}
 
     public List<Tag> getTagsOfType (TagEnum type, bool stale) {
-		if (!stale && knownTags.ContainsKey(type)) {
-			return knownTags[type];
-		} else if (stale && previouslyKnownTags.ContainsKey(type)){
-			return previouslyKnownTags[type];
+		List<Tag> tags;
+		if (stale) {
+			previouslyKnownTags.TryGetValue(type, out tags);
+		} else {
+			knownTags.TryGetValue(type, out tags);
 		}
-		else return new List<Tag>();
+		return tags != null ? tags : new List<Tag>();
     }
 
     public List<TagEnum> getKnownTagTypes() {
@@ -127,7 +128,7 @@ public class MentalModel {
         }
     }
 
-    private void registerTags(LabelHandle handle) {
+	private void registerTags(LabelHandle handle) {
 		// Clean out all stale tags from this LabelHandle before registering new ones
 		SensoryInfo info;
 		staleTargetSightings.TryGetValue(handle, out info);
@@ -141,38 +142,32 @@ public class MentalModel {
 			}
 		}
 
-        List<TagEnum> tags = handle.getTagTypes();
-        foreach (TagEnum tag in tags) {
-            if (knownTags.ContainsKey(tag)) {
-                knownTags[tag].Add(handle.getTag(tag));
-				//Debug.Log("registering tag: " + handle.getTag(tag).GetType() + " as " + tag.ToString());
-			} else {
-                List<Tag> tagList = new List<Tag>();
-                tagList.Add(handle.getTag(tag));
-                knownTags[tag] = tagList;
-				//Debug.Log("registering tag: " + handle.getTag(tag).GetType() + " as " + tag.ToString() );
-			}
-        }
-    }
+		List<TagEnum> tags = handle.getTagTypes();
+		foreach (TagEnum tag in tags) {
+			addTag (knownTags, handle.getTag(tag));
+		}
+	}
 
-    private void unregisterTags(LabelHandle handle) {
-        List<TagEnum> tags = handle.getTagTypes();
-        foreach (TagEnum tag in tags) {
-            if (knownTags.ContainsKey(tag)) {
-                knownTags[tag].Remove(handle.getTag(tag));
-            }
-        }
-
-		foreach (Tag tag in targetSightings[handle].getAttachedTags()) {
-			if (previouslyKnownTags.ContainsKey(tag.type)) {
-				previouslyKnownTags[tag.type].Add(tag);
-				//Debug.Log("registering tag: " + handle.getTag(tag).GetType() + " as " + tag.ToString());
-			} else {
-				List<Tag> tagList = new List<Tag>();
-				tagList.Add(tag);
-				previouslyKnownTags[tag.type] = tagList;
-				//Debug.Log("registering tag: " + handle.getTag(tag).GetType() + " as " + tag.ToString() );
+	private void unregisterTags(LabelHandle handle) {
+		List<TagEnum> tags = handle.getTagTypes();
+		foreach (TagEnum tag in tags) {
+			if (knownTags.ContainsKey(tag)) {
+				knownTags[tag].Remove(handle.getTag(tag));
 			}
 		}
+
+		foreach (Tag tag in targetSightings[handle].getAttachedTags()) {
+			addTag(previouslyKnownTags, tag);
+		}
     }
+
+	private static void addTag(Dictionary<TagEnum, List<Tag>> tags, Tag tag) {
+		if (tags.ContainsKey(tag.type)) {
+			tags[tag.type].Add(tag);
+		} else {
+			List<Tag> tagList = new List<Tag>();
+			tagList.Add(tag);
+			tags[tag.type] = tagList;
+		}
+	}
 }

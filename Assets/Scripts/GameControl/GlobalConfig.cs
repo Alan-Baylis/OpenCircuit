@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
+﻿using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
 
@@ -8,6 +6,8 @@ public class GlobalConfig : NetworkBehaviour {
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
 	public CentralRobotController centralRobotController;
     public int frozenPlayers = 0;
+
+	private GameMode gamemode = null;
 
     [ServerCallback]
     void Update() {
@@ -25,6 +25,10 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GlobalConfig() {
 		myGlobalConfig = this;
+	}
+
+	public void startGame() {
+	    GameMode.constructGameMode(gameObject, configuration.gameMode);
 	}
 
     [Server]
@@ -69,12 +73,14 @@ public struct GlobalConfigData {
 	public int robotsPerPlayer;
     public float robotSpawnRatePerSecond;
 	public float spawnRateIncreasePerPlayer;
+    public GameMode.GameModes gameMode;
 
 	public static GlobalConfigData getDefault() {
 		GlobalConfigData data = new GlobalConfigData();
 		data.robotsPerPlayer = 3;
 		data.robotSpawnRatePerSecond = 1f;
 		data.spawnRateIncreasePerPlayer = 0.1f;
+	    data.gameMode = GameMode.GameModes.SPAWNER_HUNT;
 		return data;
 	}
 }

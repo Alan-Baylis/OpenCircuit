@@ -43,4 +43,8 @@ public class CentralRobotController : MonoBehaviour {
 	public void forceAddListener(RobotController listener) {
 		listener.attachMentalModel(mentalModel);
 	}
+
+	public void sightingFound(LabelHandle target, Vector3 pos, Vector3? dir) {
+		mentalModel.addSighting(target, pos, dir);
+	}
 }
