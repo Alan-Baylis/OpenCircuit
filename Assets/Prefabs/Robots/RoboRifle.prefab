@@ -75,6 +75,8 @@ GameObject:
   - component: {fileID: 135856742939827744}
   - component: {fileID: 23701218489055334}
   - component: {fileID: 114631904695018896}
+  - component: {fileID: 114201910514010470}
+  - component: {fileID: 114732869944023674}
   m_Layer: 0
   m_Name: ElbowJoint
   m_TagString: Untagged
@@ -2350,6 +2352,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114201910514010470
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1127511226866986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d744924bc1f46b4da2ad8800f9af550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 1
+  interpolationRate: 0.2
+  networkChannel: 1
+  syncTarget: {fileID: 0}
 --- !u!114 &114281232858295066
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2465,6 +2482,38 @@ MonoBehaviour:
   recoilAnimationDistance: {x: 0, y: -0.01, z: -0.03}
   rotatable: {fileID: 114631904695018896}
   rifle: {fileID: 114623181795154200}
+--- !u!114 &114732869944023674
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1127511226866986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 155
+    i1: 38
+    i2: 212
+    i3: 193
+    i4: 238
+    i5: 141
+    i6: 223
+    i7: 4
+    i8: 251
+    i9: 83
+    i10: 71
+    i11: 15
+    i12: 180
+    i13: 29
+    i14: 7
+    i15: 9
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114737381180283362
 MonoBehaviour:
   m_ObjectHideFlags: 1
