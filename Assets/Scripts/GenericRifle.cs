@@ -53,7 +53,7 @@ public class GenericRifle : NetworkBehaviour {
         lastFiredTime = Time.time;
         //transform.position -= transform.TransformVector(recoilAnimationDistance);
 
-        //doFireEffects();
+        doFireEffects();
 
     }
 
