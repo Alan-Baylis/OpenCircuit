@@ -22,8 +22,10 @@ public class RoboRifle : AbstractRobotComponent {
     [ServerCallback]
     void FixedUpdate() {
 
-        if (target != null) { //no point if there are no targets in view
+        if (target != null) {
             trackTarget(target.getPosition());
+        } else {
+            trackTarget(transform.position - transform.forward);
         }
     }
 
@@ -34,7 +36,6 @@ public class RoboRifle : AbstractRobotComponent {
 
     public override void release() {
         target = null;
-        rotatable.transform.rotation = Quaternion.LookRotation(transform.forward);
     }
 
     public void setTarget(LabelHandle handle) {
