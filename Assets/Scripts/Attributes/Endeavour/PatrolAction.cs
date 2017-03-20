@@ -66,7 +66,6 @@ public class PatrolAction : Endeavour {
 	}
 
 	protected override float getCost() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		return jet.calculatePathCost(routePoints[currentDestination].label);
 	}
 

@@ -10,7 +10,6 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 
 	private AsyncOperation async;
 	private bool loading = false;
-	private List<Scene> scenes = new List<Scene>();
 
 	private int nextScene;
 	private string nextScenePath;

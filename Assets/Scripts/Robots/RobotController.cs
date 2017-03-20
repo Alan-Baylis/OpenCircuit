@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using System;
 
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
 public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver, MentalModelUpdateListener {
@@ -61,19 +59,18 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
         mentalModel.addUpdateListener(this);
 		myHealth = GetComponent<Health>();
 		soundEmitter = gameObject.AddComponent<AudioSource>();
-        foreach(Goal goal in goals) {
+	    foreach(Goal goal in goals) {
             if(!goalMap.ContainsKey(goal.type)) {
                 goalMap.Add(goal.type, goal);
             }
         }
 
-        Label[] labels = FindObjectsOfType<Label>();
-        foreach (Label label in labels) {
+	    Label[] labels = FindObjectsOfType<Label>();
+	    foreach (Label label in labels) {
             if (label.inherentKnowledge) {
                 sightingFound(label.labelHandle, label.transform.position, null);
             }
         }
-
 
         foreach (Label location in locations) {
 			if (location == null) {
@@ -124,7 +121,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //			}
 //		}
 //#endif
-
 		foreach(Endeavour endeavour in currentEndeavours) {
 			endeavour.update();
 		}
@@ -180,7 +176,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	public AbstractRobotComponent getRobotComponent(System.Type type) {
 		List<AbstractRobotComponent> compList = null;
 		componentMap.TryGetValue(type, out compList);
-		return compList[0];
+		return compList == null ? null : compList[0];
 	}
 
     public void addTag(Tag newTag) {
@@ -285,26 +281,25 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				availableEndeavours.Add(action);
 			}
 		}
+	    Dictionary<System.Type, int> componentMap = getComponentUsageMap();
 
 		//print("\tAvailable Endeavours");
 		foreach(Endeavour action in availableEndeavours) {
 			if(action.isStale()) {
 				//print("\t\t--" + action.getName());
 				staleEndeavours.Add(action);
-			} else {
+			} else if (!action.isMissingComponents(componentMap)) {
 				//print("\t\t++" + action.getName());
 				endeavourQueue.Enqueue(action);
 			}
 		}
 
 		foreach(Endeavour action in staleEndeavours) {
-			//print("remove: " + action.getName());
 			availableEndeavours.Remove(action);
 			currentEndeavours.Remove(action);
 		}
 		HashSet<Endeavour> proposedEndeavours = new HashSet<Endeavour>();
 
-		Dictionary<System.Type, int> componentMap = getComponentUsageMap();
 
 #if UNITY_EDITOR
 		bool maxPrioritySet = false;
@@ -316,7 +311,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			Endeavour action = (Endeavour)endeavourQueue.Dequeue();
 			bool isReady = action.isReady(componentMap);
 #if UNITY_EDITOR
-			if (debug) {
+			if (debug && !action.isMissingComponents(componentMap)) {
 				float priority = action.getPriority();
 				if (!maxPrioritySet) {
 					maxPrioritySet = true;

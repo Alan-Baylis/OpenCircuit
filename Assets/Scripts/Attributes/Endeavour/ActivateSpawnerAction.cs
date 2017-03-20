@@ -1,22 +1,17 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 
 public class ActivateSpawnerAction : Endeavour {
 
-	RobotSpawner spawner;
-	HoverJet jet;
+	private RobotSpawner spawner;
 
 	public ActivateSpawnerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) : base(factory, controller, goals, tagMap) {
 		name = "ActivateSpawner";
 		spawner = getTagOfType<Tag>(TagEnum.Spawner).getLabelHandle().label.GetComponentInChildren<RobotSpawner>();
-		jet = getController().getRobotComponent<HoverJet>();
-		
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
     }
 
 	public override bool canExecute() {
@@ -24,7 +19,7 @@ public class ActivateSpawnerAction : Endeavour {
 	}
 
 	protected override void onExecute() {
-		getHoverJet().setTarget(getTagOfType<Tag>(TagEnum.Spawner).getLabelHandle(), true);
+		jet.setTarget(getTagOfType<Tag>(TagEnum.Spawner).getLabelHandle(), true);
 	}
 
 	public override bool isStale() {
@@ -42,11 +37,7 @@ public class ActivateSpawnerAction : Endeavour {
 	}
 
 	protected override float getCost() {
-		return getHoverJet().calculatePathCost(getTagOfType<Tag>(TagEnum.Spawner).getLabelHandle().label);
-	}
-
-	private HoverJet getHoverJet() {
-		return jet;
+		return jet.calculatePathCost(getTagOfType<Tag>(TagEnum.Spawner).getLabelHandle().label);
 	}
 
 	public override TagEnum getPrimaryTagType() {

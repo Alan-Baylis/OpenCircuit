@@ -1,18 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public class GuardAction : Endeavour {
 
 	Tag guardLocation;
 
 	public GuardAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) : base(factory, controller, goals, tagMap){
-		this.guardLocation = getTagOfType<Tag>(TagEnum.GuardPoint);
-		this.name = "guard";
+		guardLocation = getTagOfType<Tag>(TagEnum.GuardPoint);
+		name = "guard";
 	}
 
 	protected override void onExecute() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		jet.setTarget(guardLocation.getLabelHandle(), true, true);
 	}
 
@@ -21,13 +19,12 @@ public class GuardAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
-		if(this.active && !jet.hasTarget() && !jet.hasReachedTarget(guardLocation.getLabelHandle())) {
-			this.active = false;
+		if(active && !jet.hasTarget() && !jet.hasReachedTarget(guardLocation.getLabelHandle())) {
+			active = false;
 		}
 		return true;
 	}
@@ -37,7 +34,6 @@ public class GuardAction : Endeavour {
 	}
 
 	protected override float getCost() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		return jet.calculatePathCost(guardLocation.getLabelHandle().label);
 	}
 

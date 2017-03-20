@@ -12,7 +12,9 @@ public class NetworkParenter : NetworkBehaviour {
 
 	public override void OnStartClient() {
 		base.OnStartClient();
-		updateParentId(parentId);
+	    if (!isServer) {
+	        updateParentId(parentId);
+	    }
 	}
 
 	[Server]
