@@ -46,7 +46,17 @@ public class ArmController : LimbController {
 	}
 
 	public override Vector3 deducePosition() {
+		return lower.getTip();
+	}
+
+	public Vector3 deduceHandPosition() {
 		return hand.getTip();
+	}
+
+	public bool setHandPositionAndRotation(Vector3 position, Quaternion rotation) {
+		hand.trans.localRotation = rotation;
+		hand.reposition();
+		return true;
 	}
 
 	private bool calculatShoulderRotation(Vector3 worldPos) {
@@ -75,36 +85,32 @@ public class ArmController : LimbController {
 	}
 
 	private bool calculateUpperRotation(Vector3 worldPos) {
-		upper.reposition();
-		return true;
+		bool canReach = true;
+		Vector3 diff = upper.parent.trans.InverseTransformPoint(worldPos) -upper.parent.config.tip;
+		float rotation = 0;
+		rotation = getVectorAngle(diff.x, diff.y) -	getVectorAngle(
+			lower.config.tip.x -lower.config.offset.x,
+			lower.config.tip.y -lower.config.offset.y);
 
-//		bool canReach = true;
-//		Vector3 eulerAngles = upper.trans.localEulerAngles;
-//		eulerAngles.y = 0;
-//		upper.trans.localEulerAngles = eulerAngles;
-//		upper.trans.localPosition = upper.offset;
-//		Vector3 localPos = upper.trans.InverseTransformPoint(worldPos);
-//		eulerAngles.y = (getVectorAngle(localPos.z, localPos.x) + 180 -upper.minRotation) % 360 - 180 +upper.minRotation;
-//
-//		// calculate circle intersection
-//		double midPointDistance = circleMidPointDistance(new Vector2(upper.offset.x, upper.offset.z), new Vector2(localPos.x, localPos.z), upper.length, lower.length);
-//		if (midPointDistance < upper.length) {
-//			float angleOffset = (float)Math.Acos(midPointDistance / upper.length) * Mathf.Rad2Deg;
-//			if (float.IsNaN(angleOffset) || angleOffset < 0) {
-//				angleOffset = 180;
-//			}
-//			eulerAngles.y += angleOffset;
-//		}
-//
-//		// apply angle limits
-//		float clampedAngle = clampAngle(eulerAngles.y, upper.minRotation, upper.maxRotation);
-//		if (clampedAngle % 360 != eulerAngles.y % 360) {
-//			eulerAngles.y = clampedAngle;
-//			canReach = false;
-//		}
-//		upper.trans.localPosition += rotate(-upper.offset, new Vector3(0, eulerAngles.y, 0));
-//		upper.trans.localEulerAngles = eulerAngles;
-//		return canReach;
+		// calculate circle intersection
+		double midPointDistance = circleMidPointDistance(new Vector2(upper.config.offset.x, upper.config.offset.y),
+			new Vector2(diff.x, diff.y), upper.getLength(), lower.getLength());
+		if (midPointDistance < upper.getLength()) {
+			float angleOffset = (float)System.Math.Acos(midPointDistance / upper.getLength()) * Mathf.Rad2Deg;
+			if (float.IsNaN(angleOffset) || angleOffset < 0) {
+				angleOffset = 180;
+			}
+			rotation += angleOffset;
+		}
+
+		// apply angle limits
+		canReach = !clampAngle(ref rotation, upper.config.minRotation, upper.config.maxRotation);
+
+		Vector3 eulerAngles = upper.trans.localEulerAngles;
+		eulerAngles.z = rotation;
+		upper.trans.localEulerAngles = eulerAngles;
+	    upper.reposition();
+		return canReach;
 	}
 
 	private bool calculateLowerRotation(Vector3 worldPos) {
@@ -116,11 +122,7 @@ public class ArmController : LimbController {
 							 getVectorAngle(lower.config.tip.x -lower.config.offset.x,
 								 lower.config.tip.y -lower.config.offset.y);
 
-		float clampedAngle = clampAngle(rotation, lower.config.minRotation, lower.config.maxRotation);
-		if (clampedAngle % 360 != rotation % 360) {
-			rotation = clampedAngle;
-			canReach = false;
-		}
+		canReach = !clampAngle(ref rotation, lower.config.minRotation, lower.config.maxRotation);
 
 		Vector3 eulerAngles = lower.trans.localEulerAngles;
 		eulerAngles.z = rotation;

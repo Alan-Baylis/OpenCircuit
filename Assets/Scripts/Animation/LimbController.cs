@@ -17,7 +17,7 @@ public abstract class LimbController : MonoBehaviour {
 	public abstract Vector3 deducePosition();
 
 	// TODO: add unit tests
-	protected double circleMidPointDistance(Vector2 p1, Vector2 p2, double r1, double r2) {
+	protected static double circleMidPointDistance(Vector2 p1, Vector2 p2, double r1, double r2) {
 		// ax + by + c = 0 is the equation for the line that passes through the circle intersection points
 		double a = 2 * (p1.x - p2.x);
 		double b = 2 * (p1.y - p2.y);
@@ -36,28 +36,38 @@ public abstract class LimbController : MonoBehaviour {
 	}
 
 	// TODO: add unit tests
-	protected Vector3 rotate(Vector3 vector, Vector3 angle) {
+	protected static Vector3 rotate(Vector3 vector, Vector3 angle) {
 		return Quaternion.Euler(angle) *vector;
 	}
 
 	// TODO: add unit tests
-	protected float getVectorAngle(float x, float y) {
+	protected static float getVectorAngle(float x, float y) {
 		return Mathf.Atan2(y, x) *Mathf.Rad2Deg;
 	}
 
 	// TODO: add unit tests
-	protected float flipAngle(float angle) {
+	protected static float flipAngle(float angle) {
 		return (angle +360) %360 -180;
 	}
 
 	// TODO: add unit tests
-	protected float clampAngle(float startAngle, float min, float max) {
+	protected static float clampAngle(float startAngle, float min, float max) {
 		if (startAngle < max) {
 			startAngle = max - (max - startAngle) % 360;
 		} else if (startAngle > min) {
 			startAngle = min + (startAngle - min) % 360;
 		}
 		return Mathf.Clamp(startAngle, min, max);
+	}
+
+	// TODO: add unit tests
+	protected static bool clampAngle(ref float angle, float min, float max) {
+		float clampedAngle = clampAngle(angle, min, max);
+		if (clampedAngle % 360 != angle % 360) {
+			angle = clampedAngle;
+			return true;
+		}
+		return false;
 	}
 
 	[Serializable]

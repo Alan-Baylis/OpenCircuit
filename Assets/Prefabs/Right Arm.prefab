@@ -940,8 +940,8 @@ MonoBehaviour:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0, y: -0.4, z: 0}
     deadzone: 0
-    minRotation: 0
-    maxRotation: 0
+    minRotation: -180
+    maxRotation: 180
   lowerArmConfig:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0, y: -0.5, z: 0}
