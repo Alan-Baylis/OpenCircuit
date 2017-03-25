@@ -25,7 +25,6 @@ public class BodyController : MonoBehaviour {
 		Quaternion camRotation = Quaternion.Euler(0, player.cam.transform.localEulerAngles.y, 0);
 		Quaternion rotation = Quaternion.Euler(transform.localEulerAngles);
 		float diff = Quaternion.Angle(rotation, camRotation);
-		print(rotating + ", " + diff);
 		if (rotating) {
 			float rotationChange = Mathf.Max(minDegreesPerSecond *Time.deltaTime,
 				Mathf.Min(diff * rotationPercent, maxDegreesPerSecond * Time.deltaTime));

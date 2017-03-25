@@ -272,8 +272,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1403996644077670}
-  m_LocalRotation: {x: -0.000000019227876, y: 0.0000000086468255, z: 1.6626009e-16,
-    w: 1}
+  m_LocalRotation: {x: -0.000000020619114, y: -0.000000004405223, z: -0.5916079, w: 0.80622584}
   m_LocalPosition: {x: 0, y: -0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -316,8 +315,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1173660020621368}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -0, z: -0}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4687863232277610}
@@ -398,7 +397,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1887317751091584}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.21632881, w: 0.97632056}
   m_LocalPosition: {x: 0.1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -415,7 +414,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1251178228782492}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4463126183092376}
@@ -890,7 +889,7 @@ BoxCollider:
   m_GameObject: {fileID: 1896950836948926}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -902,7 +901,7 @@ BoxCollider:
   m_GameObject: {fileID: 1161283387703342}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -914,7 +913,7 @@ BoxCollider:
   m_GameObject: {fileID: 1599194586490436}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -926,16 +925,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1251178228782492}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22625669915804b828e4156d1b72c882, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f05a4549bf13de48b87e16d5c4149aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPos: {x: 0.1, y: -0.8, z: 0}
+  defaultPos: {x: 0, y: -0.7, z: 0.1}
   shoulderConfig:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0.1, y: 0, z: 0}
-    deadzone: 0.05
-    minRotation: -90
-    maxRotation: 90
+    deadzone: 0
+    minRotation: 0
+    maxRotation: 180
   upperArmConfig:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0, y: -0.4, z: 0}
@@ -945,12 +944,12 @@ MonoBehaviour:
   lowerArmConfig:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0, y: -0.5, z: 0}
-    deadzone: 0.1
-    minRotation: 0
-    maxRotation: 175
+    deadzone: 0
+    minRotation: -175
+    maxRotation: 0
   handConfig:
     offset: {x: 0, y: 0, z: 0}
-    tip: {x: 0, y: -0.2, z: 0}
+    tip: {x: 0, y: 0, z: 0}
     deadzone: 0
     minRotation: 0
     maxRotation: 0
@@ -962,7 +961,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1511387567501542}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -975,7 +974,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1792454287015276}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -988,7 +987,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1724876300286474}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -1001,7 +1000,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1294091379488428}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -1014,7 +1013,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1187073785676100}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1

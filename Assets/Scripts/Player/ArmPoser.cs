@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class ArmController : LimbController {
+public class ArmPoser : LimbController {
 
 	public SegmentConfig shoulderConfig;
 	public SegmentConfig upperArmConfig;

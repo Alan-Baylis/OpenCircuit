@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Player/Inventory")]
@@ -14,7 +13,7 @@ public class Inventory : NetworkBehaviour {
 
 	protected Player player;
 	protected Dictionary<System.Type, List<Item>> items = new Dictionary<System.Type, List<Item>>();
-	protected Item equipped = null;
+	protected Item equipped;
     protected System.Type[] slots = new System.Type[3];
     protected int selecting = -1;
     protected int highlighted;
@@ -22,9 +21,9 @@ public class Inventory : NetworkBehaviour {
     protected Vector2 mousePos;
 	protected List<System.Type> contextStack = new List<System.Type>();
 	[HideInInspector]
-	public bool sprinting = false;
+	public bool sprinting;
 
-	private List<GameObject> toTake = new List<GameObject>();
+	private readonly List<GameObject> toTake = new List<GameObject>();
 
 	[ServerCallback]
 	void Awake() {
@@ -209,6 +208,10 @@ public class Inventory : NetworkBehaviour {
 			}
 		}
 		return results;
+	}
+
+	public Item getEquipped() {
+		return equipped;
 	}
 
     protected void showSlottedItems() {
