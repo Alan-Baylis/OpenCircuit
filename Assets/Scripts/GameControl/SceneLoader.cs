@@ -50,35 +50,42 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 
 	public void loadScene(int index, SceneLoadListener listener) {
 	    sceneLoadListener = listener;
-	    nextScene = index;
-	    cutToLoadScene();
-		StartCoroutine("load");
+	    //nextScene = index;
+//	    cutToLoadScene();
+		//StartCoroutine("load");
+	    nextScenePath = SceneCatalog.sceneCatalog.scenes[index];
+	    StartCoroutine("loadByPath");
 	}
 
 	public void loadScene(string path, SceneLoadListener listener) {
 	    sceneLoadListener = listener;
 		nextScenePath = path;
-        cutToLoadScene();
+//        cutToLoadScene();
 		StartCoroutine("loadByPath");
 	}
 
-	IEnumerator load() {
-	    yield return new WaitForSeconds(loadDelaySeconds);
-		if (nextScene < SceneManager.sceneCountInBuildSettings) {
-			loading = true;
-			async = SceneManager.LoadSceneAsync(nextScene);
-			async.allowSceneActivation = false;
-		} else {
-			Debug.LogError("Attempted to load scene " + nextScene + " when the total scene count is only " + SceneManager.sceneCountInBuildSettings + "!");
-		}
-		yield return async;
-	}
+//	IEnumerator load() {
+//	    yield return new WaitForSeconds(loadDelaySeconds);
+//		if (nextScene < SceneManager.sceneCountInBuildSettings) {
+//			loading = true;
+//			//async = SceneManager.LoadSceneAsync(nextScene);
+//
+//		    RoboNetworkManager.singleton.ServerChangeScene(nextScenePath, false);
+//			async.allowSceneActivation = false;
+//		} else {
+//			Debug.LogError("Attempted to load scene " + nextScene + " when the total scene count is only " + SceneManager.sceneCountInBuildSettings + "!");
+//		}
+//		yield return async;
+//	}
 
 	IEnumerator loadByPath() {
 	    yield return new WaitForSeconds(loadDelaySeconds);
-		if (nextScene < SceneManager.sceneCountInBuildSettings) {
+		if (SceneCatalog.sceneCatalog.scenes.Contains(nextScenePath)) {
 			loading = true;
-			async = SceneManager.LoadSceneAsync(nextScenePath);
+//			async = SceneManager.LoadSceneAsync(nextScenePath);
+		    ((RoboNetworkManager)RoboNetworkManager.singleton).ServerChangeScene(nextScenePath, true);
+		    ((RoboNetworkManager)RoboNetworkManager.singleton).onlineScene = nextScenePath     ;
+		    async = RoboNetworkManager.s_LoadingSceneAsync;
 			async.allowSceneActivation = false;
 		} else {
 			Debug.LogError("Attempted to load scene '" + nextScenePath + "' but it is not in the build!");
@@ -90,13 +97,13 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 		async.allowSceneActivation = true;
 	}
 
-    private void cutToLoadScene() {
-        string scenePath = SceneCatalog.sceneCatalog.getScenePath(0);
-        SceneData ? sceneData = SceneCatalog.sceneCatalog.getSceneData(scenePath);
-		if (sceneData != null && sceneData.Value.isLoadingScene() && !SceneManager.GetActiveScene().path.Equals(sceneData.Value.path)) {
-			SceneManager.LoadScene(0);
-		}
-    }
+//    private void cutToLoadScene() {
+//        string scenePath = SceneCatalog.sceneCatalog.getScenePath(0);
+//        SceneData ? sceneData = SceneCatalog.sceneCatalog.getSceneData(scenePath);
+//		if (sceneData != null && sceneData.Value.isLoadingScene() && !SceneManager.GetActiveScene().path.Equals(sceneData.Value.path)) {
+//			SceneManager.LoadScene(0);
+//		}
+//    }
 
     public void onSceneLoaded() {
         Menu.menu.activeAtStart = true;

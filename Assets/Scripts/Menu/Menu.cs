@@ -10,6 +10,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 
 	private Rect hostRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
+	private Rect restartRect = new Rect(0.05f, 0.55f, 0.5f, 0.07f);
 	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect optionsRect = new Rect(0.05f, 0.35f, 0.5f, 0.07f);
 	private Rect backRect = new Rect(0.05f, 0.8f, 0.5f, 0.07f);
@@ -129,6 +130,9 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 
 	private void doLose() {
 		adjustFontSize(skin.button, exitRect.height * 0.8f);
+	    if (GUI.Button(convertRect(restartRect, false), "Restart", skin.button)) {
+	        restart();
+	    }
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
 		}
@@ -370,6 +374,10 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 	    }
 	}
 
+    private void restart() {
+        SceneLoader.sceneLoader.loadScene(SceneManager.GetActiveScene().buildIndex, this);
+    }
+
 	private void quit() {
         Application.Quit();
 #if UNITY_EDITOR
@@ -382,17 +390,23 @@ public class Menu : MonoBehaviour, SceneLoadListener {
     }
 
     private void startGame() {
-        NetworkManager manager = NetworkManager.singleton;
-        manager.StartHost();
+        if (!NetworkManager.singleton.isNetworkActive) {
+            NetworkManager manager = NetworkManager.singleton;
+            manager.StartHost();
+        } else {
+            NetworkServer.SpawnObjects();
+        }
         //player.gameObject.SetActive(true);
         //GetComponent<Camera>().enabled = false;
         //GetComponent<AudioListener>().enabled = false;
         menuHistory.Clear();
         activeAtStart = false;
         Cursor.lockState = CursorLockMode.Locked;
-        networkDiscovery.Initialize();
-        networkDiscovery.broadcastData = serverName;
-        networkDiscovery.StartAsServer();
+        if (!networkDiscovery.running) {
+            networkDiscovery.Initialize();
+            networkDiscovery.broadcastData = serverName;
+            networkDiscovery.StartAsServer();
+        }
         GlobalConfig.globalConfig.configuration = serverConfig;
         GlobalConfig.globalConfig.startGame();
     }
