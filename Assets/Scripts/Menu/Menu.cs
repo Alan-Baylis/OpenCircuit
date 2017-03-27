@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
@@ -175,7 +176,6 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		if (GUI.Button(convertRect(hostRect, false), "Host", skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Host;
-		    loadDefaultSceneConfiguration();
 		}
 		adjustFontSize(skin.button, joinRect.height * 0.8f);
 		if(GUI.Button(convertRect(joinRect, false), "Join", skin.button)) {
@@ -262,9 +262,14 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		}
 
 		int returnValue = dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
-        serverConfig.gameMode = (GameMode.GameModes)System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
+	    GameMode.GameModes selectedMode =
+	        (GameMode.GameModes) System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
+	    if (selectedMode != serverConfig.gameMode) {
+	        loadDefaultSceneConfigurationFor(SceneCatalog.sceneCatalog.getScenesForGameMode(selectedMode)[0].path);
+	        serverConfig.gameMode = selectedMode;
+	    }
 
-		// back button
+	    // back button
 		adjustFontSize(skin.button, backRect.height * 0.8f);
 		if (GUI.Button(convertRect(backRect, false), "Back", skin.button)) {
 			currentMenu = menuHistory.Pop();
@@ -373,7 +378,6 @@ public class Menu : MonoBehaviour, SceneLoadListener {
     }
 
     public void onSceneLoaded() {
-        loadDefaultSceneConfiguration();
         startGame();
     }
 
@@ -393,9 +397,9 @@ public class Menu : MonoBehaviour, SceneLoadListener {
         GlobalConfig.globalConfig.startGame();
     }
 
-    private void loadDefaultSceneConfiguration() {
+    private void loadDefaultSceneConfigurationFor(string path) {
         SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
-        SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
+        SceneData? sceneData = sceneCatalog.getSceneData(path);
         if (sceneData != null)
             menu.serverConfig = sceneData.Value.configuration;
     }
