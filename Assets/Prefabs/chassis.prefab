@@ -978,10 +978,12 @@ MonoBehaviour:
   - {fileID: 114923979571162624}
   stanceWidth: 2
   stanceHeight: 3
-  strideLength: 0.5
+  normalStrideLength: 0.5
+  maxStrideLength: 1
   stepHeight: 0.6
   maxStepHeight: 0.8
   minMoveSpeed: 0.01
+  normalMoveSpeed: 2
   minimumTimePerSwitch: 0.02
   footstep: {fileID: 82250956191707916}
   footPlant:

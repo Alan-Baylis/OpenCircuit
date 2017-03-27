@@ -26,7 +26,7 @@ public class TransformSync : NetworkBehaviour {
 	protected Vector3 serverAngularVelocity;
 
 	private new Comp<Rigidbody> rigidbody;
-	private Comp<NavMeshAgent> navAgent;
+	private Comp<UnityEngine.AI.NavMeshAgent> navAgent;
 
 	public void Awake() {
 		rigidbody.init(getTransform());

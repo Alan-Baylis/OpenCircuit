@@ -120,7 +120,6 @@ public class LocomotionController : MonoBehaviour {
 		foreach (SpiderLegController leg in steppingGroup) {
 			LegInfo info = getLegInfo(leg);
 			Vector3 stepOffset = leg.getDefaultPos() +info.getVelocity().normalized * strideLength;
-			//print("step offset: " + stepOffset);
 
 
 			stepOffset.y += calculateAltitudeAdjustment(stepOffset, leg);
@@ -164,7 +163,9 @@ public class LocomotionController : MonoBehaviour {
 			leg.setPosition(getLegInfo(leg).foot);
 			info.setPlanted(planted);
 			info.setLastDefault();
-			drawPoint(leg.getDefaultPos(), Color.cyan, "default pos - " + leg);
+			if (debug) {
+				drawPoint (leg.getDefaultPos (), Color.cyan, "default pos - " + leg);
+			}
 		}
 	}
 
