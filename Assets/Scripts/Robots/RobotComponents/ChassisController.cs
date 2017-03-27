@@ -9,11 +9,13 @@ public class ChassisController : MonoBehaviour {
 
 	public float stanceWidth = 2;
 	public float stanceHeight = 3;
-	public float strideLength = 1;
+	public float normalStrideLength = 1;
+	public float maxStrideLength = 1.25f;
 	public float stepHeight = 0.5f;
 	public float maxStepHeight = .8f;
 
 	public float minMoveSpeed = 0.01f;
+	public float normalMoveSpeed = 2;
 	public float minimumTimePerSwitch = 0.02f;
 
 	public AudioSource footstep;
@@ -22,44 +24,90 @@ public class ChassisController : MonoBehaviour {
 	public bool debug = false;
 
 	private Dictionary<LegController, LegInfo> legInfo = new Dictionary<LegController, LegInfo>();
-	private Vector3 lastPos;
 	private LegController[] plantedGroup = null;
 	private LegController[] steppingGroup = null;
 	private float lastSwitch = 0;
+	private bool stopped = true;
+
+	// these handle running in editor
+	protected float time {
+		get {
+			return Application.isPlaying ? Time.time : Time.realtimeSinceStartup;
+		}
+	}
+	protected float deltaTime {
+		get {
+			return Application.isPlaying ? Time.deltaTime : 0.03f;
+		}
+	}
 
 	void Update() {
-		//if (velocity.sqrMagnitude < minMoveSpeed) {
-			// plant all legs
-		//} else {
-			// select stepping group
 		if (plantedGroup == null) {
 			plantedGroup = legGroup1;
 			steppingGroup = legGroup2;
 		}
-
-		float stepPercent = Mathf.Min(1, calculateStepPercent(plantedGroup));
-		//print(stepPercent);
-		updateSteppingGroup(steppingGroup, stepPercent);
-		float time = Application.isPlaying ? Time.time : Time.realtimeSinceStartup;
-		bool isSwitching = stepPercent > 0.99f && lastSwitch <= time - minimumTimePerSwitch;
-		if (isSwitching) {
-			LegController[] temp = plantedGroup;
-			plantedGroup = steppingGroup;
-			steppingGroup = temp;
-			lastSwitch = time;
+		
+		float stepPercent = 0;
+		float maxSpeed = getMaxSpeed();
+		if (maxSpeed < minMoveSpeed) {
+			// plant feet
+			if (!stopped) {
+				updateSteppingGroup(steppingGroup, 1, 0);
+				if (getMaxDisplacement(steppingGroup) == 0) {
+					if (getMaxDisplacement(plantedGroup) == 0) {
+						stopped = true;
+					} else {
+						swapLegGroups();
+					}
+				}
+			}
+		} else {
+			stopped = false;
+			// step feet
+			float strideLength = Mathf.Min(maxStrideLength, maxSpeed / normalMoveSpeed *normalStrideLength);
+			stepPercent = Mathf.Min(1, calculateStepPercent(plantedGroup, strideLength));
+			updateSteppingGroup(steppingGroup, stepPercent, strideLength);
+			bool isSwitching = stepPercent > 0.99f && lastSwitch <= time - minimumTimePerSwitch;
+			if (isSwitching) {
+				swapLegGroups();
+				lastSwitch = time;
+			}
 		}
+
 		updateLegs(plantedGroup, true);
-		updateLegs(steppingGroup, false);
+		updateLegs(steppingGroup, stopped);
 	}
 
-	protected float calculateStepPercent(LegController[] plantedGroup) {
+	public float getMaxSpeed() {
+		float maxSpeed = 0;
+		foreach(LegController leg in plantedGroup) {
+			maxSpeed = Mathf.Max(maxSpeed, getLegInfo(leg).getVelocity().magnitude);
+		}
+		return maxSpeed;
+	}
+
+	public void swapLegGroups() {
+		LegController[] temp = plantedGroup;
+		plantedGroup = steppingGroup;
+		steppingGroup = temp;
+	}
+
+	protected float getMaxDisplacement(LegController[] group) {
+		float displacement = 0;
+		foreach (LegController leg in group) {
+			LegInfo info = getLegInfo(leg);
+			
+			Vector3 offset = info.foot - leg.getDefaultPos();
+			displacement = Mathf.Max(displacement, offset.magnitude);
+		}
+		print("displacement: " + displacement);
+		return displacement;
+    }
+
+	protected float calculateStepPercent(LegController[] plantedGroup, float strideLength) {
 		float offsetMagnitude = 0;
 		foreach (LegController leg in plantedGroup) {
 			LegInfo info = getLegInfo(leg);
-
-			// maybe the following should be added back in?
-			//if (info.planted)
-			//	continue;
 
 			Vector3 normalizedVelocity = info.getVelocity().normalized;
 			Vector3 offset = info.foot - leg.getDefaultPos();
@@ -68,10 +116,11 @@ public class ChassisController : MonoBehaviour {
 		return offsetMagnitude / 2;
 	}
 
-	protected void updateSteppingGroup(LegController[] steppingGroup, float stepPercent) {
+	protected void updateSteppingGroup(LegController[] steppingGroup, float stepPercent, float strideLength) {
 		foreach (LegController leg in steppingGroup) {
 			LegInfo info = getLegInfo(leg);
 			Vector3 stepOffset = leg.getDefaultPos() +info.getVelocity().normalized * strideLength;
+			//print("step offset: " + stepOffset);
 
 
 			stepOffset.y += calculateAltitudeAdjustment(stepOffset, leg);
@@ -79,8 +128,8 @@ public class ChassisController : MonoBehaviour {
 
 			target.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
 			Vector3 diff = (target - info.foot);
-			float deltaTime = Application.isPlaying ? Time.deltaTime : 0.03f;
-			float maxDistance = Mathf.Max(10f, diff.magnitude * 20) * deltaTime;
+			float maxDistance = Mathf.Max(normalMoveSpeed *4, diff.magnitude * 20) * deltaTime;
+			print("diff: " + diff + "   max dis: " + maxDistance);
             info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
 
 #if UNITY_EDITOR
@@ -90,19 +139,6 @@ public class ChassisController : MonoBehaviour {
 #endif
 		}
 	}
-#if UNITY_EDITOR
-	private Dictionary<string, GameObject> footPos = new Dictionary<string,GameObject>();
-	private void drawPoint(Vector3 point, Color color, string id) {
-		if (footPos.ContainsKey(id))
-		Destroy(footPos[id]);
-		GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		cube.transform.position = point;
-		cube.GetComponent<MeshRenderer>().material.color = color;
-		Destroy(cube.GetComponent<BoxCollider>());
-		cube.transform.localScale = new Vector3(.2f, .2f, .2f);
-		footPos[id] = cube;
-	}
-#endif
 
 	protected float calculateAltitudeAdjustment(Vector3 stepOffset, LegController leg) {
 		Vector3 maxStepPos = stepOffset + new Vector3(0, maxStepHeight, 0);
@@ -128,6 +164,7 @@ public class ChassisController : MonoBehaviour {
 			leg.setPosition(getLegInfo(leg).foot);
 			info.setPlanted(planted);
 			info.setLastDefault();
+			drawPoint(leg.getDefaultPos(), Color.cyan, "default pos - " + leg);
 		}
 	}
 
@@ -139,6 +176,20 @@ public class ChassisController : MonoBehaviour {
 		}
 		return info;
 	}
+
+#if UNITY_EDITOR
+	private Dictionary<string, GameObject> footPos = new Dictionary<string, GameObject>();
+	private void drawPoint(Vector3 point, Color color, string id) {
+		if (footPos.ContainsKey(id))
+			Destroy(footPos[id]);
+		GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		cube.transform.position = point;
+		cube.GetComponent<MeshRenderer>().material.color = color;
+		Destroy(cube.GetComponent<BoxCollider>());
+		cube.transform.localScale = new Vector3(.2f, .2f, .2f);
+		footPos[id] = cube;
+	}
+#endif
 
 
 
@@ -159,9 +210,9 @@ public class ChassisController : MonoBehaviour {
 		}
 
 		public void setPlanted(bool planted) {
-			if (!planted && this.planted)
+			if (!planted && this.planted) {
 				setLastPlanted();
-			if (planted && !this.planted) {
+			} else if (planted && !this.planted) {
                 if (chassis.footstep != null) {
 					chassis.footstep.pitch = Random.Range(1f, 1.5f);
 					chassis.footstep.Play();
@@ -176,7 +227,7 @@ public class ChassisController : MonoBehaviour {
 		}
 
 		public Vector3 getVelocity() {
-			return leg.getDefaultPos() -lastDefault;
+			return (leg.getDefaultPos() -lastDefault) /chassis.deltaTime;
 		}
 
 		public void setLastDefault() {

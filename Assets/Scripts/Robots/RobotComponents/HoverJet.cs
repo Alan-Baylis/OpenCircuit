@@ -41,7 +41,6 @@ public class HoverJet : AbstractRobotComponent {
 	private GameObject dest;
 #endif
 	private float regularHeight;
-	private float regularStrideLength;
 	private ChassisController chassis;
 
 	public void goToPosition(Vector3 ? pos, bool autoBrake) {
@@ -88,7 +87,6 @@ public class HoverJet : AbstractRobotComponent {
 		pursueSpeed += Random.Range(-0.5f, 0.5f);
 		nav.speed = regularSpeed;
 		regularHeight = nav.height;
-		regularStrideLength = chassis.strideLength;
 	}
 
 	[ServerCallback]
@@ -102,8 +100,7 @@ public class HoverJet : AbstractRobotComponent {
 		} else if (nav.speed > actualSpeed) {
 			nav.speed = actualSpeed;
         }
-
-		chassis.strideLength = regularStrideLength *nav.speed /actualSpeed;
+		
 		if (nav.baseOffset < regularHeight) {
 			nav.baseOffset = nav.baseOffset + heightRegenRate * Time.deltaTime;
 
