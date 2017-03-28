@@ -131,11 +131,7 @@ public class LocomotionController : MonoBehaviour {
 			print("diff: " + diff + "   max dis: " + maxDistance);
             info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
 
-#if UNITY_EDITOR
-			if(debug) {
-				drawPoint(info.foot, Color.blue, leg + "three");
-			}
-#endif
+			drawPoint(info.foot, Color.blue, leg + "three");
 		}
 	}
 
@@ -144,14 +140,10 @@ public class LocomotionController : MonoBehaviour {
 		RaycastHit hitInfo = new RaycastHit();
 		float yOffset = 0f;
 		if(Physics.Raycast(new Ray(maxStepPos, new Vector3(0, -1, 0)), out hitInfo, maxStepHeight * 10)) {
-#if UNITY_EDITOR
-			if(debug) {
-				drawPoint(hitInfo.point, Color.green, leg + "one");
-				drawPoint(stepOffset, Color.red, leg + "two");
-			}
-#endif
-
 			yOffset = hitInfo.point.y - stepOffset.y;
+
+			drawPoint(hitInfo.point, Color.green, leg + "one");
+			drawPoint(stepOffset, Color.red, leg + "two");
 		}
 		return yOffset;
 	}
@@ -160,12 +152,13 @@ public class LocomotionController : MonoBehaviour {
 	protected void updateLegs(SpiderLegController[] group, bool planted) {
 		foreach(SpiderLegController leg in group) {
 			LegInfo info = getLegInfo(leg);
-			leg.setPosition(getLegInfo(leg).foot);
+			bool canReach = leg.setPosition(info.foot);
+			if (!canReach)
+				info.foot = leg.deducePosition();
 			info.setPlanted(planted);
 			info.setLastDefault();
-			if (debug) {
-				drawPoint (leg.getDefaultPos (), Color.cyan, "default pos - " + leg);
-			}
+
+			drawPoint(leg.getDefaultPos (), Color.cyan, "default pos - " + leg);
 		}
 	}
 
@@ -178,17 +171,28 @@ public class LocomotionController : MonoBehaviour {
 		return info;
 	}
 
-#if UNITY_EDITOR
-	private Dictionary<string, GameObject> footPos = new Dictionary<string, GameObject>();
 	private void drawPoint(Vector3 point, Color color, string id) {
-		if (footPos.ContainsKey(id))
-			Destroy(footPos[id]);
-		GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		cube.transform.position = point;
-		cube.GetComponent<MeshRenderer>().material.color = color;
-		Destroy(cube.GetComponent<BoxCollider>());
-		cube.transform.localScale = new Vector3(.2f, .2f, .2f);
-		footPos[id] = cube;
+#if UNITY_EDITOR
+		if (debug)
+			debugPoints[id] = new DebugPoint() {point=point, color=color};
+#endif
+	}
+
+#if UNITY_EDITOR
+	private Dictionary<string, DebugPoint> debugPoints = new Dictionary<string, DebugPoint>();
+
+	public void OnDrawGizmos() {
+		if (!debug)
+			return;
+		foreach(DebugPoint point in debugPoints.Values) {
+			Gizmos.color = point.color;
+			Gizmos.DrawCube(point.point, Vector3.one * 0.2f);
+		}
+	}
+
+	private struct DebugPoint {
+		public Vector3 point;
+		public Color color;
 	}
 #endif
 
