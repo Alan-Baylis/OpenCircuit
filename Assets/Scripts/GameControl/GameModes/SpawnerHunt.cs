@@ -21,4 +21,7 @@ public class SpawnerHunt : GameMode {
 		return true;
 	}
 
+    public override bool loseConditionMet() {
+        return GlobalConfig.globalConfig.frozenPlayers >= ClientController.numPlayers;
+    }
 }

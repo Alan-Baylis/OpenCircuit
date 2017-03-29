@@ -22,11 +22,14 @@ public abstract class GameMode : NetworkBehaviour {
     }
 
 	void Update() {
-		if (winConditionMet()) {
+	    if (loseConditionMet()) {
+	      GlobalConfig.globalConfig.loseGame();
+	    } if (winConditionMet()) {
 			GlobalConfig.globalConfig.winGame();
 		}
 	}
 
 	public abstract bool winConditionMet();
+    public abstract bool loseConditionMet();
 
 }

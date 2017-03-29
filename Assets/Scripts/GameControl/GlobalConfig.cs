@@ -11,9 +11,7 @@ public class GlobalConfig : NetworkBehaviour {
 
     [ServerCallback]
     void Update() {
-        if (frozenPlayers >= ClientController.numPlayers) {
-            RpcLoseGame();
-        }
+
     }
 
     private static GlobalConfig myGlobalConfig = null;
@@ -43,6 +41,7 @@ public class GlobalConfig : NetworkBehaviour {
 
     [ClientRpc]
     private void RpcLoseGame() {
+        print("attempting lose");
         Menu.menu.lose();
     }
 
