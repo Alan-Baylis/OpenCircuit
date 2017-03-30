@@ -1,6 +1,9 @@
-﻿using UnityEngine.Networking;
+﻿using UnityEngine;
+using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
+
+    public GameObject playerPrefab;
 
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
@@ -9,9 +12,9 @@ public class GlobalConfig : NetworkBehaviour {
 
 	private GameMode gamemode = null;
 
-    [ServerCallback]
-    void Update() {
 
+    void Start() {
+        GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
     private static GlobalConfig myGlobalConfig = null;
@@ -23,10 +26,6 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GlobalConfig() {
 		myGlobalConfig = this;
-	}
-
-	public void startGame() {
-	    GameMode.constructGameMode(gameObject, configuration.gameMode);
 	}
 
     [Server]
@@ -41,7 +40,6 @@ public class GlobalConfig : NetworkBehaviour {
 
     [ClientRpc]
     private void RpcLoseGame() {
-        print("attempting lose");
         Menu.menu.lose();
     }
 
@@ -65,6 +63,13 @@ public class GlobalConfig : NetworkBehaviour {
 	public CentralRobotController getCRC() {
 		return centralRobotController;
 	}
+
+    [Server]
+    public void spawnPlayerForConnection(NetworkConnection connection) {
+        Transform startPos = NetworkManager.singleton.GetStartPosition();
+        NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
+            connection);
+    }
 }
 
 [System.Serializable]

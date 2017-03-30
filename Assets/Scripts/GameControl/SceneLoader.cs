@@ -1,18 +1,14 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Networking;
 
 public class SceneLoader : MonoBehaviour, SceneLoadListener {
 
 	public static SceneLoader sceneLoader;
 
 	private AsyncOperation async;
-	private bool loading = false;
-	private List<Scene> scenes = new List<Scene>();
+	private bool loading;
 
-	private int nextScene;
 	private string nextScenePath;
 
 	private bool delayLoad = true;
@@ -23,8 +19,6 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 	void Start() {
 		DontDestroyOnLoad(gameObject);
 		sceneLoader = this;
-
-
 
 		SceneData ? activeScene = SceneCatalog.sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
 
@@ -49,10 +43,13 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 	}
 
 	public void loadScene(int index, SceneLoadListener listener) {
-	    sceneLoadListener = listener;
-	    nextScene = index;
-	    cutToLoadScene();
-		StartCoroutine("load");
+	    if (index >= 0 && index < SceneCatalog.sceneCatalog.scenes.Count) {
+	        string path = SceneCatalog.sceneCatalog.scenes[index];
+	        loadScene(path, listener);
+	    } else {
+	        Debug.LogError("Attempted to load scene " + index + " when the total scene count is only " +
+	                       SceneManager.sceneCountInBuildSettings + "!");
+	    }
 	}
 
 	public void loadScene(string path, SceneLoadListener listener) {
@@ -62,27 +59,12 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 		StartCoroutine("loadByPath");
 	}
 
-	IEnumerator load() {
-	    yield return new WaitForSeconds(loadDelaySeconds);
-		if (nextScene < SceneManager.sceneCountInBuildSettings) {
-			loading = true;
-			async = SceneManager.LoadSceneAsync(nextScene);
-			async.allowSceneActivation = false;
-		} else {
-			Debug.LogError("Attempted to load scene " + nextScene + " when the total scene count is only " + SceneManager.sceneCountInBuildSettings + "!");
-		}
-		yield return async;
-	}
-
 	IEnumerator loadByPath() {
 	    yield return new WaitForSeconds(loadDelaySeconds);
-		if (nextScene < SceneManager.sceneCountInBuildSettings) {
-			loading = true;
-			async = SceneManager.LoadSceneAsync(nextScenePath);
-			async.allowSceneActivation = false;
-		} else {
-			Debug.LogError("Attempted to load scene '" + nextScenePath + "' but it is not in the build!");
-		}
+        loading = true;
+        async = SceneManager.LoadSceneAsync(nextScenePath);
+        async.allowSceneActivation = false;
+
 		yield return async;
 	}
 

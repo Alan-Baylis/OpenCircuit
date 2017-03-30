@@ -3,6 +3,8 @@ using UnityEngine.Networking;
 
 public abstract class GameMode : NetworkBehaviour {
 
+    private bool gameOver = false;
+
 	public enum GameModes {
 		BASES, SPAWNER_HUNT
 	}
@@ -21,15 +23,23 @@ public abstract class GameMode : NetworkBehaviour {
         return mode;
     }
 
+    [ServerCallback]
 	void Update() {
+        if (gameOver)
+            return;
 	    if (loseConditionMet()) {
 	      GlobalConfig.globalConfig.loseGame();
-	    } if (winConditionMet()) {
+	        gameOver = true;
+	    } else if (winConditionMet()) {
 			GlobalConfig.globalConfig.winGame();
-		}
+	        gameOver = true;
+	    }
 	}
 
+    [Server]
 	public abstract bool winConditionMet();
+
+    [Server]
     public abstract bool loseConditionMet();
 
 }

@@ -6,6 +6,7 @@ public class SceneInitializer : MonoBehaviour {
     public Menu menuPrefab;
     public NetworkManager networkManagerPrefab;
     public SceneLoader sceneLoaderPrefab;
+    public NetworkController networkControllerPrefab;
 
 	// Use this for initialization
 	void Start () {
@@ -17,6 +18,9 @@ public class SceneInitializer : MonoBehaviour {
 	    }
 	    if (SceneLoader.sceneLoader == null) {
 	        Instantiate(sceneLoaderPrefab, Vector3.zero, Quaternion.identity);
+	    }
+	    if (NetworkController.networkController == null) {
+	        Instantiate(networkControllerPrefab, Vector3.zero, Quaternion.identity);
 	    }
 	}
 }
