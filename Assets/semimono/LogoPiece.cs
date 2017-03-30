@@ -21,7 +21,7 @@ public class LogoPiece : MonoBehaviour {
 
 			if (firstPoint == null) {
 				int hits = letter.getHits(col.transform);
-				if (Random.Range(0f, 1f) <= 0.8f - 0.7f / Mathf.Max(hits, 1))
+				if (Random.Range(0f, 1f) * letter.stickModifier <= 0.8f - 0.7f / Mathf.Max(hits, 1))
 					return;
 				firstPoint = col.transform;
 				rb.angularVelocity = rb.angularVelocity * 100000;

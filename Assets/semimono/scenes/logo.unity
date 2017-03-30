@@ -520,6 +520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 0.85
 --- !u!1 &64218027
 GameObject:
   m_ObjectHideFlags: 0
@@ -3778,6 +3779,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 1
+  stickModifier: 1
 --- !u!1 &388235873
 GameObject:
   m_ObjectHideFlags: 0
@@ -4409,6 +4411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 1
 --- !u!1 &449621464
 GameObject:
   m_ObjectHideFlags: 0
@@ -4941,6 +4944,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 1
+  stickModifier: 1
 --- !u!1 &524385304
 GameObject:
   m_ObjectHideFlags: 0
@@ -5385,6 +5389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 1
 --- !u!1 &589924416
 GameObject:
   m_ObjectHideFlags: 0
@@ -7471,6 +7476,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 1
 --- !u!1 &886225763
 GameObject:
   m_ObjectHideFlags: 0
@@ -8290,6 +8296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 0.85
 --- !u!1 &985595614
 GameObject:
   m_ObjectHideFlags: 0
@@ -9300,6 +9307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 0.85
 --- !u!1 &1179496669
 GameObject:
   m_ObjectHideFlags: 0
@@ -11301,6 +11309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 1
+  stickModifier: 1
 --- !u!1 &1401912096
 GameObject:
   m_ObjectHideFlags: 0
@@ -12869,6 +12878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 0.85
 --- !u!1 &1546542930
 GameObject:
   m_ObjectHideFlags: 0
@@ -14185,6 +14195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 0.85
 --- !u!1 &1742822102
 GameObject:
   m_ObjectHideFlags: 0
@@ -14560,6 +14571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loop: 0
+  stickModifier: 0.85
 --- !u!1 &1822632187
 GameObject:
   m_ObjectHideFlags: 0

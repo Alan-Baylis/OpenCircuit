@@ -4,6 +4,7 @@ using UnityEngine;
 public class LogoLetter : MonoBehaviour {
 
 	public bool loop;
+	public float stickModifier = 1;
 
 	private Dictionary<Transform, Transform> connections;
 	private Dictionary<Transform, int> hits;
