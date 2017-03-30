@@ -7219,11 +7219,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volume: {x: 30, y: 4, z: 6}
-  spawnRate: 500
+  spawnRate: 1000
   spawnCount: 2000
   maxSpinSpeed: 10
   piecePrefabs:
   - {fileID: 1213212381913276, guid: d6be7979a04aa44afad0773f9f15e7dd, type: 2}
+  seed: 2
 --- !u!1 &856755374
 GameObject:
   m_ObjectHideFlags: 0

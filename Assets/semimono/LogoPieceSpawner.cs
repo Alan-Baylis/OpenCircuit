@@ -7,15 +7,18 @@ public class LogoPieceSpawner : MonoBehaviour {
 	public int spawnCount;
 	public float maxSpinSpeed;
 	public GameObject[] piecePrefabs;
+	public int seed = 0;
 
 	private float lastSpawn;
 
-	public void Start() {
+	public void Awake() {
+		if (seed != 0)
+			Random.InitState(seed);
 		Physics.IgnoreLayerCollision(2, 2);
 		lastSpawn = 0;
 	}
 	
-	public void Update () {
+	public void FixedUpdate () {
 		float spawnTime = 1f / spawnRate;
 		while (spawnCount > 0 && lastSpawn <= Time.time -spawnTime) {
 			lastSpawn += spawnTime;
