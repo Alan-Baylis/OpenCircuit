@@ -2,16 +2,21 @@
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 
-public class NetworkController : MonoBehaviour {
+public class NetworkController : MonoBehaviour, SceneLoadListener {
 
     public static NetworkController networkController;
 
-    private NetworkClient client; //Local client if we're the server
+    //Server fields
+    private NetworkClient localClient;
+
+
+    // Client fields
+   private NetworkClient client;
+
 
 	void Start () {
 	    DontDestroyOnLoad(gameObject);
 	    networkController = this;
-	    NetworkServer.RegisterHandler(MsgType.Scene, clientChangeScene);
 	}
 
     public bool listen() {
@@ -55,7 +60,7 @@ public class NetworkController : MonoBehaviour {
 
         //isNetworkActive = true;
 
-        NetworkClient client = new NetworkClient();
+        client = new NetworkClient();
 
         registerClientMessages(client);
 
@@ -89,34 +94,43 @@ public class NetworkController : MonoBehaviour {
 
     public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, short playerControllerId = 0) {
         GameObject player = Instantiate(playerPrefab, pos, rotation);
-//        print("null? " + (ClientScene.readyConnection == null));
-//        print(ClientScene.localPlayers.Count);
-        //ClientScene.Ready(conn);
-
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
     }
 
-    public void serverChangeScene(string path, SceneLoadListener listener) {
-        SceneLoader.sceneLoader.loadScene(path, listener);
+    public void serverClearPlayers() {
+        foreach (NetworkConnection connection in NetworkServer.connections) {
+            NetworkServer.DestroyPlayersForConnection(connection);
+        }
+    }
+
+    public void serverChangeScene(string path) {
         StringMessage msg = new StringMessage(path);
         NetworkServer.SendToAll(MsgType.Scene, msg);
+        NetworkServer.SetAllClientsNotReady();
     }
 
-    //This should only ever be called client side
-    private void clientChangeScene(NetworkMessage netMsg) {
-        SceneLoader.sceneLoader.loadScene(netMsg.reader.ReadString(), null);
+    public void onSceneLoaded() {
+        ClientScene.readyConnection.Send(MsgType.Ready, new ReadyMessage());
     }
 
-    private void serverSpawnPlayer(NetworkMessage netMsg) {
-        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn);
+    public bool allClientsReady() {
+        foreach (NetworkConnection connection in NetworkServer.connections) {
+            if (!connection.isReady) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void registerServerMessages() {
         NetworkServer.RegisterHandler(MsgType.AddPlayer, serverSpawnPlayer);
+        NetworkServer.RegisterHandler(MsgType.Ready, serverOnClientReady);
     }
 
     private void registerClientMessages(NetworkClient client) {
         client.RegisterHandler(MsgType.Connect, onClientConnected);
+        client.RegisterHandler(MsgType.Scene, clientChangeScene);
+
 //        client.RegisterHandler(MsgType.Disconnect, OnClientDisconnectInternal);
 //        client.RegisterHandler(MsgType.NotReady, OnClientNotReadyMessageInternal);
 //        client.RegisterHandler(MsgType.Error, OnClientErrorInternal);
@@ -136,16 +150,36 @@ public class NetworkController : MonoBehaviour {
         }
     }
 
-    private void onClientConnected(NetworkMessage netMsg) {
-        ClientScene.Ready(netMsg.conn);
-
-    }
-
-    private NetworkClient connectLocalClient() {
+    private void connectLocalClient() {
         if (LogFilter.logDebug) { Debug.Log("NetworkManager StartHost port:" + NetworkManager.singleton.networkPort); }
         //m_NetworkAddress = "localhost";
-        client = ClientScene.ConnectLocalServer();
-        registerClientMessages(client);
-        return client;
+        localClient = ClientScene.ConnectLocalServer();
+        registerClientMessages(localClient);
+    }
+
+    /*
+    *
+    * Server message handlers
+    *
+    */
+    private void serverSpawnPlayer(NetworkMessage netMsg) {
+        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn);
+    }
+
+    private void serverOnClientReady(NetworkMessage netMsg) {
+        NetworkServer.SetClientReady(netMsg.conn);
+    }
+
+    /*
+    *
+    * Client message handlers
+    *
+    */
+    private void clientChangeScene(NetworkMessage netMsg) {
+        SceneLoader.sceneLoader.loadScene(netMsg.reader.ReadString(), this);
+    }
+
+    private void onClientConnected(NetworkMessage netMsg) {
+        ClientScene.Ready(netMsg.conn);
     }
 }
