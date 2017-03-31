@@ -13,8 +13,7 @@ public class ShootAction : Endeavour {
     }
 
     public override bool isStale() {
-        bool stale = !getController().knowsTarget(target.getLabelHandle());
-        return stale;
+        return !getController().knowsTarget(target.getLabelHandle());;
     }
 
     protected override void onExecute() {
