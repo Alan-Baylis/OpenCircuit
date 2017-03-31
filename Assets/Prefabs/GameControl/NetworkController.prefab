@@ -9,30 +9,30 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1239475517844496}
+  m_RootGameObject: {fileID: 1111149434049192}
   m_IsPrefabParent: 1
---- !u!1 &1239475517844496
+--- !u!1 &1111149434049192
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4625537141179448}
-  - component: {fileID: 114959114143990982}
+  - component: {fileID: 4823397221980956}
+  - component: {fileID: 114123531806021306}
   m_Layer: 0
-  m_Name: SceneInitializer
+  m_Name: NetworkController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4625537141179448
+--- !u!4 &4823397221980956
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1239475517844496}
+  m_GameObject: {fileID: 1111149434049192}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,21 +40,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114959114143990982
+--- !u!114 &114123531806021306
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1239475517844496}
+  m_GameObject: {fileID: 1111149434049192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aad57d3336f878489edfd69975292bc, type: 3}
+  m_Script: {fileID: 11500000, guid: 9de2594c34cc37549af48ccf8df49aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuPrefab: {fileID: 11457940, guid: 7a64c719a6682fe449c4c8a47c977a22, type: 2}
-  networkManagerPrefab: {fileID: 11462160, guid: e20bb824c36dad245bf3dbf70ddde74a,
-    type: 2}
-  sceneLoaderPrefab: {fileID: 114269922599295740, guid: 15dccd2e29364504ba9404718d2c719b,
-    type: 2}
-  networkControllerPrefab: {fileID: 114123531806021306, guid: 1b95908fefc0ede45b69be763945cde0,
-    type: 2}

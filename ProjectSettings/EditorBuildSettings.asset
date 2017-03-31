@@ -8,6 +8,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/scenes/Loading/Loading.unity
   - enabled: 1
-    path: Assets/scenes/newleveltest/newleveltest.unity
-  - enabled: 1
     path: Assets/scenes/quicktest/quicktest.unity
+  - enabled: 1
+    path: Assets/scenes/Bases/bases.unity

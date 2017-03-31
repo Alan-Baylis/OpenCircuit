@@ -42,10 +42,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73575c9d3520046a38ae8378239a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 175040, guid: 7ecf7c856d9af924086760e0e85174a4, type: 2}
   configuration:
     robotsPerPlayer: 3
-    robotSpawnRatePerSecond: 0.05
-    spawnRateIncreasePerPlayer: 0.03
+    robotSpawnRatePerSecond: 1
+    spawnRateIncreasePerPlayer: 0.1
     gameMode: 1
   centralRobotController: {fileID: 0}
   frozenPlayers: 0

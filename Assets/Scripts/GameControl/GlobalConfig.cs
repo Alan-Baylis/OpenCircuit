@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections.Generic;
 
 public class GlobalConfig : NetworkBehaviour {
+
+    public GameObject playerPrefab;
 
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
@@ -11,11 +12,9 @@ public class GlobalConfig : NetworkBehaviour {
 
 	private GameMode gamemode = null;
 
-    [ServerCallback]
-    void Update() {
-        if (frozenPlayers >= ClientController.numPlayers) {
-            RpcLoseGame();
-        }
+
+    void Start() {
+        GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
     private static GlobalConfig myGlobalConfig = null;
@@ -27,18 +26,6 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GlobalConfig() {
 		myGlobalConfig = this;
-	}
-
-	public void startGame() {
-		//TODO: Do this better
-		switch (configuration.gameMode) {
-			case GameMode.GameModes.BASES:
-				gamemode = gameObject.AddComponent<Bases>();
-				break;
-			case GameMode.GameModes.SPAWNER_HUNT:
-				gamemode = gameObject.AddComponent<SpawnerHunt>();
-				break;
-		}
 	}
 
     [Server]
@@ -76,6 +63,13 @@ public class GlobalConfig : NetworkBehaviour {
 	public CentralRobotController getCRC() {
 		return centralRobotController;
 	}
+
+    [Server]
+    public void spawnPlayerForConnection(NetworkConnection connection) {
+        Transform startPos = NetworkManager.singleton.GetStartPosition();
+        NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
+            connection);
+    }
 }
 
 [System.Serializable]

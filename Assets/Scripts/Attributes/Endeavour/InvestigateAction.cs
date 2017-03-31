@@ -33,9 +33,9 @@ public class InvestigateAction : Endeavour {
 	public override bool isStale() {
 		UnityEngine.AI.NavMeshAgent nav = controller.GetComponent<UnityEngine.AI.NavMeshAgent>();
 
-		return (active && nav.remainingDistance < 2f) 
-			|| sighted 
-			|| !((Time.time - creationTime) < InvestigateAction.expirationTimeSeconds) 
+		return (active && nav.remainingDistance < 2f)
+			|| sighted
+			|| !((Time.time - creationTime) < InvestigateAction.expirationTimeSeconds)
 			|| Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 1.8f;
 	}
 

@@ -12,7 +12,7 @@ public struct SceneData {
 	public SceneData (string path, GlobalConfigData configuration) {
 		this.path = path;
 		this.configuration = configuration;
-		this.supportedGameModes = new List<GameMode.GameModes>();
+		supportedGameModes = new List<GameMode.GameModes>();
 	}
 
 	public bool isLoadingScene () {

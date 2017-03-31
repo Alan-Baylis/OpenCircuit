@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Bases : GameMode {
+﻿public class Bases : GameMode {
 	public override bool winConditionMet() {
 		return false;
 	}
+
+    public override bool loseConditionMet() {
+        return GlobalConfig.globalConfig.frozenPlayers >= ClientController.numPlayers;
+    }
 }
