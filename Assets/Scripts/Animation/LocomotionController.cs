@@ -17,18 +17,21 @@ public class LocomotionController : MonoBehaviour {
 	public float minMoveSpeed = 0.01f;
 	public float normalMoveSpeed = 2;
 	public float minimumTimePerSwitch = 0.02f;
+	public float minStepRate = 1;
 
-	public AudioSource footstep;
 	public EffectSpec footPlant;
 
-	public bool debug = false;
+	public bool debug;
 
 	private Dictionary<SpiderLegController, LegInfo> legInfo = new Dictionary<SpiderLegController, LegInfo>();
 	private Vector3 lastPos;
 	private SpiderLegController[] plantedGroup;
 	private SpiderLegController[] steppingGroup;
-	private float lastSwitch = 0;
+	private float lastSwitch;
 	private bool stopped = true;
+	private bool moving;
+	private float stoppingPercent;
+	private float lastStepPercent;
 
 	// these handle running in editor
 	protected float time {
@@ -47,32 +50,39 @@ public class LocomotionController : MonoBehaviour {
 			plantedGroup = legGroup1;
 			steppingGroup = legGroup2;
 		}
-		
-		float stepPercent = 0;
+
 		float maxSpeed = getMaxSpeed();
 		if (maxSpeed < minMoveSpeed) {
+			moving = false;
 			// plant feet
 			if (!stopped) {
-				updateSteppingGroup(steppingGroup, 1, 0);
-				if (getMaxDisplacement(steppingGroup) == 0) {
+				updateSteppingGroup(steppingGroup, stoppingPercent);
+				if (getMaxDisplacement(steppingGroup) == 0 && stoppingPercent == 1) {
 					if (getMaxDisplacement(plantedGroup) == 0) {
 						stopped = true;
 					} else {
 						swapLegGroups();
+						stoppingPercent = 0;
 					}
 				}
+				stoppingPercent = Mathf.Min(1, stoppingPercent +minStepRate *2 *Time.deltaTime);
 			}
 		} else {
+			moving = true;
 			stopped = false;
 			// step feet
-			float strideLength = Mathf.Min(maxStrideLength, maxSpeed / normalMoveSpeed *normalStrideLength);
-			stepPercent = Mathf.Min(1, calculateStepPercent(plantedGroup, strideLength));
-			updateSteppingGroup(steppingGroup, stepPercent, strideLength);
+			float maxStrideLength = Mathf.Max(normalStrideLength, getStrideLength(maxSpeed));
+			float minStepChange = minStepRate * Time.deltaTime;
+			float stepPercent = Mathf.Min(1, Mathf.Max(lastStepPercent + minStepChange,
+				calculateStepPercent(plantedGroup, maxStrideLength)));
+			lastStepPercent = stepPercent;
+			updateSteppingGroup(steppingGroup, stepPercent);
 			bool isSwitching = stepPercent > 0.99f && lastSwitch <= time - minimumTimePerSwitch;
 			if (isSwitching) {
 				swapLegGroups();
 				lastSwitch = time;
 			}
+			stoppingPercent = stepPercent;
 		}
 
 		updateLegs(plantedGroup, true);
@@ -91,19 +101,29 @@ public class LocomotionController : MonoBehaviour {
 		SpiderLegController[] temp = plantedGroup;
 		plantedGroup = steppingGroup;
 		steppingGroup = temp;
+		lastStepPercent = 0;
 	}
 
 	protected float getMaxDisplacement(SpiderLegController[] group) {
-		float displacement = 0;
-		foreach (SpiderLegController leg in group) {
+		float sqrDisplacement = 0;
+		foreach(SpiderLegController leg in group) {
 			LegInfo info = getLegInfo(leg);
 			
 			Vector3 offset = info.foot - leg.getDefaultPos();
-			displacement = Mathf.Max(displacement, offset.magnitude);
+			offset.y = 0;
+			sqrDisplacement = Mathf.Max(sqrDisplacement, offset.sqrMagnitude);
 		}
-		print("displacement: " + displacement);
+		float displacement = Mathf.Sqrt(sqrDisplacement);
 		return displacement;
     }
+
+	protected bool isGroupPlanted(SpiderLegController[] group) {
+		foreach(SpiderLegController leg in group) {
+			if (!getLegInfo(leg).planted)
+				return false;
+		}
+		return true;
+	}
 
 	protected float calculateStepPercent(SpiderLegController[] plantedGroup, float strideLength) {
 		float offsetMagnitude = 0;
@@ -116,11 +136,12 @@ public class LocomotionController : MonoBehaviour {
 		return offsetMagnitude / 2;
 	}
 
-	protected void updateSteppingGroup(SpiderLegController[] steppingGroup, float stepPercent, float strideLength) {
+	protected void updateSteppingGroup(SpiderLegController[] steppingGroup, float stepPercent) {
 		foreach (SpiderLegController leg in steppingGroup) {
 			LegInfo info = getLegInfo(leg);
-			Vector3 stepOffset = leg.getDefaultPos() +info.getVelocity().normalized * strideLength;
-
+			Vector3 velocity = info.getVelocity();
+			float strideLength = getStrideLength(velocity.magnitude);
+			Vector3 stepOffset = leg.getDefaultPos() + velocity.normalized * strideLength;
 
 			stepOffset.y += calculateAltitudeAdjustment(stepOffset, leg);
 			Vector3 target = Vector3.Lerp(info.getLastPlanted(), stepOffset, stepPercent);
@@ -128,8 +149,7 @@ public class LocomotionController : MonoBehaviour {
 			target.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
 			Vector3 diff = (target - info.foot);
 			float maxDistance = Mathf.Max(normalMoveSpeed *4, diff.magnitude * 20) * deltaTime;
-			print("diff: " + diff + "   max dis: " + maxDistance);
-            info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
+			info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
 
 			drawPoint(info.foot, Color.blue, leg + "three");
 		}
@@ -139,7 +159,7 @@ public class LocomotionController : MonoBehaviour {
 		Vector3 maxStepPos = stepOffset + new Vector3(0, maxStepHeight, 0);
 		RaycastHit hitInfo = new RaycastHit();
 		float yOffset = 0f;
-		if(Physics.Raycast(new Ray(maxStepPos, new Vector3(0, -1, 0)), out hitInfo, maxStepHeight * 10)) {
+		if (Physics.Raycast(new Ray(maxStepPos, new Vector3(0, -1, 0)), out hitInfo, maxStepHeight * 10)) {
 			yOffset = hitInfo.point.y - stepOffset.y;
 
 			drawPoint(hitInfo.point, Color.green, leg + "one");
@@ -160,6 +180,10 @@ public class LocomotionController : MonoBehaviour {
 
 			drawPoint(leg.getDefaultPos (), Color.cyan, "default pos - " + leg);
 		}
+	}
+
+	protected float getStrideLength(float speed) {
+		return Mathf.Min(maxStrideLength, speed / normalMoveSpeed *normalStrideLength);
 	}
 
 	protected LegInfo getLegInfo(SpiderLegController leg) {
@@ -184,6 +208,18 @@ public class LocomotionController : MonoBehaviour {
 	public void OnDrawGizmos() {
 		if (!debug)
 			return;
+
+		// draw moving status
+		if (moving) {
+			Gizmos.color = Color.green;
+		} else if (stopped) {
+			Gizmos.color = Color.red;
+		} else {
+			Gizmos.color = new Color(1, 0.5f, 0);
+		}
+		Gizmos.DrawSphere(transform.position, 0.2f);
+
+		// draw points
 		foreach(DebugPoint point in debugPoints.Values) {
 			Gizmos.color = point.color;
 			Gizmos.DrawCube(point.point, Vector3.one * 0.2f);
@@ -218,10 +254,6 @@ public class LocomotionController : MonoBehaviour {
 			if (!planted && this.planted) {
 				setLastPlanted();
 			} else if (planted && !this.planted) {
-                if (chassis.footstep != null) {
-					chassis.footstep.pitch = Random.Range(1f, 1.5f);
-					chassis.footstep.Play();
-				}
 				chassis.footPlant.spawn(foot, Vector3.up);
 			}
 			this.planted = planted;

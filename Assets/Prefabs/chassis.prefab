@@ -985,6 +985,7 @@ MonoBehaviour:
   minMoveSpeed: 0.01
   normalMoveSpeed: 2
   minimumTimePerSwitch: 0.02
+  minStepRate: 2
   footstep: {fileID: 82250956191707916}
   footPlant:
     prefab: {fileID: 127654, guid: 2953fbf8543951343adffc4647d99a83, type: 2}
