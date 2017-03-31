@@ -3,6 +3,8 @@ using UnityEngine.Networking;
 
 public class GenericRifle : NetworkBehaviour {
 
+    public AudioClip[] fireSounds;
+
     public float maximumMovementInaccuracy = 0.1f;
     public float movementInaccuracySoftness = 10f;
     public float baseInaccuracy = 0.1f;
@@ -203,6 +205,7 @@ public class GenericRifle : NetworkBehaviour {
         }
         // play sound effect
         if (gunshotSoundEmitter != null) {
+            gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];
             gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
         }
         playSound(gunshotSoundEmitter);

@@ -2425,6 +2425,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 430e5bf0aa07d82469cfac499920d26b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireSounds:
+  - {fileID: 8300000, guid: c62b8672bfa7446468fb4f32ba96be74, type: 3}
+  - {fileID: 8300000, guid: b662898f78938b844adf341082d5d5c0, type: 3}
+  - {fileID: 8300000, guid: e7c16300e76a50d4a81a35129b232946, type: 3}
   maximumMovementInaccuracy: 0.2
   movementInaccuracySoftness: 10
   baseInaccuracy: 0.005
