@@ -26,6 +26,12 @@ public abstract class Endeavour : Prioritizable {
     private int lastFrameEvaluated = -1;
 	private Dictionary<TagEnum, Tag> tagMap;
 
+    private AbstractArms myArms;
+    private HoverJet myJet;
+    private RoboRifle myRifle;
+    private TowerSpawner myTowerSpawner;
+
+
 	public Endeavour(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) {
 		this.controller = controller;
 		this.goals = goals;
@@ -148,6 +154,42 @@ public abstract class Endeavour : Prioritizable {
 			   -executors * factory.mobCostPerRobot;
 	}
 
+    protected AbstractArms arms {
+        get {
+            if (myArms == null) {
+                myArms = getController().getRobotComponent<AbstractArms>();
+            }
+            return myArms;
+        }
+    }
+
+    protected HoverJet jet {
+        get {
+            if (myJet == null) {
+                myJet = getController().getRobotComponent<HoverJet>();
+            }
+            return myJet;
+        }
+    }
+
+    protected RoboRifle rifle {
+        get {
+            if (myRifle == null) {
+                myRifle = getController().getRobotComponent<RoboRifle>();
+            }
+            return myRifle;
+        }
+    }
+
+    protected TowerSpawner towerSpawner {
+        get {
+            if (myTowerSpawner == null) {
+                myTowerSpawner = getController().getRobotComponent<TowerSpawner>();
+            }
+            return myTowerSpawner;
+        }
+    }
+
 	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
 		foreach (System.Type type in getRequiredComponents()) {
 			if (!availableComponents.ContainsKey(type) || availableComponents[type] < 1) {
@@ -176,4 +218,13 @@ public abstract class Endeavour : Prioritizable {
 			tag.addExecution(getController(), this.GetType());
 		}
 	}
+
+    public bool isMissingComponents(Dictionary<System.Type, int> availableComponents) {
+        foreach (System.Type type in getRequiredComponents()) {
+            if (!availableComponents.ContainsKey(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

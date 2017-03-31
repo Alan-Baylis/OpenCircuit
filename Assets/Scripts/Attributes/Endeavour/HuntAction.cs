@@ -6,15 +6,11 @@ using System;
 public class HuntAction : Endeavour {
 
 	private Tag target;
-	private HoverJet jet;
-	private AbstractArms arms;
 
 	public HuntAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
 		: base(factory, controller, goals, tags) {
 		target = getTagOfType<Tag>(TagEnum.Player);
-		this.name = "hunt";
-		jet = getController().getRobotComponent<HoverJet>();
-		arms = getController().getRobotComponent<AbstractArms>();
+		name = "hunt";
 	}
 
 	public override bool canExecute() {
