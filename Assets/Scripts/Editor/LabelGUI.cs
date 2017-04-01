@@ -6,8 +6,8 @@ using System.Collections.Generic;
 [CustomEditor(typeof(Label), true)]
 public class LabelGUI : Editor {
 
-	private bool tagsExpanded = false;
-	private bool operationsExpanded = false;
+	private bool tagsExpanded;
+	private bool operationsExpanded;
 	
 	public override void OnInspectorGUI() {
 		serializedObject.Update();
@@ -29,15 +29,19 @@ public class LabelGUI : Editor {
 
 	public void doEndeavourInfo(Label label) {
 		EditorGUILayout.LabelField("Used in Actions:");
+		HashSet<Type> actions = new HashSet<Type>();
 		foreach (Tag tag in label.tags) {
 			if (tag != null) {
 				if (ActionCatalog.availableActionsMap.ContainsKey(tag.type)) {
-					List<System.Type> actionList = ActionCatalog.availableActionsMap[tag.type];
-					foreach (System.Type type in actionList) {
-						EditorGUILayout.LabelField("-->" + type.ToString());
+					List<Type> actionList = ActionCatalog.availableActionsMap[tag.type];
+					foreach (Type type in actionList) {
+						actions.Add(type);
 					}
 				}
 			}
+		}
+		foreach (Type type in actions) {
+			EditorGUILayout.LabelField("-->" + type);
 		}
 	}
 

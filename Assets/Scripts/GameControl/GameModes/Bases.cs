@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Bases : TeamGameMode {
+﻿public class Bases : TeamGameMode {
 
     void Start() {
         teams.Add(new TeamData(0, new Color(0, 0, .4777f, 1)));
@@ -13,4 +8,8 @@ public class Bases : TeamGameMode {
 	public override bool winConditionMet() {
 		return false;
 	}
+
+    public override bool loseConditionMet() {
+        return GlobalConfig.globalConfig.frozenPlayers >= ClientController.numPlayers;
+    }
 }

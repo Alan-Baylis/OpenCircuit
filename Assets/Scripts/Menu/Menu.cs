@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		return nd;
 	} }
 
+    private bool isHost = false;
 
 	[System.NonSerialized]
 	public GlobalConfigData serverConfig = GlobalConfigData.getDefault();
@@ -44,7 +46,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 	}}
 	
 	private enum state {
-		MainMenu, InGameMenu, Options, Host, Join, Win, Lose
+		MainMenu, InGameMenu, Options, Host, Join, Win, Lose, HostLobby, ClientLobby
 	};
 
 	public bool paused() {
@@ -91,29 +93,36 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		float menuWidth = 0.6f;
 		float width = background.width / background.height;
 		GUI.DrawTexture(convertRect(new Rect(menuWidth -width, 0, width, 1), false), background);
-		switch (currentMenu) {
-			case state.MainMenu:
-				doMainMenu();
-				break;
-			case state.InGameMenu:
-				doInGameMenu();
-				break;
-			case state.Options:
-				doOptions();
-				break;
-			case state.Host:
-				doHost();
-				break;
-			case state.Join:
-				doJoin();
-				break;
-			case state.Win:
-				doWin();
-				break;
-			case state.Lose:
-				doLose();
-				break;
-		}
+	    switch (currentMenu) {
+	        case state.MainMenu:
+	            doMainMenu();
+	            break;
+	        case state.InGameMenu:
+	            doInGameMenu();
+	            break;
+	        case state.Options:
+	            doOptions();
+	            break;
+	        case state.Host:
+	            doHost();
+	            break;
+	        case state.Join:
+	            doJoin();
+	            break;
+	        case state.ClientLobby:
+	            if (isHost) {
+	                doHost();
+	            } else {
+	                doLobby();
+	            }
+	            break;
+	        case state.Win:
+	            doWin();
+	            break;
+	        case state.Lose:
+	            doLose();
+	            break;
+	    }
 	}
 
 	public void win() {
@@ -123,13 +132,13 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 
 	public void lose() {
 		pause();
-		currentMenu = state.Lose;
-	}
+        currentMenu = state.Lose;
+    }
 
 	private void doLose() {
 		adjustFontSize(skin.button, exitRect.height * 0.8f);
-		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
-            quit();
+		if (GUI.Button(convertRect(exitRect, false), "To Lobby", skin.button)) {
+		    returnToLobby();
 		}
 		int width = 400;
 		int height = 50;
@@ -175,6 +184,7 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		if (GUI.Button(convertRect(hostRect, false), "Host", skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Host;
+		    startListen();
 		}
 		adjustFontSize(skin.button, joinRect.height * 0.8f);
 		if(GUI.Button(convertRect(joinRect, false), "Join", skin.button)) {
@@ -261,9 +271,14 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		}
 
 		int returnValue = dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
-        serverConfig.gameMode = (GameMode.GameModes)System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
+	    GameMode.GameModes selectedMode =
+	        (GameMode.GameModes) System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
+	    if (selectedMode != serverConfig.gameMode) {
+	        loadDefaultSceneConfigurationFor(SceneCatalog.sceneCatalog.getScenesForGameMode(selectedMode)[0].path);
+	        serverConfig.gameMode = selectedMode;
+	    }
 
-		// back button
+	    // back button
 		adjustFontSize(skin.button, backRect.height * 0.8f);
 		if (GUI.Button(convertRect(backRect, false), "Back", skin.button)) {
 			currentMenu = menuHistory.Pop();
@@ -310,6 +325,15 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 		}
 	}
 
+    private void doLobby() {
+        adjustFontSize(skin.button, exitRect.height * 0.8f);
+        if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
+            ClientScene.AddPlayer(0);
+            activeAtStart = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
+
 	private int dropDownSelector(Rect relativePosition, List<string> options, int startValue) {
 		return GUI.SelectionGrid(convertRect(relativePosition, false), startValue, options.ToArray(), 2);
 	}
@@ -342,14 +366,14 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 
 	private void join() {
 		NetworkManager manager = NetworkManager.singleton;
-		manager.networkAddress = host;
-		manager.StartClient();
-		activeAtStart = false;
-		Cursor.lockState = CursorLockMode.Locked;
+	    manager.networkAddress = host;
+	    NetworkController.networkController.connect();
+	    currentMenu = state.ClientLobby;
 		networkDiscovery.StopBroadcast();
 	}
 
 	private void begin() {
+	    isHost = true;
 	    activeAtStart = false;
 		string activeScenePath = SceneManager.GetActiveScene().path;
 		SceneData? sceneData = SceneCatalog.sceneCatalog.getSceneData(activeScenePath);
@@ -358,11 +382,17 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 	        if (scenes.Count == 0) {
 	            return;
 	        }
-	        SceneLoader.sceneLoader.loadScene(scenes[0].path, this);
+	        NetworkController.networkController.serverChangeScene(scenes[0].path, this);
 	    } else if (sceneData != null && sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
             startGame();
 	    }
 	}
+
+    private void returnToLobby() {
+        menuHistory.Clear();
+        activeAtStart = true;
+        currentMenu = state.ClientLobby;
+    }
 
 	private void quit() {
         Application.Quit();
@@ -372,26 +402,38 @@ public class Menu : MonoBehaviour, SceneLoadListener {
     }
 
     public void onSceneLoaded() {
-        SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
-        SceneData? sceneData = sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
-        if (sceneData != null)
-            menu.serverConfig = sceneData.Value.configuration;
         startGame();
     }
 
+    private void startListen() {
+        NetworkController.networkController.listen();
+        if (!networkDiscovery.running) {
+            networkDiscovery.Initialize();
+            networkDiscovery.broadcastData = serverName;
+            networkDiscovery.StartAsServer();
+        }
+    }
+
     private void startGame() {
-        NetworkManager manager = NetworkManager.singleton;
-        manager.StartHost();
+        //NetworkManager manager = NetworkManager.singleton;
+        //if (!manager.isNetworkActive) {
+            //manager.StartHost();
+        //}
         //player.gameObject.SetActive(true);
         //GetComponent<Camera>().enabled = false;
         //GetComponent<AudioListener>().enabled = false;
+        NetworkServer.SpawnObjects();
         menuHistory.Clear();
         activeAtStart = false;
         Cursor.lockState = CursorLockMode.Locked;
-        networkDiscovery.Initialize();
-        networkDiscovery.broadcastData = serverName;
-        networkDiscovery.StartAsServer();
         GlobalConfig.globalConfig.configuration = serverConfig;
-        GlobalConfig.globalConfig.startGame();
+        ClientScene.AddPlayer(0);
+    }
+
+    private void loadDefaultSceneConfigurationFor(string path) {
+        SceneCatalog sceneCatalog = SceneCatalog.sceneCatalog;
+        SceneData? sceneData = sceneCatalog.getSceneData(path);
+        if (sceneData != null)
+            menu.serverConfig = sceneData.Value.configuration;
     }
 }

@@ -1,18 +1,10 @@
-﻿public class TagRequirement {
+﻿public struct TagRequirement {
 	
-	private TagEnum type;
-	private bool stale = false;
+	public readonly TagEnum type;
+	public readonly bool stale;
 
-	public TagRequirement(TagEnum type, bool stale) {
+	public TagRequirement(TagEnum type, bool stale=false) {
 		this.type = type;
 		this.stale = stale;
-	}
-
-	public TagEnum getType() {
-		return type;
-	}
-
-	public bool isStale() {
-		return stale;
 	}
 }
