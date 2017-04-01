@@ -7224,7 +7224,7 @@ MonoBehaviour:
   maxSpinSpeed: 10
   piecePrefabs:
   - {fileID: 1213212381913276, guid: d6be7979a04aa44afad0773f9f15e7dd, type: 2}
-  seed: 2
+  seed: 3
 --- !u!1 &856755374
 GameObject:
   m_ObjectHideFlags: 0
