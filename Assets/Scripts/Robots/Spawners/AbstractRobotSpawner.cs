@@ -29,7 +29,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	protected void spawnRobot() {
         ++RobotController.controllerCount;
 		if (bodyPrefab != null) {
-			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as GameObject;
+			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation);
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
@@ -46,7 +46,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 					Debug.LogWarning("Null robot component in spawner: " + name);
 					continue;
 				}
-				GameObject component = Instantiate(prefab, transform.position + prefab.transform.position, prefab.transform.rotation) as GameObject;
+				GameObject component = Instantiate(prefab, transform.position + prefab.transform.position, prefab.transform.rotation);
 				component.transform.parent = body.transform;
 				components.Add(component);
 			}
@@ -75,8 +75,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			navAgent.avoidancePriority = Random.Range(0, 100);
 			navAgent.enabled = true;
 
-			if (getConfig().getCRC() != null) {
-                getConfig().getCRC().forceAddListener(robotController);
+			if (GlobalConfig.globalConfig.getCRC() != null) {
+			    GlobalConfig.globalConfig.getCRC().forceAddListener(robotController);
 			}
 		} else {
 			Debug.LogError("Null body prefab in spawner: " +name);
@@ -88,15 +88,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			applyPlayerKnowledge(robotController);
 		}
     }
-
-
-
-	protected GlobalConfig getConfig() {
-		if (config == null) {
-			config = FindObjectOfType<GlobalConfig>();
-		}
-		return config;
-	}
 
 	protected void applyPlayerKnowledge(RobotController controller) {
 		Player[] players = FindObjectsOfType<Player>();

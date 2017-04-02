@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class RobotSpawner : AbstractRobotSpawner {
 
@@ -9,8 +8,8 @@ public class RobotSpawner : AbstractRobotSpawner {
 	[ServerCallback]
 	public override void Update() {
         base.Update();
-		if (active && RobotController.controllerCount < getConfig().getMaxRobots()) {
-			if (Time.time -lastSpawnTime > getConfig().getDelay()) {
+		if (active && GlobalConfig.globalConfig != null && RobotController.controllerCount < GlobalConfig.globalConfig.getMaxRobots()) {
+			if (Time.time -lastSpawnTime > GlobalConfig.globalConfig.getDelay()) {
 				spawnRobot();
 				lastSpawnTime = Time.time;
 			}

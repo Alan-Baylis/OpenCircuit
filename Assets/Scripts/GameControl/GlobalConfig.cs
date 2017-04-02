@@ -17,6 +17,8 @@ public class GlobalConfig : NetworkBehaviour {
 
     void Start() {
         myGlobalConfig = this;
+        globalConfig.configuration = Menu.menu.serverConfig;
+
         gameStarted = true;
         GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
