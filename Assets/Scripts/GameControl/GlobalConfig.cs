@@ -15,8 +15,8 @@ public class GlobalConfig : NetworkBehaviour {
 
 	private GameMode gamemode = null;
 
-    [ServerCallback]
     void Start() {
+        myGlobalConfig = this;
         gameStarted = true;
         GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
@@ -27,10 +27,6 @@ public class GlobalConfig : NetworkBehaviour {
             return myGlobalConfig;
         }
     }
-
-	public GlobalConfig() {
-		myGlobalConfig = this;
-	}
 
     [Server]
     public void winGame() {
