@@ -11,8 +11,27 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public GameObject bodyPrefab;
 	public GameObject[] componentPrefabs;
 
+    public int teamIndex;
+
+    public TeamData team {
+        get {
+            if (isTeamMode()) {
+                TeamGameMode gameMode = (TeamGameMode) GlobalConfig.globalConfig.gamemode;
+                if (teamIndex >= 0 && teamIndex < gameMode.teams.Count)
+                    myTeam = gameMode.teams[teamIndex];
+            }
+            return myTeam;
+        }
+    }
+
 	private GlobalConfig config;
     private Label label;
+    private TeamData myTeam;
+
+    [ServerCallback]
+    void Start() {
+
+    }
 
     [ServerCallback]
     public virtual void Update() {
@@ -33,6 +52,11 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
+		    if (isTeamMode()) {
+		        Team teamComponent = body.GetComponent<Team>();
+		        teamComponent.team = team;
+		        teamComponent.enabled = true;
+		    }
 
 			addKnowledge(robotController);
 
@@ -102,5 +126,9 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
             label = GetComponent<Label>();
         }
         return label;
+    }
+
+    private bool isTeamMode() {
+        return GlobalConfig.globalConfig.gamemode is TeamGameMode;
     }
 }
