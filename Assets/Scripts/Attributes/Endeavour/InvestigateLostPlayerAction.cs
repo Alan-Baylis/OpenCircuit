@@ -5,7 +5,6 @@ public class InvestigateLostPlayerAction : Endeavour {
 
 	private Tag player;
 	private bool reached = false;
-	private HoverJet jet;
 
 #if UNITY_EDITOR
 	private GameObject mySphere;
@@ -23,7 +22,6 @@ public class InvestigateLostPlayerAction : Endeavour {
 	public InvestigateLostPlayerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
 		this.name = "investigateLostPlayer";
 		this.player = getTagOfType<Tag>(TagEnum.Player);
-		jet = getController().getRobotComponent<HoverJet>();
 	}
 
 	public override void update() {

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public class SearchAction : Endeavour {
 	
@@ -8,16 +7,14 @@ public class SearchAction : Endeavour {
 	protected float lastSeen = -30;
 
 	private Tag searchPoint;
-	private HoverJet jet;
 
 	public SearchAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
 		this.name = "search";
 		searchPoint = getTagOfType<Tag>(TagEnum.Searchable);
-		jet = getController().getRobotComponent<HoverJet>();
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
 	}
 
 	public override bool canExecute() {
@@ -49,7 +46,7 @@ public class SearchAction : Endeavour {
     }
 
 	protected override float getCost() {
-		return (jet == null) ? 0 : jet.calculatePathCost(searchPoint.getLabelHandle().getPosition()) * 0.5f;
+		return jet.calculatePathCost(searchPoint.getLabelHandle().getPosition()) * 0.5f;
 	}
 
 	public override TagEnum getPrimaryTagType() {

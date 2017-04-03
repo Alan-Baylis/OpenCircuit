@@ -15,9 +15,6 @@ public abstract class EndeavourFactory : InspectorListElement {
     private bool status = false;
 	private int size = 0;
 
-    [System.NonSerialized]
-    private RobotController robotController;
-
 	private static string[] typeNames = null;
 
 	private static System.Type[] eTypes;
@@ -74,14 +71,6 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public List<TagRequirement> getRequiredTagsList() {
 		return (List<TagRequirement>)GetType().GetMethod("getRequiredTags").Invoke(null, null);
 	}
-
-    public void setRobotController(RobotController controller) {
-        robotController = controller;
-    }
-
-    public RobotController getRobotController() {
-        return robotController;
-    }
 
     public static EndeavourFactory constructDefault() {
 		EndeavourFactory factory = (EndeavourFactory) types[0].GetConstructor(new System.Type[0]).Invoke(new object[0]);

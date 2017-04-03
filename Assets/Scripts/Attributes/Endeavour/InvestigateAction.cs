@@ -58,7 +58,6 @@ public class InvestigateAction : Endeavour {
 	}
 
 	protected override float getCost() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		System.Nullable<Vector3> pos = controller.getLastKnownPosition(sound.getLabelHandle());
 		if(pos.HasValue) {
 			float cost = jet.calculatePathCost(pos.Value);

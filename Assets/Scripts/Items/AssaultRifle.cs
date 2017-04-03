@@ -1,8 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 
 public class AssaultRifle : AbstractGun {
+
+    public AudioClip[] fireSounds;
 
 	public float inaccuracy = 0.1f;
 	public float range = 1000;
@@ -201,6 +202,7 @@ public class AssaultRifle : AbstractGun {
 		}
 		// play sound effect
 		if (gunshotSoundEmitter != null) {
+		    //gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];
 			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 		}
 		playSound(gunshotSoundEmitter);
