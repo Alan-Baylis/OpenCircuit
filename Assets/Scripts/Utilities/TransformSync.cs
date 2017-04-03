@@ -6,21 +6,33 @@ public class TransformSync : NetworkBehaviour {
 	public enum SyncMode {
 		POSITION,
 		ROTATION,
-		BOTH
+		BOTH,
+		VELOCITY
 	}
 
 	public SyncMode mode = SyncMode.BOTH;
 	public float interpolationRate = .2f;
 	public int networkChannel = 1;
-    public Transform syncTarget;
+	[SerializeField, ReadOnly]
+    private Transform syncTarget;
 
 	[SyncVar]
 	protected Vector3 serverPosition;
 	[SyncVar]
 	protected Quaternion serverRotation;
+	[SyncVar]
+	protected Vector3 serverVelocity;
+	[SyncVar]
+	protected Vector3 serverAngularVelocity;
+
+	private new Comp<Rigidbody> rigidbody;
+	private Comp<UnityEngine.AI.NavMeshAgent> navAgent;
 
 	public void Awake() {
+		rigidbody.init(getTransform());
+		navAgent.init(getTransform());
 		serverPosition = getTransform().position;
+		serverRotation = getTransform().rotation;
 	}
 
 	public void FixedUpdate() {
@@ -28,6 +40,8 @@ public class TransformSync : NetworkBehaviour {
             syncPosition();
         if (mode != SyncMode.POSITION)
             syncRotation();
+		if (mode == SyncMode.VELOCITY)
+			syncVelocity();
 	}
 
 	public override int GetNetworkChannel() {
@@ -57,4 +71,41 @@ public class TransformSync : NetworkBehaviour {
             getTransform().position += diff * interpolationRate;
         }
     }
+
+	protected virtual void syncVelocity() {
+		if (rigidbody.get != null) {
+			if (isServer) {
+				if (navAgent.get == null) {
+					serverVelocity = rigidbody.get.velocity;
+				} else {
+					serverVelocity = getTransform().InverseTransformVector(navAgent.get.velocity);
+				}
+				serverAngularVelocity = rigidbody.get.angularVelocity;
+			} else {
+				Vector3 diff = serverVelocity - rigidbody.get.velocity;
+				rigidbody.get.velocity += diff * interpolationRate;
+				diff = serverAngularVelocity - rigidbody.get.angularVelocity;
+				rigidbody.get.angularVelocity += diff * interpolationRate;
+				//rigidbody.get.velocity = Vector3.Lerp(rigidbody.get.velocity, serverVelocity, interpolationRate);
+				//rigidbody.get.angularVelocity = Vector3.Lerp(rigidbody.get.angularVelocity, serverAngularVelocity, interpolationRate);
+			}
+		}
+	}
+	
+	private struct Comp<T> where T : Component {
+		public T get { get {
+				if (cache == null) {
+					cache = owner.GetComponent<T>();
+				}
+				return cache;
+			}
+		}
+		private T cache;
+
+		private Component owner;
+
+		public void init(Component owner) {
+			this.owner = owner;
+		}
+	}
 }
