@@ -13,17 +13,17 @@ public class GlobalConfig : NetworkBehaviour {
     [SyncVar]
     public bool gameStarted;
 
-	private GameMode gamemode = null;
+	public GameMode gamemode;
 
     void Start() {
         myGlobalConfig = this;
         globalConfig.configuration = Menu.menu.serverConfig;
 
         gameStarted = true;
-        GameMode.constructGameMode(gameObject, configuration.gameMode);
+        gamemode = GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
-    private static GlobalConfig myGlobalConfig = null;
+    private static GlobalConfig myGlobalConfig;
     public static GlobalConfig globalConfig {
         get {
             return myGlobalConfig;
