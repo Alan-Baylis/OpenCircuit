@@ -30,9 +30,6 @@ public class LevelLoad {
 	    // create scene initializer
 	    createPrefab("Assets/Prefabs/GameControl/SceneInitializer.prefab", gameControl);
 
-	    // create game controller
-	    createPrefab("Assets/Prefabs/GameControl/GameController.prefab", gameControl);
-
 		// create start point
 		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab", gameControl);
 

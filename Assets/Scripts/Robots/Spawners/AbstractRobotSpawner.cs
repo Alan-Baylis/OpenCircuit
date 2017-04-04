@@ -15,6 +15,10 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
     public Vector3 spawnPos;
 
+    private Vector3 worldSpawnPos {
+        get { return transform.position + transform.TransformDirection(spawnPos); }
+    }
+
 	private GlobalConfig config;
     private Label label;
     public TeamData team;
@@ -46,7 +50,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	protected void spawnRobot() {
         ++GlobalConfig.globalConfig.robotControllers;
 		if (bodyPrefab != null) {
-			GameObject body = Instantiate(bodyPrefab, transform.position + spawnPos, bodyPrefab.transform.rotation);
+			GameObject body = Instantiate(bodyPrefab, worldSpawnPos, bodyPrefab.transform.rotation);
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
@@ -68,7 +72,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 					Debug.LogWarning("Null robot component in spawner: " + name);
 					continue;
 				}
-				GameObject component = Instantiate(prefab, transform.position + spawnPos + prefab.transform.position, prefab.transform.rotation);
+				GameObject component = Instantiate(prefab, worldSpawnPos + prefab.transform.position, prefab.transform.rotation);
 				component.transform.parent = body.transform;
 				components.Add(component);
 			}
@@ -132,6 +136,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
     void OnDrawGizmos() {
         Gizmos.color = Color.green;
-        Gizmos.DrawSphere(transform.position + spawnPos, .3f);
+        Gizmos.DrawSphere(worldSpawnPos, .3f);
     }
 }

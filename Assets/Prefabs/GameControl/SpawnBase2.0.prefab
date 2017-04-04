@@ -366,14 +366,14 @@ MonoBehaviour:
   componentPrefabs:
   - {fileID: 170158, guid: f462ed1fe395337449fd1390d55af843, type: 2}
   - {fileID: 167118, guid: f26cb59a57e7fdd4ca975aab4043a6f4, type: 2}
-  - {fileID: 1915773975504358, guid: 9b26d4c1ee8ddf04fb53470fb41d0709, type: 2}
+  - {fileID: 1000011511779768, guid: e0a02f1e9ed63c94387809e019af9502, type: 2}
   - {fileID: 194710, guid: d12be230b2cf2d443aa53c1508bc0c37, type: 2}
   - {fileID: 101790, guid: 57f278600f284864ca4ff9d3dc8ec826, type: 2}
   - {fileID: 128374, guid: 513924346bbb5814c8b8b5ea37c37576, type: 2}
   - {fileID: 1000012390531196, guid: 4058d0703e17c9c4fa0723e7936363ed, type: 2}
   - {fileID: 1482100421143698, guid: 41101aa4c0e18c349857c197c7fc2cfd, type: 2}
   teamIndex: 0
-  spawnPos: {x: 0, y: 0, z: -2.5}
+  spawnPos: {x: 0, y: 0, z: 2.5}
   team:
     Id: 0
     color: {r: 0, g: 0, b: 0, a: 0}

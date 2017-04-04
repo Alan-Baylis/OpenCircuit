@@ -8,7 +8,6 @@ public class GlobalConfig : NetworkBehaviour {
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
 	public CentralRobotController centralRobotController;
-    public int frozenPlayers = 0;
 
     [SyncVar]
     public bool gameStarted;

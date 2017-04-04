@@ -51,9 +51,9 @@ MonoBehaviour:
     spawnRateIncreasePerPlayer: 0.1
     gameMode: 1
   centralRobotController: {fileID: 0}
-  frozenPlayers: 0
   gameStarted: 0
   gamemode: {fileID: 0}
+  robotControllers: 0
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -122,6 +122,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64bf759bcd566f1469463ae4693c98f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  frozenPlayers: 0
+  freezeLockPrefab: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
 --- !u!114 &114875189402417868
 MonoBehaviour:
   m_ObjectHideFlags: 1

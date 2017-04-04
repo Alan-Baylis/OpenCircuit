@@ -36,4 +36,9 @@ public abstract class GameMode : NetworkBehaviour {
     [Server]
     public abstract bool loseConditionMet();
 
+    [Server]
+    public abstract void onPlayerDeath(Player player);
+
+    [Server]
+    public abstract void onPlayerRevive(Player player);
 }

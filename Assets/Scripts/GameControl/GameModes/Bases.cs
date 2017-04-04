@@ -29,9 +29,6 @@ public class Bases : TeamGameMode {
 
     [Server]
     public override bool loseConditionMet() {
-        if (GlobalConfig.globalConfig.frozenPlayers > 0 && GlobalConfig.globalConfig.frozenPlayers >=
-            ClientController.numPlayers)
-            return true;
         foreach (RobotSpawner spawner in spawners) {
             if (spawner == null) {
                 continue;
@@ -41,5 +38,13 @@ public class Bases : TeamGameMode {
             }
         }
         return true;
+    }
+
+    public override void onPlayerDeath(Player player) {
+        throw new System.NotImplementedException();
+    }
+
+    public override void onPlayerRevive(Player player) {
+        throw new System.NotImplementedException();
     }
 }
