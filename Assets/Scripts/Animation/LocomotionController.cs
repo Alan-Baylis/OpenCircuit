@@ -35,6 +35,8 @@ public class LocomotionController : MonoBehaviour {
 	private float lastStepPercent;
 	private bool airborne;
 
+	public bool isAirborne { get { return airborne; } }
+
 	// these handle running in editor
 	protected float time {
 		get {
