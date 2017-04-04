@@ -15,12 +15,16 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GameMode gamemode;
 
+    public int robotControllers;
+
     void Start() {
         myGlobalConfig = this;
-        globalConfig.configuration = Menu.menu.serverConfig;
+        configuration = Menu.menu.serverConfig;
+        gamemode = getGameMode(configuration.gameMode);
+        gamemode.initialize();
+        gamemode.enabled = true;
 
         gameStarted = true;
-        gamemode = GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
     private static GlobalConfig myGlobalConfig;
@@ -72,6 +76,20 @@ public class GlobalConfig : NetworkBehaviour {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
             connection);
+    }
+
+    private GameMode getGameMode(GameMode.GameModes gameType) {
+        //TODO: Do this better
+        GameMode mode = null;
+        switch (gameType) {
+            case GameMode.GameModes.BASES:
+                mode = GetComponent<Bases>();
+                break;
+            case GameMode.GameModes.SPAWNER_HUNT:
+                mode = GetComponent<SpawnerHunt>();
+                break;
+        }
+        return mode;
     }
 }
 

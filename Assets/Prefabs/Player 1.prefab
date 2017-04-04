@@ -370,7 +370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSuffering: 100
-  recoveryRate: 25
+  recoveryRate: 5
   sufferingDisplay: 0
   hurtSound: {fileID: 0}
   hurtSoundPitch: 1
@@ -516,4 +516,3 @@ MonoBehaviour:
   team:
     Id: 0
     color: {r: 0, g: 0, b: 0, a: 0}
-    teamTag: 0

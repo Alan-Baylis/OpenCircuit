@@ -1,21 +1,45 @@
-﻿using UnityEngine;
-using UnityEngine.Networking;
+﻿using UnityEngine.Networking;
 
 public class Bases : TeamGameMode {
 
-    void Start() {
-        teams.Add(new TeamData(0, new Color(0, 0, .4777f, 1), TagEnum.Team1));
-        teams.Add(new TeamData(1, new Color(.4777f, 0, 0, 1), TagEnum.Team2));
+    private RobotSpawner[] spawners;
+
+    [ServerCallback]
+    public void Start() {
+        base.Start();
+        spawners = FindObjectsOfType<RobotSpawner>();
+    }
+
+    public override void initialize() {
         localTeam = teams[0];
     }
 
     [Server]
 	public override bool winConditionMet() {
-		return false;
+        foreach (RobotSpawner spawner in spawners) {
+            if (spawner == null) {
+                continue;
+            }
+            if (spawner.team.Id != localTeam.Id) {
+                return false;
+            }
+        }
+		return true;
 	}
 
     [Server]
     public override bool loseConditionMet() {
-        return GlobalConfig.globalConfig.frozenPlayers > 0 && GlobalConfig.globalConfig.frozenPlayers >= ClientController.numPlayers;
+        if (GlobalConfig.globalConfig.frozenPlayers > 0 && GlobalConfig.globalConfig.frozenPlayers >=
+            ClientController.numPlayers)
+            return true;
+        foreach (RobotSpawner spawner in spawners) {
+            if (spawner == null) {
+                continue;
+            }
+            if (spawner.team.Id == localTeam.Id) {
+                return false;
+            }
+        }
+        return true;
     }
 }

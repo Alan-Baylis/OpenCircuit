@@ -30,6 +30,8 @@ public class Menu : MonoBehaviour {
 
     private bool isHost;
 
+    public GlobalConfig globalConfigPrefab;
+
 	[System.NonSerialized]
 	public GlobalConfigData serverConfig = GlobalConfigData.getDefault();
 	public float defaultScreenHeight = 1080;
@@ -431,7 +433,9 @@ public class Menu : MonoBehaviour {
         //player.gameObject.SetActive(true);
         //GetComponent<Camera>().enabled = false;
         //GetComponent<AudioListener>().enabled = false;
-        NetworkServer.SpawnObjects();
+        //NetworkServer.SpawnObjects();
+        GlobalConfig globalConfig = Instantiate(globalConfigPrefab);
+        NetworkServer.Spawn(globalConfig.gameObject);
         menuHistory.Clear();
         currentMenu = state.ClientLobby;
     }

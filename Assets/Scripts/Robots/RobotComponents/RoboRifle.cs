@@ -36,6 +36,7 @@ public class RoboRifle : AbstractRobotComponent {
 
     public override void release() {
         target = null;
+        rifle.firing = false;
     }
 
     public void setTarget(LabelHandle handle) {

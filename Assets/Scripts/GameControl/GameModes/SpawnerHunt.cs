@@ -7,6 +7,7 @@ public class SpawnerHunt : GameMode {
 
 	[ServerCallback]
 	public void Start() {
+	    base.Start();
 		spawners = GameObject.FindObjectsOfType<RobotSpawner>();
 	}
 

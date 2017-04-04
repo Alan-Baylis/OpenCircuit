@@ -9,6 +9,6 @@ public class Team : NetworkBehaviour {
     [ServerCallback]
     void Start() {
         Label label = GetComponent<Label>();
-        label.setTag(new Tag(team.teamTag, 0, label.labelHandle));
+        label.setTag(new Tag(TagEnum.Team, 0, label.labelHandle));
     }
 }

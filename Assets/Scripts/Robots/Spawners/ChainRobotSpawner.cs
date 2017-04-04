@@ -22,7 +22,7 @@ public class ChainRobotSpawner : RobotSpawner {
 		if(this != activeSpawner) {
 			active = false;
 		}
-		if(active && RobotController.controllerCount < GlobalConfig.globalConfig.getMaxRobots()) {
+		if(active && GlobalConfig.globalConfig.robotControllers < GlobalConfig.globalConfig.getMaxRobots()) {
 			timeSinceLastSpawn += Time.deltaTime;
 			if(timeSinceLastSpawn > GlobalConfig.globalConfig.getDelay()) {
 				spawnRobot();

@@ -8,7 +8,7 @@ public class RobotSpawner : AbstractRobotSpawner {
 	[ServerCallback]
 	public override void Update() {
         base.Update();
-		if (active && GlobalConfig.globalConfig != null && RobotController.controllerCount < GlobalConfig.globalConfig.getMaxRobots()) {
+		if (active && GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.robotControllers < GlobalConfig.globalConfig.getMaxRobots()) {
 			if (Time.time -lastSpawnTime > GlobalConfig.globalConfig.getDelay()) {
 				spawnRobot();
 				lastSpawnTime = Time.time;

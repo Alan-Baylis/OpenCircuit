@@ -5,11 +5,9 @@ using UnityEngine;
 public struct TeamData {
     public int Id;
     public Color color;
-    public TagEnum teamTag;
 
-    public TeamData(int ID, Color color, TagEnum teamTag) {
+    public TeamData(int ID, Color color) {
         Id = ID;
         this.color = color;
-        this.teamTag = teamTag;
     }
 }
