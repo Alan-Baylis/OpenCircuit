@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
 [RequireComponent(typeof(NetworkDiscovery))]
-public class Menu : MonoBehaviour, SceneLoadListener {
+public class Menu : MonoBehaviour {
 
 	private Rect hostRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
@@ -149,8 +150,8 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 
 	private void doWin() {
 		adjustFontSize(skin.button, exitRect.height *0.8f);
-		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
-            quit();
+		if (GUI.Button(convertRect(exitRect, false), "To Lobby", skin.button)) {
+		    returnToLobby();
 		}
 		int width = 400;
 		int height = 50;
@@ -327,10 +328,15 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 
     private void doLobby() {
         adjustFontSize(skin.button, exitRect.height * 0.8f);
-        if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
-            ClientScene.AddPlayer(0);
-            activeAtStart = false;
-            Cursor.lockState = CursorLockMode.Locked;
+        if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
+            if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
+                ClientScene.AddPlayer(0);
+                activeAtStart = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        } else {
+            adjustFontSize(skin.label, 0.07f);
+            GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Waiting on host...");
         }
     }
 
@@ -382,7 +388,8 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 	        if (scenes.Count == 0) {
 	            return;
 	        }
-	        NetworkController.networkController.serverChangeScene(scenes[0].path, this);
+	        NetworkController.networkController.serverChangeScene(scenes[0].path);
+	        StartCoroutine("startGameWhenReady");
 	    } else if (sceneData != null && sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
             startGame();
 	    }
@@ -392,6 +399,9 @@ public class Menu : MonoBehaviour, SceneLoadListener {
         menuHistory.Clear();
         activeAtStart = true;
         currentMenu = state.ClientLobby;
+        if (isHost) {
+            NetworkController.networkController.serverChangeScene(SceneManager.GetActiveScene().path);
+        }
     }
 
 	private void quit() {
@@ -401,10 +411,6 @@ public class Menu : MonoBehaviour, SceneLoadListener {
 #endif
     }
 
-    public void onSceneLoaded() {
-        startGame();
-    }
-
     private void startListen() {
         NetworkController.networkController.listen();
         if (!networkDiscovery.running) {
@@ -412,6 +418,13 @@ public class Menu : MonoBehaviour, SceneLoadListener {
             networkDiscovery.broadcastData = serverName;
             networkDiscovery.StartAsServer();
         }
+    }
+
+    IEnumerator startGameWhenReady() {
+        while (!NetworkController.networkController.allClientsReady()) {
+            yield return null;
+        }
+        startGame();
     }
 
     private void startGame() {

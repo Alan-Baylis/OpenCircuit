@@ -10,10 +10,14 @@ public class GlobalConfig : NetworkBehaviour {
 	public CentralRobotController centralRobotController;
     public int frozenPlayers = 0;
 
+    [SyncVar]
+    public bool gameStarted;
+
 	private GameMode gamemode = null;
 
-
+    [ServerCallback]
     void Start() {
+        gameStarted = true;
         GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
@@ -35,6 +39,7 @@ public class GlobalConfig : NetworkBehaviour {
 
     [Server]
     public void loseGame() {
+        NetworkController.networkController.serverClearPlayers();
         RpcLoseGame();
     }
 
@@ -84,7 +89,7 @@ public struct GlobalConfigData {
 		data.robotsPerPlayer = 3;
 		data.robotSpawnRatePerSecond = 1f;
 		data.spawnRateIncreasePerPlayer = 0.1f;
-	    data.gameMode = GameMode.GameModes.SPAWNER_HUNT;
+	    data.gameMode = GameMode.GameModes.BASES;
 		return data;
 	}
 }

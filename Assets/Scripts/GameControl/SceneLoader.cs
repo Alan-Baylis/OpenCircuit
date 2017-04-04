@@ -37,8 +37,9 @@ public class SceneLoader : MonoBehaviour, SceneLoadListener {
 		} else if (async != null && loading && async.isDone) {
 			async = null;
 			loading = false;
-		    sceneLoadListener.onSceneLoaded();
-
+		    if (sceneLoadListener != null) {
+		        sceneLoadListener.onSceneLoaded();
+		    }
 		}
 	}
 

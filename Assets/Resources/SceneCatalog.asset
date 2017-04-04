@@ -35,5 +35,5 @@ MonoBehaviour:
     supportedGameModes: 00000000
   scenes:
   - Assets/scenes/Loading/Loading.unity
-  - Assets/scenes/quicktest/quicktest.unity
   - Assets/scenes/Bases/bases.unity
+  - Assets/scenes/quicktest/quicktest.unity
