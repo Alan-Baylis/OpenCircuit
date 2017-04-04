@@ -8,16 +8,20 @@ public class ClientController : NetworkBehaviour {
 
 	public GameObject playerPrefab;
 	public GameObject playerCamPrefab;
+	public GameObject playerLegsPrefab;
+	public GameObject playerArmsPrefab;
     public static int numPlayers = 0;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
 	[SyncVar(hook="setCamId")]
 	private NetworkInstanceId camId;
-	private GameObject player = null;
+	[SyncVar(hook="setLegsId")]
+	private NetworkInstanceId legsId;
+	private GameObject player;
 
 	[SyncVar(hook="setPlayerDead")]
-	private bool isDead = false;
+	private bool isDead;
 
 	private int currentCamera = -1;
 	private Camera sceneCamera;
@@ -72,6 +76,8 @@ public class ClientController : NetworkBehaviour {
 		playerPrefab.SetActive(false);
 		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity);
 		GameObject playerCam = Instantiate(playerCamPrefab, position, Quaternion.identity);
+		GameObject playerLegs = Instantiate(playerLegsPrefab, position, Quaternion.identity);
+		GameObject playerArms = Instantiate(playerArmsPrefab, position, Quaternion.identity);
 
 		Player playerScript = newPlayer.GetComponent<Player>();
 		playerScript.clientController = this;
@@ -79,7 +85,11 @@ public class ClientController : NetworkBehaviour {
 		newPlayer.SetActive(true);
 
 		playerCam.transform.parent = newPlayer.transform;
-		playerCam.transform.localPosition = new Vector3(0, .8f, 0);
+		playerCam.transform.localPosition = new Vector3(0, 0.8f, 0);
+		playerLegs.transform.parent = newPlayer.transform;
+		playerLegs.transform.localPosition = new Vector3(0, 0.5f, 0);
+		playerArms.transform.parent = newPlayer.transform;
+		playerArms.transform.localPosition = new Vector3(0, 0.8f, 0);
 
 		newPlayer.name = "player" + Random.Range(1, 20);
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
@@ -91,11 +101,16 @@ public class ClientController : NetworkBehaviour {
 
 	    NetworkServer.Spawn(newPlayer);
 		NetworkServer.Spawn(playerCam);
+		NetworkServer.Spawn(playerLegs);
+		NetworkServer.Spawn(playerArms);
 
 		NetworkServer.AddPlayerForConnection(connectionToClient, newPlayer, 1);
 		id = newPlayer.GetComponent<Player>().netId;
 		camId = playerCam.GetComponent<NetworkIdentity>().netId;
+		legsId = playerLegs.GetComponent<NetworkIdentity>().netId;
 		playerCam.GetComponent<NetworkParenter>().setParentId(id);
+		playerLegs.GetComponent<NetworkParenter>().setParentId(id);
+		playerArms.GetComponent<NetworkParenter>().setParentId(id);
 
 	}
 
@@ -154,6 +169,11 @@ public class ClientController : NetworkBehaviour {
 			cam.GetComponent<Camera>().enabled = true;
 			cam.GetComponent<AudioListener>().enabled = true;
 		}
+	}
+
+	[Client]
+	private void setLegsId(NetworkInstanceId legsId) {
+		this.legsId = legsId;
 	}
 
 	[ClientRpc]

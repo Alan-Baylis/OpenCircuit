@@ -1,28 +1,28 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections;
 
-[CustomEditor(typeof(LegController), true)]
+[CustomEditor(typeof(LimbController), true)]
 public class LimbControllerGUI : Editor {
 
-	bool posing = false;
+	bool posing;
 	Vector3 targetPos = Vector3.zero;
 
 	public void OnSceneGUI() {
 		if (posing) {
-			targetPos = UnityEditor.Handles.PositionHandle(targetPos, Quaternion.identity);
+			targetPos = Handles.PositionHandle(targetPos, Quaternion.identity);
+			((LimbController)target).setPosition(targetPos);
 		}
-		((LegController)target).setPosition(targetPos);
 	}
 
 	public override void OnInspectorGUI() {
 
-		LegController controller = (LegController)target;
+		LimbController controller = (LimbController)target;
 
 		if (posing) {
 			posing = !GUILayout.Button("Stop Posing");
 			if (GUILayout.Button("Reset"))
 				targetPos = controller.getDefaultPos();
+			controller.setPosition(targetPos);
 		} else {
 			posing = GUILayout.Button("Start Posing");
 			if (posing)
@@ -32,7 +32,7 @@ public class LimbControllerGUI : Editor {
 
         base.DrawDefaultInspector();
 
-		((LegController)target).setPosition(targetPos);
+		controller.init();
 	}
 
 }

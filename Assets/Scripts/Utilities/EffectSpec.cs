@@ -18,6 +18,8 @@ public struct EffectSpec {
 	}
 
 	public GameObject spawn(Vector3 location, Quaternion direction) {
+		if (!Application.isPlaying)
+			return null;
 		if (prefab == null) {
 			MonoBehaviour.print("EMPTY EFFECT");
 			return null;
