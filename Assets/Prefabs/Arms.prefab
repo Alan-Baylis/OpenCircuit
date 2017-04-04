@@ -252,7 +252,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1555153527690214
 GameObject:
   m_ObjectHideFlags: 1
@@ -306,7 +306,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1695873394844660
 GameObject:
   m_ObjectHideFlags: 1
@@ -1907,6 +1907,9 @@ MonoBehaviour:
   rotationPercent: 0.8
   maxDegreesPerSecond: 2000
   minDegreesPerSecond: 30
+  maxHandMoveSpeed: 5
+  minHandMoveSpeed: 1
+  minHandMoveUrgency: 0.2
 --- !u!114 &114407763735079048
 MonoBehaviour:
   m_ObjectHideFlags: 1
