@@ -115,7 +115,7 @@ public class ClientController : NetworkBehaviour {
 	}
 
 	[Server]
-	public void destroyPlayer(NetworkConnection clientConnection, short playerID) {
+	public void destroyPlayer() {
 		isDead = true;
 
 		Destroy(player);

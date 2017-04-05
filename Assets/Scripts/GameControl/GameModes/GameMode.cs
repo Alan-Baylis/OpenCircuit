@@ -15,7 +15,7 @@ public abstract class GameMode : NetworkBehaviour {
     }
 
     [ServerCallback]
-	void Update() {
+	protected virtual void Update() {
         if (gameOver)
             return;
 	    if (loseConditionMet()) {
