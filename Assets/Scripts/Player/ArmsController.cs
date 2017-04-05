@@ -29,7 +29,7 @@ public class ArmsController : MonoBehaviour {
 	}
 
 
-	public void Update () {
+	public void LateUpdate () {
 		updateRotation();
 
 		// update hand positions
@@ -60,7 +60,7 @@ public class ArmsController : MonoBehaviour {
 	}
 
 	private void updateRotation() {
-		Quaternion camRotation = Quaternion.Euler(0, player.cam.transform.localEulerAngles.y, 0);
+		Quaternion camRotation = Quaternion.Euler(0, player.head.transform.localEulerAngles.y, 0);
 		Quaternion rotation = Quaternion.Euler(transform.localEulerAngles);
 		float diff = Quaternion.Angle(rotation, camRotation);
 		if (rotating) {

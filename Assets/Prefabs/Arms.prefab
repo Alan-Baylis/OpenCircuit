@@ -2928,10 +2928,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52ef0fbacc785c747be83c9b69e036ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minRotationDiff: 0.1
+  minRotationDiff: 5
   rotationPercent: 0.8
-  maxDegreesPerSecond: 2000
-  minDegreesPerSecond: 30
+  maxDegreesPerSecond: 1080
+  minDegreesPerSecond: 5
   maxHandMoveSpeed: 5
   minHandMoveSpeed: 1
   minHandMoveUrgency: 0.2

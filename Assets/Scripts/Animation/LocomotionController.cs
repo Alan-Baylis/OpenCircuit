@@ -49,7 +49,7 @@ public class LocomotionController : MonoBehaviour {
 		}
 	}
 
-	void Update() {
+	public void FixedUpdate() {
 		if (plantedGroup == null) {
 			plantedGroup = legGroup1;
 			steppingGroup = legGroup2;

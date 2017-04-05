@@ -161,8 +161,8 @@ public class ClientController : NetworkBehaviour {
 		GameObject cam = ClientScene.FindLocalObject(camId);
 		if(player.GetComponent<Player>().isLocalPlayer) {
 			disableSceneCam();
-			cam.GetComponent<Camera>().enabled = true;
-			cam.GetComponent<AudioListener>().enabled = true;
+			cam.GetComponentInChildren<Camera>().enabled = true;
+			cam.GetComponentInChildren<AudioListener>().enabled = true;
 		}
 	}
 

@@ -38,7 +38,7 @@ public class AssaultRifle : AbstractGun {
 		}
 	}
 
-	void FixedUpdate() {
+	public override void Update() {
 		base.Update();
 		bulletsRemainingDisplay = bulletsRemaining;
 	}
