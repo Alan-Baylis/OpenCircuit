@@ -320,14 +320,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a05dfd7eaef3154ab757723a77ac881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprintMult: 1.5
+  sprintMult: 3
   walkSpeedf: 4
   walkSpeedb: 3
   walkSpeedr: 3
   walkSpeedl: 3
   acceleration: 0.6
   climbRate: 0.2
-  crouchSpeedMultiplier: 0.5
+  crouchSpeedMultiplier: 0.8
   crouchHeight: 1.25
   standingElevation: 0.65
   crouchingElevation: 0.25
@@ -335,13 +335,13 @@ MonoBehaviour:
   airControl: 0.2
   oxygenStopSprint: 10
   oxygenBeginSprint: 15
-  oxygenSprintUsage: 30
+  oxygenSprintUsage: 0
   footsteps:
   - {fileID: 0}
   minimumFoostepOccurence: 0.45
   foostepSpeedScale: 0.03
-  fallHurtSpeed: 12
-  fallDeathSpeed: 25
+  fallHurtSpeed: 1000
+  fallDeathSpeed: 1000
   minDist: 0.1
 --- !u!114 &11441398
 MonoBehaviour:
