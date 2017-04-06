@@ -148,7 +148,7 @@ public abstract class Item : NetworkBehaviour {
 			newPosition = followingCamera.TransformPoint(position.position);
 			newRotation = followingCamera.rotation * Quaternion.Euler(position.rotation);
 		} else {
-			Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
+			Quaternion rotation = Quaternion.Euler(0, holder.getPlayer().head.transform.localEulerAngles.y, 0);
 			newPosition = transform.parent.TransformPoint(rotation * position.position);
 			newRotation = transform.parent.rotation * Quaternion.Euler(position.rotation);
 			newRotation = rotation * newRotation;

@@ -1809,8 +1809,8 @@ MonoBehaviour:
     rotation: {x: 0, y: 180, z: 0}
     cameraRelative: 1
   sprintPosition:
-    position: {x: 0.1, y: 0.55, z: 0.15}
-    rotation: {x: -30, y: 160, z: 0}
+    position: {x: 0.1, y: 0.3, z: 0.3}
+    rotation: {x: -45, y: 150, z: 0}
     cameraRelative: 0
   zoomPosition:
     position: {x: 0, y: -0.05, z: 0.25}
@@ -1834,8 +1834,8 @@ MonoBehaviour:
   recoilMinRotation: {x: -0.1, y: 0.1}
   recoilMaxRotation: {x: 0.1, y: 0.2}
   reloadPosition:
-    position: {x: 0.1, y: 0.5, z: 0.15}
-    rotation: {x: -60, y: 160, z: 45}
+    position: {x: 0.1, y: 0.3, z: 0.2}
+    rotation: {x: -75, y: 160, z: 45}
     cameraRelative: 0
   fireEffectLocation: {x: 0, y: 0, z: -0.4}
   fireEffect:

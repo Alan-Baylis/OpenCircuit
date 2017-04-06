@@ -1476,11 +1476,11 @@ MonoBehaviour:
   maxStrideLength: 1
   stepHeight: 0.6
   maxStepHeight: 0.8
+  stepHeightRange: 2
   minMoveSpeed: 0.01
   normalMoveSpeed: 5
   minimumTimePerSwitch: 0.02
   minStepRate: 2
-  footstep: {fileID: 8289408}
   footPlant:
     prefab: {fileID: 127654, guid: 2953fbf8543951343adffc4647d99a83, type: 2}
     lifetime: 5

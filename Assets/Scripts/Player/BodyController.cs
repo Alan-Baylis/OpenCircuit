@@ -22,7 +22,9 @@ public class BodyController : MonoBehaviour {
 
 
 	public void Update () {
-		Quaternion camRotation = Quaternion.Euler(0, player.cam.transform.localEulerAngles.y, 0);
+		if (legs.isAirborne)
+			return;
+		Quaternion camRotation = Quaternion.Euler(0, player.head.transform.localEulerAngles.y, 0);
 		Quaternion rotation = Quaternion.Euler(transform.localEulerAngles);
 		float diff = Quaternion.Angle(rotation, camRotation);
 		if (rotating) {

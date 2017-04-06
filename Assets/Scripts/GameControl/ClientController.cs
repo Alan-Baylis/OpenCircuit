@@ -85,11 +85,11 @@ public class ClientController : NetworkBehaviour {
 		newPlayer.SetActive(true);
 
 		playerCam.transform.parent = newPlayer.transform;
-		playerCam.transform.localPosition = new Vector3(0, 0.8f, 0);
+		playerCam.transform.localPosition = playerCamPrefab.transform.localPosition;
 		playerLegs.transform.parent = newPlayer.transform;
-		playerLegs.transform.localPosition = new Vector3(0, 0.5f, 0);
+		playerLegs.transform.localPosition = playerLegsPrefab.transform.localPosition;
 		playerArms.transform.parent = newPlayer.transform;
-		playerArms.transform.localPosition = new Vector3(0, 0.8f, 0);
+		playerArms.transform.localPosition = playerArmsPrefab.transform.localPosition;
 
 		newPlayer.name = "player" + Random.Range(1, 20);
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
@@ -166,8 +166,8 @@ public class ClientController : NetworkBehaviour {
 		GameObject cam = ClientScene.FindLocalObject(camId);
 		if(player.GetComponent<Player>().isLocalPlayer) {
 			disableSceneCam();
-			cam.GetComponent<Camera>().enabled = true;
-			cam.GetComponent<AudioListener>().enabled = true;
+			cam.GetComponentInChildren<Camera>().enabled = true;
+			cam.GetComponentInChildren<AudioListener>().enabled = true;
 		}
 	}
 

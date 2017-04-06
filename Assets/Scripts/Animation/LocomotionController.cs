@@ -4,8 +4,8 @@ using System.Collections.Generic;
 [ExecuteInEditMode]
 public class LocomotionController : MonoBehaviour {
 
-	public SpiderLegController[] legGroup1;
-	public SpiderLegController[] legGroup2;
+	public LimbController[] legGroup1;
+	public LimbController[] legGroup2;
 
 	public float stanceWidth = 2;
 	public float stanceHeight = 3;
@@ -13,6 +13,7 @@ public class LocomotionController : MonoBehaviour {
 	public float maxStrideLength = 1.25f;
 	public float stepHeight = 0.5f;
 	public float maxStepHeight = .8f;
+	public float stepHeightRange = 1f;
 
 	public float minMoveSpeed = 0.01f;
 	public float normalMoveSpeed = 2;
@@ -23,15 +24,18 @@ public class LocomotionController : MonoBehaviour {
 
 	public bool debug;
 
-	private Dictionary<SpiderLegController, LegInfo> legInfo = new Dictionary<SpiderLegController, LegInfo>();
+	private Dictionary<LimbController, LegInfo> legInfo = new Dictionary<LimbController, LegInfo>();
 	private Vector3 lastPos;
-	private SpiderLegController[] plantedGroup;
-	private SpiderLegController[] steppingGroup;
+	private LimbController[] plantedGroup;
+	private LimbController[] steppingGroup;
 	private float lastSwitch;
 	private bool stopped = true;
 	private bool moving;
 	private float stoppingPercent;
 	private float lastStepPercent;
+	private bool airborne;
+
+	public bool isAirborne { get { return airborne; } }
 
 	// these handle running in editor
 	protected float time {
@@ -45,7 +49,7 @@ public class LocomotionController : MonoBehaviour {
 		}
 	}
 
-	void Update() {
+	public void FixedUpdate() {
 		if (plantedGroup == null) {
 			plantedGroup = legGroup1;
 			steppingGroup = legGroup2;
@@ -67,6 +71,9 @@ public class LocomotionController : MonoBehaviour {
 				}
 				stoppingPercent = Mathf.Min(1, stoppingPercent +minStepRate *2 *Time.deltaTime);
 			}
+		} else if (airborne) {
+			updateSteppingGroup(plantedGroup, 0.2f);
+			airborne = updateSteppingGroup(steppingGroup, 0.8f);
 		} else {
 			moving = true;
 			stopped = false;
@@ -76,37 +83,38 @@ public class LocomotionController : MonoBehaviour {
 			float stepPercent = Mathf.Min(1, Mathf.Max(lastStepPercent + minStepChange,
 				calculateStepPercent(plantedGroup, maxStrideLength)));
 			lastStepPercent = stepPercent;
-			updateSteppingGroup(steppingGroup, stepPercent);
+			airborne = updateSteppingGroup(steppingGroup, stepPercent);
 			bool isSwitching = stepPercent > 0.99f && lastSwitch <= time - minimumTimePerSwitch;
-			if (isSwitching) {
+			if (isSwitching && !airborne) {
 				swapLegGroups();
 				lastSwitch = time;
 			}
 			stoppingPercent = stepPercent;
 		}
-
-		updateLegs(plantedGroup, true);
-		updateLegs(steppingGroup, stopped);
+		if (!airborne) {
+			updateLegs(plantedGroup, true);
+			updateLegs(steppingGroup, stopped);
+		}
 	}
 
 	public float getMaxSpeed() {
 		float maxSpeed = 0;
-		foreach(SpiderLegController leg in plantedGroup) {
+		foreach(LimbController leg in plantedGroup) {
 			maxSpeed = Mathf.Max(maxSpeed, getLegInfo(leg).getVelocity().magnitude);
 		}
 		return maxSpeed;
 	}
 
 	public void swapLegGroups() {
-		SpiderLegController[] temp = plantedGroup;
+		LimbController[] temp = plantedGroup;
 		plantedGroup = steppingGroup;
 		steppingGroup = temp;
 		lastStepPercent = 0;
 	}
 
-	protected float getMaxDisplacement(SpiderLegController[] group) {
+	protected float getMaxDisplacement(LimbController[] group) {
 		float sqrDisplacement = 0;
-		foreach(SpiderLegController leg in group) {
+		foreach(LimbController leg in group) {
 			LegInfo info = getLegInfo(leg);
 			
 			Vector3 offset = info.foot - leg.getDefaultPos();
@@ -117,17 +125,17 @@ public class LocomotionController : MonoBehaviour {
 		return displacement;
     }
 
-	protected bool isGroupPlanted(SpiderLegController[] group) {
-		foreach(SpiderLegController leg in group) {
+	protected bool isGroupPlanted(LimbController[] group) {
+		foreach(LimbController leg in group) {
 			if (!getLegInfo(leg).planted)
 				return false;
 		}
 		return true;
 	}
 
-	protected float calculateStepPercent(SpiderLegController[] plantedGroup, float strideLength) {
+	protected float calculateStepPercent(LimbController[] plantedGroup, float strideLength) {
 		float offsetMagnitude = 0;
-		foreach (SpiderLegController leg in plantedGroup) {
+		foreach (LimbController leg in plantedGroup) {
 			LegInfo info = getLegInfo(leg);
 			Vector3 normalizedVelocity = info.getVelocity().normalized;
 			Vector3 offset = info.foot - leg.getDefaultPos();
@@ -136,41 +144,51 @@ public class LocomotionController : MonoBehaviour {
 		return offsetMagnitude / 2;
 	}
 
-	protected void updateSteppingGroup(SpiderLegController[] steppingGroup, float stepPercent) {
-		foreach (SpiderLegController leg in steppingGroup) {
+	protected bool updateSteppingGroup(LimbController[] steppingGroup, float stepPercent) {
+		bool airborne = true;
+		foreach (LimbController leg in steppingGroup) {
 			LegInfo info = getLegInfo(leg);
 			Vector3 velocity = info.getVelocity();
+			velocity.y = 0;
 			float strideLength = getStrideLength(velocity.magnitude);
 			Vector3 stepOffset = leg.getDefaultPos() + velocity.normalized * strideLength;
 
-			stepOffset.y += calculateAltitudeAdjustment(stepOffset, leg);
+			float altitudeAdjustment = calculateAltitudeAdjustment(stepOffset, leg);
+			if (altitudeAdjustment == float.MinValue) {
+				stepOffset.y -= stepHeight *0.5f;
+			} else {
+				airborne = false;
+				stepOffset.y += altitudeAdjustment;
+				stepOffset.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
+			}
 			Vector3 target = Vector3.Lerp(info.getLastPlanted(), stepOffset, stepPercent);
-
-			target.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
 			Vector3 diff = (target - info.foot);
 			float maxDistance = Mathf.Max(normalMoveSpeed *4, diff.magnitude * 20) * deltaTime;
 			info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
 
 			drawPoint(info.foot, Color.blue, leg + "three");
 		}
+		return airborne;
 	}
 
-	protected float calculateAltitudeAdjustment(Vector3 stepOffset, SpiderLegController leg) {
+	protected float calculateAltitudeAdjustment(Vector3 stepOffset, LimbController leg) {
 		Vector3 maxStepPos = stepOffset + new Vector3(0, maxStepHeight, 0);
-		RaycastHit hitInfo = new RaycastHit();
+		RaycastHit hitInfo;
 		float yOffset = 0f;
-		if (Physics.Raycast(new Ray(maxStepPos, new Vector3(0, -1, 0)), out hitInfo, maxStepHeight * 10)) {
+		if (Physics.Raycast(new Ray(maxStepPos, new Vector3(0, -1, 0)), out hitInfo, stepHeightRange)) {
 			yOffset = hitInfo.point.y - stepOffset.y;
 
 			drawPoint(hitInfo.point, Color.green, leg + "one");
 			drawPoint(stepOffset, Color.red, leg + "two");
+		} else {
+			return float.MinValue;
 		}
 		return yOffset;
 	}
 
 
-	protected void updateLegs(SpiderLegController[] group, bool planted) {
-		foreach(SpiderLegController leg in group) {
+	protected void updateLegs(LimbController[] group, bool planted) {
+		foreach(LimbController leg in group) {
 			LegInfo info = getLegInfo(leg);
 			bool canReach = leg.setPosition(info.foot);
 			if (!canReach)
@@ -186,7 +204,7 @@ public class LocomotionController : MonoBehaviour {
 		return Mathf.Min(maxStrideLength, speed / normalMoveSpeed *normalStrideLength);
 	}
 
-	protected LegInfo getLegInfo(SpiderLegController leg) {
+	protected LegInfo getLegInfo(LimbController leg) {
 		LegInfo info;
 		if (!legInfo.TryGetValue(leg, out info)) {
 			info = new LegInfo(this, leg);
@@ -240,9 +258,9 @@ public class LocomotionController : MonoBehaviour {
 		public Vector3 lastDefault = Vector3.zero;
 		public Vector3 lastPlanted = Vector3.zero;
 		public LocomotionController chassis;
-		public SpiderLegController leg;
+		public LimbController leg;
 
-		public LegInfo(LocomotionController chassis, SpiderLegController leg) {
+		public LegInfo(LocomotionController chassis, LimbController leg) {
 			this.chassis = chassis;
 			this.leg = leg;
 			foot = leg.getDefaultPos();

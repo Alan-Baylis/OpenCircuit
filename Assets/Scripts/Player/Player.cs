@@ -28,6 +28,7 @@ public class Player : NetworkBehaviour {
 	private Inventory myInventory;
 	private MovementController myMover;
 	private Camera myCam;
+	private CameraSync myHead;
 	private MouseLook myLooker;
 	private Controls myControls;
 	private Health myHealth;
@@ -75,7 +76,13 @@ public class Player : NetworkBehaviour {
 			myCam = GetComponentInChildren<Camera>();
 		}
 		return myCam; 
-	} set { myCam = value; } }
+		} set { myCam = value; } }
+	public CameraSync head { get {
+			if(myHead == null) {
+				myHead = GetComponentInChildren<CameraSync>();
+			}
+			return myHead; 
+		}}
 	public MouseLook looker { get {
 		if(myLooker == null) {
 			myLooker = GetComponent<MouseLook>();
