@@ -28,7 +28,7 @@ public abstract class Endeavour : Prioritizable {
 
     private AbstractArms myArms;
     private HoverJet myJet;
-    private RoboRifle myRifle;
+    private AbstractRobotGun myRifle;
     private TowerSpawner myTowerSpawner;
 
 
@@ -172,10 +172,10 @@ public abstract class Endeavour : Prioritizable {
         }
     }
 
-    protected RoboRifle rifle {
+    protected AbstractRobotGun rifle {
         get {
             if (myRifle == null) {
-                myRifle = getController().getRobotComponent<RoboRifle>();
+                myRifle = getController().getRobotComponent<AbstractRobotGun>();
             }
             return myRifle;
         }

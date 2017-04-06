@@ -1807,11 +1807,12 @@ MonoBehaviour:
     randomizePitch: 0
   robotHitEffect:
     prefab: {fileID: 103590, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
-    lifetime: 30
+    lifetime: 2
     randomizePitch: 0
   hitEffect:
     prefab: {fileID: 196292, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
-    lifetime: 2
+    lifetime: 30
     randomizePitch: 0
   gunshotSoundEmitter: {fileID: 82759292565948152}
   firing: 0
+  reverseGunForward: 1

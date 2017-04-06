@@ -24,16 +24,26 @@ public class GenericRifle : NetworkBehaviour {
     public AudioSource gunshotSoundEmitter;
 
     public bool firing;
+    public bool reverseGunForward = true;
 
     protected LabelHandle audioLabel;
 
     protected float lastFiredTime = 0;
 
+    // This is to deal with models that have inconsistent forward directions
+    protected Vector3 gunForward {
+        get { return reverseGunForward ? -transform.forward.normalized : transform.forward.normalized; }
+    }
+
+    private Vector3 worldFireEffectLocation {
+        get { return transform.TransformPoint(fireEffectLocation); }
+    }
+
     [ServerCallback]
     void Update() {
         if (lastFiredTime <= Time.time - fireDelay && firing) {
             // Transform cam = holder.getPlayer().cam.transform;
-            shoot(transform.TransformPoint(fireEffectLocation), -transform.forward);
+            shoot(worldFireEffectLocation, gunForward);
 
             //TODO: implement recoil?
 //	        looker.rotate(
@@ -43,8 +53,9 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     public bool targetInRange(Vector3 targetPosition) {
-        Vector3 objectVector = targetPosition - transform.TransformPoint(fireEffectLocation);
-        return (1-Vector3.Dot(-transform.forward.normalized, objectVector.normalized)) < .05f;
+        Vector3 objectVector = targetPosition - worldFireEffectLocation;
+
+        return (1-Vector3.Dot(gunForward, objectVector.normalized)) < .05f;
     }
 
     [Server]
@@ -105,7 +116,11 @@ public class GenericRifle : NetworkBehaviour {
     protected virtual float getMovementInaccuracy() {
         // here we use a rational function to get the desired behaviour
         const float arbitraryValue = 0.2f; // the larger this value is, the faster the player must be moving before it affects his accuracy
-        float speed = getParentComponent<Rigidbody>(transform).velocity.magnitude;
+        Rigidbody rb = getParentComponent<Rigidbody>(transform);
+        float speed = 0f;
+        if (rb != null) {
+            speed = rb.velocity.magnitude;
+        }
         float inaccuracy = (maximumMovementInaccuracy * speed -arbitraryValue) / (speed +movementInaccuracySoftness);
         return Mathf.Max(inaccuracy, 0);
     }
@@ -215,11 +230,10 @@ public class GenericRifle : NetworkBehaviour {
         playFireSound();
 
         // do fire effects
-        Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
-        fireEffect.spawn(effectPosition, -transform.forward);
-        fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
-        fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
-        fireEffectLight.spawn(effectPosition);
+        fireEffect.spawn(worldFireEffectLocation, gunForward);
+        fireEffectSideways.spawn(worldFireEffectLocation, -transform.right - gunForward);
+        fireEffectSideways.spawn(worldFireEffectLocation, transform.right - gunForward);
+        fireEffectLight.spawn(worldFireEffectLocation);
     }
 
     protected void playSound(AudioSource soundEmitter) {
@@ -231,5 +245,10 @@ public class GenericRifle : NetworkBehaviour {
         } else if (soundEmitter.clip == null) {
             Debug.LogWarning("AudioSource clip missing for the '" + GetType() + "' component attached to '" + gameObject.name + "'");
         }
+    }
+
+    void OnDrawGizmos() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(worldFireEffectLocation, .1f);
     }
 }
