@@ -49,6 +49,9 @@ public class FollowTargetAction : Endeavour {
 	}
 
 	private Vector3 getTargetPos() {
+		if (Vector3.Distance(target.getLabelHandle().getPosition(), getController().transform.position) < safetyMargin) {
+			return getController().transform.position;
+		}
 		Vector3 adjust = controller.transform.position - target.getLabelHandle().getPosition();
 		adjust.Normalize();
 		return target.getLabelHandle().getPosition() + adjust * safetyMargin;
