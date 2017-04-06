@@ -127,7 +127,7 @@ public abstract class Item : NetworkBehaviour {
 	protected RaycastHit reach(out Vector3 position) {
 		RaycastHit finalHit = new RaycastHit();
 		position = Vector3.zero;
-		Ray ray = new Ray(this.transform.parent.position, this.transform.parent.forward);
+		Ray ray = new Ray(transform.parent.position, transform.parent.forward);
 		RaycastHit[] hits = Physics.RaycastAll(ray, reachDistance);
 		float distance = reachDistance;
 

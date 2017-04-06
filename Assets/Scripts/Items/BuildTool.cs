@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [AddComponentMenu("Scripts/Items/BuildTool")]
 public class BuildTool : ContextItem {
@@ -21,7 +19,7 @@ public class BuildTool : ContextItem {
 					(Instantiate(structureBase, hitInfo.point, Quaternion.identity)).GetComponent<Label>();
 				crc.sightingFound(towerBase.labelHandle, towerBase.transform.position,
 					null);
-				invoker.popContext(this.GetType());
+				invoker.popContext(GetType());
 			}
 		}
 	}
