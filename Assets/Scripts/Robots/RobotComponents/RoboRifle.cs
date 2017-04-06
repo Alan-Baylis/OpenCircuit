@@ -14,21 +14,21 @@ public class RoboRifle : AbstractRobotGun {
     void Start() {
         rifle = Instantiate(riflePrefab, getController().transform.position + riflePrefab.transform.position, riflePrefab.transform.rotation);
         rotatable = Instantiate(elbowPrefab, getController().transform.position + elbowPrefab.transform.position, elbowPrefab.transform.rotation);
-//
+
         rifle.transform.parent = rotatable.transform;
         rotatable.transform.parent = transform;
-//
-        NetworkInstanceId elbowId = rotatable.GetComponent<NetworkIdentity>().netId;
+
+	    // Spawn the elbow - this has to happern first so that the elbow's netId gets set
         NetworkInstanceId mountId = netId;
-//
         NetworkParenter elbowParenteer = rotatable.GetComponent<NetworkParenter>();
         elbowParenteer.setParentId(mountId);
-//
-        NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
-        rifleParenter.setParentId(elbowId);
+	    NetworkServer.Spawn(rotatable.gameObject);
 
-        NetworkServer.Spawn(rifle.gameObject);
-        NetworkServer.Spawn(rotatable.gameObject);
+		// Spawn the rifle
+	    NetworkInstanceId elbowId = rotatable.GetComponent<NetworkIdentity>().netId;
+	    NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
+	    rifleParenter.setParentId(elbowId);
+	    NetworkServer.Spawn(rifle.gameObject);
     }
 
     [Server]

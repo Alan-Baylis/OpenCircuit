@@ -30,11 +30,12 @@ public class Bases : TeamGameMode {
         }
     }
 
-	[Server]
     public override void initialize() {
         localTeam = teams[0];
-		initializeCRCs();
-    }
+		if (isServer) {
+			initializeCRCs();
+		}
+	}
 
     [Server]
 	public override bool winConditionMet() {
