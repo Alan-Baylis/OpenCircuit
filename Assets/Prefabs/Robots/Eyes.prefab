@@ -200,7 +200,7 @@ MonoBehaviour:
   sightDistance: 30
   lookAroundInterval: 0.1
   eye: {fileID: 194710}
-  light: {fileID: 10897022}
+  eyeLight: {fileID: 10897022}
 --- !u!114 &11488654
 MonoBehaviour:
   m_ObjectHideFlags: 1

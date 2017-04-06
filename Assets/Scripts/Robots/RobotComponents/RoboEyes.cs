@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 [AddComponentMenu("Scripts/Robot/Robo Eyes")]
 public class RoboEyes : AbstractVisualSensor {
 
-    public Light light;
+    public Light eyeLight;
 	private LaserProjector scanner;
 
 	// Use this for initialization
@@ -19,7 +19,7 @@ public class RoboEyes : AbstractVisualSensor {
 
 			    mat.SetColor("_EmissionColor", teamComponent.team.color);
 			    mat.SetColor("_Albedo", teamComponent.team.color);
-			    light.color = teamComponent.team.color;
+			    eyeLight.color = teamComponent.team.color;
 		    }
 	    }
 		scanner = GetComponent<LaserProjector>();

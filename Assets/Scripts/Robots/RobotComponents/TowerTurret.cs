@@ -43,7 +43,6 @@ public class TowerTurret : AbstractRobotGun {
         }
 
     // Rotate the vertical rotatable
-        float maxAngle = 20f;
         delta = pos - verticalRotatable.transform.position;
         look = Quaternion.LookRotation(delta);
         float angle = look.eulerAngles.x;

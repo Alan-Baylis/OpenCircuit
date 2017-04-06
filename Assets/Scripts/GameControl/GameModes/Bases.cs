@@ -13,7 +13,7 @@ public class Bases : TeamGameMode {
 	private List<CentralRobotController> centralRobotControllers = new List<CentralRobotController>();
 
 	[ServerCallback]
-    public void Start() {
+    public new void Start() {
         base.Start();
         spawners = FindObjectsOfType<RobotSpawner>();
     }

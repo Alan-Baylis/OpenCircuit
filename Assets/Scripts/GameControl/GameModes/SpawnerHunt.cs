@@ -9,7 +9,7 @@ public class SpawnerHunt : GameMode {
 	private RobotSpawner[] spawners;
 
 	[ServerCallback]
-	public void Start() {
+	public new void Start() {
 	    base.Start();
 		spawners = FindObjectsOfType<RobotSpawner>();
 	}
