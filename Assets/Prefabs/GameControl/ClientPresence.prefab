@@ -44,7 +44,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 144342, guid: 93f30fedd45ade9458e6cb1493939b9a, type: 2}
   playerCamPrefab: {fileID: 1423059799441900, guid: 0fbfc8e24628d9542a5b8b095be261f9,
     type: 2}
-  playerLegsPrefab: {fileID: 1251107906865332, guid: 8ddc29618c83143ba89ebc68abaa31d8,
+  playerLegsPrefab: {fileID: 1063549573324614, guid: 8ddc29618c83143ba89ebc68abaa31d8,
     type: 2}
   playerArmsPrefab: {fileID: 1404083573619808, guid: 990697ed79f4fb543b69e28721f15684,
     type: 2}
