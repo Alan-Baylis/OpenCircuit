@@ -101,8 +101,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			navAgent.avoidancePriority = Random.Range(0, 100);
 			navAgent.enabled = true;
 
-			if (GlobalConfig.globalConfig.getCRC() != null) {
-			    GlobalConfig.globalConfig.getCRC().forceAddListener(robotController);
+			if (GetComponent<Team>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
+			    ((Bases)GlobalConfig.globalConfig.gamemode).getCRC(teamIndex).forceAddListener(robotController);
 			}
 		} else {
 			Debug.LogError("Null body prefab in spawner: " +name);

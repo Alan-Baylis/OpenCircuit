@@ -50,7 +50,6 @@ MonoBehaviour:
     robotSpawnRatePerSecond: 1
     spawnRateIncreasePerPlayer: 0.1
     gameMode: 1
-  centralRobotController: {fileID: 0}
   gameStarted: 0
   gamemode: {fileID: 0}
   robotControllers: 0
@@ -143,3 +142,6 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0.47843137, a: 1}
   - Id: 1
     color: {r: 0.47794116, g: 0, b: 0, a: 1}
+  respawnDelay: 3
+  centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
+    type: 2}

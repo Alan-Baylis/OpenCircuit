@@ -7,7 +7,6 @@ public class GlobalConfig : NetworkBehaviour {
 
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
-	public CentralRobotController centralRobotController;
 
     [SyncVar]
     public bool gameStarted;
@@ -63,11 +62,6 @@ public class GlobalConfig : NetworkBehaviour {
 	[Server]
 	public float getDelay() {
 		return 1f/(NetworkServer.connections.Count * configuration.spawnRateIncreasePerPlayer + configuration.robotSpawnRatePerSecond); 
-	}
-
-	[Server]
-	public CentralRobotController getCRC() {
-		return centralRobotController;
 	}
 
     [Server]

@@ -22,7 +22,7 @@ public class ShootAction : Endeavour {
     }
 
     public override Type[] getRequiredComponents() {
-        return new[] {typeof(RoboRifle), typeof(HoverJet) };
+        return new[] {typeof(AbstractRobotGun), typeof(HoverJet) };
     }
 
     public override bool canExecute() {
