@@ -5,12 +5,16 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 
     public GenericRifle rifle;
 
-    protected LabelHandle target;
+    protected LabelHandle currentTarget;
+
+	public LabelHandle target {
+		get { return currentTarget; }
+	}
 
     // Update is called once per frame
     [ServerCallback]
     void Update () {
-        if (target != null && rifle.targetInRange(target.getPosition())) {
+        if (currentTarget != null && rifle.targetInRange(currentTarget.getPosition())) {
             rifle.firing = true;
         } else {
             rifle.firing = false;
@@ -20,20 +24,20 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
     [ServerCallback]
     void FixedUpdate() {
 
-        if (target != null) {
-            trackTarget(target.getPosition());
+        if (currentTarget != null) {
+            trackTarget(currentTarget.getPosition());
         } else {
             trackTarget(transform.position + getController().transform.forward);
         }
     }
 
     public override void release() {
-        target = null;
+        currentTarget = null;
         rifle.firing = false;
     }
 
     public void setTarget(LabelHandle handle) {
-        target = handle;
+        currentTarget = handle;
     }
 
     public override System.Type getComponentArchetype() {

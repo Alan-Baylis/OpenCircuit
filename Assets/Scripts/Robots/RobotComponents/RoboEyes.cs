@@ -13,10 +13,14 @@ public class RoboEyes : AbstractVisualSensor {
         base.Start();
 	    Team teamComponent = getController().GetComponent<Team>();
 	    if (teamComponent.enabled) {
-	        Material mat = GetComponent<Renderer>().material;
-            mat.SetColor("_EmissionColor", teamComponent.team.color);
-	        mat.SetColor("_Albedo", teamComponent.team.color);
-	        light.color = teamComponent.team.color;
+		    Renderer renderer = GetComponent<Renderer>();
+		    if (renderer != null) {
+			    Material mat = renderer.material;
+
+			    mat.SetColor("_EmissionColor", teamComponent.team.color);
+			    mat.SetColor("_Albedo", teamComponent.team.color);
+			    light.color = teamComponent.team.color;
+		    }
 	    }
 		scanner = GetComponent<LaserProjector>();
 	}

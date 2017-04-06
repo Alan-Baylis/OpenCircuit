@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class ShootAction : Endeavour {
 
@@ -13,16 +12,17 @@ public class ShootAction : Endeavour {
     }
 
     public override bool isStale() {
-        return !getController().knowsTarget(target.getLabelHandle()) || target.getLabelHandle().label == null || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id;
+        return !getController().knowsTarget(target.getLabelHandle())
+               || target.getLabelHandle().label == null
+               || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id;
     }
 
     protected override void onExecute() {
         rifle.setTarget(target.getLabelHandle());
-        jet.setTarget(target.getLabelHandle(), true);
     }
 
     public override Type[] getRequiredComponents() {
-        return new[] {typeof(AbstractRobotGun), typeof(HoverJet) };
+        return new[] {typeof(AbstractRobotGun) };
     }
 
     public override bool canExecute() {
@@ -38,6 +38,6 @@ public class ShootAction : Endeavour {
     }
 
     protected override float getCost() {
-        return jet.calculatePathCost(target.getLabelHandle().label);
+        return 0f;
     }
 }

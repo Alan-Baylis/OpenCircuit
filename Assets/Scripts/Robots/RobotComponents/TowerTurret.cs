@@ -12,11 +12,6 @@ public class TowerTurret : AbstractRobotGun {
 
     [ServerCallback]
     void Start() {
-	    print(sign(360f, 350f));
-	    print(sign(10f, 350f));
-	    print(sign(350f, 360f));
-	    print(sign(50f, 180f));
-	    print(sign(0f, 361f));
         horizontalRotatable = GetComponent<Rotatable>();
         rifle = Instantiate(riflePrefab, getController().transform.position + riflePrefab.transform.position, riflePrefab.transform.rotation);
         rifle.transform.parent = horizontalRotatable.transform;

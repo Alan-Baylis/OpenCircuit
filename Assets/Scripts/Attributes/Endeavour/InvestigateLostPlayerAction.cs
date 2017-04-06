@@ -44,7 +44,11 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 
 	public override bool isStale() {
-		return reached;
+		bool isAlly = false;
+		if (GlobalConfig.globalConfig.gamemode is Bases) {
+			isAlly = player.getLabelHandle().label.GetComponent<Team>().team.Id == getController().GetComponent<Team>().team.Id;
+		}
+		return reached || isAlly;
 	}
 
 	public override bool singleExecutor() {
