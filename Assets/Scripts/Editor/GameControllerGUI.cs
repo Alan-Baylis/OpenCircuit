@@ -1,6 +1,4 @@
 ﻿using UnityEditor;
-using UnityEngine;
-using UnityEngine.Networking;
 
 [CustomEditor(typeof(GlobalConfig), true)]
 public class GameControllerGUI : Editor {
@@ -10,8 +8,7 @@ public class GameControllerGUI : Editor {
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("playerPrefab"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("configuration"), true, null);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("centralRobotController"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("frozenPlayers"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("cameraManager"));
         serializedObject.ApplyModifiedProperties();
     }
 }

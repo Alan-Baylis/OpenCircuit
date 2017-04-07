@@ -1,11 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections.Generic;
 
 public class ClientController : NetworkBehaviour {
-
-	private static List<CamInfo> availableCameras = new List<CamInfo>();
-	private static Dictionary<ClientController, CamInfo> cameraMap = new Dictionary<ClientController, CamInfo>();
 
 	public GameObject playerPrefab;
 	public GameObject playerCamPrefab;
@@ -22,30 +18,12 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar(hook="setPlayerDead")]
 	private bool isDead;
 
-	private static int nextCameraIndex;
-	private static CamInfo sceneCamera;
-	private static CamInfo lastCamera;
-	private static bool localPlayerDead;
-
 	[ClientCallback]
 	void Start() {
-		if (isLocalPlayer) {
-			Camera[] cams = FindObjectsOfType<Camera>();
-			foreach (Camera cam in cams) {
-				if (cam.tag == "SceneCamera") {
-					sceneCamera = new CamInfo(this, cam);
-					lastCamera = sceneCamera;
-					availableCameras.Add(sceneCamera);
-					break;
-				}
-			}
-		}
-
 		if (player != null) {
-			addCamera(this, player.GetComponentInChildren<Camera>());
+			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
 
-	//	disableSceneCam();
 		if(isLocalPlayer) {
 			CmdSpawnPlayerAt(transform.position);
 		}
@@ -54,7 +32,7 @@ public class ClientController : NetworkBehaviour {
 	[ClientCallback]
 	void Update() {
 		if(isLocalPlayer && isDead && Input.GetButtonDown("Use")) {
-			switchCamera();
+			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
 	}
 
@@ -122,12 +100,12 @@ public class ClientController : NetworkBehaviour {
 	private void setPlayerDead(bool dead) {
 		isDead = dead;
 		if (isLocalPlayer) {
-			localPlayerDead = isDead;
+			GlobalConfig.globalConfig.localPlayerDead = isDead;
 		}
 		if (isDead) {
-			removeCamera(this);
+			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
 			if(isLocalPlayer) {
-				switchCamera();
+				GlobalConfig.globalConfig.cameraManager.switchCamera();
 			}
 		}
 	}
@@ -157,70 +135,11 @@ public class ClientController : NetworkBehaviour {
 		player = ClientScene.FindLocalObject(id);
 		GameObject camObject = ClientScene.FindLocalObject(camId);
 		Camera cam = camObject.GetComponentInChildren<Camera>();
-		addCamera(this, cam);
-		if(isLocalPlayer) {
-			if (lastCamera != null) {
-				disableCamera(lastCamera.cam);
-			}
-			enableCamera(cam);
-			nextCameraIndex = 0;
-		}
-	} 
-
-	[Client]
-	private void addCamera(ClientController controller, Camera cam) {
-		CamInfo newCamInfo = new CamInfo(controller, cam);
-		cameraMap[controller] = newCamInfo;
-		availableCameras.Add(newCamInfo);
-	}
-
-	[Client]
-	private static void removeCamera(ClientController controller) {
-		availableCameras.Remove(cameraMap[controller]);
-		cameraMap.Remove(controller);
-		if (localPlayerDead && lastCamera.controller == controller) {
-			nextCameraIndex = 0;
-			switchCamera();
+		GlobalConfig.globalConfig.cameraManager.addCamera(this, cam);
+		if (isLocalPlayer) {
+			GlobalConfig.globalConfig.cameraManager.usePlayerCam(cam);
 		}
 	}
 
-	[Client]
-	private static void switchCamera() {
-		if (lastCamera != null)
-			disableCamera(lastCamera.cam);
-		lastCamera = availableCameras[nextCameraIndex];
-		enableCamera(lastCamera.cam);
 
-		incrementCamera();
-	}
-
-	private static void enableCamera(Camera cam) {
-		cam.enabled = true;
-		cam.GetComponent<AudioListener>().enabled = true;
-	}
-
-	private static void disableCamera(Camera cam) {
-		cam.enabled = false;
-		cam.GetComponent<AudioListener>().enabled = false;
-	}
-
-	[Client]
-	private static void incrementCamera() {
-		if(nextCameraIndex >= availableCameras.Count - 1) {
-			nextCameraIndex = 0;
-		} else {
-			nextCameraIndex++;
-		}
-	}
-
-	private class CamInfo {
-		public readonly ClientController controller;
-		public readonly Camera cam;
-
-		public CamInfo(ClientController controller, Camera cam) {
-			this.controller = controller;
-			this.cam = cam;
-		}
-
-	}
 }

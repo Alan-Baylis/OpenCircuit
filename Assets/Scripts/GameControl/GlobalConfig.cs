@@ -4,6 +4,8 @@ using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
 
+	public bool localPlayerDead;
+
     public GameObject playerPrefab;
 
 	[SyncVar]
@@ -13,6 +15,7 @@ public class GlobalConfig : NetworkBehaviour {
     public bool gameStarted;
 
 	public GameMode gamemode;
+	public CameraManager cameraManager;
 
     public int robotControllers;
 
