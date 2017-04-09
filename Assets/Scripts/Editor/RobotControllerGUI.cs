@@ -11,8 +11,8 @@ public class RobotControllerGUI : Editor {
 	private bool endeavoursExpanded = true;
 
     void onEnable() {
-		debugFont = UnityEditor.AssetDatabase.LoadAssetAtPath<Font>("Assets/GUI/Courier.ttf");
-		size = this.serializedObject.FindProperty("goals").arraySize;
+		debugFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/GUI/Courier.ttf");
+		size = serializedObject.FindProperty("goals").arraySize;
     }
 
 	void OnSceneGUI() {
@@ -74,7 +74,7 @@ public class RobotControllerGUI : Editor {
 			for (int i = 0; i <robot.lines.Count; ++i) {
 				DecisionInfoObject obj = robot.lines[i];
 
-				GUILayoutOption[] boxOptions = new GUILayoutOption[] { 
+				GUILayoutOption[] boxOptions = {
 					GUILayout.Width(100 * (obj.getPriority() / robot.maxPriority)) 
 				};				
 

@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 
 [CustomEditor(typeof(Vox.VoxelEditor))]
 public class VoxelEditorGUI : Editor {
@@ -109,33 +105,29 @@ public class VoxelEditorGUI : Editor {
 		if (editor.selectedMode != 1)
 			return;
 
-		if (editor.pathPoints != null && editor.pathPoints.Length > 0 && editor.isSelectedBrushPathable() && editor.showPositionHandles) {
-			for (int i = 0; i < editor.pathPoints.Length; ++i)
-				editor.pathPoints[i] = UnityEditor.Handles.PositionHandle(editor.pathPoints[i], Quaternion.identity);
-		}
-
 		int controlId = GUIUtility.GetControlID(FocusType.Passive);
-		switch(UnityEngine.Event.current.GetTypeForControl(controlId)) {
+		switch(Event.current.GetTypeForControl(controlId)) {
 		case EventType.MouseDown:
-			if (UnityEngine.Event.current.button == 0) {
+			if (Event.current.button == 0) {
 				GUIUtility.hotControl = controlId;
-				applyBrush(editor, HandleUtility.GUIPointToWorldRay(UnityEngine.Event.current.mousePosition));
-				UnityEngine.Event.current.Use();
+				applyBrush(editor, HandleUtility.GUIPointToWorldRay(Event.current.mousePosition));
+				Event.current.Use();
 			}
 			break;
 
 		case EventType.MouseUp:
-			if (UnityEngine.Event.current.button == 0) {
+			if (Event.current.button == 0) {
 				GUIUtility.hotControl = 0;
-				UnityEngine.Event.current.Use();
+				Event.current.Use();
 			}
 			break;
 		case EventType.MouseMove:
 			SceneView.RepaintAll();
 			break;
 		case EventType.KeyDown:
-			if (UnityEngine.Event.current.keyCode == KeyCode.Escape)
-				editor.pathPoints = null;
+			//TODO: I'm not sure what this does, but my code needs an equivalent -Brian
+//			if (UnityEngine.Event.current.keyCode == KeyCode.Escape)
+//				editor.pathPoints = null;
 			break;
 		}
 	}
@@ -214,30 +206,29 @@ public class VoxelEditorGUI : Editor {
 			return;
 		GUILayout.Label("Path Tool", labelBigFont);
 
-
-		if(editor.pathPoints != null && editor.pathPoints.Length > 0) {
-			GUILayout.Label("Hold 'Control' to place another point.");
-			editor.showPositionHandles = GUILayout.Toggle(editor.showPositionHandles, "Show drag handles (disable click to complete).");
-			SerializedProperty prop = serializedObject.FindProperty("pathPoints");
-			InspectorList.doArrayGUISimple(ref prop);
-			serializedObject.ApplyModifiedProperties();
+		editor.currentBrushGroup =
+			(GameObject) EditorGUILayout.ObjectField("Brush group", editor.currentBrushGroup, typeof(GameObject), true);
+		if (editor.currentBrushGroup != null && editor.currentBrushGroup.transform.childCount > 0) {
 			if (GUILayout.Button("Clear Path")) {
-				editor.pathPoints = null;
+				editor.currentBrushGroup = null;
 			} else if (GUILayout.Button("Apply Path")) {
-				Vox.LocalMutator mut = (Vox.LocalMutator)buildMutator(editor, editor.pathPoints[0]);
-				if (editor.pathPoints.Length > 1) {
-					new Vox.LineMutator(editor.pathPoints, mut).apply(editor);
+				Vox.LocalMutator mut = (Vox.LocalMutator)buildMutator(editor, editor.currentBrushGroup.transform.GetChild(0).position);
+				if (editor.currentBrushGroup.transform.childCount > 1) {
+					Vector3[] points = new Vector3[editor.currentBrushGroup.transform.childCount];
+					for (int i = 0; i < editor.currentBrushGroup.transform.childCount; ++i) {
+						points[i] = editor.currentBrushGroup.transform.GetChild(i).position;
+					}
+
+
+					new Vox.LineMutator(points, mut).apply(editor);
 				} else {
 					mut.apply(editor);
 				}
 			}
 		} else {
 			GUILayout.Label("Hold 'Control' to start a path.");
-			if (GUILayout.Button("Start Path"))
-				editor.addPathPoint(editor.transform.position);
+
 		}
-
-
 	}
 
 	protected void doManageGUI(Vox.VoxelEditor editor) {
@@ -540,7 +531,7 @@ public class VoxelEditorGUI : Editor {
 
 		// check for showPositionHandles
 		if (editor.showPositionHandles && editor.isSelectedBrushPathable()
-			&& editor.pathPoints != null && editor.pathPoints.Length > 0)
+			&& editor.currentBrushGroup != null && editor.currentBrushGroup.transform.childCount > 0)
 			return;
 
 		// create mutator
@@ -550,10 +541,17 @@ public class VoxelEditorGUI : Editor {
 		if (mutator == null)
 			return;
 		Vox.LocalMutator localMutator = mutator as Vox.LocalMutator;
-		if (localMutator != null && editor.pathPoints != null && editor.pathPoints.Length > 0) {
+		if (localMutator != null && editor.currentBrushGroup != null && editor.currentBrushGroup.transform.childCount > 0) {
 			editor.addPathPoint(point.Value);
-			mutator = new Vox.LineMutator(editor.pathPoints, localMutator);
-			editor.pathPoints = null;
+
+			Vector3[] points = new Vector3[editor.currentBrushGroup.transform.childCount];
+			for (int i = 0; i < editor.currentBrushGroup.transform.childCount; ++i) {
+				points[i] = editor.currentBrushGroup.transform.GetChild(i).position;
+			}
+
+
+			mutator = new Vox.LineMutator(points, localMutator);
+			editor.currentBrushGroup = null;
 		}
 		mutator.apply(editor);
 	}
@@ -566,7 +564,7 @@ public class VoxelEditorGUI : Editor {
 		}
 
 		// create mutator (and maybe apply)
-		switch (editor.selectedBrush) {
+		switch (editor.	selectedBrush) {
 			case 0:
 				Vox.SphereMutator sphereMod = new Vox.SphereMutator(point, editor.sphereBrushSize, new Vox.Voxel(editor.sphereBrushSubstance, opacity));
 				sphereMod.overwriteShape = !editor.sphereSubstanceOnly;

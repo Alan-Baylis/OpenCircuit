@@ -1,9 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-
 
 namespace Vox {
 
@@ -43,7 +38,7 @@ namespace Vox {
 		public float smoothBrushStrength = 1;
 		public int smoothBrushBlurRadius = 3;
 		public float ghostBrushAlpha = 0.3f;
-		public Vector3[] pathPoints = null;
+		public GameObject currentBrushGroup = null;
 		public bool showPositionHandles = false;
 
 		public void Start() {
@@ -191,44 +186,15 @@ namespace Vox {
 	    }
 
 		public void addPathPoint(Vector3 point) {
-			if (pathPoints == null || pathPoints.Length < 1) {
-				pathPoints = new Vector3[] { point };
-			} else {
-				System.Array.Resize(ref pathPoints, pathPoints.Length + 1);
-				pathPoints[pathPoints.Length - 1] = point;
+			if (currentBrushGroup == null) {
+				currentBrushGroup = new GameObject("BrushGroup1");
+				currentBrushGroup.transform.position = point;
+				BrushGroup group = currentBrushGroup.AddComponent<BrushGroup>();
+				group.voxelEditor = this;
 			}
-		}
-
-		protected Mesh generateRectangleMesh(Vector3 scale) {
-			Mesh mesh = new Mesh();
-            scale = scale / 2;
-            Vector3[] vertices = new Vector3[] {
-				new Vector3(-scale.x, -scale.y, -scale.z),
-				new Vector3( scale.x, -scale.y, -scale.z),
-				new Vector3(-scale.x,  scale.y, -scale.z),
-				new Vector3( scale.x,  scale.y, -scale.z),
-				new Vector3(-scale.x, -scale.y,  scale.z),
-				new Vector3( scale.x, -scale.y,  scale.z),
-				new Vector3(-scale.x,  scale.y,  scale.z),
-				new Vector3( scale.x,  scale.y,  scale.z),
-			};
-			mesh.vertices = vertices;
-			mesh.normals = new Vector3[vertices.Length];
-			mesh.triangles = new int[] {
-				0, 1, 5,
-				5, 4, 0,
-				2, 7, 3,
-				7, 2, 6,
-				0, 3, 1,
-				2, 3, 0,
-				4, 5, 7,
-				6, 4, 7,
-				1, 3, 5,
-				5, 3, 7,
-				0, 4, 2,
-				4, 6, 2,
-			};
-			return mesh;
+			GameObject newBrush = new GameObject("1-"+currentBrushGroup.transform.childCount);
+			newBrush.transform.position = point;
+			newBrush.transform.parent = currentBrushGroup.transform;
 		}
 
 #if UNITY_EDITOR
@@ -246,82 +212,18 @@ namespace Vox {
 		}
 
 		public bool isSubtracting() {
-			return UnityEngine.Event.current.shift;
+			return Event.current.shift;
 		}
 
 		public bool isPathing() {
-			return UnityEngine.Event.current.control && isSelectedBrushPathable();
+			return Event.current.control && isSelectedBrushPathable();
 		}
 
 		public bool isSelectedBrushPathable() {
 			return selectedBrush == 0 || selectedBrush == 1;
 		}
 
-		public void OnDrawGizmosSelected() {
-			if (selectedMode == 0)
-				return;
-			if (ghostBrushAlpha > 0 && selectedMode == 1) {
-				Ray mouseRay = UnityEditor.HandleUtility.GUIPointToWorldRay(UnityEngine.Event.current.mousePosition);
-				Color brushColor = getBrushColor();
-				brushColor.a = ghostBrushAlpha;
-				System.Nullable<Vector3> point = getBrushPoint(mouseRay);
-				if (point != null) {
-					Gizmos.color = brushColor;
-					drawBrushGizmo(point.Value);
-					if (isPathing()) {
-						drawPathPoint(point.Value);
-					}
-				}
-
-				// draw path points
-				if (pathPoints != null && pathPoints.Length > 0 && isSelectedBrushPathable()) {
-					for(int i=0; i<pathPoints.Length; ++i) {
-						Gizmos.color = brushColor;
-						drawBrushGizmo(pathPoints[i]);
-						drawPathPoint(pathPoints[i]);
-						if(showPositionHandles) {
-							pathPoints[i] = UnityEditor.Handles.PositionHandle(pathPoints[i], Quaternion.identity);
-						}
-					}
-					Gizmos.color = Color.yellow;
-					for (int i = 0; i < pathPoints.Length -1; ++i) {
-						Gizmos.DrawLine(pathPoints[i], pathPoints[i +1]);
-					}
-					if (point != null)
-						Gizmos.DrawLine(pathPoints[pathPoints.Length -1], point.Value);
-				}
-			}
-			if (maskDisplayAlpha > 0 && masks != null) {
-				Gizmos.color = new Color(1, 0, 0, maskDisplayAlpha);
-				foreach (VoxelMask mask in masks) {
-					if (!mask.active)
-						continue;
-					Gizmos.DrawMesh(generateRectangleMesh(new Vector3(width, 0, width)), transform.TransformPoint(width / 2, mask.yPosition * voxelSize(), width / 2));
-				}
-				Gizmos.color = Color.gray;
-			}
-		}
-
-		protected void drawBrushGizmo(Vector3 location) {
-			switch (selectedBrush) {
-				case 0:
-					Gizmos.DrawSphere(location, sphereBrushSize);
-					break;
-				case 1:
-					Gizmos.DrawMesh(generateRectangleMesh(cubeBrushDimensions), location);
-					break;
-				case 2:
-					Gizmos.DrawSphere(location, smoothBrushSize);
-					break;
-			}
-		}
-
-		protected void drawPathPoint(Vector3 point) {
-			Gizmos.color = Color.yellow;
-			Gizmos.DrawWireCube(point, new Vector3(0.5f, 0.5f, 0.5f) *voxelSize());
-		}
-
-		protected Color getBrushColor() {
+		public Color getBrushColor() {
 			switch (selectedBrush) {
 				case 0:
 					if (sphereSubstanceOnly)
