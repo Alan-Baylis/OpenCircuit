@@ -33,9 +33,6 @@ public class TowerTurret : AbstractRobotGun {
         Quaternion look = Quaternion.LookRotation(delta);
         float horizontal = look.eulerAngles.y;
         if (Mathf.Abs(orig.eulerAngles.y - look.eulerAngles.y) > .0001f) {
-//			print(orig.eulerAngles.y);
-//			print(look.eulerAngles.y);
-//	        print(sign(orig.eulerAngles.y, look.eulerAngles.y));
 	        horizontal = Mathf.Abs(orig.eulerAngles.y - horizontal) < horizontalRotatable.rotationSpeed * Time.deltaTime
 		        ? horizontal
 		        : orig.eulerAngles.y + horizontalRotatable.rotationSpeed * Time.deltaTime*sign(orig.eulerAngles.y, look.eulerAngles.y);
@@ -60,13 +57,8 @@ public class TowerTurret : AbstractRobotGun {
     }
 
 	private float sign(float a, float b) {
-		if (a > 360 || b > 360) {
-			print(a + ", " + b);
-		}
 		float diff1 = b - a ;
 		float diff2 = Mathf.Min(Mathf.Abs(a), Mathf.Abs(360 - a)) + Mathf.Min(Mathf.Abs(b), Mathf.Abs(360 - b));
-		//print(diff1);
-		//print(diff2);
 		if (Mathf.Abs(diff1) <= diff2) {
 			return Mathf.Sign(diff1);
 		}
