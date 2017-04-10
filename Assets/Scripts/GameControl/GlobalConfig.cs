@@ -8,29 +8,30 @@ public class GlobalConfig : NetworkBehaviour {
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
 	public CentralRobotController centralRobotController;
-    public int frozenPlayers = 0;
 
     [SyncVar]
     public bool gameStarted;
 
-	private GameMode gamemode = null;
+	public GameMode gamemode;
 
-    [ServerCallback]
+    public int robotControllers;
+
     void Start() {
+        myGlobalConfig = this;
+        configuration = Menu.menu.serverConfig;
+        gamemode = getGameMode(configuration.gameMode);
+        gamemode.initialize();
+        gamemode.enabled = true;
+
         gameStarted = true;
-        GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
-    private static GlobalConfig myGlobalConfig = null;
+    private static GlobalConfig myGlobalConfig;
     public static GlobalConfig globalConfig {
         get {
             return myGlobalConfig;
         }
     }
-
-	public GlobalConfig() {
-		myGlobalConfig = this;
-	}
 
     [Server]
     public void winGame() {
@@ -74,6 +75,20 @@ public class GlobalConfig : NetworkBehaviour {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
             connection);
+    }
+
+    private GameMode getGameMode(GameMode.GameModes gameType) {
+        //TODO: Do this better
+        GameMode mode = null;
+        switch (gameType) {
+            case GameMode.GameModes.BASES:
+                mode = GetComponent<Bases>();
+                break;
+            case GameMode.GameModes.SPAWNER_HUNT:
+                mode = GetComponent<SpawnerHunt>();
+                break;
+        }
+        return mode;
     }
 }
 

@@ -8,12 +8,14 @@ public class ShootAction : Endeavour {
 
     public ShootAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
         : base(factory, controller, goals, tags) {
-        target = getTagOfType<Tag>(TagEnum.Player);
+        target = getTagOfType<Tag>(TagEnum.Team);
         name = "shoot";
     }
 
     public override bool isStale() {
-        return !getController().knowsTarget(target.getLabelHandle());;
+        return !getController().knowsTarget(target.getLabelHandle())
+               || target.getLabelHandle().label == null
+               || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id;
     }
 
     protected override void onExecute() {
@@ -34,7 +36,7 @@ public class ShootAction : Endeavour {
     }
 
     public override TagEnum getPrimaryTagType() {
-        return TagEnum.Player;
+        return TagEnum.Team;
     }
 
     protected override float getCost() {

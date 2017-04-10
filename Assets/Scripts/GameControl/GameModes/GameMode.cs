@@ -9,22 +9,13 @@ public abstract class GameMode : NetworkBehaviour {
 		BASES, SPAWNER_HUNT
 	}
 
-    public static GameMode constructGameMode(GameObject target, GameModes gameType) {
-        //TODO: Do this better
-        GameMode mode = null;
-        switch (gameType) {
-            case GameMode.GameModes.BASES:
-                mode = target.AddComponent<Bases>();
-                break;
-            case GameMode.GameModes.SPAWNER_HUNT:
-                mode = target.AddComponent<SpawnerHunt>();
-                break;
-        }
-        return mode;
+    [ServerCallback]
+    public void Start() {
+        NetworkServer.SpawnObjects();
     }
 
     [ServerCallback]
-	void Update() {
+	protected virtual void Update() {
         if (gameOver)
             return;
 	    if (loseConditionMet()) {
@@ -37,9 +28,17 @@ public abstract class GameMode : NetworkBehaviour {
 	}
 
     [Server]
+    public virtual void initialize() { }
+
+    [Server]
 	public abstract bool winConditionMet();
 
     [Server]
     public abstract bool loseConditionMet();
 
+    [Server]
+    public abstract void onPlayerDeath(Player player);
+
+    [Server]
+    public abstract void onPlayerRevive(Player player);
 }

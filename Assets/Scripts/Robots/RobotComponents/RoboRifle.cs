@@ -3,11 +3,35 @@ using UnityEngine.Networking;
 
 public class RoboRifle : AbstractRobotComponent {
 
+    public GenericRifle riflePrefab;
+    public Rotatable elbowPrefab;
+
     public Vector3 recoilAnimationDistance = new Vector3(0, 0, 0.2f);
-    public Rotatable rotatable;
+    public Rotatable elbow;
     public GenericRifle rifle;
 
     private LabelHandle target;
+
+    [ServerCallback]
+    void Start() {
+        rifle = Instantiate(riflePrefab, getController().transform.position + riflePrefab.transform.position, riflePrefab.transform.rotation);
+        elbow = Instantiate(elbowPrefab, getController().transform.position + elbowPrefab.transform.position, elbowPrefab.transform.rotation);
+
+	    rifle.transform.parent = elbow.transform;
+        elbow.transform.parent = transform;
+
+	    NetworkInstanceId elbowId = elbow.GetComponent<NetworkIdentity>().netId;
+        NetworkInstanceId mountId = netId;
+
+	    NetworkParenter elbowParenteer = elbow.GetComponent<NetworkParenter>();
+        elbowParenteer.setParentId(mountId);
+
+	    NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
+        rifleParenter.setParentId(elbowId);
+
+        NetworkServer.Spawn(rifle.gameObject);
+        NetworkServer.Spawn(elbow.gameObject);
+    }
 
     // Update is called once per frame
     [ServerCallback]
@@ -31,11 +55,12 @@ public class RoboRifle : AbstractRobotComponent {
 
     [Server]
     private void trackTarget(Vector3 pos) {
-        rotatable.transform.rotation = Quaternion.RotateTowards(rotatable.transform.rotation, Quaternion.LookRotation(pos - rotatable.transform.position), rotatable.rotationSpeed * Time.deltaTime);
+        elbow.transform.rotation = Quaternion.RotateTowards(elbow.transform.rotation, Quaternion.LookRotation(pos - elbow.transform.position), elbow.rotationSpeed * Time.deltaTime);
     }
 
     public override void release() {
         target = null;
+        rifle.firing = false;
     }
 
     public void setTarget(LabelHandle handle) {
