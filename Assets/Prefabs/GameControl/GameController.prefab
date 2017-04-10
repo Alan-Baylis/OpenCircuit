@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 11460716}
   - component: {fileID: 11483592}
   - component: {fileID: 114000012641137478}
+  - component: {fileID: 114192725487870188}
+  - component: {fileID: 114875189402417868}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GlobalConfig
@@ -49,7 +51,9 @@ MonoBehaviour:
     spawnRateIncreasePerPlayer: 0.1
     gameMode: 1
   centralRobotController: {fileID: 0}
-  frozenPlayers: 0
+  gameStarted: 0
+  gamemode: {fileID: 0}
+  robotControllers: 0
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -107,3 +111,35 @@ MonoBehaviour:
   targetFramerate: 60
   opacity: 0.5
   trackRate: 0.3
+--- !u!114 &114192725487870188
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64bf759bcd566f1469463ae4693c98f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frozenPlayers: 0
+  freezeLockPrefab: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
+--- !u!114 &114875189402417868
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 935f37758805a6b48aa4e2b2dc7259a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localTeam:
+    Id: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+  teams:
+  - Id: 0
+    color: {r: 0, g: 0, b: 0.47843137, a: 1}
+  - Id: 1
+    color: {r: 0.47794116, g: 0, b: 0, a: 1}

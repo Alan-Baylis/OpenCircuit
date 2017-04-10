@@ -7,8 +7,6 @@ using System.IO;
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
 public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver, MentalModelUpdateListener {
 
-	public static int controllerCount = 0;
-
 	[SerializeField]
 	public byte[] serializedData;
 
@@ -414,7 +412,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	[Server]
 	public void dispose() {
-		--controllerCount;
+		--GlobalConfig.globalConfig.robotControllers;
 		CancelInvoke();
 		soundEmitter.PlayOneShot(destructionSound);
 		foreach(Endeavour e in currentEndeavours) {

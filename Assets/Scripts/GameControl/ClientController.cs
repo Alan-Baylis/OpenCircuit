@@ -92,9 +92,14 @@ public class ClientController : NetworkBehaviour {
 		playerArms.transform.localPosition = playerArmsPrefab.transform.localPosition;
 
 		newPlayer.name = "player" + Random.Range(1, 20);
+	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
+	    if (mode != null) {
+	        Team team = newPlayer.GetComponent<Team>();
+	        team.team = mode.localTeam;
+	        team.enabled = true;
+	    }
 
-
-		NetworkServer.Spawn(newPlayer);
+	    NetworkServer.Spawn(newPlayer);
 		NetworkServer.Spawn(playerCam);
 		NetworkServer.Spawn(playerLegs);
 		NetworkServer.Spawn(playerArms);
@@ -110,7 +115,7 @@ public class ClientController : NetworkBehaviour {
 	}
 
 	[Server]
-	public void destroyPlayer(NetworkConnection clientConnection, short playerID) {
+	public void destroyPlayer() {
 		isDead = true;
 
 		Destroy(player);
