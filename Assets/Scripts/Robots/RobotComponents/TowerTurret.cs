@@ -35,7 +35,7 @@ public class TowerTurret : AbstractRobotGun {
         if (Mathf.Abs(orig.eulerAngles.y - look.eulerAngles.y) > .0001f) {
 	        horizontal = Mathf.Abs(orig.eulerAngles.y - horizontal) < horizontalRotatable.rotationSpeed * Time.deltaTime
 		        ? horizontal
-		        : orig.eulerAngles.y + horizontalRotatable.rotationSpeed * Time.deltaTime*sign(orig.eulerAngles.y, look.eulerAngles.y);
+		        : orig.eulerAngles.y + horizontalRotatable.rotationSpeed * Time.deltaTime*Mathf.Sign(Mathf.DeltaAngle(orig.eulerAngles.y, look.eulerAngles.y));
             horizontalRotatable.transform.rotation = Quaternion.AngleAxis(horizontal, horizontalRotatable.transform.up);
         }
 
@@ -50,18 +50,8 @@ public class TowerTurret : AbstractRobotGun {
 	    angle = Mathf.Abs(orig.eulerAngles.x - angle) < verticalRotatable.rotationSpeed * Time.deltaTime
 		    ? angle
 		    : orig.eulerAngles.x + verticalRotatable.rotationSpeed * Time.deltaTime *
-		      sign(orig.eulerAngles.x, look.eulerAngles.x);
+		      Mathf.Sign(Mathf.DeltaAngle(orig.eulerAngles.x, look.eulerAngles.x));
         verticalRotatable.transform.rotation = Quaternion.AngleAxis(angle, verticalRotatable.transform.right);
         verticalRotatable.transform.rotation = verticalRotatable.transform.rotation*Quaternion.AngleAxis(horizontal, horizontalRotatable.transform.up);
-
     }
-
-	private float sign(float a, float b) {
-		float diff1 = b - a ;
-		float diff2 = Mathf.Min(Mathf.Abs(a), Mathf.Abs(360 - a)) + Mathf.Min(Mathf.Abs(b), Mathf.Abs(360 - b));
-		if (Mathf.Abs(diff1) <= diff2) {
-			return Mathf.Sign(diff1);
-		}
-		return a < b ? -1f : 1f;
-	}
 }
