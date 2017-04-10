@@ -13,7 +13,12 @@ public class FollowTargetAction : Endeavour {
 	}
 
 	public override void update() {
-		jet.goToPosition(getTargetPos(), true);
+		float distance = Vector3.Distance(controller.transform.position, target.getLabelHandle().getPosition());
+		if ( distance > parentFactory.safetyMargin || !canSeeTarget()) {
+			jet.goToPosition(target.getLabelHandle().getPosition(), true);
+		} else {
+			jet.stop();
+		}
 	}
 
 	public override bool isStale() {
@@ -30,7 +35,7 @@ public class FollowTargetAction : Endeavour {
 	}
 
 	public override bool canExecute() {
-		return jet.canReach(getTargetPos());
+		return jet.canReach(target.getLabelHandle().getPosition()) && eyes != null;
 	}
 
 	public override bool singleExecutor() {
@@ -46,15 +51,12 @@ public class FollowTargetAction : Endeavour {
 		if (rifle != null && rifle.target == target.getLabelHandle()) {
 			penalty = parentFactory.penalty;
 		}
-		return penalty + jet.calculatePathCost(getTargetPos());
+		return penalty + jet.calculatePathCost(target.getLabelHandle().getPosition());
 	}
 
-	private Vector3 getTargetPos() {
-		if (Vector3.Distance(target.getLabelHandle().getPosition(), getController().transform.position) < parentFactory.safetyMargin) {
-			return getController().transform.position;
-		}
-		Vector3 adjust = controller.transform.position - target.getLabelHandle().getPosition();
-		adjust.Normalize();
-		return target.getLabelHandle().getPosition() + adjust * parentFactory.safetyMargin;
+	private bool canSeeTarget() {
+		GameObject found = eyes.lookAt(target.getLabelHandle().getPosition());
+		return found == target.getLabelHandle().label.gameObject ||
+		       found.transform.root.gameObject == target.getLabelHandle().label.gameObject;
 	}
 }
