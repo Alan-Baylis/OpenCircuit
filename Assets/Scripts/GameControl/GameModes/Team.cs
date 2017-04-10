@@ -16,13 +16,11 @@ public class Team : NetworkBehaviour {
 
 	[ServerCallback]
 	void OnEnable() {
-		print("server set enabled on");
 		isEnabled = true;
 	}
 
 	[ServerCallback]
 	void OnDisable() {
-		print("server set enabled off");
 		isEnabled = false;
 	}
 

@@ -27,7 +27,7 @@ public class RoboRifle : AbstractRobotGun {
 
 		// Spawn the rifle
         NetworkServer.Spawn(elbow.gameObject);
-	    NetworkInstanceId elbowId = rotatable.GetComponent<NetworkIdentity>().netId;
+	    NetworkInstanceId elbowId = elbow.GetComponent<NetworkIdentity>().netId;
 	    NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
 	    rifleParenter.setParentId(elbowId);
 	    NetworkServer.Spawn(rifle.gameObject);
