@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 
 
 [System.Serializable]
 public abstract class EndeavourFactory : InspectorListElement {
 
 	public List<Goal> goals = new List<Goal> ();
-    public float maxMobBenefit = 0;
+    public float maxMobBenefit;
     public int optimalMobSize = 1;
     public float mobCostPerRobot = 10;
 
-    private bool status = false;
-	private int size = 0;
+    private bool status;
+	private int size;
 
-	private static string[] typeNames = null;
+	private static string[] typeNames;
 
 	private static System.Type[] eTypes;
 
@@ -37,7 +35,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	public static readonly GoalEnum[] goalEnums;
 
 	static EndeavourFactory() {
-		Array values = Enum.GetValues(typeof(GoalEnum));
+		System.Array values = System.Enum.GetValues(typeof(GoalEnum));
 		List<GoalEnum> typeList = new List<GoalEnum>();
 		foreach(object obj in values) {
 			typeList.Add((GoalEnum)obj);
@@ -115,7 +113,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 			foreach (Goal goal in goals) {
 				//goal.name = EditorGUILayout.TextField("Name", goal.name);
 				//int selectedType = (int) goal.type; // System.Array.FindIndex(goalEnums, OP => OP == goal.type);
-				goal.type = (GoalEnum) UnityEditor.EditorGUILayout.Popup((int) goal.type, Enum.GetNames(typeof(GoalEnum)));
+				goal.type = (GoalEnum) UnityEditor.EditorGUILayout.Popup((int) goal.type, System.Enum.GetNames(typeof(GoalEnum)));
 				goal.priority = UnityEditor.EditorGUILayout.FloatField("Priority", goal.priority);
 				UnityEditor.EditorGUILayout.Separator();
 			}
@@ -123,7 +121,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 				goals.RemoveRange(size, goals.Count - size);
 			}
 			while (size > goals.Count) {
-				goals.Add(new Goal((GoalEnum)Enum.GetValues(typeof(GoalEnum)).GetValue(0), 0));
+				goals.Add(new Goal((GoalEnum)System.Enum.GetValues(typeof(GoalEnum)).GetValue(0), 0));
 			}
 		}
 	}

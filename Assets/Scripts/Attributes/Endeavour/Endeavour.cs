@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-
 
 /**
  * Something an AI can endeavour to accomplish, or more simply put, execute

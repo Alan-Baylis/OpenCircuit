@@ -4,11 +4,12 @@ using UnityEngine;
 public class FollowTargetAction : Endeavour {
 
 	private Tag target;
-	private float safetyMargin = 15f;
+	private FollowTarget parentFactory;
 
 	public FollowTargetAction(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) : base(parentFactory, controller, goals, tagMap) {
 		target = getTagOfType<Tag>(TagEnum.Team);
 		name = "followTarget";
+		this.parentFactory = (FollowTarget) parentFactory;
 	}
 
 	public override void update() {
@@ -49,11 +50,11 @@ public class FollowTargetAction : Endeavour {
 	}
 
 	private Vector3 getTargetPos() {
-		if (Vector3.Distance(target.getLabelHandle().getPosition(), getController().transform.position) < safetyMargin) {
+		if (Vector3.Distance(target.getLabelHandle().getPosition(), getController().transform.position) < parentFactory.safetyMargin) {
 			return getController().transform.position;
 		}
 		Vector3 adjust = controller.transform.position - target.getLabelHandle().getPosition();
 		adjust.Normalize();
-		return target.getLabelHandle().getPosition() + adjust * safetyMargin;
+		return target.getLabelHandle().getPosition() + adjust * parentFactory.safetyMargin;
 	}
 }
