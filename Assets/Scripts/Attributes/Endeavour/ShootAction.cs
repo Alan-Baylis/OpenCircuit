@@ -13,7 +13,9 @@ public class ShootAction : Endeavour {
     }
 
     public override bool isStale() {
-        return !getController().knowsTarget(target.getLabelHandle()) || target.getLabelHandle().label == null || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id;
+        return !getController().knowsTarget(target.getLabelHandle())
+               || target.getLabelHandle().label == null
+               || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id;
     }
 
     protected override void onExecute() {

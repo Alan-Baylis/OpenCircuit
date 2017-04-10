@@ -7,7 +7,7 @@ public class RoboRifle : AbstractRobotComponent {
     public Rotatable elbowPrefab;
 
     public Vector3 recoilAnimationDistance = new Vector3(0, 0, 0.2f);
-    public Rotatable rotatable;
+    public Rotatable elbow;
     public GenericRifle rifle;
 
     private LabelHandle target;
@@ -15,22 +15,22 @@ public class RoboRifle : AbstractRobotComponent {
     [ServerCallback]
     void Start() {
         rifle = Instantiate(riflePrefab, getController().transform.position + riflePrefab.transform.position, riflePrefab.transform.rotation);
-        rotatable = Instantiate(elbowPrefab, getController().transform.position + elbowPrefab.transform.position, elbowPrefab.transform.rotation);
-//
-        rifle.transform.parent = rotatable.transform;
-        rotatable.transform.parent = transform;
-//
-        NetworkInstanceId elbowId = rotatable.GetComponent<NetworkIdentity>().netId;
+        elbow = Instantiate(elbowPrefab, getController().transform.position + elbowPrefab.transform.position, elbowPrefab.transform.rotation);
+
+	    rifle.transform.parent = elbow.transform;
+        elbow.transform.parent = transform;
+
+	    NetworkInstanceId elbowId = elbow.GetComponent<NetworkIdentity>().netId;
         NetworkInstanceId mountId = netId;
-//
-        NetworkParenter elbowParenteer = rotatable.GetComponent<NetworkParenter>();
+
+	    NetworkParenter elbowParenteer = elbow.GetComponent<NetworkParenter>();
         elbowParenteer.setParentId(mountId);
-//
-        NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
+
+	    NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
         rifleParenter.setParentId(elbowId);
 
         NetworkServer.Spawn(rifle.gameObject);
-        NetworkServer.Spawn(rotatable.gameObject);
+        NetworkServer.Spawn(elbow.gameObject);
     }
 
     // Update is called once per frame
@@ -55,7 +55,7 @@ public class RoboRifle : AbstractRobotComponent {
 
     [Server]
     private void trackTarget(Vector3 pos) {
-        rotatable.transform.rotation = Quaternion.RotateTowards(rotatable.transform.rotation, Quaternion.LookRotation(pos - rotatable.transform.position), rotatable.rotationSpeed * Time.deltaTime);
+        elbow.transform.rotation = Quaternion.RotateTowards(elbow.transform.rotation, Quaternion.LookRotation(pos - elbow.transform.position), elbow.rotationSpeed * Time.deltaTime);
     }
 
     public override void release() {
