@@ -7,6 +7,8 @@ public class FollowTarget : EndeavourFactory {
 	private static List<TagRequirement> requiredTags = new List<TagRequirement> { new TagRequirement(TagEnum.Team) };
 
 	public float safetyMargin = 15f;
+	public float bonus = 500f;
+	public float penalty = -100f;
 
 	protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
 		return new FollowTargetAction(this, controller, goals, tags);
@@ -18,6 +20,8 @@ public class FollowTarget : EndeavourFactory {
 
 	public override void doGUI() {
 		safetyMargin = EditorGUILayout.DelayedFloatField("Safety Margin", safetyMargin);
+		bonus = EditorGUILayout.DelayedFloatField("Bonus", bonus);
+		penalty = EditorGUILayout.DelayedFloatField("Penalty", penalty);
 		EditorGUILayout.Separator();
 		base.doGUI();
 	}

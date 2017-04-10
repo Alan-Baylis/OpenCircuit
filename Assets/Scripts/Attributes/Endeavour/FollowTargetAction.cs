@@ -42,9 +42,9 @@ public class FollowTargetAction : Endeavour {
 	}
 
 	protected override float getCost() {
-		float penalty = 500f;
+		float penalty = parentFactory.bonus;
 		if (rifle != null && rifle.target == target.getLabelHandle()) {
-			penalty = -100f;
+			penalty = parentFactory.penalty;
 		}
 		return penalty + jet.calculatePathCost(getTargetPos());
 	}
