@@ -49,9 +49,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	[System.NonSerialized]
 	MentalModel externalMentalModel = null;
 
-	[System.NonSerialized]
-	private bool dirty = false;
-
 	[ServerCallback]
 	void Start() {
         mentalModel.addUpdateListener(this);
@@ -122,15 +119,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		foreach(Endeavour endeavour in currentEndeavours) {
 			endeavour.update();
 		}
-		if (dirty) {
-			evaluateActions();
-		}
-	}
-
-	public void addEndeavour(Endeavour action) {
-		availableEndeavours.Add (action);
-		//evaluateActions ();
-		dirty = true;
 	}
 
 	public bool knowsTarget(LabelHandle target) {
@@ -147,7 +135,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public void enqueueMessage(RobotMessage message) {
-		foreach (Endeavour action in currentEndeavours) {
+		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
+		foreach (Endeavour action in endeavours) {
 			action.onMessage(message);
 		}
 	}
@@ -265,7 +254,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		List<DecisionInfoObject> debugText = new List<DecisionInfoObject>();
 #endif
 		//print("****EVALUATE****");
-		dirty = false;
         DictionaryHeap endeavourQueue = new DictionaryHeap();
 		List<Endeavour> staleEndeavours = new List<Endeavour>();
 		//print("\tCurrent Endeavours");
