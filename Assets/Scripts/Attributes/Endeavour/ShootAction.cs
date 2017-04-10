@@ -26,7 +26,7 @@ public class ShootAction : Endeavour {
     }
 
     public override bool canExecute() {
-        return !target.getLabelHandle().hasTag(TagEnum.Frozen);
+        return !target.getLabelHandle().hasTag(TagEnum.Frozen) && !rifle.targetObstructed(target.getLabelHandle());
     }
 
     public override bool singleExecutor() {

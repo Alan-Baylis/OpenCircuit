@@ -35,7 +35,7 @@ public class GenericRifle : NetworkBehaviour {
         get { return reverseGunForward ? -transform.forward.normalized : transform.forward.normalized; }
     }
 
-    private Vector3 worldFireEffectLocation {
+    public Vector3 worldFireEffectLocation {
         get { return transform.TransformPoint(fireEffectLocation); }
     }
 
@@ -66,7 +66,7 @@ public class GenericRifle : NetworkBehaviour {
         lastFiredTime = Time.time;
         //transform.position -= transform.TransformVector(recoilAnimationDistance);
 
-        doFireEffects();
+        doFireEffects(position);
 
     }
 
@@ -154,7 +154,7 @@ public class GenericRifle : NetworkBehaviour {
 
     [ClientRpc]
     protected void RpcCreateFireEffects() {
-        doFireEffects();
+        doFireEffects(worldFireEffectLocation);
     }
 
     [ClientRpc]
@@ -165,7 +165,7 @@ public class GenericRifle : NetworkBehaviour {
             } else if (type == HitEffectType.ROBOT) {
                 robotHitEffect.spawn(location, normal);
             }
-            doFireEffects();
+            doFireEffects(worldFireEffectLocation);
         }
     }
 
@@ -226,14 +226,15 @@ public class GenericRifle : NetworkBehaviour {
         playSound(gunshotSoundEmitter);
     }
 
-    protected void doFireEffects() {
+    protected void doFireEffects(Vector3 position) {
         playFireSound();
 
         // do fire effects
-        fireEffect.spawn(worldFireEffectLocation, gunForward);
-        fireEffectSideways.spawn(worldFireEffectLocation, -transform.right - gunForward);
-        fireEffectSideways.spawn(worldFireEffectLocation, transform.right - gunForward);
-        fireEffectLight.spawn(worldFireEffectLocation);
+	    Vector3 gunForwardDirection = gunForward;
+        fireEffect.spawn(position, gunForwardDirection);
+        fireEffectSideways.spawn(position, -transform.right - gunForwardDirection);
+        fireEffectSideways.spawn(position, transform.right - gunForwardDirection);
+        fireEffectLight.spawn(position);
     }
 
     protected void playSound(AudioSource soundEmitter) {
