@@ -7,24 +7,26 @@ public class RoboRifle : AbstractRobotGun {
     public Rotatable elbowPrefab;
 
     public Vector3 recoilAnimationDistance = new Vector3(0, 0, 0.2f);
-    public Rotatable rotatable;
+    public Rotatable elbow;
 
 
     [ServerCallback]
     void Start() {
         rifle = Instantiate(riflePrefab, getController().transform.position + riflePrefab.transform.position, riflePrefab.transform.rotation);
-        rotatable = Instantiate(elbowPrefab, getController().transform.position + elbowPrefab.transform.position, elbowPrefab.transform.rotation);
+        elbow = Instantiate(elbowPrefab, getController().transform.position + elbowPrefab.transform.position, elbowPrefab.transform.rotation);
 
-        rifle.transform.parent = rotatable.transform;
-        rotatable.transform.parent = transform;
+	    rifle.transform.parent = elbow.transform;
+        elbow.transform.parent = transform;
 
 	    // Spawn the elbow - this has to happern first so that the elbow's netId gets set
         NetworkInstanceId mountId = netId;
-        NetworkParenter elbowParenteer = rotatable.GetComponent<NetworkParenter>();
+
+	    NetworkParenter elbowParenteer = elbow.GetComponent<NetworkParenter>();
         elbowParenteer.setParentId(mountId);
-	    NetworkServer.Spawn(rotatable.gameObject);
+
 
 		// Spawn the rifle
+        NetworkServer.Spawn(elbow.gameObject);
 	    NetworkInstanceId elbowId = rotatable.GetComponent<NetworkIdentity>().netId;
 	    NetworkParenter rifleParenter = rifle.GetComponent<NetworkParenter>();
 	    rifleParenter.setParentId(elbowId);
@@ -33,6 +35,6 @@ public class RoboRifle : AbstractRobotGun {
 
     [Server]
     protected override void trackTarget(Vector3 pos) {
-        rotatable.transform.rotation = Quaternion.RotateTowards(rotatable.transform.rotation, Quaternion.LookRotation(pos - rotatable.transform.position), rotatable.rotationSpeed * Time.deltaTime);
+        elbow.transform.rotation = Quaternion.RotateTowards(elbow.transform.rotation, Quaternion.LookRotation(pos - elbow.transform.position), elbow.rotationSpeed * Time.deltaTime);
     }
 }
