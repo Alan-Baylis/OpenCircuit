@@ -10,12 +10,12 @@ public class FollowTarget : EndeavourFactory {
 	public float bonus = 500f;
 	public float penalty = -100f;
 
-	protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tags) {
-		return new FollowTargetAction(this, controller, goals, tags);
+	protected override Endeavour createEndeavour(RobotController controller, Dictionary<TagEnum, Tag> tagMap) {
+		return new FollowTargetAction(this, controller, goals, tagMap);
 	}
 
 	public new static List<TagRequirement> getRequiredTags() {
-		return requiredTags;
+		return requiredTags; 
 	}
 
 	public override void doGUI() {
