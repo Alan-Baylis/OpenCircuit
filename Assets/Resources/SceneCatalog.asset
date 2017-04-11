@@ -33,7 +33,15 @@ MonoBehaviour:
       spawnRateIncreasePerPlayer: 0.05
       gameMode: 0
     supportedGameModes: 00000000
+  - path: Assets/scenes/Pair/pair.unity
+    configuration:
+      robotsPerPlayer: 10
+      robotSpawnRatePerSecond: 1
+      spawnRateIncreasePerPlayer: 0.1
+      gameMode: 0
+    supportedGameModes: 00000000
   scenes:
   - Assets/scenes/Loading/Loading.unity
   - Assets/scenes/Bases/bases.unity
   - Assets/scenes/quicktest/quicktest.unity
+  - Assets/scenes/Pair/pair.unity
