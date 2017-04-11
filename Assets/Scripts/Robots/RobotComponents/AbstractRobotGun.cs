@@ -27,7 +27,7 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
         if (currentTarget != null) {
             trackTarget(currentTarget.getPosition());
         } else {
-            trackTarget(transform.position + getController().transform.forward);
+            trackTarget(getRestPosition());
         }
     }
 
@@ -39,6 +39,10 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
     public void setTarget(LabelHandle handle) {
         currentTarget = handle;
     }
+
+	protected virtual Vector3 getRestPosition() {
+		return transform.position + getController().transform.forward;
+	}
 
 	public bool targetObstructed(LabelHandle handle) {
 		Vector3 objPos = handle.getPosition();
