@@ -33,7 +33,7 @@ public class CheckPoint : AbstractPlayerSpawner {
 		}
 	}
 
-    protected override Vector3 nextSpawnPos() {
+    public override Vector3 nextSpawnPos() {
         Vector3 pos = pads[nextPad].transform.position + new Vector3(0, 1, 0);
         incrementPad();
         return pos;

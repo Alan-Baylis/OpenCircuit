@@ -24,8 +24,13 @@ public class ClientController : NetworkBehaviour {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
 
+		AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
 		if(isLocalPlayer) {
-			CmdSpawnPlayerAt(transform.position);
+			if (spawner != null) {
+				CmdSpawnPlayerAt(spawner.nextSpawnPos());
+			} else {
+				Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
+			}
 		}
 	}
 
