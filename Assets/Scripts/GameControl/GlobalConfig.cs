@@ -1,18 +1,21 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
+
+	public bool localPlayerDead;
 
     public GameObject playerPrefab;
 
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
-	public CentralRobotController centralRobotController;
 
     [SyncVar]
     public bool gameStarted;
 
 	public GameMode gamemode;
+	public CameraManager cameraManager;
 
     public int robotControllers;
 
@@ -35,22 +38,25 @@ public class GlobalConfig : NetworkBehaviour {
 
     [Server]
     public void winGame() {
+	    //NetworkController.networkController.serverClearPlayers();
         RpcWinGame();
     }
 
     [Server]
     public void loseGame() {
-        NetworkController.networkController.serverClearPlayers();
+        //NetworkController.networkController.serverClearPlayers();
         RpcLoseGame();
     }
 
     [ClientRpc]
     private void RpcLoseGame() {
-        Menu.menu.lose();
+		clearLocalPlayers();
+	    Menu.menu.lose();
     }
 
     [ClientRpc]
     private void RpcWinGame() {
+	    clearLocalPlayers();
         Menu.menu.win();
     }
 
@@ -65,17 +71,22 @@ public class GlobalConfig : NetworkBehaviour {
 		return 1f/(NetworkServer.connections.Count * configuration.spawnRateIncreasePerPlayer + configuration.robotSpawnRatePerSecond); 
 	}
 
-	[Server]
-	public CentralRobotController getCRC() {
-		return centralRobotController;
-	}
-
     [Server]
     public void spawnPlayerForConnection(NetworkConnection connection) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
             connection);
     }
+
+	private void clearLocalPlayers() {
+		List<short> playerIds = new List<short>();
+		foreach (var player in ClientScene.localPlayers) {
+			playerIds.Add(player.playerControllerId);
+		}
+		foreach (short Id in playerIds) {
+			ClientScene.RemovePlayer(Id);
+		}
+	}
 
     private GameMode getGameMode(GameMode.GameModes gameType) {
         //TODO: Do this better

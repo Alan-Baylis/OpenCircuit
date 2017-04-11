@@ -182,6 +182,10 @@ public class Menu : MonoBehaviour {
 		if (GUI.Button(convertRect(hostRect, false), "Host", skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Host;
+		    SceneData ? activeSceneData = SceneCatalog.sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
+		    if (activeSceneData != null) {
+		        serverConfig = activeSceneData.Value.configuration;
+		    }
 		    startListen();
 		}
 		adjustFontSize(skin.button, joinRect.height * 0.8f);

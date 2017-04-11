@@ -30,8 +30,8 @@ MonoBehaviour:
     configuration:
       robotsPerPlayer: 10
       robotSpawnRatePerSecond: 0.05
-      spawnRateIncreasePerPlayer: 0.03
-      gameMode: 1
+      spawnRateIncreasePerPlayer: 0.05
+      gameMode: 0
     supportedGameModes: 00000000
   scenes:
   - Assets/scenes/Loading/Loading.unity

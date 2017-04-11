@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-
 
 /**
  * Something an AI can endeavour to accomplish, or more simply put, execute
@@ -20,23 +18,24 @@ public abstract class Endeavour : Prioritizable {
 	protected RobotController controller;
 	protected EndeavourFactory factory;
 
-    public bool active = false;
+    public bool active;
 
     private float priorityCache;
     private int lastFrameEvaluated = -1;
 	private Dictionary<TagEnum, Tag> tagMap;
 
     private AbstractArms myArms;
-    private HoverJet myJet;
-    private RoboRifle myRifle;
-    private TowerSpawner myTowerSpawner;
+	private AbstractRobotGun myRifle;
+	private HoverJet myJet;
+	private RoboEyes myEyes;
+	private TowerSpawner myTowerSpawner;
 
 
 	public Endeavour(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) {
 		this.controller = controller;
 		this.goals = goals;
-		this.factory = parentFactory;
 		this.tagMap = tagMap;
+		factory = parentFactory;
 	}
 
 	public virtual void update() {
@@ -163,6 +162,15 @@ public abstract class Endeavour : Prioritizable {
         }
     }
 
+	protected AbstractRobotGun rifle {
+		get {
+			if (myRifle == null) {
+				myRifle = getController().getRobotComponent<AbstractRobotGun>();
+			}
+			return myRifle;
+		}
+	}
+
     protected HoverJet jet {
         get {
             if (myJet == null) {
@@ -172,14 +180,14 @@ public abstract class Endeavour : Prioritizable {
         }
     }
 
-    protected RoboRifle rifle {
-        get {
-            if (myRifle == null) {
-                myRifle = getController().getRobotComponent<RoboRifle>();
-            }
-            return myRifle;
-        }
-    }
+	protected RoboEyes eyes {
+		get {
+			if (myEyes == null) {
+				myEyes = getController().getRobotComponent<RoboEyes>();
+			}
+			return myEyes;
+		}
+	}
 
     protected TowerSpawner towerSpawner {
         get {

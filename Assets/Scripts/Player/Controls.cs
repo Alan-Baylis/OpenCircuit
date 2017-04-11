@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Controls")]
 public class Controls : NetworkBehaviour {

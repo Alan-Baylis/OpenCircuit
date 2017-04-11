@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 
 public abstract class AbstractVisualSensor : AbstractRobotComponent {
@@ -45,7 +44,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
             //			print (angle);
             if (angle < fieldOfViewAngle * 0.5f) {
                 Physics.Raycast(eye.transform.position, dir, out hit, sightDistance);
-                if (hit.transform == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
+                if (hit.transform == obj || hit.transform.root == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
                     result = true;
 #if UNITY_EDITOR
                     if (getController().debug)

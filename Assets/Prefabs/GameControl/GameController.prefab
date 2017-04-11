@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 114000012641137478}
   - component: {fileID: 114192725487870188}
   - component: {fileID: 114875189402417868}
+  - component: {fileID: 114762472885982036}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GlobalConfig
@@ -44,15 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73575c9d3520046a38ae8378239a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localPlayerDead: 0
   playerPrefab: {fileID: 175040, guid: 7ecf7c856d9af924086760e0e85174a4, type: 2}
   configuration:
     robotsPerPlayer: 3
     robotSpawnRatePerSecond: 1
     spawnRateIncreasePerPlayer: 0.1
     gameMode: 1
-  centralRobotController: {fileID: 0}
   gameStarted: 0
   gamemode: {fileID: 0}
+  cameraManager: {fileID: 114762472885982036}
   robotControllers: 0
 --- !u!114 &11483592
 MonoBehaviour:
@@ -124,6 +126,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frozenPlayers: 0
   freezeLockPrefab: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
+--- !u!114 &114762472885982036
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7aabe173522f0f4d99c6320d67a9d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114875189402417868
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -143,3 +156,6 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0.47843137, a: 1}
   - Id: 1
     color: {r: 0.47794116, g: 0, b: 0, a: 1}
+  respawnDelay: 3
+  centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
+    type: 2}

@@ -5,12 +5,15 @@ using UnityEngine;
 public class Bases : TeamGameMode {
 
     public float respawnDelay = 3f;
+	public CentralRobotController centralRobotControllerPrefab;
 
-    private RobotSpawner[] spawners;
-    private List<RespawnJob> respawnJobs = new List<RespawnJob>();
+	private RobotSpawner[] spawners;
+	private List<RespawnJob> respawnJobs = new List<RespawnJob>();
 
-    [ServerCallback]
-    public void Start() {
+	private List<CentralRobotController> centralRobotControllers = new List<CentralRobotController>();
+
+	[ServerCallback]
+    public override void Start() {
         base.Start();
         spawners = FindObjectsOfType<RobotSpawner>();
     }
@@ -25,12 +28,14 @@ public class Bases : TeamGameMode {
                 respawnJobs[i] = new RespawnJob(respawnJobs[i].controller, respawnJobs[i].timeRemaining - Time.deltaTime);
             }
         }
-
     }
 
     public override void initialize() {
         localTeam = teams[0];
-    }
+		if (isServer) {
+			initializeCRCs();
+		}
+	}
 
     [Server]
 	public override bool winConditionMet() {
@@ -64,9 +69,22 @@ public class Bases : TeamGameMode {
         respawnJobs.Add(new RespawnJob(player.clientController, respawnDelay));
     }
 
+	[Server]
     public override void onPlayerRevive(Player player) {
         throw new System.NotImplementedException();
     }
+
+	[Server]
+	public CentralRobotController getCRC(int teamIndex) {
+		return teamIndex < 0 || teamIndex > centralRobotControllers.Count ? null : centralRobotControllers[teamIndex];
+	}
+
+	[Server]
+	private void initializeCRCs() {
+		foreach (TeamData teamData in teams) {
+			centralRobotControllers.Add(Instantiate(centralRobotControllerPrefab, Vector3.zero, Quaternion.identity));
+		}
+	}
 
     private struct RespawnJob {
         public ClientController controller;
@@ -76,7 +94,5 @@ public class Bases : TeamGameMode {
             controller = playerController;
             timeRemaining = time;
         }
-
-
     }
 }

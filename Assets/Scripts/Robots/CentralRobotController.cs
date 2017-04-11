@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-using System;
 
 [AddComponentMenu("Scripts/Robot/Central Robot Controller")]
 public class CentralRobotController : MonoBehaviour {

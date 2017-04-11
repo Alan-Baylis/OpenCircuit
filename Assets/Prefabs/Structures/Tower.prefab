@@ -41,6 +41,10 @@ GameObject:
   - component: {fileID: 136644399473268532}
   - component: {fileID: 23125455420562168}
   - component: {fileID: 114657157657239662}
+  - component: {fileID: 114858514119157126}
+  - component: {fileID: 114124950510998398}
+  - component: {fileID: 114097431236047264}
+  - component: {fileID: 114899178947417490}
   m_Layer: 0
   m_Name: Tower
   m_TagString: Untagged
@@ -404,7 +408,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1320519335677618}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 69.8, y: 113.05, z: 85.19}
+  m_LocalPosition: {x: 65.02466, y: 65.05196, z: 94.5011}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4882397608046198}
@@ -1326,6 +1330,36 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114097431236047264
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320519335677618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ba74ec35107dc041826b44adf893850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSuffering: 500
+  recoveryRate: 0
+  sufferingDisplay: 0
+  hurtSound: {fileID: 0}
+  hurtSoundPitch: 1
+--- !u!114 &114124950510998398
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320519335677618}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd4f62c397a0e094ebf60b68c0806bae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  team:
+    Id: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &114657157657239662
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1358,6 +1392,46 @@ MonoBehaviour:
     i15: 165
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114858514119157126
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320519335677618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 582921497bc4f4e409f73f4e601026af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000010000000410456e646561766f7572466163746f727902000000090300000005030000000553686f6f740600000005676f616c730d6d61784d6f6242656e656669740e6f7074696d616c4d6f6253697a650f6d6f62436f7374506572526f626f7417456e646561766f7572466163746f72792b73746174757315456e646561766f7572466163746f72792b73697a650300000000007153797374656d2e436f6c6c656374696f6e732e47656e657269632e4c69737460315b5b476f616c2c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c5d5d0b080b0108020000000904000000000000000100000000002041000000000004040000007153797374656d2e436f6c6c656374696f6e732e47656e657269632e4c69737460315b5b476f616c2c20417373656d626c792d4353686172702c2056657273696f6e3d302e302e302e302c2043756c747572653d6e65757472616c2c205075626c69634b6579546f6b656e3d6e756c6c5d5d03000000065f6974656d73055f73697a65085f76657273696f6e04000006476f616c5b5d0200000008080905000000000000000000000007050000000001000000000000000404476f616c020000000b
+  destructionSound: {fileID: 8300000, guid: 24df31e5418d9c14dbeb91f48a27b8f2, type: 3}
+  destructionEffect:
+    prefab: {fileID: 143798, guid: 3f9ed27588432d74eacd8fa5d41f4f23, type: 2}
+    lifetime: 2
+    randomizePitch: 0
+  debug: 0
+  shouldAlphabetize: 0
+  locations: []
+  goals: []
+  reliability: 5
+  targetSightedSound: {fileID: 0}
+  evaluatePeriod: 0.2
+  maxPriority: 0
+  minPriority: 0
+--- !u!114 &114899178947417490
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320519335677618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000100000004094f7065726174696f6e020000000903000000050300000019526f626f744465737472756374696f6e4f7065726174696f6e00000000020000000b
+  isVisible: 1
+  inherentKnowledge: 0
 --- !u!136 &136084432990141854
 CapsuleCollider:
   m_ObjectHideFlags: 1

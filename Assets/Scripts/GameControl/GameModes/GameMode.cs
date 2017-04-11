@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.Networking;
+﻿using UnityEngine.Networking;
 
 public abstract class GameMode : NetworkBehaviour {
 
@@ -10,7 +9,7 @@ public abstract class GameMode : NetworkBehaviour {
 	}
 
     [ServerCallback]
-    public void Start() {
+    public virtual void Start() {
         NetworkServer.SpawnObjects();
     }
 
