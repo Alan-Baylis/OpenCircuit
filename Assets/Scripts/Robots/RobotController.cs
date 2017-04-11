@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -117,7 +118,13 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //		}
 //#endif
 		foreach(Endeavour endeavour in currentEndeavours) {
-			endeavour.update();
+			try {
+				endeavour.update();
+
+			} catch (Exception e) {
+				Debug.LogError("Endeavour '" + endeavour.getName() + "' threw an exception during update.");
+				Debug.LogException(e);
+			}
 		}
 	}
 
@@ -125,7 +132,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		return getMentalModel ().canSee (target);
 	}
 
-	public System.Nullable<Vector3> getLastKnownPosition(LabelHandle target) {
+	public Vector3? getLastKnownPosition(LabelHandle target) {
 		return getMentalModel().getLastKnownPosition(target);
 	}
 
@@ -161,7 +168,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public AbstractRobotComponent getRobotComponent(System.Type type) {
-		List<AbstractRobotComponent> compList = null;
+		List<AbstractRobotComponent> compList;
 		componentMap.TryGetValue(type, out compList);
 		return compList == null ? null : compList[0];
 	}
@@ -271,12 +278,17 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 		//print("\tAvailable Endeavours");
 		foreach(Endeavour action in availableEndeavours) {
-			if(action.isStale()) {
-				//print("\t\t--" + action.getName());
-				staleEndeavours.Add(action);
-			} else if (!action.isMissingComponents(componentMap)) {
-				//print("\t\t++" + action.getName());
-				endeavourQueue.Enqueue(action);
+			try {
+				if (action.isStale()) {
+					//print("\t\t--" + action.getName());
+					staleEndeavours.Add(action);
+				} else if (!action.isMissingComponents(componentMap)) {
+					//print("\t\t++" + action.getName());
+					endeavourQueue.Enqueue(action);
+				}
+			} catch (Exception e) {
+				Debug.LogError("Endeavour '" +action.getName()+"' threw an exception from isStale()");
+				Debug.LogException(e);
 			}
 		}
 

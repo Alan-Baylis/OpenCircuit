@@ -28,6 +28,7 @@ public class MentalModel {
 				targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, target.getTags(), 1);
 			}
 			registerTags(target);
+			notifyListenersTargetLost(target);
 			notifyListenersTargetFound(target);
 		}
 	}
@@ -42,6 +43,8 @@ public class MentalModel {
 				targetSightings.Remove(target);
 				staleTargetSightings.Add(target, info);
 				notifyListenersTargetLost (target);
+				if (!target.isBacked || target.label != null)
+					notifyListenersTargetFound(target);
 			}
 			info.updateInfo(position, System.DateTime.Now, direction);
 		} else {
@@ -97,20 +100,12 @@ public class MentalModel {
     }
 
     private void notifyListenersTargetLost(LabelHandle target) {
-        foreach (Tag tag in target.getTags()) {
-            notifyListenersTagRemoved(tag);
-        }
-
-		foreach(Tag tag in target.getTags()) {
-			notifyListenersTagAdded(tag);
-		}
+	    foreach (Tag tag in target.getTags()) {
+		    notifyListenersTagRemoved(tag);
+	    }
     }
 
     private void notifyListenersTargetFound(LabelHandle target) {
-		foreach (Tag tag in target.getTags()) {
-			notifyListenersTagRemoved(tag);
-		}
-
 		foreach (Tag tag in target.getTags()) {
             notifyListenersTagAdded(tag);
         }
