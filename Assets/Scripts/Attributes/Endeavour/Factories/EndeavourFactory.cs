@@ -87,7 +87,7 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-        InspectorListElement InspectorListElement.doListElementGUI() {
+        InspectorListElement InspectorListElement.doListElementGUI(GameObject parent) {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());
 		if (newSelectedType != selectedType) {

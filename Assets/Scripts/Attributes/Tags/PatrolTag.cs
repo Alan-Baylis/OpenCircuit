@@ -1,47 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
+using UnityEditor;
 
 [System.Serializable]
 public class PatrolTag : Tag {
 
     [System.NonSerialized]
-    public List<Label> points = null;
-    [System.NonSerialized]
-    private List<LabelHandle> pointHandles;
-    private string[] pointsPaths = new string[0];
+    public List<Label> points;
 
-    private bool status = false;
+	[System.NonSerialized]
+	private List<LabelHandle> pointHandles;
+
+    private bool status;
     private int size = 0;
 
-    public PatrolTag (float severity, LabelHandle handle) : base(TagEnum.PatrolRoute, severity, handle) {
+    public PatrolTag (float severity, LabelHandle labelHandle) : base(TagEnum.PatrolRoute, severity, labelHandle) {
 
     }
 
-    public List<Label> getPoints() {
-        if (points == null || points.Count < getPointsPaths().Length) {
-            points = new List<Label>();
-            foreach (string id in getPointsPaths()) {
-                if (id == null)
-                    points.Add(null);
-                else
-                    points.Add(ObjectReferenceManager.get().fetchReference<Label>(id));
-            }
-        }
-        return points;
-    }
-
-    private string[] getPointsPaths() {
-        if (pointsPaths == null) {
-            pointsPaths = new string[0];
-        }
-        return pointsPaths;
+    public List<Label> getPoints(GameObject parent) {
+	    if (points == null) {
+		    points = new List<Label>();
+		    for (int i = 0; i < parent.transform.childCount; ++i) {
+			    Label childLabel = parent.transform.GetChild(i).GetComponent<Label>();
+			    points.Add(childLabel);
+		    }
+	    }
+	    return points;
     }
 
     public List<LabelHandle> getPointHandles() {
         if (pointHandles == null) {
             pointHandles = new List<LabelHandle>();
-            foreach (Label label in getPoints()) {
+            foreach (Label label in getPoints(getLabelHandle().label.gameObject)) {
                 pointHandles.Add(label.labelHandle);
             }
         }
@@ -49,52 +40,28 @@ public class PatrolTag : Tag {
     }
 
 #if UNITY_EDITOR
-    public override void doGUI() {
-        base.doGUI();
-        status = UnityEditor.EditorGUILayout.Foldout(status, "Points");
+    public override void doGUI(GameObject parent) {
+        base.doGUI(parent);
+        status = EditorGUILayout.Foldout(status, "Points");
 
         if (status) {
-            size = UnityEditor.EditorGUILayout.IntField("Size:", getPoints().Count);
-            if (size < getPoints().Count) {
-                getPoints().RemoveRange(size, getPoints().Count - size);
-                string[] temp = new string[size];
-                Array.Copy(pointsPaths, 0, temp, 0, size);
-                pointsPaths = temp;
-            } else if (size > getPoints().Count) {
-                while (size > getPoints().Count) {
-                    getPoints().Add(null);
-                }
-                string[] temp = new string[size];
-                if (pointsPaths.Length != 0) {
-                    Array.Copy(pointsPaths, 0, temp, 0, pointsPaths.Length - 1);
-                }
-                for (int i = pointsPaths.Length; i < size; i++) {
-                    temp[i] = null;
-                }
-                pointsPaths = temp;
-            }
-
-            for (int i = 0; i < getPoints().Count; i++) {
-                getPoints()[i] = ((Label)UnityEditor.EditorGUILayout.ObjectField(getPoints()[i], typeof(Label), true));
-                if (getPoints()[i] != null) {
-                    ObjectReferenceManager.get().deleteReference(getLabelHandle().label, getPointsPaths()[i]);
-                    getPointsPaths()[i] = ObjectReferenceManager.get().addReference(getLabelHandle().label, getPoints()[i]);
-                }
+            for (int i = 0; i < getPoints(parent).Count; i++) {
+                EditorGUILayout.LabelField(getPoints(parent)[i].name);
             }
         }
     }
 
-    public override void drawGizmo() {
+    public override void drawGizmo(Label label) {
         //Color COLOR_ONE = Color.black;
         //Color COLOR_TWO = Color.green;
         Gizmos.color = Color.black;
 
-        for (int i = 0; i < getPoints().Count; ++i) {
-            if (getPoints()[i] == null)
+        for (int i = 0; i < getPoints(label.gameObject).Count; ++i) {
+            if (getPoints(label.gameObject)[i] == null)
                 continue;
             int NUM_STRIPES = 8;
-            Label current = getPoints()[i];
-            Label next = (i == getPoints().Count - 1) ? getPoints()[0] : getPoints()[i + 1];
+            Label current = getPoints(label.gameObject)[i];
+            Label next = (i == getPoints(label.gameObject).Count - 1) ? getPoints(label.gameObject)[0] : getPoints(label.gameObject)[i + 1];
             if (next == null || current == null) {
                 return;
             }
