@@ -22,13 +22,14 @@ public class Fireflies {
 			++i;
 
 			Vector2 diff = fly.target -fly.position;
-			if (diff.sqrMagnitude < (fly.velocity *deltaTime).sqrMagnitude &&
+			Vector2 movement = fly.velocity * deltaTime * config.fireflySize;
+			if (diff.sqrMagnitude < movement.sqrMagnitude &&
 					Vector2.Dot(diff.normalized, fly.velocity.normalized) > 0.99f) {
 				fly.position = fly.target;
 				fly.velocity = Vector2.zero;
 				continue;
 			}
-			fly.position += fly.velocity *deltaTime *config.fireflySize;
+			fly.position += movement;
 			diff = fly.target -fly.position;
 			if (diff.sqrMagnitude < 1 /config.fireflySize) {
 				fly.position = fly.target;

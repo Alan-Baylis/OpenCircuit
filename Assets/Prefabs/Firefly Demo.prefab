@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191f6e131cc1e472b98140957a17aa78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: 001110001
+  text: 0123456789
   fontSize: 6
   shuffleOnChange: 1
   fireflyConfig:
