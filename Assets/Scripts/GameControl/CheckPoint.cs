@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
-public class CheckPoint : NetworkBehaviour {
+public class CheckPoint : AbstractPlayerSpawner {
 
 	public GameObject[] pads;
 	private int nextPad = 0;
@@ -15,10 +14,7 @@ public class CheckPoint : NetworkBehaviour {
 			foreach(ClientController controller in controllers) {
 				if(pads != null) {
 					if(pads[nextPad] != null) {
-						if(!controller.isAlive()) {
-							controller.respawnPlayerAt(pads[nextPad].transform.position + new Vector3(0, 1, 0));
-							incrementPad();
-						}
+                        respawnPlayer(controller);
 					} else {
 						Debug.LogWarning("Null pad attached to checkpoint: '" + gameObject.name + "' in position " + nextPad + "!");
 					}
@@ -36,4 +32,10 @@ public class CheckPoint : NetworkBehaviour {
 			++nextPad;
 		}
 	}
+
+    public override Vector3 nextSpawnPos() {
+        Vector3 pos = pads[nextPad].transform.position + new Vector3(0, 1, 0);
+        incrementPad();
+        return pos;
+    }
 }

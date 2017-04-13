@@ -5,10 +5,10 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 499102}
-  - 108: {fileID: 10897022}
+  - component: {fileID: 499102}
+  - component: {fileID: 10897022}
   m_Layer: 0
   m_Name: Light
   m_TagString: Untagged
@@ -21,23 +21,23 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 449140}
-  - 33: {fileID: 3315696}
-  - 65: {fileID: 6539896}
-  - 23: {fileID: 2327558}
-  - 114: {fileID: 11451438}
-  - 114: {fileID: 11426314}
-  - 114: {fileID: 11488654}
-  - 114: {fileID: 11407536}
+  - component: {fileID: 449140}
+  - component: {fileID: 3315696}
+  - component: {fileID: 6539896}
+  - component: {fileID: 2327558}
+  - component: {fileID: 11451438}
+  - component: {fileID: 11426314}
+  - component: {fileID: 11488654}
+  - component: {fileID: 11407536}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &449140
 Transform:
   m_ObjectHideFlags: 1
@@ -47,11 +47,11 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.005, y: 0.176, z: 0.439}
   m_LocalScale: {x: 0.4, y: 0.2, z: 0.2}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 499102}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &499102
 Transform:
   m_ObjectHideFlags: 1
@@ -61,10 +61,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.2, z: 0.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 449140}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2327558
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -79,7 +79,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_Materials:
   - {fileID: 2100000, guid: 8d50894b351994f4b9fc1c5f42f69778, type: 2}
-  m_SubsetIndices: 
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
@@ -87,7 +89,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_SelectedWireframeHidden: 0
+  m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -198,6 +200,7 @@ MonoBehaviour:
   sightDistance: 30
   lookAroundInterval: 0.1
   eye: {fileID: 194710}
+  eyeLight: {fileID: 10897022}
 --- !u!114 &11488654
 MonoBehaviour:
   m_ObjectHideFlags: 1

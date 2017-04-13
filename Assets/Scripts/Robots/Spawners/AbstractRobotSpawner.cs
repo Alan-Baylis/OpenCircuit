@@ -11,8 +11,29 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public GameObject bodyPrefab;
 	public GameObject[] componentPrefabs;
 
+    public int teamIndex;
+
+    public Vector3 spawnPos;
+
+    private Vector3 worldSpawnPos {
+        get { return transform.position + transform.TransformDirection(spawnPos); }
+    }
+
 	private GlobalConfig config;
     private Label label;
+    public TeamData team;
+
+    [ServerCallback]
+    void Start() {
+        if (isTeamMode()) {
+            TeamGameMode gameMode = (TeamGameMode) GlobalConfig.globalConfig.gamemode;
+            if (teamIndex >= 0 && teamIndex < gameMode.teams.Count)
+                team = gameMode.teams[teamIndex];
+            Team teamComponent = GetComponent<Team>();
+            teamComponent.team = team;
+            teamComponent.enabled = true;
+        }
+    }
 
     [ServerCallback]
     public virtual void Update() {
@@ -27,12 +48,17 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
     [Server]
 	protected void spawnRobot() {
-        ++RobotController.controllerCount;
+        ++GlobalConfig.globalConfig.robotControllers;
 		if (bodyPrefab != null) {
-			GameObject body = Instantiate(bodyPrefab, transform.position, bodyPrefab.transform.rotation) as GameObject;
+			GameObject body = Instantiate(bodyPrefab, worldSpawnPos, bodyPrefab.transform.rotation);
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
+		    if (isTeamMode()) {
+		        Team teamComponent = body.GetComponent<Team>();
+		        teamComponent.team = team;
+		        teamComponent.enabled = true;
+		    }
 
 			addKnowledge(robotController);
 
@@ -46,7 +72,7 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 					Debug.LogWarning("Null robot component in spawner: " + name);
 					continue;
 				}
-				GameObject component = Instantiate(prefab, transform.position + prefab.transform.position, prefab.transform.rotation) as GameObject;
+				GameObject component = Instantiate(prefab, worldSpawnPos + prefab.transform.position, prefab.transform.rotation);
 				component.transform.parent = body.transform;
 				components.Add(component);
 			}
@@ -75,8 +101,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			navAgent.avoidancePriority = Random.Range(0, 100);
 			navAgent.enabled = true;
 
-			if (getConfig().getCRC() != null) {
-                getConfig().getCRC().forceAddListener(robotController);
+			if (GetComponent<Team>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
+			    ((Bases)GlobalConfig.globalConfig.gamemode).getCRC(teamIndex).forceAddListener(robotController);
 			}
 		} else {
 			Debug.LogError("Null body prefab in spawner: " +name);
@@ -88,15 +114,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			applyPlayerKnowledge(robotController);
 		}
     }
-
-
-
-	protected GlobalConfig getConfig() {
-		if (config == null) {
-			config = FindObjectOfType<GlobalConfig>();
-		}
-		return config;
-	}
 
 	protected void applyPlayerKnowledge(RobotController controller) {
 		Player[] players = FindObjectsOfType<Player>();
@@ -111,5 +128,14 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
             label = GetComponent<Label>();
         }
         return label;
+    }
+
+    private bool isTeamMode() {
+        return GlobalConfig.globalConfig.gamemode is TeamGameMode;
+    }
+
+    void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(worldSpawnPos, .3f);
     }
 }

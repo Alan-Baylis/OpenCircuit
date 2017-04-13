@@ -51,12 +51,12 @@ public class LabelGUI : Editor {
 			return;
 		}
 
-		for (int i = 0; i < label.tags.Length; ++i)
+		for (int i = 0; i < label.tags.Length; ++i) {
 			if (label.tags[i] == null) {
 				label.tags[i] = Tag.constructDefault();
-				label.tags[i].setLabelHandle(label.labelHandle);
 			}
-		doArrayGUI(ref label.tags);
+		}
+		doArrayGUI(ref label.tags, label.gameObject);
 		/*
 		int newSize = UnityEditor.EditorGUILayout.IntField("Size:", label.tags.Length);
 			if(newSize != label.tags.Length) {
@@ -96,10 +96,10 @@ public class LabelGUI : Editor {
 		for(int i=0; i<label.operations.Length; ++i)
 			if (label.operations[i] == null)
 				label.operations[i] = Operation.constructDefault();
-		doArrayGUI(ref label.operations);
+		doArrayGUI(ref label.operations, label.gameObject);
 	}
 
-	private static void doArrayGUI<T>(ref T[] array) where T:InspectorListElement {
+	private static void doArrayGUI<T>(ref T[] array, GameObject parent) where T:InspectorListElement {
 		//GUILayout.BeginHorizontal();
 		//int newSize = Math.Max(EditorGUILayout.IntField("Count", array.Length), 0);
 		//if (newSize != array.Length) {
@@ -129,7 +129,7 @@ public class LabelGUI : Editor {
 
 			// draw element
 			GUILayout.BeginVertical();
-			array[i] = (T) array[i].doListElementGUI();
+			array[i] = (T) array[i].doListElementGUI(parent);
 			GUILayout.EndVertical();
 			GUILayout.EndHorizontal();
 		}

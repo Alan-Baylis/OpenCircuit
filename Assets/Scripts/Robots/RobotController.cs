@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -6,8 +7,6 @@ using System.IO;
 
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
 public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver, MentalModelUpdateListener {
-
-	public static int controllerCount = 0;
 
 	[SerializeField]
 	public byte[] serializedData;
@@ -50,9 +49,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	MentalModel mentalModel = new MentalModel ();
 	[System.NonSerialized]
 	MentalModel externalMentalModel = null;
-
-	[System.NonSerialized]
-	private bool dirty = false;
 
 	[ServerCallback]
 	void Start() {
@@ -122,24 +118,21 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //		}
 //#endif
 		foreach(Endeavour endeavour in currentEndeavours) {
-			endeavour.update();
-		}
-		if (dirty) {
-			evaluateActions();
-		}
-	}
+			try {
+				endeavour.update();
 
-	public void addEndeavour(Endeavour action) {
-		availableEndeavours.Add (action);
-		//evaluateActions ();
-		dirty = true;
+			} catch (Exception e) {
+				Debug.LogError("Endeavour '" + endeavour.getName() + "' threw an exception during update.");
+				Debug.LogException(e);
+			}
+		}
 	}
 
 	public bool knowsTarget(LabelHandle target) {
 		return getMentalModel ().canSee (target);
 	}
 
-	public System.Nullable<Vector3> getLastKnownPosition(LabelHandle target) {
+	public Vector3? getLastKnownPosition(LabelHandle target) {
 		return getMentalModel().getLastKnownPosition(target);
 	}
 
@@ -149,7 +142,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public void enqueueMessage(RobotMessage message) {
-		foreach (Endeavour action in currentEndeavours) {
+		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
+		foreach (Endeavour action in endeavours) {
 			action.onMessage(message);
 		}
 	}
@@ -174,7 +168,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public AbstractRobotComponent getRobotComponent(System.Type type) {
-		List<AbstractRobotComponent> compList = null;
+		List<AbstractRobotComponent> compList;
 		componentMap.TryGetValue(type, out compList);
 		return compList == null ? null : compList[0];
 	}
@@ -267,7 +261,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		List<DecisionInfoObject> debugText = new List<DecisionInfoObject>();
 #endif
 		//print("****EVALUATE****");
-		dirty = false;
         DictionaryHeap endeavourQueue = new DictionaryHeap();
 		List<Endeavour> staleEndeavours = new List<Endeavour>();
 		//print("\tCurrent Endeavours");
@@ -285,12 +278,17 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 		//print("\tAvailable Endeavours");
 		foreach(Endeavour action in availableEndeavours) {
-			if(action.isStale()) {
-				//print("\t\t--" + action.getName());
-				staleEndeavours.Add(action);
-			} else if (!action.isMissingComponents(componentMap)) {
-				//print("\t\t++" + action.getName());
-				endeavourQueue.Enqueue(action);
+			try {
+				if (action.isStale()) {
+					//print("\t\t--" + action.getName());
+					staleEndeavours.Add(action);
+				} else if (!action.isMissingComponents(componentMap)) {
+					//print("\t\t++" + action.getName());
+					endeavourQueue.Enqueue(action);
+				}
+			} catch (Exception e) {
+				Debug.LogError("Endeavour '" +action.getName()+"' threw an exception from isStale()");
+				Debug.LogException(e);
 			}
 		}
 
@@ -414,7 +412,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	[Server]
 	public void dispose() {
-		--controllerCount;
+		--GlobalConfig.globalConfig.robotControllers;
 		CancelInvoke();
 		soundEmitter.PlayOneShot(destructionSound);
 		foreach(Endeavour e in currentEndeavours) {

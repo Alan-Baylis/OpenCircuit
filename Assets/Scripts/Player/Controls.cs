@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Controls")]
 public class Controls : NetworkBehaviour {
@@ -10,6 +9,7 @@ public class Controls : NetworkBehaviour {
 	private Menu menu;
 
 	public float mouseSensitivity = 1;
+	public float zoomingSensitivity = 0.8f;
 	public bool invertLook = false;
 	public bool enableMousePadHacking = false;
 
@@ -74,8 +74,9 @@ public class Controls : NetworkBehaviour {
 		}
 
 		if (hasControls()) {
-			float hori = Input.GetAxis("Look Horizontal") * mouseSensitivity;
-			float verti = Input.GetAxis("Look Vertical") * mouseSensitivity;
+			float sensitivityMult = mouseSensitivity * (myPlayer.zooming ? zoomingSensitivity : 1);
+			float hori = Input.GetAxis("Look Horizontal") * sensitivityMult;
+			float verti = Input.GetAxis("Look Vertical") * sensitivityMult;
 			if (invertLook)
 				verti = -verti;
 			myPlayer.looker.rotate(hori, verti);

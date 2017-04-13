@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public abstract class AbstractRobotComponent : NetworkBehaviour {
 
@@ -98,7 +97,7 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
 			if (hasCollider) {
 				useAsTemporaryDebris(trans);
 			} else {
-				Destroy(trans.gameObject, lingerTime);
+				Destroy(trans.gameObject);
 			}
 		} else if (hasCollider) {
 			convertToDebris(trans);

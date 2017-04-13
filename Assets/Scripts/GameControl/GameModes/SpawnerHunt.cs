@@ -3,11 +3,15 @@ using UnityEngine.Networking;
 
 public class SpawnerHunt : GameMode {
 
+    public int frozenPlayers;
+    public GameObject freezeLockPrefab;
+
 	private RobotSpawner[] spawners;
 
 	[ServerCallback]
-	public void Start() {
-		spawners = GameObject.FindObjectsOfType<RobotSpawner>();
+	public override void Start() {
+	    base.Start();
+		spawners = FindObjectsOfType<RobotSpawner>();
 	}
 
 	[Server]
@@ -23,6 +27,25 @@ public class SpawnerHunt : GameMode {
 
     [Server]
     public override bool loseConditionMet() {
-        return GlobalConfig.globalConfig.frozenPlayers > 0 && GlobalConfig.globalConfig.frozenPlayers >= ClientController.numPlayers;
+        return frozenPlayers > 0 && frozenPlayers >= ClientController.numPlayers;
+    }
+
+    [Server]
+    public override void onPlayerDeath(Player player) {
+        GameObject newFreezeLock = Instantiate(freezeLockPrefab);
+        newFreezeLock.GetComponent<NetworkParenter>().setParentId(player.netId);
+        FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
+        freezeLockScript.frozenPlayer = player;
+        NetworkServer.Spawn(newFreezeLock);
+        Label label = player.GetComponent<Label>();
+        label.setTag(new Tag(TagEnum.Frozen, 0, label.labelHandle));
+        player.frozen = true;
+        ++frozenPlayers;
+    }
+
+    public override void onPlayerRevive(Player player) {
+        player.frozen = false;
+        player.GetComponent<Label>().clearTag(TagEnum.Frozen);
+        --frozenPlayers;
     }
 }

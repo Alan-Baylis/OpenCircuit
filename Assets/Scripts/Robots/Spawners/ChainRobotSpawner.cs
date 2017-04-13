@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class ChainRobotSpawner : RobotSpawner {
 
@@ -9,7 +8,7 @@ public class ChainRobotSpawner : RobotSpawner {
 
 	public bool playerActivates = false;
 
-	private bool triggered = false;
+	private bool triggered;
 
 	[ServerCallback]
 	void Start() {
@@ -23,9 +22,9 @@ public class ChainRobotSpawner : RobotSpawner {
 		if(this != activeSpawner) {
 			active = false;
 		}
-		if(active && RobotController.controllerCount < getConfig().getMaxRobots()) {
+		if(active && GlobalConfig.globalConfig.robotControllers < GlobalConfig.globalConfig.getMaxRobots()) {
 			timeSinceLastSpawn += Time.deltaTime;
-			if(timeSinceLastSpawn > getConfig().getDelay()) {
+			if(timeSinceLastSpawn > GlobalConfig.globalConfig.getDelay()) {
 				spawnRobot();
 				timeSinceLastSpawn = 0f;
 			}

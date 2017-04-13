@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
 
 public abstract class AbstractVisualSensor : AbstractRobotComponent {
@@ -45,7 +44,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
             //			print (angle);
             if (angle < fieldOfViewAngle * 0.5f) {
                 Physics.Raycast(eye.transform.position, dir, out hit, sightDistance);
-                if (hit.transform == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
+                if (hit.transform == obj || hit.transform.root == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
                     result = true;
 #if UNITY_EDITOR
                     if (getController().debug)
@@ -142,7 +141,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
 
 	private LineRenderer lineRenderer { get {
-			if (this.getController().debug && myLineRenderer == null) {
+			if (getController().debug && myLineRenderer == null) {
 				float sizeValue = 2f * Mathf.PI / theta_scale;
 				size = (int)sizeValue;
 				size++;
@@ -151,8 +150,8 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 					myLineRenderer = getController().gameObject.AddComponent<LineRenderer>();
 				}
 				myLineRenderer.material = new Material(Shader.Find("Particles/Additive"));
-				myLineRenderer.SetWidth(0.02f, 0.02f); //thickness of line
-				myLineRenderer.SetVertexCount(size);
+				myLineRenderer.startWidth = 0.02f; //thickness of line
+				myLineRenderer.numPositions = size;
 			}
 			return myLineRenderer;
 		}
@@ -170,13 +169,13 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
     void Update() {
         if (this.isComponentAttached() && getController().debug) {
             clearCircle();
-            lineRenderer.SetVertexCount(size);
+            lineRenderer.numPositions = size;
             drawCircle();
         }
     }
 
     private void clearCircle() {
-        lineRenderer.SetVertexCount(0);
+        lineRenderer.numPositions = 0;
     }
 
     private void drawCircle() {
@@ -196,13 +195,14 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
     }
 
     protected void drawLine(Vector3 start, Vector3 end, Color color) {
-        LineRenderer line = new GameObject("Line ").AddComponent<LineRenderer>();
-        line.SetWidth(0.025F, 0.025F);
-        line.SetColors(color, color);
-        line.SetVertexCount(2);
-        line.SetPosition(0, start);
-        line.SetPosition(1, end);
-        line.material.shader = (Shader.Find("Unlit/Color"));
+	    GameObject lineHolder = new GameObject("Line ");
+	    lineHolder.transform.parent = transform;
+        LineRenderer line = lineHolder.AddComponent<LineRenderer>();
+	    line.startWidth = 0.025f;
+	    line.startColor = color;//, color);
+	    line.numPositions = 2;
+	    line.SetPositions(new [] {start, end});
+        line.material.shader = Shader.Find("Unlit/Color");
         line.material.color = color;
         lines.Add(line.gameObject);
     }

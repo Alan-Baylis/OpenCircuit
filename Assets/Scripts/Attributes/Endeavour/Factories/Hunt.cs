@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 [System.Serializable]
 public class Hunt : EndeavourFactory {
@@ -10,7 +9,7 @@ public class Hunt : EndeavourFactory {
 		return new HuntAction(this, controller, goals, tags);
 	}
 
-    public static new List<TagRequirement> getRequiredTags() {
+    public new static List<TagRequirement> getRequiredTags() {
         return requiredTags;
     }
 }

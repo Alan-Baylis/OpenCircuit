@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class Health : NetworkBehaviour {
 
@@ -51,7 +50,7 @@ public class Health : NetworkBehaviour {
 	public virtual void hurt(float pain) {
 		suffering += pain;
 		if(soundEmitter.clip != null) {
-			soundEmitter.pitch = UnityEngine.Random.Range(hurtSoundPitch -0.05f, hurtSoundPitch +0.05f);
+			soundEmitter.pitch = Random.Range(hurtSoundPitch -0.05f, hurtSoundPitch +0.05f);
 			soundEmitter.Play();
 		}
 		// play sound or whatever here

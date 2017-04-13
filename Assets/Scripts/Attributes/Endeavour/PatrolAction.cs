@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 
 public class PatrolAction : Endeavour {
 
@@ -10,10 +8,10 @@ public class PatrolAction : Endeavour {
 
 	public PatrolAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap)
 		: base(factory, controller, goals, tagMap) {
-		this.name = "patrol";
+		name = "patrol";
 
 		PatrolTag patrolTag = getTagOfType<PatrolTag>(TagEnum.PatrolRoute);
-		if (patrolTag.getPoints() == null || patrolTag.getPoints().Count == 0) {
+		if (patrolTag.getPointHandles() == null || patrolTag.getPointHandles().Count == 0) {
 			Debug.LogWarning("Patrol route '" + patrolTag.getLabelHandle().label.name + "' has no route points");
 		}
 		routePoints = patrolTag.getPointHandles();

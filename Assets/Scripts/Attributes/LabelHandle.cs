@@ -2,16 +2,31 @@
 using System.Collections.Generic;
 
 public class LabelHandle {
-    public Label label;
-    public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
+	public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
 
-    private Vector3 position;
+	private bool backed;
 
-    public LabelHandle(Vector3 pos, string name) {
+	public Label label {
+		get { return myLabel; }
+		set {
+			myLabel = value;
+			backed = true;
+		}
+	}
+
+	public bool isBacked {
+		get { return backed; }
+	}
+
+	private Vector3 position;
+
+	private Label myLabel;
+
+	public LabelHandle(Vector3 pos, string name) {
         position = pos;
     }
 
-    public string getName() {
+	public string getName() {
         if (label != null) {
             return label.name;
         }

@@ -15,15 +15,13 @@ public class Player : NetworkBehaviour {
 	public float whiteOutDuration;
 	public float blackOutDuration;
     [SyncVar]
-    public bool frozen = false;
+    public bool frozen;
 
 	[HideInInspector]
 	public ClientController controller;
 	[HideInInspector]
 	public bool zooming = false;
 
-    public GameObject freezeLock;
-	
 	private Attack myAttacker;
 	private Grab myGrabber;
 	private Interact myInteractor;
@@ -156,31 +154,12 @@ public class Player : NetworkBehaviour {
 		blackOutTime = Mathf.Max(seconds, blackOutTime);
 	}
 
-    [Server]
-    public void freeze() {
-        frozen = true;
-		Label label = GetComponent<Label>();
-        label.setTag(new Tag(TagEnum.Frozen, 0, label.labelHandle));
-        ++GlobalConfig.globalConfig.frozenPlayers;
-    }
-
-    [Server]
-    public void unfreeze() {
-        frozen = false;
-        GetComponent<Label>().clearTag(TagEnum.Frozen);
-        --GlobalConfig.globalConfig.frozenPlayers;
-    }
-
 	[Server]
 	public void die() {
 		if (!alive)
 			return;
-		GameObject newFreezeLock = GameObject.Instantiate(freezeLock) as GameObject;
-		newFreezeLock.GetComponent<NetworkParenter>().setParentId(netId);
-		FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
-		freezeLockScript.frozenPlayer = this;
-		NetworkServer.Spawn(newFreezeLock);
-		freeze();
+	    GlobalConfig.globalConfig.gamemode.onPlayerDeath(this);
+
 	}
 
 	public void teleport(Vector3 position) {

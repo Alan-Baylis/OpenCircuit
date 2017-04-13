@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 
 public class HuntAction : Endeavour {
 
@@ -37,7 +34,7 @@ public class HuntAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet), typeof(AbstractArms) };
+		return new [] { typeof(HoverJet), typeof(AbstractArms) };
 	}
 
 	public override bool singleExecutor() {

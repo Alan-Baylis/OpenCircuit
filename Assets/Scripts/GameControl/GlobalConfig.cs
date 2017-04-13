@@ -1,55 +1,62 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
+
+	public bool localPlayerDead;
 
     public GameObject playerPrefab;
 
 	[SyncVar]
 	public GlobalConfigData configuration = GlobalConfigData.getDefault();
-	public CentralRobotController centralRobotController;
-    public int frozenPlayers = 0;
 
     [SyncVar]
     public bool gameStarted;
 
-	private GameMode gamemode = null;
+	public GameMode gamemode;
+	public CameraManager cameraManager;
 
-    [ServerCallback]
+    public int robotControllers;
+
     void Start() {
+        myGlobalConfig = this;
+        configuration = Menu.menu.serverConfig;
+        gamemode = getGameMode(configuration.gameMode);
+        gamemode.initialize();
+        gamemode.enabled = true;
+
         gameStarted = true;
-        GameMode.constructGameMode(gameObject, configuration.gameMode);
     }
 
-    private static GlobalConfig myGlobalConfig = null;
+    private static GlobalConfig myGlobalConfig;
     public static GlobalConfig globalConfig {
         get {
             return myGlobalConfig;
         }
     }
 
-	public GlobalConfig() {
-		myGlobalConfig = this;
-	}
-
     [Server]
     public void winGame() {
+	    //NetworkController.networkController.serverClearPlayers();
         RpcWinGame();
     }
 
     [Server]
     public void loseGame() {
-        NetworkController.networkController.serverClearPlayers();
+        //NetworkController.networkController.serverClearPlayers();
         RpcLoseGame();
     }
 
     [ClientRpc]
     private void RpcLoseGame() {
-        Menu.menu.lose();
+		clearLocalPlayers();
+	    Menu.menu.lose();
     }
 
     [ClientRpc]
     private void RpcWinGame() {
+	    clearLocalPlayers();
         Menu.menu.win();
     }
 
@@ -64,16 +71,35 @@ public class GlobalConfig : NetworkBehaviour {
 		return 1f/(NetworkServer.connections.Count * configuration.spawnRateIncreasePerPlayer + configuration.robotSpawnRatePerSecond); 
 	}
 
-	[Server]
-	public CentralRobotController getCRC() {
-		return centralRobotController;
-	}
-
     [Server]
     public void spawnPlayerForConnection(NetworkConnection connection) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
             connection);
+    }
+
+	private void clearLocalPlayers() {
+		List<short> playerIds = new List<short>();
+		foreach (var player in ClientScene.localPlayers) {
+			playerIds.Add(player.playerControllerId);
+		}
+		foreach (short Id in playerIds) {
+			ClientScene.RemovePlayer(Id);
+		}
+	}
+
+    private GameMode getGameMode(GameMode.GameModes gameType) {
+        //TODO: Do this better
+        GameMode mode = null;
+        switch (gameType) {
+            case GameMode.GameModes.BASES:
+                mode = GetComponent<Bases>();
+                break;
+            case GameMode.GameModes.SPAWNER_HUNT:
+                mode = GetComponent<SpawnerHunt>();
+                break;
+        }
+        return mode;
     }
 }
 
