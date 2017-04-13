@@ -86,6 +86,8 @@ public class GlobalConfig : NetworkBehaviour {
 		foreach (short Id in playerIds) {
 			ClientScene.RemovePlayer(Id);
 		}
+
+		cameraManager.switchCamera();
 	}
 
     private GameMode getGameMode(GameMode.GameModes gameType) {

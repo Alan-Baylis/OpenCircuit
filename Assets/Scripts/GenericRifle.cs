@@ -12,6 +12,7 @@ public class GenericRifle : NetworkBehaviour {
     public float impulse = 1;
     public float damage = 10;
     public float fireDelay = 0.1f;
+	public float soundExpirationTime = 10f;
 
     public Vector3 fireEffectLocation;
     public EffectSpec fireEffect;
@@ -202,7 +203,7 @@ public class GenericRifle : NetworkBehaviour {
         //float volume = gunshotSoundEmitter.volume;
         if (Time.time - lastFiredTime > .5f || audioLabel == null) {
             audioLabel = new LabelHandle(transform.position, "gunshots");
-            audioLabel.addTag(new Tag(TagEnum.Sound, 0, audioLabel));
+            audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
             audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 
             audioLabel.setPosition(transform.position);

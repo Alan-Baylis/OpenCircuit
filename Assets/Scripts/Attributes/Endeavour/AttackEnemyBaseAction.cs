@@ -88,7 +88,7 @@ public class AttackEnemyBaseAction : Endeavour {
 
 	protected override float getCost() {
 		int index = getNearest(controller.transform.position);
-		return jet.calculatePathCost(routePoints[index].label) + getRemainingPathLength(index);
+		return Vector3.Distance(controller.transform.position, routePoints[index].getPosition()) + getRemainingPathLength(index);
 	}
 
 	private float getRemainingPathLength(int nodeIndex) {

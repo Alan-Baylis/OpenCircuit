@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class MentalModel {
 
-	private Dictionary<LabelHandle, SensoryInfo> targetSightings = new Dictionary<LabelHandle, SensoryInfo>();
-	private Dictionary<LabelHandle, SensoryInfo> staleTargetSightings = new Dictionary<LabelHandle, SensoryInfo>();
+	public Dictionary<LabelHandle, SensoryInfo> targetSightings = new Dictionary<LabelHandle, SensoryInfo>();
+	public Dictionary<LabelHandle, SensoryInfo> staleTargetSightings = new Dictionary<LabelHandle, SensoryInfo>();
 	private Dictionary<TagEnum, List<Tag>> knownTags = new Dictionary<TagEnum, List<Tag>>();
 	private Dictionary<TagEnum, List<Tag>> previouslyKnownTags = new Dictionary<TagEnum, List<Tag>>();
 
@@ -24,6 +24,7 @@ public class MentalModel {
                 targetSightings.Add(target, info);
 				staleTargetSightings.Remove(target);
 				info.addSighting();
+
 			} else {
 				targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, target.getTags(), 1);
 			}
@@ -41,10 +42,12 @@ public class MentalModel {
 			if (info.getSightings() < 1) {
                 unregisterTags(target);
 				targetSightings.Remove(target);
-				staleTargetSightings.Add(target, info);
+
 				notifyListenersTargetLost (target);
-				if (!target.isBacked || target.label != null)
+				if (target.label != null) {
+					staleTargetSightings.Add(target, info);
 					notifyListenersTargetFound(target);
+				}
 			}
 			info.updateInfo(position, System.DateTime.Now, direction);
 		} else {

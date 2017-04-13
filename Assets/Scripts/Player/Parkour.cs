@@ -58,6 +58,7 @@ public class Parkour : MovementController {
 	public AudioClip[] footsteps;
 	public float minimumFoostepOccurence;
 	public float foostepSpeedScale;
+	public float footstepSoundExpirationTime = 10f;
 	public float fallHurtSpeed = 10;
 	public float fallDeathSpeed = 15;
 
@@ -184,7 +185,7 @@ public class Parkour : MovementController {
 				float volume = 0.8f -(0.8f / (1 + currentSpeed /100));
 				playFootstep(volume);
 				LabelHandle audioLabel = new LabelHandle(transform.position, "footsteps");
-				audioLabel.addTag(new Tag(TagEnum.Sound, volume, audioLabel));
+				audioLabel.addTag(new SoundTag(TagEnum.Sound, volume, audioLabel, Time.time, footstepSoundExpirationTime));
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f, audioLabel));
 				AudioBroadcaster.broadcast(audioLabel, volume);
 				player.inventory.doStep(volume);
