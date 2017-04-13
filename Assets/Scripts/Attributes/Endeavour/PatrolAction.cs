@@ -18,14 +18,12 @@ public class PatrolAction : Endeavour {
 	}
 
 	protected override void onExecute() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		currentDestination = getNearest(controller.transform.position);
 		jet.setTarget(routePoints[currentDestination], false);
 	}
 
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals (HoverJet.TARGET_REACHED)) {
-			HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 			if (routePoints[currentDestination] == message.Target) {
 				++currentDestination;
 				if (currentDestination == routePoints.Count) {
@@ -68,7 +66,7 @@ public class PatrolAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
 	}
 
 	public override bool singleExecutor() {
