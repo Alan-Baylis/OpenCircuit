@@ -5,6 +5,7 @@ public class AssaultRifle : AbstractGun {
 
     public AudioClip[] fireSounds;
 
+	public float soundExpirationTime = 10f;
 	public float inaccuracy = 0.1f;
 	public float range = 1000;
 	public float damage = 10;
@@ -184,7 +185,7 @@ public class AssaultRifle : AbstractGun {
 		//float volume = gunshotSoundEmitter.volume;
 		if (Time.time - lastFiredTime > .5f || audioLabel == null) {
 			audioLabel = new LabelHandle(transform.position, "gunshots");
-			audioLabel.addTag(new Tag(TagEnum.Sound, 0, audioLabel));
+			audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
 			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 
 			audioLabel.setPosition(transform.position);

@@ -13,6 +13,8 @@ public class Tag : InspectorListElement {
 		switch (type) {
 			case TagEnum.PatrolRoute:
 				return new PatrolTag(0, null);
+			case TagEnum.AttackRoute:
+				return new AttackRoute(0, null);
 			default:
 				return new Tag(type, 0, null);
 		}
@@ -87,7 +89,18 @@ public class Tag : InspectorListElement {
     }
 
 	public virtual void doGUI(GameObject parent) {
+		UnityEditor.EditorGUILayout.LabelField("Executors: " + getAllExecutions());
 		severity = UnityEditor.EditorGUILayout.FloatField("Severity: ", severity);
+	}
+
+	private int getAllExecutions() {
+		int result = 0;
+		if (executors != null) {
+			foreach (HashSet<RobotController> hashSet in executors.Values) {
+				result += hashSet.Count;
+			}
+		}
+		return result;
 	}
 #endif
 }

@@ -2,6 +2,9 @@
 
 public class Team : NetworkBehaviour {
 
+	public bool autoInitializeTeam;
+	public int teamIndex;
+
     [SyncVar]
     public TeamData team;
 
@@ -10,6 +13,13 @@ public class Team : NetworkBehaviour {
 
     [ServerCallback]
     void Start() {
+	    if (autoInitializeTeam) {
+		    TeamGameMode teamGameMode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
+		    if (teamGameMode != null) {
+			    team = teamGameMode.teams[teamIndex];
+		    }
+	    }
+
         Label label = GetComponent<Label>();
         label.setTag(new Tag(TagEnum.Team, 0, label.labelHandle));
     }

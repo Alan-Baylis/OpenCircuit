@@ -1,56 +1,14 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-using UnityEditor;
 
 [System.Serializable]
-public class PatrolTag : Tag {
+public class PatrolTag : AbstractRouteTag {
 
-    [System.NonSerialized]
-    public List<Label> points;
-
-	[System.NonSerialized]
-	private List<LabelHandle> pointHandles;
-
-    private bool status;
-    private int size = 0;
 
     public PatrolTag (float severity, LabelHandle labelHandle) : base(TagEnum.PatrolRoute, severity, labelHandle) {
 
     }
 
-    public List<Label> getPoints(GameObject parent) {
-	    if (points == null) {
-		    points = new List<Label>();
-		    for (int i = 0; i < parent.transform.childCount; ++i) {
-			    Label childLabel = parent.transform.GetChild(i).GetComponent<Label>();
-			    points.Add(childLabel);
-		    }
-	    }
-	    return points;
-    }
-
-    public List<LabelHandle> getPointHandles() {
-        if (pointHandles == null) {
-            pointHandles = new List<LabelHandle>();
-            foreach (Label label in getPoints(getLabelHandle().label.gameObject)) {
-                pointHandles.Add(label.labelHandle);
-            }
-        }
-        return pointHandles;
-    }
-
 #if UNITY_EDITOR
-    public override void doGUI(GameObject parent) {
-        base.doGUI(parent);
-        status = EditorGUILayout.Foldout(status, "Points");
-
-        if (status) {
-            for (int i = 0; i < getPoints(parent).Count; i++) {
-                EditorGUILayout.LabelField(getPoints(parent)[i].name);
-            }
-        }
-    }
-
     public override void drawGizmo(Label label) {
         //Color COLOR_ONE = Color.black;
         //Color COLOR_TWO = Color.green;
