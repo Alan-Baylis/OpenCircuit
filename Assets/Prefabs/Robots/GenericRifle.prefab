@@ -1789,9 +1789,10 @@ MonoBehaviour:
   movementInaccuracySoftness: 10
   baseInaccuracy: 0.005
   range: 1000
-  impulse: 100
+  impulse: 50
   damage: 1
   fireDelay: 0.1
+  soundExpirationTime: 10
   fireEffectLocation: {x: 0, y: 0, z: -0.4}
   fireEffect:
     prefab: {fileID: 122320, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
