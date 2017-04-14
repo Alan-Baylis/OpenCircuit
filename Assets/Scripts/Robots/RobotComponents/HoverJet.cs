@@ -92,8 +92,9 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	void Update () {
-		float actualSpeed = regularSpeed * speedMultipler;
-		if(nav.speed < actualSpeed) {
+	    double startTime = Time.realtimeSinceStartup;
+	    float actualSpeed = regularSpeed * speedMultipler;
+	    if(nav.speed < actualSpeed) {
 			nav.speed += speedRegenRate * Time.deltaTime;
 			if(nav.speed > actualSpeed) {
 				nav.speed = actualSpeed;
@@ -101,20 +102,22 @@ public class HoverJet : AbstractRobotComponent {
 		} else if (nav.speed > actualSpeed) {
 			nav.speed = actualSpeed;
         }
-		
-		if (nav.baseOffset < regularHeight) {
+
+	    if (nav.baseOffset < regularHeight) {
 			nav.baseOffset = nav.baseOffset + heightRegenRate * Time.deltaTime;
 
 			if (nav.baseOffset > regularHeight) {
 				nav.baseOffset = regularHeight;
 			}
 		}
-		if (powerSource == null) {
+	    if (powerSource == null) {
 			Debug.LogWarning(getController().name + " is missing a power source.");
 			return;
 		}
-		goToTarget();
-		nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
+	    goToTarget();
+	    nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
+	    double endTime = Time.realtimeSinceStartup;
+	    getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float calculatePathCost(Label label) {

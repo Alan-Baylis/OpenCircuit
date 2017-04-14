@@ -10,9 +10,12 @@ public class AudioSensor : AbstractRobotComponent {
     public static HashSet<AudioSensor> sensors = new HashSet<AudioSensor>();
 
 	public void processAudioEvent(LabelHandle soundLabelHandle) {
-		if(hasPower) {
+	    double startTime = Time.realtimeSinceStartup;
+	    if(hasPower) {
 			getController().sightingFound(soundLabelHandle, soundLabelHandle.getPosition(), null);
 		}
+	    double endTime = Time.realtimeSinceStartup;
+	    getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float getRange() {

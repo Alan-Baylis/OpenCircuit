@@ -96,6 +96,16 @@ public class Bases : TeamGameMode {
 		return teamIndex < 0 || teamIndex > centralRobotControllers.Count ? null : centralRobotControllers[teamIndex];
 	}
 
+    public double getRobotTiming()
+    {
+        double robotAITime = 0f;
+        foreach (CentralRobotController controller in centralRobotControllers)
+        {
+            robotAITime += controller.robotExecutionTimer.getMeasuredTimePerSecond();
+        }
+        return robotAITime;
+    }
+
 	[Server]
 	private void initializeCRCs() {
 		foreach (TeamData teamData in teams) {

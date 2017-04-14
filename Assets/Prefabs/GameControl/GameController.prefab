@@ -48,7 +48,7 @@ MonoBehaviour:
   localPlayerDead: 0
   playerPrefab: {fileID: 175040, guid: 7ecf7c856d9af924086760e0e85174a4, type: 2}
   configuration:
-    robotsPerPlayer: 3
+    robotsPerPlayer: 10
     robotSpawnRatePerSecond: 1
     spawnRateIncreasePerPlayer: 0.1
     gameMode: 1

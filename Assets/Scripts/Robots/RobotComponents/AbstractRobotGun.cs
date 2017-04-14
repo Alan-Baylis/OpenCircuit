@@ -23,12 +23,14 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 
     [ServerCallback]
     void FixedUpdate() {
-
+        double startTime = Time.realtimeSinceStartup;
         if (currentTarget != null) {
             trackTarget(currentTarget.getPosition());
         } else {
             trackTarget(getRestPosition());
         }
+        double endTime = Time.realtimeSinceStartup;
+        getController().getExecutionTimer().addTime(endTime-startTime);
     }
 
     public override void release() {

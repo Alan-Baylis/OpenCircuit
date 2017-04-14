@@ -64,7 +64,9 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
         return result;
     }
 
-    private void lookAround() {
+    private void lookAround()
+    {
+        double startTime = Time.realtimeSinceStartup;
 #if UNITY_EDITOR
         clearLines();
 #endif
@@ -78,12 +80,12 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
             bool targetInView = hasPower && canSee(label.transform);
             if (targetInView) {
                 if (!targetMap.ContainsKey(label)) {
-                    Rigidbody labelRB = label.GetComponent<Rigidbody>();
-                    if (labelRB != null) {
-                        targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, label.getTags(), 0);
-                    } else {
+//                    Rigidbody labelRB = label.GetComponent<Rigidbody>();
+//                    if (labelRB != null) {
+//                        targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, label.getTags(), 0);
+//                    } else {
                         targetMap[label] = new SensoryInfo(label.transform.position, null, System.DateTime.Now, label.getTags(), 0);
-                    }
+//                    }
                 }
                 if (targetMap[label].getSightings() == 0) {
                     registerSightingFound(label);
@@ -93,6 +95,8 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
                 clearSighting(label);
             }
         }
+        double endTime = Time.realtimeSinceStartup;
+        getController().getExecutionTimer().addTime(endTime-startTime);
     }
 
     private void registerSightingFound(Label label) {
