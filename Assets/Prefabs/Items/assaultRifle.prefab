@@ -1857,10 +1857,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 8300737604f6aa242958c1a2e7c39779, type: 3}
   - {fileID: 8300000, guid: 9023a5ba9be23b54499fbf95e5e2caca, type: 3}
   - {fileID: 8300000, guid: 497b73a0c8d6291469ce5a2951353971, type: 3}
+  soundExpirationTime: 10
   inaccuracy: 0.1
   range: 1000
   damage: 5
-  impulse: 200
+  impulse: 75
   hitEffect:
     prefab: {fileID: 196292, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
     lifetime: 30
