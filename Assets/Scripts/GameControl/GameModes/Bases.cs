@@ -12,18 +12,35 @@ public class Bases : TeamGameMode {
 
 	private List<CentralRobotController> centralRobotControllers = new List<CentralRobotController>();
 
+	private AbstractPlayerSpawner myPlayerSpawner;
+
+	private AbstractPlayerSpawner playerSpawner {
+		get {
+			if (myPlayerSpawner == null) {
+				myPlayerSpawner = FindObjectOfType<AbstractPlayerSpawner>();
+			}
+			return myPlayerSpawner;
+		}
+	}
+
 	[ServerCallback]
     public override void Start() {
         base.Start();
         spawners = FindObjectsOfType<RobotSpawner>();
+		foreach (RobotSpawner spawner in spawners) {
+			Label spawnerLabel = spawner.GetComponent<Label>();
+			spawnerLabel.setTag(new Tag(TagEnum.Defendable, 0, spawnerLabel.labelHandle));
+			getCRC(spawner.teamIndex).sightingFound(spawnerLabel.labelHandle, spawner.transform.position, null);
+		}
     }
 
     [ServerCallback]
     protected override void Update() {
         base.Update();
-        for (int i = 0; i < respawnJobs.Count; ++i) {
+        for (int i = respawnJobs.Count - 1; i >= 0; --i) {
             if (respawnJobs[i].timeRemaining <= 0f) {
-                FindObjectOfType<AbstractPlayerSpawner>().respawnPlayer(respawnJobs[i].controller);
+	            playerSpawner.respawnPlayer(respawnJobs[i].controller);
+	            respawnJobs.RemoveAt(i);
             } else {
                 respawnJobs[i] = new RespawnJob(respawnJobs[i].controller, respawnJobs[i].timeRemaining - Time.deltaTime);
             }

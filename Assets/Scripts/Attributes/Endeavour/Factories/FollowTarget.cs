@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEditor;
 
 [System.Serializable]
 public class FollowTarget : EndeavourFactory {
@@ -18,11 +17,13 @@ public class FollowTarget : EndeavourFactory {
 		return requiredTags; 
 	}
 
+#if UNITY_EDITOR
 	public override void doGUI() {
-		safetyMargin = EditorGUILayout.DelayedFloatField("Safety Margin", safetyMargin);
-		bonus = EditorGUILayout.DelayedFloatField("Bonus", bonus);
-		penalty = EditorGUILayout.DelayedFloatField("Penalty", penalty);
-		EditorGUILayout.Separator();
+		safetyMargin = UnityEditor.EditorGUILayout.DelayedFloatField("Safety Margin", safetyMargin);
+		bonus = UnityEditor.EditorGUILayout.DelayedFloatField("Bonus", bonus);
+		penalty = UnityEditor.EditorGUILayout.DelayedFloatField("Penalty", penalty);
+		UnityEditor.EditorGUILayout.Separator();
 		base.doGUI();
 	}
+#endif
 }

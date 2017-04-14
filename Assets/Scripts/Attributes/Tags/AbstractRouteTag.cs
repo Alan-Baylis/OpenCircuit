@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
@@ -40,11 +39,11 @@ public class AbstractRouteTag : Tag {
 #if UNITY_EDITOR
 	public override void doGUI(GameObject parent) {
 		base.doGUI(parent);
-		status = EditorGUILayout.Foldout(status, "Points");
+		status = UnityEditor.EditorGUILayout.Foldout(status, "Points");
 
 		if (status) {
 			for (int i = 0; i < getPoints(parent).Count; i++) {
-				EditorGUILayout.LabelField(getPoints(parent)[i].name);
+				UnityEditor.EditorGUILayout.LabelField(getPoints(parent)[i].name);
 			}
 		}
 	}

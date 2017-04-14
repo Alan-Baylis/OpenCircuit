@@ -68,6 +68,8 @@ public class LabelHandle {
 		tagMap.Add(tag.type, tag);
 	}
 
+
+
 	public Vector3 getPosition() {
 		if(label != null) {
 			return label.transform.position;
