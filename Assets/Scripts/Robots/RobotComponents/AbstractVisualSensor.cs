@@ -80,12 +80,12 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
             bool targetInView = hasPower && canSee(label.transform);
             if (targetInView) {
                 if (!targetMap.ContainsKey(label)) {
-//                    Rigidbody labelRB = label.GetComponent<Rigidbody>();
-//                    if (labelRB != null) {
-//                        targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, label.getTags(), 0);
-//                    } else {
+                    Rigidbody labelRB = label.GetComponent<Rigidbody>();
+                    if (labelRB != null) {
+                        targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, label.getTags(), 0);
+                    } else {
                         targetMap[label] = new SensoryInfo(label.transform.position, null, System.DateTime.Now, label.getTags(), 0);
-//                    }
+                    }
                 }
                 if (targetMap[label].getSightings() == 0) {
                     registerSightingFound(label);
