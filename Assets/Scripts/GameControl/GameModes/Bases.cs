@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class Bases : TeamGameMode {
 
+	public const float PLAYER_ROBOT_PENALTY = 1.5f;
+
     public float respawnDelay = 3f;
 	public CentralRobotController centralRobotControllerPrefab;
 
 	private RobotSpawner[] spawners;
 	private List<RespawnJob> respawnJobs = new List<RespawnJob>();
 
-	private List<CentralRobotController> centralRobotControllers = new List<CentralRobotController>();
+	private Dictionary<int, CentralRobotController> centralRobotControllers = new Dictionary<int, CentralRobotController>();
 
 	private AbstractPlayerSpawner myPlayerSpawner;
 
@@ -30,7 +32,7 @@ public class Bases : TeamGameMode {
 		foreach (RobotSpawner spawner in spawners) {
 			Label spawnerLabel = spawner.GetComponent<Label>();
 			spawnerLabel.setTag(new Tag(TagEnum.Defendable, 0, spawnerLabel.labelHandle));
-			getCRC(spawner.teamIndex).sightingFound(spawnerLabel.labelHandle, spawner.transform.position, null);
+			getCRC(spawner.teamId.id).sightingFound(spawnerLabel.labelHandle, spawner.transform.position, null);
 		}
     }
 
@@ -48,8 +50,9 @@ public class Bases : TeamGameMode {
     }
 
     public override void initialize() {
-        localTeam = teams[0];
-		if (isServer) {
+	    base.initialize();
+        localTeamId = 0;
+	    if (isServer) {
 			initializeCRCs();
 		}
 	}
@@ -60,7 +63,7 @@ public class Bases : TeamGameMode {
             if (spawner == null) {
                 continue;
             }
-            if (spawner.team.Id != localTeam.Id) {
+            if (spawner.teamId.id != localTeamId) {
                 return false;
             }
         }
@@ -73,7 +76,7 @@ public class Bases : TeamGameMode {
             if (spawner == null) {
                 continue;
             }
-            if (spawner.team.Id == localTeam.Id) {
+            if (spawner.teamId.id == localTeamId) {
                 return false;
             }
         }
@@ -96,16 +99,26 @@ public class Bases : TeamGameMode {
 		return teamIndex < 0 || teamIndex > centralRobotControllers.Count ? null : centralRobotControllers[teamIndex];
 	}
 
+	public override int getMaxRobots(int teamIndex) {
+		return (int)(GlobalConfig.globalConfig.configuration.robotsPerPlayer - getJoinedPlayerCount(teamIndex) *PLAYER_ROBOT_PENALTY);
+	}
+
+	public override int getJoinedPlayerCount(int teamIndex) {
+		if (teamIndex == 0)
+			return GlobalConfig.globalConfig.clients.Count;
+		return 0;
+	}
+
 	[Server]
 	private void initializeCRCs() {
-		foreach (TeamData teamData in teams) {
-			centralRobotControllers.Add(Instantiate(centralRobotControllerPrefab, Vector3.zero, Quaternion.identity));
+		foreach (Team team in teams.Values) {
+			centralRobotControllers.Add(team.id, Instantiate(centralRobotControllerPrefab, Vector3.zero, Quaternion.identity));
 		}
 	}
 
     private struct RespawnJob {
-        public ClientController controller;
-        public float timeRemaining;
+        public readonly ClientController controller;
+        public readonly float timeRemaining;
 
         public RespawnJob(ClientController playerController, float time) {
             controller = playerController;

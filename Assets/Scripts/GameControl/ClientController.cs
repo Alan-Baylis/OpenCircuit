@@ -7,7 +7,7 @@ public class ClientController : NetworkBehaviour {
 	public GameObject playerCamPrefab;
 	public GameObject playerLegsPrefab;
 	public GameObject playerArmsPrefab;
-    public static int numPlayers = 0;
+    public static int numPlayers;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
@@ -20,12 +20,13 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientCallback]
 	void Start() {
+		GlobalConfig.globalConfig.clients.Add(this);
 		if (player != null) {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
 
-		AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
 		if(isLocalPlayer) {
+			AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
 			if (spawner != null) {
 				CmdSpawnPlayerAt(spawner.nextSpawnPos());
 			} else {
@@ -39,6 +40,11 @@ public class ClientController : NetworkBehaviour {
 		if(isLocalPlayer && isDead && Input.GetButtonDown("Use")) {
 			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
+	}
+
+	[ClientCallback]
+	public void OnDestroy() {
+		GlobalConfig.globalConfig.clients.Remove(this);
 	}
 
 	//anyone can call!!
@@ -75,8 +81,8 @@ public class ClientController : NetworkBehaviour {
 		newPlayer.name = "player" + Random.Range(1, 20);
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
 	    if (mode != null) {
-	        Team team = newPlayer.GetComponent<Team>();
-	        team.team = mode.localTeam;
+	        TeamId team = newPlayer.GetComponent<TeamId>();
+	        team.id = mode.localTeamId;
 	        team.enabled = true;
 	    }
 

@@ -55,7 +55,6 @@ MonoBehaviour:
   gameStarted: 0
   gamemode: {fileID: 0}
   cameraManager: {fileID: 114762472885982036}
-  robotControllers: 0
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -148,14 +147,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935f37758805a6b48aa4e2b2dc7259a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localTeam:
-    Id: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
-  teams:
-  - Id: 0
-    color: {r: 0, g: 0, b: 0.47843137, a: 1}
-  - Id: 1
-    color: {r: 0.47794116, g: 0, b: 0, a: 1}
+  localTeamId: 0
+  teamConfig:
+  - color: {r: 0, g: 0, b: 0.49803922, a: 1}
+  - color: {r: 0.49803922, g: 0, b: 0, a: 1}
   respawnDelay: 3
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}

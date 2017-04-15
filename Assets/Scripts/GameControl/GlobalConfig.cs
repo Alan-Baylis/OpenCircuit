@@ -17,7 +17,17 @@ public class GlobalConfig : NetworkBehaviour {
 	public GameMode gamemode;
 	public CameraManager cameraManager;
 
-    public int robotControllers;
+    private int robotControllers;
+
+	public HashSet<ClientController> clients = new HashSet<ClientController>();
+
+	public TeamGameMode teamGameMode {
+		get {
+			if (!(gamemode is TeamGameMode))
+				Debug.LogError("Unsupported game mode.  Must be a team game mode.");
+			return gamemode as TeamGameMode;
+		}
+	}
 
     void Start() {
         myGlobalConfig = this;
@@ -77,6 +87,24 @@ public class GlobalConfig : NetworkBehaviour {
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
             connection);
     }
+
+	public int getRobotCount() {
+		return robotControllers;
+	}
+
+	public void addRobotCount(RobotController robotController) {
+		++robotControllers;
+		if (gamemode is TeamGameMode) {
+			++teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
+		}
+	}
+
+	public void subtractRobotCount(RobotController robotController) {
+		--robotControllers;
+		if (gamemode is TeamGameMode) {
+			--teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
+		}
+	}
 
 	private void clearLocalPlayers() {
 		List<short> playerIds = new List<short>();

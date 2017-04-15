@@ -291,11 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4f62c397a0e094ebf60b68c0806bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoInitializeTeam: 0
-  teamIndex: 0
-  team:
-    Id: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
+  id: 0
 --- !u!114 &114826005961985978
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -374,11 +370,7 @@ MonoBehaviour:
   - {fileID: 128374, guid: 513924346bbb5814c8b8b5ea37c37576, type: 2}
   - {fileID: 1000012390531196, guid: 4058d0703e17c9c4fa0723e7936363ed, type: 2}
   - {fileID: 1482100421143698, guid: 41101aa4c0e18c349857c197c7fc2cfd, type: 2}
-  teamIndex: 0
   spawnPos: {x: 0, y: 0, z: 2.5}
-  team:
-    Id: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!135 &135720964286892150
 SphereCollider:
   m_ObjectHideFlags: 1

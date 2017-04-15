@@ -8,7 +8,7 @@ public class BuildTool : ContextItem {
 	public GameObject structureBase;
 
 	public override void beginInvoke(Inventory invoker) {
-		Team team = holder.GetComponent<Team>();
+		TeamId team = holder.GetComponent<TeamId>();
 		if (team != null && team.enabled && GlobalConfig.globalConfig.gamemode is Bases) {
 			Transform cam = holder.getPlayer().cam.transform;
 
@@ -22,8 +22,8 @@ public class BuildTool : ContextItem {
 
 	[Command]
 	private void CmdSpawnTower(Vector3 location) {
-		Team team = holder.GetComponent<Team>();
-		CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.team.Id);
+		TeamId team = holder.GetComponent<TeamId>();
+		CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.id);
 		Label towerBase =
 			Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();
 		crc.sightingFound(towerBase.labelHandle, towerBase.transform.position,

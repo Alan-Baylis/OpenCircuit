@@ -1,43 +1,22 @@
-﻿using UnityEngine.Networking;
+﻿using UnityEngine;
 
-public class Team : NetworkBehaviour {
+public class Team {
 
-	public bool autoInitializeTeam;
-	public int teamIndex;
+	public readonly int id;
+	public int robotCount;
+	public Config config;
 
-    [SyncVar]
-    public TeamData team;
-
-	[SyncVar(hook = "isEnabledSet")]
-	private bool isEnabled;
-
-    [ServerCallback]
-    void Start() {
-	    if (autoInitializeTeam) {
-		    TeamGameMode teamGameMode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
-		    if (teamGameMode != null) {
-			    team = teamGameMode.teams[teamIndex];
-		    }
-	    }
-
-        Label label = GetComponent<Label>();
-        label.setTag(new Tag(TagEnum.Team, 0, label.labelHandle));
-    }
-
-	[ServerCallback]
-	void OnEnable() {
-		isEnabled = true;
+	public Team(int id, Config config) {
+		this.id = id;
+		this.config = config;
 	}
 
-	[ServerCallback]
-	void OnDisable() {
-		isEnabled = false;
-	}
+	[System.Serializable]
+	public struct Config {
+		public Color color;
 
-	[Client]
-	private void isEnabledSet(bool enabled) {
-		isEnabled = enabled;
-		this.enabled = enabled;
-
+		public Config(Color color) {
+			this.color = color;
+		}
 	}
 }

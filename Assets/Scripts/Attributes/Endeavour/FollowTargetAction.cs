@@ -24,7 +24,7 @@ public class FollowTargetAction : Endeavour {
 	public override bool isStale() {
 		return !controller.knowsTarget(target.getLabelHandle())
 		       || target.getLabelHandle().label == null
-		       || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id
+		       || target.getLabelHandle().label.GetComponent<TeamId>().id == controller.GetComponent<TeamId>().id
 		       || !target.getLabelHandle().hasTag(TagEnum.Health);
 	}
 
