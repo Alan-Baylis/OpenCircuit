@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bases : TeamGameMode {
 
-    public float PLAYER_ROBOT_PENALTY = 1.5f;
+    public float playerRobotPenalty = 1.5f;
     public float respawnDelay = 3f;
 	public CentralRobotController centralRobotControllerPrefab;
 
@@ -109,7 +109,7 @@ public class Bases : TeamGameMode {
 	}
 
 	public override int getMaxRobots(int teamIndex) {
-		return (int)(GlobalConfig.globalConfig.configuration.robotsPerPlayer - getJoinedPlayerCount(teamIndex) *PLAYER_ROBOT_PENALTY);
+		return (int)(GlobalConfig.globalConfig.configuration.robotsPerPlayer - getJoinedPlayerCount(teamIndex) *playerRobotPenalty);
 	}
 
 	public override int getJoinedPlayerCount(int teamIndex) {
