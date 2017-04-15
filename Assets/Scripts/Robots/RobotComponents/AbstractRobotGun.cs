@@ -3,42 +3,44 @@ using UnityEngine.Networking;
 
 public abstract class AbstractRobotGun : AbstractRobotComponent {
 
-    public GenericRifle rifle;
+	public GenericRifle rifle;
 
-    protected LabelHandle currentTarget;
+	protected LabelHandle currentTarget;
 
 	public LabelHandle target {
 		get { return currentTarget; }
 	}
 
-    // Update is called once per frame
-    [ServerCallback]
-    void Update () {
-        if (currentTarget != null && rifle.targetInRange(currentTarget.getPosition())) {
-            rifle.firing = true;
-        } else {
-            rifle.firing = false;
-        }
-    }
+	// Update is called once per frame
+	[ServerCallback]
+	void Update () {
+		if (currentTarget != null && rifle.targetInRange(currentTarget.getPosition())) {
+			rifle.firing = true;
+		} else {
+			rifle.firing = false;
+		}
+	}
 
-    [ServerCallback]
-    void FixedUpdate() {
+	[ServerCallback]
+	void FixedUpdate() {
+		double startTime = Time.realtimeSinceStartup;
+		if (currentTarget != null) {
+			trackTarget(currentTarget.getPosition());
+		} else {
+			trackTarget(getRestPosition());
+		}
+		double endTime = Time.realtimeSinceStartup;
+		getController().getExecutionTimer().addTime(endTime-startTime);
+	}
 
-        if (currentTarget != null) {
-            trackTarget(currentTarget.getPosition());
-        } else {
-            trackTarget(getRestPosition());
-        }
-    }
+	public override void release() {
+		currentTarget = null;
+		rifle.firing = false;
+	}
 
-    public override void release() {
-        currentTarget = null;
-        rifle.firing = false;
-    }
-
-    public void setTarget(LabelHandle handle) {
-        currentTarget = handle;
-    }
+	public void setTarget(LabelHandle handle) {
+		currentTarget = handle;
+	}
 
 	protected virtual Vector3 getRestPosition() {
 		return transform.position + getController().transform.forward;
@@ -58,10 +60,10 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 		return result;
 	}
 
-    public override System.Type getComponentArchetype() {
-        return typeof(AbstractRobotGun);
-    }
+	public override System.Type getComponentArchetype() {
+		return typeof(AbstractRobotGun);
+	}
 
-    protected abstract void trackTarget(Vector3 pos);
+	protected abstract void trackTarget(Vector3 pos);
 
 }
