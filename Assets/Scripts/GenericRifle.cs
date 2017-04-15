@@ -60,12 +60,10 @@ public class GenericRifle : NetworkBehaviour {
         lastFiredTime = Time.time;
         //transform.position -= transform.TransformVector(recoilAnimationDistance);
 
-        effectsController.doEffects();
-	    playFireSound();
-
+        doFireEffects();
     }
 
-    public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
+	public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
         Vector3 randomAngle = Random.onUnitSphere;
         float angle = Vector3.Angle(direction, randomAngle) /360;
         return Vector3.RotateTowards(direction, Random.onUnitSphere, Mathf.PI *angle *inaccuracy, 0);
@@ -149,8 +147,7 @@ public class GenericRifle : NetworkBehaviour {
 
     [ClientRpc]
     protected void RpcCreateFireEffects() {
-        effectsController.doEffects();
-	    playFireSound();
+        doFireEffects();
     }
 
     [ClientRpc]
@@ -161,8 +158,7 @@ public class GenericRifle : NetworkBehaviour {
             } else if (type == HitEffectType.ROBOT) {
                 robotHitEffect.spawn(location, normal);
             }
-            effectsController.doEffects();
-	        playFireSound();
+            doFireEffects();
         }
     }
 
@@ -193,6 +189,10 @@ public class GenericRifle : NetworkBehaviour {
         return calculatedDamage;
     }
 
+	private void doFireEffects() {
+		effectsController.doEffects();
+		playFireSound();
+	}
 
     private void playFireSound() {
         // create sound event
