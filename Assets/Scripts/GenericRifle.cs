@@ -14,10 +14,7 @@ public class GenericRifle : NetworkBehaviour {
     public float fireDelay = 0.1f;
 	public float soundExpirationTime = 10f;
 
-    public Vector3 fireEffectLocation;
-    public EffectSpec fireEffect;
-    public EffectSpec fireEffectSideways;
-    public EffectSpec fireEffectLight;
+	public GunEffectsController effectsController;
 
     public EffectSpec robotHitEffect;
     public EffectSpec hitEffect;
@@ -36,15 +33,11 @@ public class GenericRifle : NetworkBehaviour {
         get { return reverseGunForward ? -transform.forward.normalized : transform.forward.normalized; }
     }
 
-    public Vector3 worldFireEffectLocation {
-        get { return transform.TransformPoint(fireEffectLocation); }
-    }
-
     [ServerCallback]
     void Update() {
         if (lastFiredTime <= Time.time - fireDelay && firing) {
             // Transform cam = holder.getPlayer().cam.transform;
-            shoot(worldFireEffectLocation, gunForward);
+            shoot(effectsController.transform.position, gunForward);
 
             //TODO: implement recoil?
 //	        looker.rotate(
@@ -54,7 +47,7 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     public bool targetInRange(Vector3 targetPosition) {
-        Vector3 objectVector = targetPosition - worldFireEffectLocation;
+        Vector3 objectVector = targetPosition - effectsController.transform.position;
 
         return (1-Vector3.Dot(gunForward, objectVector.normalized)) < .05f;
     }
@@ -67,7 +60,8 @@ public class GenericRifle : NetworkBehaviour {
         lastFiredTime = Time.time;
         //transform.position -= transform.TransformVector(recoilAnimationDistance);
 
-        doFireEffects(position);
+        effectsController.doEffects();
+	    playFireSound();
 
     }
 
@@ -155,7 +149,8 @@ public class GenericRifle : NetworkBehaviour {
 
     [ClientRpc]
     protected void RpcCreateFireEffects() {
-        doFireEffects(worldFireEffectLocation);
+        effectsController.doEffects();
+	    playFireSound();
     }
 
     [ClientRpc]
@@ -166,7 +161,8 @@ public class GenericRifle : NetworkBehaviour {
             } else if (type == HitEffectType.ROBOT) {
                 robotHitEffect.spawn(location, normal);
             }
-            doFireEffects(worldFireEffectLocation);
+            effectsController.doEffects();
+	        playFireSound();
         }
     }
 
@@ -227,17 +223,6 @@ public class GenericRifle : NetworkBehaviour {
         playSound(gunshotSoundEmitter);
     }
 
-    protected void doFireEffects(Vector3 position) {
-        playFireSound();
-
-        // do fire effects
-	    Vector3 gunForwardDirection = gunForward;
-        fireEffect.spawn(position, gunForwardDirection);
-        fireEffectSideways.spawn(position, -transform.right - gunForwardDirection);
-        fireEffectSideways.spawn(position, transform.right - gunForwardDirection);
-        fireEffectLight.spawn(position);
-    }
-
     protected void playSound(AudioSource soundEmitter) {
         if(soundEmitter != null && soundEmitter.clip != null) {
             soundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
@@ -247,10 +232,5 @@ public class GenericRifle : NetworkBehaviour {
         } else if (soundEmitter.clip == null) {
             Debug.LogWarning("AudioSource clip missing for the '" + GetType() + "' component attached to '" + gameObject.name + "'");
         }
-    }
-
-    void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(worldFireEffectLocation, .1f);
     }
 }
