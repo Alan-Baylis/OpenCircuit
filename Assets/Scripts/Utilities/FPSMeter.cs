@@ -12,7 +12,7 @@ public class FPSMeter : NetworkBehaviour {
 	private double msec;
 	private double fps;
 	private double barLevel;
-    private double aiTime;
+	private double aiTime;
 	private Texture2D boxColor;
 	private GUIStyle boxStyle;
 
@@ -25,7 +25,7 @@ public class FPSMeter : NetworkBehaviour {
 		msec = deltaTime * 1000;
 		fps = 1f / deltaTime;
 		barLevel += (getFPSMeterPosition(fps, targetFramerate) -barLevel) *trackRate;
-	    aiTime = ((Bases) GlobalConfig.globalConfig.gamemode).getRobotTiming() * 1000.0;
+		aiTime = ((Bases) GlobalConfig.globalConfig.gamemode).getRobotTiming() * 1000.0;
 	}
 
 	public void OnGUI() {
@@ -51,7 +51,7 @@ public class FPSMeter : NetworkBehaviour {
 		// draw FPS level
 		float fpsClamped = Mathf.Max(0, Mathf.Min(1, (float)barLevel) * 1.5f -0.5f);
 		Color barColor = new Color(0.2f + 0.8f * (1 - fpsClamped), 0.2f + 0.8f * fpsClamped, 0.2f, opacity);
-        drawBox(new Rect(0, yPos, (float)barLevel *meterTargetWidth, meterHeight), barColor);
+		drawBox(new Rect(0, yPos, (float)barLevel *meterTargetWidth, meterHeight), barColor);
 		
 		// draw target mark
 		drawBox(new Rect(meterTargetWidth - 1, yPos, 2, meterHeight),

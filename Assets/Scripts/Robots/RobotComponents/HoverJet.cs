@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [AddComponentMenu("Scripts/Robot/Hover Jet")]
 public class HoverJet : AbstractRobotComponent {
 
-    public const string TARGET_REACHED = "target reached";
+	public const string TARGET_REACHED = "target reached";
 
 	public float distanceCost = 1;
 
@@ -24,7 +24,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public float animSpeedAdjust = 1f;
 
-    public float powerDrawRate = 5f;
+	public float powerDrawRate = 5f;
 
 	public float regularSpeed = 5f;
 	public float pursueSpeed = 7f;
@@ -66,7 +66,7 @@ public class HoverJet : AbstractRobotComponent {
 		matchTargetRotation = matchRotation;
 		nav.autoBraking = autoBrake;
 		if (target != null) {
-            this.target = target;
+			this.target = target;
 			if(hasReachedTargetLocation(this.target) && hasMatchedTargetRotation()) {
 				this.target = null;
 				return;
@@ -92,32 +92,32 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	void Update () {
-	    double startTime = Time.realtimeSinceStartup;
-	    float actualSpeed = regularSpeed * speedMultipler;
-	    if(nav.speed < actualSpeed) {
+		double startTime = Time.realtimeSinceStartup;
+		float actualSpeed = regularSpeed * speedMultipler;
+		if(nav.speed < actualSpeed) {
 			nav.speed += speedRegenRate * Time.deltaTime;
 			if(nav.speed > actualSpeed) {
 				nav.speed = actualSpeed;
 			}
 		} else if (nav.speed > actualSpeed) {
 			nav.speed = actualSpeed;
-        }
+		}
 
-	    if (nav.baseOffset < regularHeight) {
+		if (nav.baseOffset < regularHeight) {
 			nav.baseOffset = nav.baseOffset + heightRegenRate * Time.deltaTime;
 
 			if (nav.baseOffset > regularHeight) {
 				nav.baseOffset = regularHeight;
 			}
 		}
-	    if (powerSource == null) {
+		if (powerSource == null) {
 			Debug.LogWarning(getController().name + " is missing a power source.");
 			return;
 		}
-	    goToTarget();
-	    nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
-	    double endTime = Time.realtimeSinceStartup;
-	    getController().getExecutionTimer().addTime(endTime-startTime);
+		goToTarget();
+		nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
+		double endTime = Time.realtimeSinceStartup;
+		getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float calculatePathCost(Label label) {
@@ -155,14 +155,14 @@ public class HoverJet : AbstractRobotComponent {
 		return hasReachedTargetLocation(target.getPosition()) && hasMatchedTargetRotation(target.label.transform.forward);
 	}
 
-    public void stop() {
-        this.target = null;
+	public void stop() {
+		this.target = null;
 		this.targetLocation = null;
 		this.matchTargetRotation = false;
-        if (nav.enabled) {
-            nav.Stop();
-        }
-    }
+		if (nav.enabled) {
+			nav.Stop();
+		}
+	}
 
 	public override void release() {
 		stop();
@@ -222,7 +222,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	private bool hasReachedTargetLocation(Vector3 targetLocation) {
 		float xzDist = Vector2.Distance(new Vector2(getController().transform.position.x, getController().transform.position.z),
-								new Vector2(targetLocation.x, targetLocation.z));
+			new Vector2(targetLocation.x, targetLocation.z));
 		float yDist = Mathf.Abs((getController().transform.position.y - .4f) - targetLocation.y);
 		if(xzDist < .5f && yDist < 2.5f) {
 			return true;
