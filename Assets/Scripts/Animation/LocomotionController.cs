@@ -253,12 +253,14 @@ public class LocomotionController : MonoBehaviour {
 
 
 	protected class LegInfo {
-		public bool planted = false;
+		public bool planted;
 		public Vector3 foot = Vector3.zero;
 		public Vector3 lastDefault = Vector3.zero;
 		public Vector3 lastPlanted = Vector3.zero;
 		public LocomotionController chassis;
 		public LimbController leg;
+		public ParticleSystem particleSystem;
+		public AudioSource soundEmitter;
 
 		public LegInfo(LocomotionController chassis, LimbController leg) {
 			this.chassis = chassis;
@@ -266,13 +268,25 @@ public class LocomotionController : MonoBehaviour {
 			foot = leg.getDefaultPos();
 			setLastDefault();
 			setLastPlanted();
+			particleSystem = leg.GetComponentInChildren<ParticleSystem>();
+			soundEmitter = leg.GetComponentInChildren<AudioSource>();
+
 		}
 
 		public void setPlanted(bool planted) {
 			if (!planted && this.planted) {
 				setLastPlanted();
 			} else if (planted && !this.planted) {
-				chassis.footPlant.spawn(foot, Vector3.up);
+				if (particleSystem != null) {
+					particleSystem.Play();
+				} else {
+					Debug.LogWarning("Missing footstep particle system on '" + chassis.transform.root.gameObject.name + "'!");
+				}
+				if (soundEmitter != null) {
+					soundEmitter.Play();
+				} else {
+					Debug.LogWarning("Missing footstep audio source on '" + chassis.transform.root.gameObject.name + "'!");
+				}
 			}
 			this.planted = planted;
 		}
