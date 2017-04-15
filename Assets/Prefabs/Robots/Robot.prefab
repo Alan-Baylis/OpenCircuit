@@ -42,7 +42,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &416272
 Transform:
   m_ObjectHideFlags: 1
@@ -76,7 +76,7 @@ MeshRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 135778}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_MotionVectors: 1
@@ -728,6 +728,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4f62c397a0e094ebf60b68c0806bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team:
-    Id: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
+  id: 0
