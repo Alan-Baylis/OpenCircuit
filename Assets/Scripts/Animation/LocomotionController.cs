@@ -34,6 +34,7 @@ public class LocomotionController : MonoBehaviour {
 	private float stoppingPercent;
 	private float lastStepPercent;
 	private bool airborne;
+	private RobotController controller;
 
 	public bool isAirborne { get { return airborne; } }
 
@@ -49,7 +50,12 @@ public class LocomotionController : MonoBehaviour {
 		}
 	}
 
+	void Start() {
+		controller = GetComponentInParent<RobotController>();
+	}
+
 	public void FixedUpdate() {
+		double startTime = Time.realtimeSinceStartup;
 		if (plantedGroup == null) {
 			plantedGroup = legGroup1;
 			steppingGroup = legGroup2;
@@ -95,6 +101,8 @@ public class LocomotionController : MonoBehaviour {
 			updateLegs(plantedGroup, true);
 			updateLegs(steppingGroup, stopped);
 		}
+		double endTime = Time.realtimeSinceStartup;
+		controller.getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float getMaxSpeed() {
@@ -123,7 +131,7 @@ public class LocomotionController : MonoBehaviour {
 		}
 		float displacement = Mathf.Sqrt(sqrDisplacement);
 		return displacement;
-    }
+	}
 
 	protected bool isGroupPlanted(LimbController[] group) {
 		foreach(LimbController leg in group) {
