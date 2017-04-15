@@ -6,15 +6,16 @@ public class CentralRobotController : MonoBehaviour {
 
 	public RobotController[] robots;
 	public Label[] locations;
-
+	public Timing robotExecutionTimer;
 	MentalModel mentalModel = new MentalModel();
 
 	// Use this for initialization
 	void Start () {
+		robotExecutionTimer = gameObject.AddComponent<Timing>();
 		for (int i = 0; i < robots.Length; i++) {
 			if (robots[i] == null) {
-					Debug.LogWarning("Null robot attached to CRC with name: " + gameObject.name);
-					continue;
+				Debug.LogWarning("Null robot attached to CRC with name: " + gameObject.name);
+				continue;
 			}
 			addListener(robots[i]);
 		}
@@ -38,6 +39,7 @@ public class CentralRobotController : MonoBehaviour {
 
 	public void forceAddListener(RobotController listener) {
 		listener.attachMentalModel(mentalModel);
+		listener.attachExecutionTimer(robotExecutionTimer);
 	}
 
 	public void sightingFound(LabelHandle target, Vector3 pos, Vector3? dir) {

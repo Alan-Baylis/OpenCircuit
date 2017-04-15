@@ -15,6 +15,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	private Dictionary<Tag, List<Endeavour>> tagUsageMap = new Dictionary<Tag, List<Endeavour>>();
 	private AudioSource soundEmitter;
 	private Health myHealth;
+    private Timing executionTimer;
 
 	public Health health { get { return myHealth; } }
 
@@ -117,6 +118,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //			}
 //		}
 //#endif
+	    double startTime = Time.realtimeSinceStartup;
 		foreach(Endeavour endeavour in currentEndeavours) {
 			try {
 				endeavour.update();
@@ -126,6 +128,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				Debug.LogException(e);
 			}
 		}
+	    double endTime = Time.realtimeSinceStartup;
+	    executionTimer.addTime(endTime-startTime);
 	}
 
 	public bool knowsTarget(LabelHandle target) {
@@ -208,6 +212,14 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				removeEndeavour(endeavours[endeavours.Count - 1]);
 			}
 		}
+    }
+
+    public void attachExecutionTimer(Timing timer) {
+        executionTimer = timer;
+    }
+
+    public Timing getExecutionTimer() {
+        return executionTimer;
     }
 
     private void constructAllEndeavours() {
