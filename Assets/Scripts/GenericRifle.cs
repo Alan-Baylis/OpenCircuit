@@ -95,10 +95,10 @@ public class GenericRifle : NetworkBehaviour {
                 //if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
                 //	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
                 //}
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, hitInfo.normal);
             } else {
                 bulletHit(direction, hitInfo.point, hitInfo.normal);
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
             }
         } else {
             bulletMiss(direction);
@@ -154,9 +154,9 @@ public class GenericRifle : NetworkBehaviour {
         if (!isServer) {
             if (type == HitEffectType.DEFAULT) {
 
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location, normal);
             } else if (type == HitEffectType.ROBOT) {
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, normal);
             }
             doFireEffects();
         }

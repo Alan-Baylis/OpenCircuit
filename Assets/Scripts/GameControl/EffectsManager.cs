@@ -7,23 +7,27 @@ public class EffectsManager : MonoBehaviour {
 
 	private Dictionary<AbstractEffectController, Queue<AbstractEffectController>> effectsMap = new Dictionary<AbstractEffectController, Queue<AbstractEffectController>>();
 
-	public void spawnEffect(AbstractEffectController effectPrefab, Vector3 position) {
+	public void spawnEffect(AbstractEffectController effectPrefab, Vector3 position, Vector3 direction) {
+		spawnEffect(effectPrefab, position, Quaternion.LookRotation(direction));
+	}
+
+	public void spawnEffect(AbstractEffectController effectPrefab, Vector3 position, Quaternion direction) {
 		if (effectsMap.ContainsKey(effectPrefab)) {
 			Queue<AbstractEffectController> effectQueue = effectsMap[effectPrefab];
 			AbstractEffectController effectController = effectQueue.Peek();
 			if (effectController.effectFinished()) {
-				useEffect(effectController, position);
+				useEffect(effectController, position, direction);
 				effectQueue.Dequeue();
 				effectQueue.Enqueue(effectController);
 			} else if (effectQueue.Count < maxEffects) {
-				useEffect(createEffect(effectPrefab), position);
+				useEffect(createEffect(effectPrefab), position, direction);
 			} else {
-				useEffect(effectController, position);
+				useEffect(effectController, position, direction);
 				effectQueue.Dequeue();
 				effectQueue.Enqueue(effectController);
 			}
 		} else {
-			useEffect(createEffect(effectPrefab), position);
+			useEffect(createEffect(effectPrefab), position, direction);
 
 		}
 	}
@@ -37,8 +41,9 @@ public class EffectsManager : MonoBehaviour {
 		return newEffect;
 	}
 
-	private void useEffect(AbstractEffectController effectController, Vector3 position) {
+	private void useEffect(AbstractEffectController effectController, Vector3 position, Quaternion rotation) {
 		effectController.transform.position = position;
+		effectController.transform.rotation = rotation;
 		effectController.doEffects();
 	}
 

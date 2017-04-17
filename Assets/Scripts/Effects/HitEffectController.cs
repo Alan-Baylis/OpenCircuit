@@ -5,8 +5,8 @@ public class HitEffectController : ParticleEffectController {
 	public AudioSource hitSoundSource;
 
 	public override void doEffects() {
-		//base.doEffects();
-		//hitSoundSource.Play();
+		base.doEffects();
+		hitSoundSource.Play();
 	}
 
 	public override bool effectFinished() {
