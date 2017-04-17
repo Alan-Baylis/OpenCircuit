@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 
 public class ShootAction : Endeavour {
@@ -14,7 +14,7 @@ public class ShootAction : Endeavour {
     public override bool isStale() {
         return !getController().knowsTarget(target.getLabelHandle())
                || target.getLabelHandle().label == null
-               || target.getLabelHandle().label.GetComponent<Team>().team.Id == controller.GetComponent<Team>().team.Id
+               || target.getLabelHandle().label.GetComponent<TeamId>().id == controller.GetComponent<TeamId>().id
                || !target.getLabelHandle().hasTag(TagEnum.Health);
     }
 

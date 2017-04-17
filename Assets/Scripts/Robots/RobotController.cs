@@ -362,7 +362,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 #if UNITY_EDITOR
 		if(debug) {
 			lines = debugText;
-			maxPriority = (Mathf.Abs(localMaxPriority) > Mathf.Abs(localMinPriority)) ? Mathf.Abs(localMaxPriority) : Mathf.Abs(localMinPriority);
+			maxPriority = Mathf.Abs(localMaxPriority) > Mathf.Abs(localMinPriority) ? Mathf.Abs(localMaxPriority) : Mathf.Abs(localMinPriority);
 			if(shouldAlphabetize) {
 				alphabetize();
 			}
@@ -417,20 +417,19 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	public MentalModel getMentalModel() {
 		if (externalMentalModel == null) {
 			return mentalModel;
-		} else {
-			return externalMentalModel; 
 		}
+		return externalMentalModel;
 	}
 
 	[Server]
 	public void dispose() {
-		--GlobalConfig.globalConfig.robotControllers;
+		GlobalConfig.globalConfig.subtractRobotCount(this);
 		CancelInvoke();
 		soundEmitter.PlayOneShot(destructionSound);
 		foreach(Endeavour e in currentEndeavours) {
 			e.stopExecution();
 		}
-		this.enabled = false;
+		enabled = false;
 
 		int randomSeed = UnityEngine.Random.seed;
 
@@ -537,14 +536,12 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			Vector2 size = new Vector2(200, shownLines * lineHeight);
 			for (int i = 0; i < shownLines; ++i) {
 				DecisionInfoObject obj = lines[i];
-				float percentFilled = 0;
-
-				percentFilled = (Mathf.Abs(obj.getPriority()) / (maxPriority));
+				float percentFilled = Mathf.Abs(obj.getPriority()) / maxPriority;
 				if(obj.getPriority() < 0) {
 					percentFilled = -percentFilled;
 				}
 
-				Rect rectng = new Rect(pos.x - size.x / 2, Screen.height - pos.y - size.y + (i * lineHeight), size.x, lineHeight);
+				Rect rectng = new Rect(pos.x - size.x / 2, Screen.height - pos.y - size.y + i * lineHeight, size.x, lineHeight);
 
 				GUI.skin.box.normal.background = red;
 
@@ -552,9 +549,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 				Rect filled;
 				if(percentFilled < 0) {
-					filled = new Rect(pos.x + ((size.x / 2) * percentFilled), Screen.height - pos.y - size.y + (i * lineHeight), -((size.x / 2) * percentFilled), lineHeight);
+					filled = new Rect(pos.x + size.x / 2 * percentFilled, Screen.height - pos.y - size.y + i * lineHeight, -(size.x / 2 * percentFilled), lineHeight);
 				} else {
-					filled = new Rect(pos.x, Screen.height - pos.y - size.y + (i * lineHeight), (size.x / 2) * (percentFilled), lineHeight);
+					filled = new Rect(pos.x, Screen.height - pos.y - size.y + i * lineHeight, size.x / 2 * percentFilled, lineHeight);
 				}
 
 				//GUI.skin.box.normal.background = green;
@@ -564,14 +561,14 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				//	GUI.Label(textCentered, "+" + obj.getTitle());
 				//} else {
 				//}
-				Rect boxRectangle = new Rect(pos.x - size.x/2, Screen.height - pos.y - size.y + (i*lineHeight)+lineHeight/4, 15, 15);
+				Rect boxRectangle = new Rect(pos.x - size.x/2, Screen.height - pos.y - size.y + i*lineHeight+lineHeight/4, 15, 15);
 				if(obj.isChosen()) {
 					GUI.DrawTexture(boxRectangle, green);
 				} else {
 					GUI.DrawTexture(boxRectangle, red);
 				}
 
-				Rect textCentered = new Rect(pos.x - size.x / 2 + 17, Screen.height - pos.y - size.y + (i * lineHeight) + 4, size.x, lineHeight);
+				Rect textCentered = new Rect(pos.x - size.x / 2 + 17, Screen.height - pos.y - size.y + i * lineHeight + 4, size.x, lineHeight);
 				GUI.Label(textCentered, obj.getTitle());
 
 

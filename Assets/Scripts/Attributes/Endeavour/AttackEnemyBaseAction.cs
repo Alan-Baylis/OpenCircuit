@@ -18,7 +18,7 @@ public class AttackEnemyBaseAction : Endeavour {
 	}
 
 	public override bool isStale() {
-		return reached || route.getLabelHandle().label.GetComponent<Team>().team.Id != controller.GetComponent<Team>().team.Id;
+		return reached || route.getLabelHandle().label.GetComponent<TeamId>().id != controller.GetComponent<TeamId>().id;
 	}
 
 	protected override void onExecute() {

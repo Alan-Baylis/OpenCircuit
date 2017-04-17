@@ -2,8 +2,22 @@
 
 public abstract class TeamGameMode : GameMode {
 
-    public TeamData localTeam;
+    public int localTeamId;
 
-    public List<TeamData> teams = new List<TeamData>();
+    public Team.Config[] teamConfig;
+
+	[System.NonSerialized]
+	public Dictionary<int, Team> teams;
+
+	public override void initialize() {
+		teams = new Dictionary<int, Team>();
+		for (int id=0; id<teamConfig.Length; ++id) {
+			teams[id] = new Team(id, teamConfig[id]);
+		}
+	}
+
+	public abstract int getMaxRobots(int teamIndex);
+
+	public abstract int getJoinedPlayerCount(int teamIndex);
 
 }

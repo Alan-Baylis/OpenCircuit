@@ -22,12 +22,12 @@ public class TowerSpawner : AbstractRobotComponent {
 
 		}
 
-		if (getController().GetComponent<Team>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
+		if (getController().GetComponent<TeamId>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
 			Bases gameMode = (Bases)GlobalConfig.globalConfig.gamemode;
-			int teamId = getController().GetComponent<Team>().team.Id;
+			int teamId = getController().GetComponent<TeamId>().id;
 			gameMode.getCRC(teamId).forceAddListener(controller);
-			Team team = newTower.GetComponent<Team>();
-			team.team = gameMode.teams[teamId];
+			TeamId team = newTower.GetComponent<TeamId>();
+			team.id = teamId;
 			team.enabled = true;
 		}
 		return newTower;

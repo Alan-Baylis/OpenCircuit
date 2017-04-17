@@ -8,11 +8,16 @@ public class RobotSpawner : AbstractRobotSpawner {
 	[ServerCallback]
 	public override void Update() {
         base.Update();
-		if (active && GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.robotControllers < GlobalConfig.globalConfig.getMaxRobots()) {
-			if (Time.time -lastSpawnTime > GlobalConfig.globalConfig.getDelay()) {
-				spawnRobot();
-				lastSpawnTime = Time.time;
+		if (active && Time.time -lastSpawnTime > GlobalConfig.globalConfig.getDelay()) {
+			int teamId = GetComponent<TeamId>().id;
+			if (GetComponent<TeamId>().enabled && GlobalConfig.globalConfig.gamemode is TeamGameMode) {
+				if (GlobalConfig.globalConfig.teamGameMode.teams[teamId].robotCount >= GlobalConfig.globalConfig.teamGameMode.getMaxRobots(teamId))
+					return;
+			} else if (GlobalConfig.globalConfig.getRobotCount() >= GlobalConfig.globalConfig.getMaxRobots()) {
+				return;
 			}
+			spawnRobot();
+			lastSpawnTime = Time.time;
 		}
 	}
 }

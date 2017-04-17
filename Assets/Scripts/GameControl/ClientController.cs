@@ -7,7 +7,7 @@ public class ClientController : NetworkBehaviour {
 	public GameObject playerCamPrefab;
 	public GameObject playerLegsPrefab;
 	public GameObject playerArmsPrefab;
-    public static int numPlayers = 0;
+    public static int numPlayers;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
@@ -18,16 +18,17 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar(hook="setPlayerDead")]
 	private bool isDead;
 
-	[ClientCallback]
 	void Start() {
+		GlobalConfig.globalConfig.clients.Add(this);
 		if (player != null) {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
 
-		AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
-		if(isLocalPlayer) {
+		if(isServer) {
+			AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
 			if (spawner != null) {
-				CmdSpawnPlayerAt(spawner.nextSpawnPos());
+				spawnPlayerAt(spawner.nextSpawnPos());
+				++numPlayers;
 			} else {
 				Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
 			}
@@ -41,15 +42,14 @@ public class ClientController : NetworkBehaviour {
 		}
 	}
 
+	[ClientCallback]
+	public void OnDestroy() {
+		GlobalConfig.globalConfig.clients.Remove(this);
+	}
+
 	//anyone can call!!
 	public bool isAlive() {
 		return !isDead;
-	}
-
-	[Command]
-	private void CmdSpawnPlayerAt(Vector3 position) {
-		spawnPlayerAt(position);
-        numPlayers++;
 	}
 	
 	[Server]
@@ -75,8 +75,8 @@ public class ClientController : NetworkBehaviour {
 		newPlayer.name = "player" + Random.Range(1, 20);
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
 	    if (mode != null) {
-	        Team team = newPlayer.GetComponent<Team>();
-	        team.team = mode.localTeam;
+	        TeamId team = newPlayer.GetComponent<TeamId>();
+	        team.id = mode.localTeamId;
 	        team.enabled = true;
 	    }
 
