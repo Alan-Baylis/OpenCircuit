@@ -11,8 +11,8 @@ public class AssaultRifle : AbstractGun {
 	public float damage = 10;
 	public float impulse = 1;
 
-	public EffectSpec hitEffect;
-	public EffectSpec robotHitEffect;
+	public AbstractEffectController hitEffectPrefab;
+	public AbstractEffectController robotHitEffectPrefab;
 
 	public float reloadTime = 1f;
 	public int magazineSize = 20;
@@ -95,10 +95,10 @@ public class AssaultRifle : AbstractGun {
 				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
 				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
 				//}
-				robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point);
 			} else {
 				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
-				hitEffect.spawn(hitInfo.point, hitInfo.normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point);
 			}
 		} else {
 			CmdBulletMiss(direction);
@@ -156,9 +156,9 @@ public class AssaultRifle : AbstractGun {
 	protected override void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
 		if (!hasAuthority) {
 			if (type == HitEffectType.DEFAULT) {
-				hitEffect.spawn(location, normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location);
 			} else if (type == HitEffectType.ROBOT) {
-				robotHitEffect.spawn(location, normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location);
 			}
 			doFireEffects();
 		}

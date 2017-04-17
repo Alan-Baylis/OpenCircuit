@@ -1838,19 +1838,7 @@ MonoBehaviour:
     position: {x: 0.1, y: 0.3, z: 0.2}
     rotation: {x: -75, y: 160, z: 45}
     cameraRelative: 0
-  fireEffectLocation: {x: 0, y: 0, z: -0.4}
-  fireEffect:
-    prefab: {fileID: 122320, guid: b7dd6a94f29bc0148b5e439c2d3387e2, type: 2}
-    lifetime: 2
-    randomizePitch: 0
-  fireEffectSideways:
-    prefab: {fileID: 153292, guid: cd74836e1ee0e7a4ba343f10a1441965, type: 2}
-    lifetime: 2
-    randomizePitch: 0
-  fireEffectLight:
-    prefab: {fileID: 141812, guid: 780ccb11fcc4f1c4e8bea141893f8f8c, type: 2}
-    lifetime: 0.03
-    randomizePitch: 0
+  effectsController: {fileID: 114623225389028786}
   guiSkin: {fileID: 11400000, guid: 2131ccba8b54c0c4dadc3239b116ce52, type: 2}
   gunshotSoundEmitter: {fileID: 8299550}
   reloadSoundEmitter: {fileID: 8231792}
@@ -1863,15 +1851,10 @@ MonoBehaviour:
   range: 1000
   damage: 5
   impulse: 75
-  effectsController: {fileID: 114623225389028786}
-  hitEffect:
-    prefab: {fileID: 196292, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
-    lifetime: 30
-    randomizePitch: 1
-  robotHitEffect:
-    prefab: {fileID: 103590, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
-    lifetime: 2
-    randomizePitch: 1
+  hitEffectPrefab: {fileID: 114009059378159868, guid: 3159a50193feafc44b9b7ab9e7b86cb0,
+    type: 2}
+  robotHitEffectPrefab: {fileID: 114543538836540394, guid: c713e3d3d7237fd488d1e87c08414ed2,
+    type: 2}
   reloadTime: 1.5
   magazineSize: 30
   maxMagazines: 5
@@ -2337,8 +2320,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667192d077c02e144a05d2581f5b9815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flash: {fileID: 108080050192557030}
-  flashDuration: 0.03
   particleEffects:
   - {fileID: 198000652555017876}
   - {fileID: 198886817833478692}
@@ -2346,6 +2327,8 @@ MonoBehaviour:
   - {fileID: 198466756298851758}
   - {fileID: 198948639387172628}
   - {fileID: 198386516072533998}
+  flash: {fileID: 108080050192557030}
+  flashDuration: 0.03
 --- !u!198 &198000652555017876
 ParticleSystem:
   m_ObjectHideFlags: 1
