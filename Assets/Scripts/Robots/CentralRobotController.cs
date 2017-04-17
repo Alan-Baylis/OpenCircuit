@@ -51,6 +51,7 @@ public class CentralRobotController : MonoBehaviour {
 	public int sightingsDisplay;
 	public int staleSightingsDisplay;
 	public List<string> activeSightings =  new List<string>();
+	public List<string> staleSightings =  new List<string>();
 
 	void Update() {
 		if (debug) {
@@ -60,6 +61,11 @@ public class CentralRobotController : MonoBehaviour {
 			activeSightings.Clear();
 			foreach (LabelHandle handle in mentalModel.targetSightings.Keys) {
 				activeSightings.Add(handle.getName());
+			}
+
+			staleSightings.Clear();
+			foreach (LabelHandle handle in mentalModel.staleTargetSightings.Keys) {
+				staleSightings.Add(handle.getName());
 			}
 		}
 	}

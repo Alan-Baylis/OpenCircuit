@@ -23,8 +23,6 @@ public class GenericRifle : NetworkBehaviour {
     public bool firing;
     public bool reverseGunForward = true;
 
-    protected LabelHandle audioLabel;
-
     protected float lastFiredTime = 0;
 
     // This is to deal with models that have inconsistent forward directions
@@ -53,14 +51,33 @@ public class GenericRifle : NetworkBehaviour {
 
     [Server]
     protected void shoot(Vector3 position, Vector3 direction) {
+	    broadcastGunshotSound();
         direction = inaccurateDirection(direction, getMovementInaccuracy());
         direction = inaccurateDirection(direction, baseInaccuracy);
         doBullet(position, direction, 1);
         lastFiredTime = Time.time;
-        //transform.position -= transform.TransformVector(recoilAnimationDistance);
-
-        doFireEffects();
     }
+
+	private void broadcastGunshotSound() {
+		// create sound event
+		//float volume = gunshotSoundEmitter.volume;
+		if (Time.time - lastFiredTime > 1f) {
+			LabelHandle audioLabel = new LabelHandle(transform.position, "gunshots");
+			TeamId team = GetComponentInParent<TeamId>();
+			if (team != null && team.enabled) {
+				audioLabel.teamId = team.id;
+			}
+			audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
+			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
+
+			audioLabel.setPosition(transform.position);
+			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
+		}
+	}
 
 	public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
         Vector3 randomAngle = Random.onUnitSphere;
@@ -195,26 +212,6 @@ public class GenericRifle : NetworkBehaviour {
 	}
 
     private void playFireSound() {
-        // create sound event
-        //float volume = gunshotSoundEmitter.volume;
-        if (Time.time - lastFiredTime > .5f || audioLabel == null) {
-            audioLabel = new LabelHandle(transform.position, "gunshots");
-            audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
-            audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
-
-            audioLabel.setPosition(transform.position);
-            Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-            Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-            //soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-            //threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-            AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
-        } else {
-            audioLabel.setPosition(transform.position);
-            //Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-            //Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-            //soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-            //threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-        }
         // play sound effect
         if (gunshotSoundEmitter != null) {
             gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];

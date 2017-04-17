@@ -5,7 +5,6 @@ public class AssaultRifle : AbstractGun {
 
     public AudioClip[] fireSounds;
 
-	public float soundExpirationTime = 10f;
 	public float inaccuracy = 0.1f;
 	public float range = 1000;
 	public float damage = 10;
@@ -177,24 +176,7 @@ public class AssaultRifle : AbstractGun {
 	private void playFireSound() {
 		// create sound event
 		//float volume = gunshotSoundEmitter.volume;
-		if (Time.time - lastFiredTime > .5f || audioLabel == null) {
-			audioLabel = new LabelHandle(transform.position, "gunshots");
-			audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
-			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 
-			audioLabel.setPosition(transform.position);
-			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
-		} else {
-			audioLabel.setPosition(transform.position);
-			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			//Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-		}
 		// play sound effect
 		if (gunshotSoundEmitter != null) {
 		    //gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];

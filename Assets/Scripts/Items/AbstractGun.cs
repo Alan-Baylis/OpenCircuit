@@ -4,6 +4,8 @@ using UnityEngine.Networking;
 
 public abstract class AbstractGun : Item {
 
+	public float soundExpirationTime = 10f;
+
 	public float fireSoundThreatLevel = 5;
 	public float fireSoundThreatRate = 0.3f;
 	public float fireSoundVolume = 1;
@@ -26,7 +28,6 @@ public abstract class AbstractGun : Item {
 
 	protected float lastFiredTime = 0;
 	protected float reloadTimeRemaining = 0;
-	protected LabelHandle audioLabel;
 
 	public AudioSource gunshotSoundEmitter;
 	public AudioSource reloadSoundEmitter;
@@ -135,6 +136,25 @@ public abstract class AbstractGun : Item {
 		consumeAmmo();
 		if (hit != null) {
 			applyDamage(hit.Value, direction, normal.Value);
+		}
+		if (Time.time - lastFiredTime > 1f) {
+			LabelHandle audioLabel = new LabelHandle(transform.position, "gunshots");
+			TeamId team = holder.GetComponent<TeamId>();
+			if (team != null && team.enabled) {
+				audioLabel.teamId = team.id;
+			}
+			audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
+			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
+
+			audioLabel.setPosition(transform.position);
+			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
+		}
+		if (!hasAuthority) {
+			lastFiredTime = Time.time;
 		}
 	}
 

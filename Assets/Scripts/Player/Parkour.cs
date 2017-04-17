@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Player/Parkour")]
@@ -27,6 +26,7 @@ public class Parkour : MovementController {
 	private CapsuleCollider col;
 	private AudioSource footstepEmitter;
 	private float nextFootstep;
+	private float lastSoundBroadcast;
 
 	// climbing stuff
 	private int freeFallDelay = 0;
@@ -181,14 +181,19 @@ public class Parkour : MovementController {
 
 		float currentSpeed = rb.velocity.sqrMagnitude;
 		if (nextFootstep <= Time.fixedTime && currentSpeed > 0.1f) {
-			if (nextFootstep != 0) {
+			if (nextFootstep != 0 && Time.time - lastSoundBroadcast > 2f) {
 				float volume = 0.8f -(0.8f / (1 + currentSpeed /100));
 				playFootstep(volume);
 				LabelHandle audioLabel = new LabelHandle(transform.position, "footsteps");
+				TeamId team = GetComponent<TeamId>();
+				if (team != null && team.enabled) {
+					audioLabel.teamId = team.id;
+				}
 				audioLabel.addTag(new SoundTag(TagEnum.Sound, volume, audioLabel, Time.time, footstepSoundExpirationTime));
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f, audioLabel));
-				AudioBroadcaster.broadcast(audioLabel, volume);
+				AudioBroadcaster.broadcast(audioLabel, volume*2);
 				player.inventory.doStep(volume);
+				lastSoundBroadcast = Time.time;
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);
 		}

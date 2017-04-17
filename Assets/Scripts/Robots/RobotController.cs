@@ -119,7 +119,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //		}
 //#endif
 	    double startTime = Time.realtimeSinceStartup;
-		foreach(Endeavour endeavour in currentEndeavours) {
+		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
+		foreach(Endeavour endeavour in endeavours) {
 			try {
 				endeavour.update();
 

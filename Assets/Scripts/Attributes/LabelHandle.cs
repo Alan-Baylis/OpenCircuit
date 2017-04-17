@@ -8,6 +8,7 @@ public class LabelHandle {
 
 	public Label label;
 	private string name;
+	public int? teamId { get; set; }
 
 	public LabelHandle(Vector3 pos, string name) {
         position = pos;
