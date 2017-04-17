@@ -74,7 +74,7 @@ public abstract class AbstractGun : Item {
 	public abstract bool addAmmo(int quantity);
 
 	[ClientRpc]
-	protected abstract void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal);
+	protected abstract void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 direction, Vector3 normal);
 
 	[ClientRpc]
 	protected abstract void RpcCreateFireEffects();
@@ -115,13 +115,13 @@ public abstract class AbstractGun : Item {
 	[Command]
 	protected virtual void CmdBulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
 		serverDoBullet(direction, position, normal, hit);
-		RpcCreateShotEffect(HitEffectType.ROBOT, position, normal);
+		RpcCreateShotEffect(HitEffectType.ROBOT, position, direction, normal);
 	}
 
 	[Command]
 	protected virtual void CmdBulletHit(Vector3 direction, Vector3 position, Vector3 normal) {
 		serverDoBullet(direction, position, normal);
-		RpcCreateShotEffect(HitEffectType.DEFAULT, position, normal);
+		RpcCreateShotEffect(HitEffectType.DEFAULT, position, direction, normal);
 	}
 
 	[Command]

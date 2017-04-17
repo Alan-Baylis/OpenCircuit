@@ -95,7 +95,7 @@ public class GenericRifle : NetworkBehaviour {
                 //if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
                 //	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
                 //}
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, hitInfo.normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, Vector3.Reflect(direction,hitInfo.normal));
             } else {
                 bulletHit(direction, hitInfo.point, hitInfo.normal);
 	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
@@ -129,13 +129,13 @@ public class GenericRifle : NetworkBehaviour {
     [Server]
     protected virtual void bulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
         doBullet(direction, position, normal, hit);
-        RpcCreateShotEffect(HitEffectType.ROBOT, position, normal);
+        RpcCreateShotEffect(HitEffectType.ROBOT, position, direction, normal);
     }
 
     [Server]
     protected virtual void bulletHit(Vector3 direction, Vector3 position, Vector3 normal) {
         doBullet(direction, position, normal);
-        RpcCreateShotEffect(HitEffectType.DEFAULT, position, normal);
+        RpcCreateShotEffect(HitEffectType.DEFAULT, position, direction, normal);
     }
 
     [Server]
@@ -150,13 +150,13 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     [ClientRpc]
-    protected void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
+    protected void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 direction, Vector3 normal) {
         if (!isServer) {
             if (type == HitEffectType.DEFAULT) {
 
 	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location, normal);
             } else if (type == HitEffectType.ROBOT) {
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, Vector3.Reflect(direction, normal));
             }
             doFireEffects();
         }
