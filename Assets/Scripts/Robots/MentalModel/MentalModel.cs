@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class MentalModel {
 
 	public Dictionary<LabelHandle, SensoryInfo> targetSightings = new Dictionary<LabelHandle, SensoryInfo>();
-	public Dictionary<LabelHandle, SensoryInfo> staleTargetSightings = new Dictionary<LabelHandle, SensoryInfo>();
+	private Dictionary<LabelHandle, SensoryInfo> staleTargetSightings = new Dictionary<LabelHandle, SensoryInfo>();
 	private Dictionary<TagEnum, List<Tag>> knownTags = new Dictionary<TagEnum, List<Tag>>();
 	private Dictionary<TagEnum, List<Tag>> previouslyKnownTags = new Dictionary<TagEnum, List<Tag>>();
 
@@ -19,15 +19,16 @@ public class MentalModel {
 			info.addSighting();
 			info.updateInfo(target);
 		} else {
-			if (staleTargetSightings.ContainsKey(target)) {
-				SensoryInfo info = staleTargetSightings[target];
-                targetSightings.Add(target, info);
-				staleTargetSightings.Remove(target);
-				info.addSighting();
-
-			} else {
+			//TODO repair the stale sighting system and put this back!
+//			if (staleTargetSightings.ContainsKey(target)) {
+//				SensoryInfo info = staleTargetSightings[target];
+//                targetSightings.Add(target, info);
+//				staleTargetSightings.Remove(target);
+//				info.addSighting();
+//
+//			} else {
 				targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, target.getTags(), 1);
-			}
+//			}
 			registerTags(target);
 			notifyListenersTargetLost(target);
 			notifyListenersTargetFound(target);
@@ -43,17 +44,18 @@ public class MentalModel {
                 unregisterTags(target);
 				targetSightings.Remove(target);
 
-				notifyListenersTargetLost (target);
-				if (target.label != null) {
-					staleTargetSightings.Add(target, info);
-					notifyListenersTargetFound(target);
-				}
+				//TODO repair the stale sighting system and put this back!
+//				notifyListenersTargetLost (target);
+//				if (target.label != null) {
+//					staleTargetSightings.Add(target, info);
+//					notifyListenersTargetFound(target);
+//				}
 			}
 			info.updateInfo(position, System.DateTime.Now, direction);
 		} else {
 			//Realistically we should never get here. This case is stupid.
-			targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, null, 0);
-			notifyListenersTargetLost (target);
+			//targetSightings[target] = new SensoryInfo(position, direction, System.DateTime.Now, null, 0);
+			//notifyListenersTargetLost (target);
 			Debug.LogWarning("Target '" + target.getName() + "' that was never found has been lost. Shenanigans?");
 		}
 	}
@@ -65,18 +67,22 @@ public class MentalModel {
 	public System.Nullable<Vector3> getLastKnownPosition(LabelHandle target) {
 		if (targetSightings.ContainsKey(target)) {
 			return targetSightings[target].getPosition();
-		} else if (staleTargetSightings.ContainsKey(target)) {
-			return staleTargetSightings[target].getPosition();
 		}
+		//TODO repair the stale sighting system and put this back!
+//		else if (staleTargetSightings.ContainsKey(target)) {
+//			return staleTargetSightings[target].getPosition();
+//		}
 		return null;
 	}
 
 	public System.DateTime? getLastSightingTime(LabelHandle target) {
 		if(targetSightings.ContainsKey(target)) {
 			return targetSightings[target].getSightingTime();
-		} else if (staleTargetSightings.ContainsKey(target)) {
-			return staleTargetSightings[target].getSightingTime();
 		}
+		//TODO repair the stale sighting system and put this back!
+//		else if (staleTargetSightings.ContainsKey(target)) {
+//			return staleTargetSightings[target].getSightingTime();
+//		}
 		return null;
 	}
 
@@ -92,14 +98,6 @@ public class MentalModel {
 			knownTags.TryGetValue(type, out tags);
 		}
 		return tags != null ? tags : new List<Tag>();
-    }
-
-    public List<TagEnum> getKnownTagTypes() {
-        List<TagEnum> tags = new List<TagEnum>();
-        foreach (TagEnum tagEnum in knownTags.Keys) {
-            tags.Add(tagEnum);
-        }
-        return tags;
     }
 
     private void notifyListenersTargetLost(LabelHandle target) {
@@ -127,18 +125,19 @@ public class MentalModel {
     }
 
 	private void registerTags(LabelHandle handle) {
+		//TODO repair the stale sighting system and put this back!
 		// Clean out all stale tags from this LabelHandle before registering new ones
-		SensoryInfo info;
-		staleTargetSightings.TryGetValue(handle, out info);
-		if (info != null) {
-			foreach (Tag tag in info.getAttachedTags()) {
-				List<Tag> staleTags;
-				previouslyKnownTags.TryGetValue(tag.type, out staleTags);
-				if (staleTags != null) {
-					staleTags.Remove(tag);
-				}
-			}
-		}
+//		SensoryInfo info;
+//		staleTargetSightings.TryGetValue(handle, out info);
+//		if (info != null) {
+//			foreach (Tag tag in info.getAttachedTags()) {
+//				List<Tag> staleTags;
+//				previouslyKnownTags.TryGetValue(tag.type, out staleTags);
+//				if (staleTags != null) {
+//					staleTags.Remove(tag);
+//				}
+//			}
+//		}
 
 		List<TagEnum> tags = handle.getTagTypes();
 		foreach (TagEnum tag in tags) {

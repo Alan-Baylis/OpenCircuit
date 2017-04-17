@@ -56,17 +56,17 @@ public class CentralRobotController : MonoBehaviour {
 	void Update() {
 		if (debug) {
 			sightingsDisplay = mentalModel.targetSightings.Count;
-			staleSightingsDisplay = mentalModel.staleTargetSightings.Count;
+//			staleSightingsDisplay = mentalModel.staleTargetSightings.Count;
 
 			activeSightings.Clear();
 			foreach (LabelHandle handle in mentalModel.targetSightings.Keys) {
 				activeSightings.Add(handle.getName());
 			}
 
-			staleSightings.Clear();
-			foreach (LabelHandle handle in mentalModel.staleTargetSightings.Keys) {
-				staleSightings.Add(handle.getName());
-			}
+//			staleSightings.Clear();
+//			foreach (LabelHandle handle in mentalModel.staleTargetSightings.Keys) {
+//				staleSightings.Add(handle.getName());
+//			}
 		}
 	}
 #endif
