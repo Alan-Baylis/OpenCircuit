@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 using UnityEngine.Networking;
 
@@ -18,10 +17,7 @@ public abstract class AbstractGun : Item {
 	public Vector2 recoilMaxRotation = new Vector3(0.1f, 0.2f);
 	public HoldPosition reloadPosition;
 
-	public Vector3 fireEffectLocation;
-	public EffectSpec fireEffect;
-	public EffectSpec fireEffectSideways;
-	public EffectSpec fireEffectLight;
+	public GunEffectsController effectsController;
 
 	public GUISkin guiSkin;
 		

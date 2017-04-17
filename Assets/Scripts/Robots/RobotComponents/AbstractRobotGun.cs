@@ -50,7 +50,7 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 		Vector3 objPos = handle.getPosition();
 		bool result = true;
 		RaycastHit hit;
-		Vector3 fireEffectLocation = rifle.worldFireEffectLocation;
+		Vector3 fireEffectLocation = rifle.effectsController.transform.position;
 		Vector3 dir = objPos - fireEffectLocation;
 		dir.Normalize();
 		Physics.Raycast(fireEffectLocation, dir, out hit, rifle.range);

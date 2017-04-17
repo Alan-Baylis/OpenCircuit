@@ -16,6 +16,7 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GameMode gamemode;
 	public CameraManager cameraManager;
+	public EffectsManager effectsManager;
 
     public int robotControllers;
 

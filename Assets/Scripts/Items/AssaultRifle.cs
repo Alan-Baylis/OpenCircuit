@@ -171,13 +171,7 @@ public class AssaultRifle : AbstractGun {
 
 	protected override void doFireEffects() {
 		playFireSound();
-
-		// do fire effects
-		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
-		fireEffect.spawn(effectPosition, -transform.forward);
-		fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
-		fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
-		fireEffectLight.spawn(effectPosition);
+		effectsController.doEffects();
 	}
 
 	private void playFireSound() {

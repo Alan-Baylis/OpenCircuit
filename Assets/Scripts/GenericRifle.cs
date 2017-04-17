@@ -14,13 +14,9 @@ public class GenericRifle : NetworkBehaviour {
     public float fireDelay = 0.1f;
 	public float soundExpirationTime = 10f;
 
-    public Vector3 fireEffectLocation;
-    public EffectSpec fireEffect;
-    public EffectSpec fireEffectSideways;
-    public EffectSpec fireEffectLight;
-
-    public EffectSpec robotHitEffect;
-    public EffectSpec hitEffect;
+	public GunEffectsController effectsController;
+	public AbstractEffectController hitEffectPrefab;
+	public AbstractEffectController robotHitEffectPrefab;
 
     public AudioSource gunshotSoundEmitter;
 
@@ -36,15 +32,11 @@ public class GenericRifle : NetworkBehaviour {
         get { return reverseGunForward ? -transform.forward.normalized : transform.forward.normalized; }
     }
 
-    public Vector3 worldFireEffectLocation {
-        get { return transform.TransformPoint(fireEffectLocation); }
-    }
-
     [ServerCallback]
     void Update() {
         if (lastFiredTime <= Time.time - fireDelay && firing) {
             // Transform cam = holder.getPlayer().cam.transform;
-            shoot(worldFireEffectLocation, gunForward);
+            shoot(effectsController.transform.position, gunForward);
 
             //TODO: implement recoil?
 //	        looker.rotate(
@@ -54,7 +46,7 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     public bool targetInRange(Vector3 targetPosition) {
-        Vector3 objectVector = targetPosition - worldFireEffectLocation;
+        Vector3 objectVector = targetPosition - effectsController.transform.position;
 
         return (1-Vector3.Dot(gunForward, objectVector.normalized)) < .05f;
     }
@@ -67,11 +59,10 @@ public class GenericRifle : NetworkBehaviour {
         lastFiredTime = Time.time;
         //transform.position -= transform.TransformVector(recoilAnimationDistance);
 
-        doFireEffects(position);
-
+        doFireEffects();
     }
 
-    public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
+	public static Vector3 inaccurateDirection(Vector3 direction, float inaccuracy) {
         Vector3 randomAngle = Random.onUnitSphere;
         float angle = Vector3.Angle(direction, randomAngle) /360;
         return Vector3.RotateTowards(direction, Random.onUnitSphere, Mathf.PI *angle *inaccuracy, 0);
@@ -104,10 +95,10 @@ public class GenericRifle : NetworkBehaviour {
                 //if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
                 //	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
                 //}
-                robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point);
             } else {
                 bulletHit(direction, hitInfo.point, hitInfo.normal);
-                hitEffect.spawn(hitInfo.point, hitInfo.normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point);
             }
         } else {
             bulletMiss(direction);
@@ -155,18 +146,19 @@ public class GenericRifle : NetworkBehaviour {
 
     [ClientRpc]
     protected void RpcCreateFireEffects() {
-        doFireEffects(worldFireEffectLocation);
+        doFireEffects();
     }
 
     [ClientRpc]
     protected void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
-        if (!hasAuthority) {
+        if (!isServer) {
             if (type == HitEffectType.DEFAULT) {
-                hitEffect.spawn(location, normal);
+
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location);
             } else if (type == HitEffectType.ROBOT) {
-                robotHitEffect.spawn(location, normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location);
             }
-            doFireEffects(worldFireEffectLocation);
+            doFireEffects();
         }
     }
 
@@ -197,6 +189,10 @@ public class GenericRifle : NetworkBehaviour {
         return calculatedDamage;
     }
 
+	private void doFireEffects() {
+		effectsController.doEffects();
+		playFireSound();
+	}
 
     private void playFireSound() {
         // create sound event
@@ -227,17 +223,6 @@ public class GenericRifle : NetworkBehaviour {
         playSound(gunshotSoundEmitter);
     }
 
-    protected void doFireEffects(Vector3 position) {
-        playFireSound();
-
-        // do fire effects
-	    Vector3 gunForwardDirection = gunForward;
-        fireEffect.spawn(position, gunForwardDirection);
-        fireEffectSideways.spawn(position, -transform.right - gunForwardDirection);
-        fireEffectSideways.spawn(position, transform.right - gunForwardDirection);
-        fireEffectLight.spawn(position);
-    }
-
     protected void playSound(AudioSource soundEmitter) {
         if(soundEmitter != null && soundEmitter.clip != null) {
             soundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
@@ -247,10 +232,5 @@ public class GenericRifle : NetworkBehaviour {
         } else if (soundEmitter.clip == null) {
             Debug.LogWarning("AudioSource clip missing for the '" + GetType() + "' component attached to '" + gameObject.name + "'");
         }
-    }
-
-    void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(worldFireEffectLocation, .1f);
     }
 }
