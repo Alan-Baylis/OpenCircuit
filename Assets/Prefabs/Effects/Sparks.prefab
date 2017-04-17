@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 19851760}
   - component: {fileID: 19931822}
   - component: {fileID: 82000013834465884}
+  - component: {fileID: 114543538836540394}
   m_Layer: 0
   m_Name: Sparks
   m_TagString: Untagged
@@ -39,10 +40,10 @@ ParticleSystem:
   m_GameObject: {fileID: 103590}
   serializedVersion: 5
   lengthInSec: 1.5
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   autoRandomSeed: 1
   startDelay:
     scalar: 0
@@ -2811,7 +2812,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 8e377cff4b1c85947affd086b06fa4c4, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1.2
   Loop: 0
@@ -2887,3 +2888,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114543538836540394
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 103590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc6187e4563f7e940a47ae3935c717ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleEffects:
+  - {fileID: 19851760}
+  hitSoundSource: {fileID: 82000013834465884}

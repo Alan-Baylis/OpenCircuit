@@ -1,18 +1,19 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class GunEffectsController : MonoBehaviour {
+public class GunEffectsController : ParticleEffectController {
 	public Light flash;
 	public float flashDuration = 0.03f;
 
-	public ParticleSystem[] particleEffects;
 
-	public void doEffects() {
-		foreach (ParticleSystem particleSystem in particleEffects) {
-			particleSystem.Play();
-		}
+	public override void doEffects() {
+		base.doEffects();
 		flash.enabled = true;
 		StartCoroutine("stopFlashAfterDuration");
+	}
+
+	public override bool effectFinished() {
+		return base.effectFinished() && !flash.enabled;
 	}
 
 	IEnumerator stopFlashAfterDuration() {

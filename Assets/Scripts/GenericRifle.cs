@@ -15,9 +15,8 @@ public class GenericRifle : NetworkBehaviour {
 	public float soundExpirationTime = 10f;
 
 	public GunEffectsController effectsController;
-
-    public EffectSpec robotHitEffect;
-    public EffectSpec hitEffect;
+	public AbstractEffectController hitEffectPrefab;
+	public AbstractEffectController robotHitEffectPrefab;
 
     public AudioSource gunshotSoundEmitter;
 
@@ -96,10 +95,10 @@ public class GenericRifle : NetworkBehaviour {
                 //if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
                 //	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
                 //}
-                robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point);
             } else {
                 bulletHit(direction, hitInfo.point, hitInfo.normal);
-                hitEffect.spawn(hitInfo.point, hitInfo.normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point);
             }
         } else {
             bulletMiss(direction);
@@ -152,11 +151,12 @@ public class GenericRifle : NetworkBehaviour {
 
     [ClientRpc]
     protected void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
-        if (!hasAuthority) {
+        if (!isServer) {
             if (type == HitEffectType.DEFAULT) {
-                hitEffect.spawn(location, normal);
+
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location);
             } else if (type == HitEffectType.ROBOT) {
-                robotHitEffect.spawn(location, normal);
+	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location);
             }
             doFireEffects();
         }

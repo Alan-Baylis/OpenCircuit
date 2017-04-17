@@ -2014,8 +2014,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667192d077c02e144a05d2581f5b9815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flash: {fileID: 108440459202883178}
-  flashDuration: 0.03
   particleEffects:
   - {fileID: 198081957363751938}
   - {fileID: 198919324446081542}
@@ -2023,6 +2021,8 @@ MonoBehaviour:
   - {fileID: 198197145408859852}
   - {fileID: 198526562588913130}
   - {fileID: 198266368154181136}
+  flash: {fileID: 108440459202883178}
+  flashDuration: 0.03
 --- !u!114 &114220400344794568
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2094,6 +2094,10 @@ MonoBehaviour:
   fireDelay: 0.1
   soundExpirationTime: 10
   effectsController: {fileID: 114173089895671930}
+  hitEffectPrefab: {fileID: 114009059378159868, guid: 3159a50193feafc44b9b7ab9e7b86cb0,
+    type: 2}
+  robotHitEffectPrefab: {fileID: 114543538836540394, guid: c713e3d3d7237fd488d1e87c08414ed2,
+    type: 2}
   robotHitEffect:
     prefab: {fileID: 103590, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
     lifetime: 2
