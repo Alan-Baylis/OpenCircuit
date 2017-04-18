@@ -45,6 +45,12 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientCallback]
 	public void OnDestroy() {
+		if (!isDead && !spectator) {
+			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
+		}
+		if (isLocalPlayer) {
+			GlobalConfig.globalConfig.cameraManager.useSceneCamera();
+		}
 		GlobalConfig.globalConfig.clients.Remove(this);
 	}
 

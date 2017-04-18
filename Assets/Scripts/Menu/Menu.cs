@@ -166,6 +166,9 @@ public class Menu : MonoBehaviour {
 		if (GUI.Button(convertRect(resumeRect, false), "Resume", skin.button)) {
 			toggleInGameMenu();
 		}
+		if (GUI.Button(convertRect(joinRect, false), "Drop out", skin.button)) {
+			dropOut();
+		}
 		adjustFontSize(skin.button, exitRect.height * 0.8f);
 		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
             quit();
@@ -342,10 +345,7 @@ public class Menu : MonoBehaviour {
 			        skin.toggle);
 	        }
 	        if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
-		        IntegerMessage message = new IntegerMessage(spectator ? 1 : 0);
-                ClientScene.AddPlayer(null, 0, message);
-                activeAtStart = false;
-                Cursor.lockState = CursorLockMode.Locked;
+				dropIn();
             }
         } else {
             adjustFontSize(skin.label, 0.07f);
@@ -405,6 +405,20 @@ public class Menu : MonoBehaviour {
 	    } else if (sceneData != null && sceneData.Value.supportedGameModes.Contains(serverConfig.gameMode)) {
             startGame();
 	    }
+	}
+
+	private void dropIn() {
+		IntegerMessage message = new IntegerMessage(spectator ? 1 : 0);
+		ClientScene.AddPlayer(null, 0, message);
+		activeAtStart = false;
+		Cursor.lockState = CursorLockMode.Locked;
+	}
+
+	private void dropOut() {
+		ClientScene.RemovePlayer(0);
+		activeAtStart = true;
+		currentMenu = state.ClientLobby;
+		Cursor.lockState = CursorLockMode.None;
 	}
 
     private void returnToLobby() {

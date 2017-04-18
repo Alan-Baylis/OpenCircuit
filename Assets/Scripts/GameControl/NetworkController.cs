@@ -125,6 +125,7 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 
     private void registerServerMessages() {
         NetworkServer.RegisterHandler(MsgType.AddPlayer, serverSpawnPlayer);
+	    NetworkServer.RegisterHandler(MsgType.RemovePlayer, serverRemovePlayer);
         NetworkServer.RegisterHandler(MsgType.Ready, serverOnClientReady);
     }
 
@@ -167,6 +168,10 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 	    netMsg.reader.ReadInt32();
         GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, netMsg.reader.ReadByte() == 1);
     }
+
+	private void serverRemovePlayer(NetworkMessage netMsg) {
+		NetworkServer.DestroyPlayersForConnection(netMsg.conn);
+	}
 
     private void serverOnClientReady(NetworkMessage netMsg) {
         NetworkServer.SetClientReady(netMsg.conn);

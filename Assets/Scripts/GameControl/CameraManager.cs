@@ -29,6 +29,9 @@ public class CameraManager : MonoBehaviour {
 	}
 
 	public void removeCamera(ClientController controller) {
+		if (cameraMap[controller].cam != null) {
+			disableCamera(cameraMap[controller].cam);
+		}
 		availableCameras.Remove(cameraMap[controller]);
 		cameraMap.Remove(controller);
 		if (lastCamera != null && lastCamera.controller == controller) {
@@ -53,6 +56,15 @@ public class CameraManager : MonoBehaviour {
 			lastCamera = null;
 		}
 		enableCamera(camera);
+		nextCameraIndex = 0;
+	}
+
+	public void useSceneCamera() {
+		if (lastCamera != null) {
+			disableCamera(lastCamera.cam);
+		}
+		lastCamera = sceneCamera;
+		enableCamera(sceneCamera.cam);
 		nextCameraIndex = 0;
 	}
 
