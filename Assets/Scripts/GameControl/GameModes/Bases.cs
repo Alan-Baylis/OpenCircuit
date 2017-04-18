@@ -113,8 +113,9 @@ public class Bases : TeamGameMode {
 	}
 
 	public override int getJoinedPlayerCount(int teamIndex) {
-		if (teamIndex == 0)
-			return GlobalConfig.globalConfig.clients.Count;
+		if (teamIndex == 0) {
+			return GlobalConfig.globalConfig.getPlayerCount();
+		}
 		return 0;
 	}
 

@@ -7,7 +7,9 @@ public class ClientController : NetworkBehaviour {
 	public GameObject playerCamPrefab;
 	public GameObject playerLegsPrefab;
 	public GameObject playerArmsPrefab;
-    public static int numPlayers;
+
+	[SyncVar]
+	public bool spectator;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
@@ -24,11 +26,10 @@ public class ClientController : NetworkBehaviour {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
 
-		if(isServer) {
+		if(isServer && !spectator) {
 			AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
 			if (spawner != null) {
 				spawnPlayerAt(spawner.nextSpawnPos());
-				++numPlayers;
 			} else {
 				Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
 			}
@@ -37,7 +38,7 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientCallback]
 	void Update() {
-		if(isLocalPlayer && isDead && Input.GetButtonDown("Use")) {
+		if (isLocalPlayer && (isDead || spectator) && Input.GetButtonDown("Use")) {
 			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
 	}
@@ -104,9 +105,6 @@ public class ClientController : NetworkBehaviour {
 	[Client]
 	private void setPlayerDead(bool dead) {
 		isDead = dead;
-		if (isLocalPlayer) {
-			GlobalConfig.globalConfig.localPlayerDead = isDead;
-		}
 		if (isDead) {
 			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
 			if(isLocalPlayer) {

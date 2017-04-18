@@ -4,8 +4,6 @@ using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
 
-	public bool localPlayerDead;
-
     public GameObject playerPrefab;
 
 	[SyncVar]
@@ -83,11 +81,19 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
     [Server]
-    public void spawnPlayerForConnection(NetworkConnection connection) {
+    public void spawnPlayerForConnection(NetworkConnection connection, bool spectator) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
-            connection);
+            connection, spectator);
     }
+
+	public int getPlayerCount() {
+		int count = 0;
+		foreach (ClientController clientController in clients) {
+			count += clientController.spectator ? 0 : 1;
+		}
+		return count;
+	}
 
 	public int getRobotCount() {
 		return robotControllers;

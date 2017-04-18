@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using UnityEngine.Networking.NetworkSystem;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
 [RequireComponent(typeof(NetworkDiscovery))]
@@ -21,6 +22,9 @@ public class Menu : MonoBehaviour {
 	private string host = "localhost";
 	private string serverName = "Lazy Setup";
 	private Vector2 scrollPosition = Vector2.zero;
+
+	private bool spectator;
+
 	private NetworkDiscovery nd;
 	private NetworkDiscovery networkDiscovery { get {
 		if (nd == null)
@@ -330,8 +334,16 @@ public class Menu : MonoBehaviour {
     private void doLobby() {
         adjustFontSize(skin.button, exitRect.height * 0.8f);
         if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
-            if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
-                ClientScene.AddPlayer(0);
+	        if (spectator) {
+		        spectator = GUI.Toggle(convertRect(new Rect(0.05f, 0.5f, 0.25f, 0.07f), false), spectator, "Spectator",
+			        skin.toggle);
+	        } else {
+		        spectator = GUI.Toggle(convertRect(new Rect(0.05f, 0.5f, 0.25f, 0.07f), false), spectator, "Player",
+			        skin.toggle);
+	        }
+	        if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
+		        IntegerMessage message = new IntegerMessage(spectator ? 1 : 0);
+                ClientScene.AddPlayer(null, 0, message);
                 activeAtStart = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }

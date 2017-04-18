@@ -31,7 +31,7 @@ public class CameraManager : MonoBehaviour {
 	public void removeCamera(ClientController controller) {
 		availableCameras.Remove(cameraMap[controller]);
 		cameraMap.Remove(controller);
-		if (GlobalConfig.globalConfig.localPlayerDead && lastCamera.controller == controller) {
+		if (lastCamera != null && lastCamera.controller == controller) {
 			nextCameraIndex = 0;
 			switchCamera();
 		}
@@ -43,12 +43,14 @@ public class CameraManager : MonoBehaviour {
 		lastCamera = availableCameras[nextCameraIndex];
 		enableCamera(lastCamera.cam);
 
+		//If the index gets off, incrementCamera() will fix it
 		incrementCamera();
 	}
 
 	public void usePlayerCam(Camera camera) {
 		if (lastCamera != null) {
 			disableCamera(lastCamera.cam);
+			lastCamera = null;
 		}
 		enableCamera(camera);
 		nextCameraIndex = 0;

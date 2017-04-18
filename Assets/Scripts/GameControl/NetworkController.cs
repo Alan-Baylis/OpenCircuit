@@ -92,8 +92,9 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
         //return client;
     }
 
-    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, short playerControllerId = 0) {
+    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn,  bool spectator, short playerControllerId = 0) {
         GameObject player = Instantiate(playerPrefab, pos, rotation);
+	    player.GetComponent<ClientController>().spectator = spectator;
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
     }
 
@@ -163,7 +164,8 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
     *
     */
     private void serverSpawnPlayer(NetworkMessage netMsg) {
-        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn);
+	    netMsg.reader.ReadInt32();
+        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, netMsg.reader.ReadByte() == 1);
     }
 
     private void serverOnClientReady(NetworkMessage netMsg) {

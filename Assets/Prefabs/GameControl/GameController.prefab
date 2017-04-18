@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73575c9d3520046a38ae8378239a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localPlayerDead: 0
   playerPrefab: {fileID: 175040, guid: 7ecf7c856d9af924086760e0e85174a4, type: 2}
   configuration:
     robotsPerPlayer: 10
@@ -165,6 +164,7 @@ MonoBehaviour:
   teamConfig:
   - color: {r: 0, g: 0, b: 0.49803922, a: 1}
   - color: {r: 0.49803922, g: 0, b: 0, a: 1}
+  playerRobotPenalty: 1.5
   respawnDelay: 3
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
