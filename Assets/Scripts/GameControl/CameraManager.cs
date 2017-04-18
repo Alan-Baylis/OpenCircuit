@@ -62,8 +62,10 @@ public class CameraManager : MonoBehaviour {
 	}
 
 	private void disableCamera(Camera cam) {
-		cam.enabled = false;
-		cam.GetComponent<AudioListener>().enabled = false;
+		if (cam != null) {
+			cam.enabled = false;
+			cam.GetComponent<AudioListener>().enabled = false;
+		}
 	}
 
 	private void incrementCamera() {
