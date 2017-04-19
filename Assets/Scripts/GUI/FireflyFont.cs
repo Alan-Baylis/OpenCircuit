@@ -1,61 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class FirefliesDemo : MonoBehaviour {
+public class FireflyFont {
 
-	public string text;
-	public float fontSize = 6;
-	public bool shuffleOnChange = true;
-	public Fireflies.Config fireflyConfig;
+	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, bool center=false) {
+		List<Vector2> positions = new List<Vector2>();
+		offset.x += center ? -(s.Length *letterWidth + (s.Length - 1) *letterGap) *0.5f *fontSize : 0;
+		foreach (char c in s) {
+			getChar(c, positions, offset, fontSize);
+			offset.x += (letterWidth + letterGap) *fontSize;
+		}
+		return positions;
+	}
 
-	private Fireflies fireflies = new Fireflies();
-	private string lastText = "";
+	public static List<Vector2> getChar(char c, Vector2 offset, float multiplier) {
+		List<Vector2> positions = new List<Vector2>();
+		getChar(c, positions, offset, multiplier);
+		return positions;
+	}
 
-	// Update is called once per frame
-	void Update () {
-		fireflies.config = fireflyConfig;
-
-		if (text != lastText) {
-			List<Vector2> positions = new List<Vector2>();
-			int i = 0;
-			foreach(char c in text) {
-				foreach(Vector2 position in characters[c]) {
-					positions.Add((position +new Vector2(i *(letterWidth +1), 0)) *fontSize);
-				}
-				++i;
+	public static void getChar(char c, List<Vector2> positions, Vector2 offset, float multiplier) {
+		if (!characters.ContainsKey(c)) {
+			positions.Add(offset);
+		} else {
+			foreach (Vector2 position in characters[c]) {
+				positions.Add(position *multiplier +offset);
 			}
-			fireflies.setPositions(positions, shuffleOnChange);
-			lastText = text;
 		}
-		fireflies.Update();
 	}
 
-	public void OnGUI() {
-		fireflies.OnGUI(new Vector2(Screen.width /2, 100));
-	}
+	private FireflyFont() {}
 
-	protected int getIndexCount() {
-		int count = 0;
-		foreach(char letter in text) {
-			count += characters[letter].Length;
-		}
-		return count;
-	}
+	private const int letterWidth = 5;
+	private const int letterHeight = 9; // 7 for primary, 2 for hanging letters
+	private const float letterGap = 1;
 
-	private Rect centeredRect(Vector2 position, Vector2 size) {
-		return new Rect(position - size / 2, size);
-	}
-
-	protected class Firefly {
-		public Vector2 position, velocity;
-		public int letterIndex, positionIndex;
-	}
-
-
-	private int letterWidth = 5;
-	private int letterHeight = 9; // 7 for primary, 2 for hanging letters
-
-	private Dictionary<char, Vector2[]> characters = new Dictionary<char, Vector2[]> {
+	private static readonly Dictionary<char, Vector2[]> characters = new Dictionary<char, Vector2[]> {
 		{'0', new Vector2[] {
 				new Vector2(1, 0),
 				new Vector2(2, 0),
@@ -224,4 +205,5 @@ public class FirefliesDemo : MonoBehaviour {
 				new Vector2(1, 6),
 			}},
 	};
+
 }

@@ -94,6 +94,10 @@ public class Fireflies {
 		}
 	}
 
+	public bool isClear() {
+		return fireflies.Count == 0 && targetCount == 0;
+	}
+
 	private static void shuffle<T>(List<T> list) {
 		for (int i = list.Count -1; i > 0; --i) {
 			int j = Random.Range(0, i);
