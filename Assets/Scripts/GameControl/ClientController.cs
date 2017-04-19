@@ -25,6 +25,8 @@ public class ClientController : NetworkBehaviour {
 		if (player != null) {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
+		if (isLocalPlayer)
+			GlobalConfig.globalConfig.localClient = this;
 
 		if(isServer && !spectator) {
 			AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();

@@ -9,11 +9,13 @@ public class Bases : TeamGameMode {
 	public CentralRobotController centralRobotControllerPrefab;
 
 	private RobotSpawner[] spawners;
+
 	private List<RespawnJob> respawnJobs = new List<RespawnJob>();
 
 	private Dictionary<int, CentralRobotController> centralRobotControllers = new Dictionary<int, CentralRobotController>();
 
 	private AbstractPlayerSpawner myPlayerSpawner;
+	private int remainingRespawnTime;
 
 	private AbstractPlayerSpawner playerSpawner {
 		get {
@@ -35,16 +37,30 @@ public class Bases : TeamGameMode {
 		}
 	}
 
-	[ServerCallback]
 	protected override void Update() {
-		base.Update();
-		for (int i = respawnJobs.Count - 1; i >= 0; --i) {
-			if (respawnJobs[i].timeRemaining <= 0f) {
-				playerSpawner.respawnPlayer(respawnJobs[i].controller);
-				respawnJobs.RemoveAt(i);
-			} else {
-				respawnJobs[i] = new RespawnJob(respawnJobs[i].controller, respawnJobs[i].timeRemaining - Time.deltaTime);
+		if (isServer) {
+			base.Update();
+			for (int i = respawnJobs.Count - 1; i >= 0; --i) {
+				if (respawnJobs[i].respawnTime <= Time.time) {
+					playerSpawner.respawnPlayer(respawnJobs[i].controller);
+					respawnJobs.RemoveAt(i);
+				}
 			}
+		}
+		bool respawning = false;
+		foreach (RespawnJob job in respawnJobs) {
+			if (job.controller == GlobalConfig.globalConfig.localClient) {
+				respawning = true;
+				int timeLeft = Mathf.CeilToInt(job.respawnTime -Time.time);
+				if (timeLeft != remainingRespawnTime) {
+					HUD.hud.setFireflyElement("respawnTimer", FireflyFont.getString(
+						timeLeft.ToString(), 0.02f, new Vector2(0, -0.4f), true), false);
+					remainingRespawnTime = timeLeft;
+				}
+			}
+		}
+		if (!respawning) {
+			HUD.hud.clearFireflyElement("respawnTimer");
 		}
 	}
 
@@ -85,7 +101,7 @@ public class Bases : TeamGameMode {
 	[Server]
 	public override void onPlayerDeath(Player player) {
 		player.clientController.destroyPlayer();
-		respawnJobs.Add(new RespawnJob(player.clientController, respawnDelay));
+		respawnJobs.Add(new RespawnJob(player.clientController, Time.time +respawnDelay));
 	}
 
 	[Server]
@@ -128,11 +144,11 @@ public class Bases : TeamGameMode {
 
 	private struct RespawnJob {
 		public readonly ClientController controller;
-		public readonly float timeRemaining;
+		public readonly float respawnTime;
 
-		public RespawnJob(ClientController playerController, float time) {
+		public RespawnJob(ClientController playerController, float respawnTime) {
 			controller = playerController;
-			timeRemaining = time;
+			this.respawnTime = respawnTime;
 		}
 	}
 }

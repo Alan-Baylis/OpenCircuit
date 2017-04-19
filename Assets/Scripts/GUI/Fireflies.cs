@@ -8,6 +8,12 @@ public class Fireflies {
 	private List<Firefly> fireflies = new List<Firefly>();
 	private int targetCount;
 
+	public Fireflies() {}
+
+	public Fireflies(Config config) {
+		this.config = config;
+	}
+
 	public void Update() {
 		float deltaTime = Mathf.Min(Time.deltaTime, 0.05f);
 		int i = 0;
@@ -31,7 +37,7 @@ public class Fireflies {
 			}
 			fly.position += movement;
 			diff = fly.target -fly.position;
-			if (diff.sqrMagnitude < 1 /config.fireflySize) {
+			if (diff.sqrMagnitude < config.fireflySize *config.fireflySize /2) {
 				fly.position = fly.target;
 				fly.velocity = Vector2.zero;
 				continue;
@@ -57,16 +63,18 @@ public class Fireflies {
 		}
 	}
 
-	public void OnGUI(Vector2 position) {
+	public void OnGUI(Vector2 offset, float scale) {
+		Vector2 normalSize = Vector2.one *config.fireflySize *scale;
 		foreach(Firefly fly in fireflies) {
 			Color col = config.fireflyColor;
 			col.a = fly.alpha;
 			GUI.color = col;
 
 			float sizeMult = Mathf.Max(1, Mathf.Min(10, Mathf.Pow(fly.velocity.sqrMagnitude, 0.1f)));
-			Vector2 flyPosition = position + fly.position;
-			GUI.DrawTexture(centeredRect(flyPosition, Vector2.one *config.fireflySize), config.fireflyTexture);
-			GUI.DrawTexture(centeredRect(flyPosition, Vector2.one *config.fireflySize *sizeMult), config.glowTexture);
+			Vector2 velocitySize = normalSize *sizeMult;
+			Vector2 flyPosition = offset + fly.position *scale;
+			GUI.DrawTexture(centeredRect(flyPosition, normalSize), config.fireflyTexture);
+			GUI.DrawTexture(centeredRect(flyPosition, velocitySize), config.glowTexture);
 		}
 	}
 
@@ -82,20 +90,31 @@ public class Fireflies {
 				++i;
 			} else {
 				fly.target = randomInRect(config.spawnPosition);
-				fly.velocity += new Vector2(-Random.value *100 -200, Random.value *10 -5);
+				fly.velocity += randomInRect(config.escapeSpeed);
 			}
 		}
 		for (; i<targetCount; ++i) {
 			Firefly firefly = new Firefly();
 			firefly.target = positions[i];
 			firefly.position = randomInRect(config.spawnPosition);
-			firefly.velocity = new Vector2(Random.value *100 +200, 0);
+			firefly.velocity = randomInRect(config.spawnSpeed);
 			fireflies.Add(firefly);
 		}
 	}
 
+	public bool unassign() {
+		if (targetCount == 0)
+			return false;
+		setPositions(new List<Vector2>(), false);
+		return true;
+	}
+
 	public bool isClear() {
 		return fireflies.Count == 0 && targetCount == 0;
+	}
+
+	public bool isAssigned() {
+		return targetCount != 0;
 	}
 
 	private static void shuffle<T>(List<T> list) {
@@ -132,5 +151,7 @@ public class Fireflies {
 		public Texture glowTexture;
 		public Color fireflyColor;
 		public Rect spawnPosition;
+		public Rect spawnSpeed;
+		public Rect escapeSpeed;
 	}
 }

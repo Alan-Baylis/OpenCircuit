@@ -16,6 +16,9 @@ public class GlobalConfig : NetworkBehaviour {
 	public CameraManager cameraManager;
 	public EffectsManager effectsManager;
 
+	[System.NonSerialized]
+	public ClientController localClient;
+
     private int robotControllers;
 
 	public HashSet<ClientController> clients = new HashSet<ClientController>();

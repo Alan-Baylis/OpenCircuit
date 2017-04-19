@@ -23,7 +23,7 @@ public class FirefliesDemo : MonoBehaviour {
 	}
 
 	public void OnGUI() {
-		fireflies.OnGUI(new Vector2(Screen.width /2, 100));
+		fireflies.OnGUI(new Vector2(Screen.width /2, 100), 1);
 	}
 
 	private Rect centeredRect(Vector2 position, Vector2 size) {
