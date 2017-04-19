@@ -13,15 +13,6 @@ public class TowerSpawner : AbstractRobotComponent {
 		GameObject newTower = Instantiate(towerPrefab, position + offset, towerPrefab.transform.rotation);
 
 		RobotController controller = newTower.GetComponent<RobotController>();
-		NetworkServer.Spawn(newTower);
-
-		foreach (GameObject componentPrefab in components) {
-			GameObject component = Instantiate(componentPrefab, position + offset + componentPrefab.transform.position, componentPrefab.transform.rotation);
-			component.GetComponent<NetworkParenter>().setParentId(controller.netId);
-			NetworkServer.Spawn(component);
-
-		}
-
 		if (getController().GetComponent<TeamId>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
 			Bases gameMode = (Bases)GlobalConfig.globalConfig.gamemode;
 			int teamId = getController().GetComponent<TeamId>().id;
@@ -30,6 +21,13 @@ public class TowerSpawner : AbstractRobotComponent {
 			team.id = teamId;
 			team.enabled = true;
 		}
-		return newTower;
+		NetworkServer.Spawn(newTower);
+
+		foreach (GameObject componentPrefab in components) {
+			GameObject component = Instantiate(componentPrefab, position + offset + componentPrefab.transform.position, componentPrefab.transform.rotation);
+			component.GetComponent<NetworkParenter>().setParentId(controller.netId);
+			NetworkServer.Spawn(component);
+		}
+
 	}
 }

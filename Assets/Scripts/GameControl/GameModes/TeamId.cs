@@ -15,7 +15,9 @@ public class TeamId : NetworkBehaviour {
     [ServerCallback]
     void Start() {
         Label label = GetComponent<Label>();
-        label.setTag(new Tag(TagEnum.Team, 0, label.labelHandle));
+	    if (label != null) {
+		    label.setTag(new Tag(TagEnum.Team, 0, label.labelHandle));
+	    }
     }
 
 	[ServerCallback]

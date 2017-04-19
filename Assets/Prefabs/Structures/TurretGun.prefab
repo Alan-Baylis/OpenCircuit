@@ -196,6 +196,7 @@ GameObject:
   - component: {fileID: 114338509190236142}
   - component: {fileID: 82335301108674962}
   - component: {fileID: 114805857318583770}
+  - component: {fileID: 114833672161672888}
   m_Layer: 0
   m_Name: TurretGun
   m_TagString: Untagged
@@ -718,6 +719,22 @@ MonoBehaviour:
   interpolationRate: 0.2
   networkChannel: 1
   syncTarget: {fileID: 0}
+--- !u!114 &114833672161672888
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1868904011467910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 10
+  buildOrder: []
+  initialized: 0
+  startTime: 0
+  timePerObject: 0
 --- !u!114 &114975457883450202
 MonoBehaviour:
   m_ObjectHideFlags: 1
