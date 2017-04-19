@@ -1370,9 +1370,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 10
+  time: 5
+  margin: 0.5
   buildOrder: []
   initialized: 0
+  completed: 0
+  waiting: 0
   startTime: 0
   timePerObject: 0
 --- !u!114 &114657157657239662

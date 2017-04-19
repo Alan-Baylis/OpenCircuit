@@ -147,7 +147,7 @@ MonoBehaviour:
     fadeSpeed: 5
     fireflyTexture: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
     glowTexture: {fileID: 2800000, guid: 4dbdac1fe2b35954d9029417fd785115, type: 3}
-    fireflyColor: {r: 1, g: 1, b: 1, a: 1}
+    fireflyColor: {r: 1, g: 1, b: 0.816, a: 1}
     spawnPosition:
       serializedVersion: 2
       x: -0.1

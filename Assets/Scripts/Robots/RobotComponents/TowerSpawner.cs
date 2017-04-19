@@ -9,7 +9,7 @@ public class TowerSpawner : AbstractRobotComponent {
 
 
 	[Server]
-	public GameObject buildTower(Vector3 position) {
+	public void buildTower(Vector3 position) {
 		GameObject newTower = Instantiate(towerPrefab, position + offset, towerPrefab.transform.rotation);
 
 		RobotController controller = newTower.GetComponent<RobotController>();

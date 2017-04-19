@@ -130,7 +130,7 @@ public class AssaultRifle : AbstractGun {
 				navAgent.baseOffset = 1.5f;
 			}
 		}
-		if(health != null) {
+		if(health != null && health.enabled) {
 			health.hurt(calculateDamage(direction, normal));
 		}
 	}
