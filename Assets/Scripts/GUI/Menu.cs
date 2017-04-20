@@ -9,13 +9,13 @@ using UnityEngine.Networking.NetworkSystem;
 [RequireComponent(typeof(NetworkDiscovery))]
 public class Menu : MonoBehaviour {
 
-	private Rect hostRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
+	private Rect topRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
-	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect optionsRect = new Rect(0.05f, 0.35f, 0.5f, 0.07f);
+	private Rect spectateRect = new Rect(0.05f, 0.55f, 0.5f, 0.07f);
+	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect backRect = new Rect(0.05f, 0.8f, 0.5f, 0.07f);
 	private Rect titleRect = new Rect(0.05f, 0.05f, 0.75f, 0.1f);
-	private Rect resumeRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
 	private float endTextFontSize = .2f;
@@ -162,8 +162,8 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void doInGameMenu() {
-		GUIUtil.adjustFontSize(skin.button, resumeRect.height *0.8f);
-		if (GUIUtil.button("Resume", resumeRect, skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, topRect.height *0.8f);
+		if (GUIUtil.button("Resume", topRect, skin.button)) {
 			toggleInGameMenu();
 		}
 		if (GUIUtil.button("Drop out", joinRect, skin.button)) {
@@ -185,8 +185,8 @@ public class Menu : MonoBehaviour {
 		GUIUtil.adjustFontSize(skin.label, titleRect.height);
 		GUI.Label(GUIUtil.convertRect(titleRect, false), "Guns 'n' Robots", skin.label);
 
-		GUIUtil.adjustFontSize(skin.button, hostRect.height * 0.8f);
-		if (GUIUtil.button("Host", hostRect, skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, topRect.height * 0.8f);
+		if (GUIUtil.button("Host", topRect, skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Host;
 		    SceneData ? activeSceneData = SceneCatalog.sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
@@ -256,8 +256,8 @@ public class Menu : MonoBehaviour {
 		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Configure Server");
 
 		// start button
-		GUIUtil.adjustFontSize(skin.button, hostRect.height * 0.8f);
-		if (GUIUtil.button("Start Hosting", hostRect)) {
+		GUIUtil.adjustFontSize(skin.button, topRect.height * 0.8f);
+		if (GUIUtil.button("Start Hosting", topRect)) {
 			begin();
         }
 
@@ -337,12 +337,9 @@ public class Menu : MonoBehaviour {
     private void doLobby() {
         GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
         if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
-	        if (spectator) {
-				spectator = GUI.Toggle(GUIUtil.convertRect(new Rect(0.05f, 0.5f, 0.25f, 0.07f), false), spectator, "Spectator",
-			        skin.toggle);
-	        } else {
-				spectator = GUI.Toggle(GUIUtil.convertRect(new Rect(0.05f, 0.5f, 0.25f, 0.07f), false), spectator, "Player",
-			        skin.toggle);
+			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
+		        spectator = true;
+		        dropIn();
 	        }
 			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
 				dropIn();
