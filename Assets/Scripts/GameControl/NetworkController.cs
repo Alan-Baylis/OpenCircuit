@@ -6,6 +6,8 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 
     public static NetworkController networkController;
 
+	public LogFilter.FilterLevel logLevel;
+
     //Server fields
     private NetworkClient localClient;
 
@@ -17,6 +19,7 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 	void Start () {
 	    DontDestroyOnLoad(gameObject);
 	    networkController = this;
+		LogFilter.currentLogLevel = (int)logLevel;
 	}
 
     public bool listen() {
@@ -52,6 +55,19 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
         connectLocalClient();
         return true;
     }
+
+	public void stopListening() {
+		if (!NetworkServer.active)
+			return;
+
+		NetworkServer.Shutdown();
+
+		if (localClient != null) {
+			localClient.Disconnect();
+			localClient.Shutdown();
+			localClient = null;
+		}
+	}
 
     public void connect() {
 

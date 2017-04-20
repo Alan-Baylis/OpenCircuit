@@ -257,7 +257,7 @@ public class Menu : MonoBehaviour {
 
 		// start button
 		GUIUtil.adjustFontSize(skin.button, topRect.height * 0.8f);
-		if (GUIUtil.button("Start Hosting", topRect)) {
+		if (GUIUtil.button("Start Game", topRect)) {
 			begin();
         }
 
@@ -265,33 +265,34 @@ public class Menu : MonoBehaviour {
 		GUIUtil.adjustFontSize(skin.label, 0.03f);
 		GUIUtil.adjustFontSize(skin.textField, 0.03f);
 		GUIUtil.adjustFontSize(skin.button, 0.03f);
-		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Server Name: ");
-		serverName = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), serverName);
-		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.45f, 0.3f, 0.03f), false), "Robot Spawn Rate: ");
-		serverConfig.robotSpawnRatePerSecond = GUIUtil.numberField(new Rect(0.35f, 0.45f, 0.2f, 0.03f), serverConfig.robotSpawnRatePerSecond);
-		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.5f, 0.3f, 0.03f), false), "Spawn Rate Increase: ");
-		serverConfig.spawnRateIncreasePerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.5f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
-		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.55f, 0.3f, 0.03f), false), "Robots per Player: ");
-		serverConfig.robotsPerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.55f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
+//		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Server Name: ");
+//		serverName = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), serverName);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.3f, 0.03f), false), "Robot Spawn Rate: ");
+		serverConfig.robotSpawnRatePerSecond = GUIUtil.numberField(new Rect(0.35f, 0.3f, 0.2f, 0.03f), serverConfig.robotSpawnRatePerSecond);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.35f, 0.3f, 0.03f), false), "Spawn Rate Increase: ");
+		serverConfig.spawnRateIncreasePerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.35f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.4f, 0.3f, 0.03f), false), "Robots per Team: ");
+		serverConfig.robotsPerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.4f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
 		GameMode.GameModes [] modes = (GameMode.GameModes[])System.Enum.GetValues(typeof(GameMode.GameModes));
 		List<string> modeStrings = new List<string>();
 		foreach (GameMode.GameModes mode in modes) {
 			modeStrings.Add(mode.ToString());
 		}
 
-		int returnValue = GUIUtil.dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
-	    GameMode.GameModes selectedMode =
-	        (GameMode.GameModes) System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
-	    if (selectedMode != serverConfig.gameMode) {
-	        loadDefaultSceneConfigurationFor(SceneCatalog.sceneCatalog.getScenesForGameMode(selectedMode)[0].path);
-	        serverConfig.gameMode = selectedMode;
-	    }
-
+//		int returnValue = GUIUtil.dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
+//	    GameMode.GameModes selectedMode =
+//	        (GameMode.GameModes) System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
+//	    if (selectedMode != serverConfig.gameMode) {
+//	        loadDefaultSceneConfigurationFor(SceneCatalog.sceneCatalog.getScenesForGameMode(selectedMode)[0].path);
+//	        serverConfig.gameMode = selectedMode;
+//	    }
+		serverConfig.gameMode = GameMode.GameModes.BASES;
 	    // back button
-		GUIUtil.adjustFontSize(skin.button, backRect.height * 0.8f);
-		if (GUIUtil.button("Back", backRect, skin.button)) {
-			currentMenu = menuHistory.Pop();
-		}
+		//GUIUtil.adjustFontSize(skin.button, backRect.height * 0.8f);
+		//if (GUIUtil.button("Cancel", backRect, skin.button)) {
+		//	currentMenu = menuHistory.Pop();
+		//	stopListen();
+		//}
 	}
 
 	private void doJoin() {
@@ -410,10 +411,16 @@ public class Menu : MonoBehaviour {
         NetworkController.networkController.listen();
         if (!networkDiscovery.running) {
             networkDiscovery.Initialize();
-            networkDiscovery.broadcastData = serverName;
+	        networkDiscovery.broadcastData = System.Environment.MachineName;
             networkDiscovery.StartAsServer();
+	        networkDiscovery.Initialize();
         }
     }
+
+	private void stopListen() {
+		networkDiscovery.StopBroadcast();
+		NetworkController.networkController.stopListening();
+	}
 
     IEnumerator startGameWhenReady() {
         while (!NetworkController.networkController.allClientsReady()) {
