@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class HUD : MonoBehaviour {
@@ -16,11 +15,16 @@ public class HUD : MonoBehaviour {
 	}
 
 	public void Update() {
+		List<string> staleElements = new List<string>();
 		foreach (string element in elements.Keys) {
 			if (elements[element].isClear())
-				elements.Remove(element);
+				staleElements.Add(element);
 			else
 				elements[element].Update();
+		}
+
+		foreach (string element in staleElements) {
+			elements.Remove(element);
 		}
 	}
 

@@ -17,6 +17,8 @@ public class Bases : TeamGameMode {
 	private AbstractPlayerSpawner myPlayerSpawner;
 	private int remainingRespawnTime;
 
+	private RespawnJob ? clientRespawnJob;
+
 	private AbstractPlayerSpawner playerSpawner {
 		get {
 			if (myPlayerSpawner == null) {
@@ -47,20 +49,17 @@ public class Bases : TeamGameMode {
 				}
 			}
 		}
-		bool respawning = false;
-		foreach (RespawnJob job in respawnJobs) {
-			if (job.controller == GlobalConfig.globalConfig.localClient) {
-				respawning = true;
-				int timeLeft = Mathf.CeilToInt(job.respawnTime -Time.time);
-				if (timeLeft != remainingRespawnTime) {
-					HUD.hud.setFireflyElement("respawnTimer", FireflyFont.getString(
-						timeLeft.ToString(), 0.02f, new Vector2(0, -0.4f), true), false);
-					remainingRespawnTime = timeLeft;
-				}
+		if (clientRespawnJob != null) {
+			int timeLeft = Mathf.CeilToInt(clientRespawnJob.Value.respawnTime - Time.time);
+			if (timeLeft != remainingRespawnTime) {
+				HUD.hud.setFireflyElement("respawnTimer", FireflyFont.getString(
+					timeLeft.ToString(), 0.02f, new Vector2(0, -0.4f), true), false);
+				remainingRespawnTime = timeLeft;
 			}
-		}
-		if (!respawning) {
-			HUD.hud.clearFireflyElement("respawnTimer");
+			if (remainingRespawnTime == 0) {
+				clientRespawnJob = null;
+				HUD.hud.clearFireflyElement("respawnTimer");
+			}
 		}
 	}
 
@@ -100,8 +99,9 @@ public class Bases : TeamGameMode {
 
 	[Server]
 	public override void onPlayerDeath(Player player) {
+		RpcStartTimerFor(player.clientController.netId);
 		player.clientController.destroyPlayer();
-		respawnJobs.Add(new RespawnJob(player.clientController, Time.time +respawnDelay));
+		respawnJobs.Add(new RespawnJob(player.clientController, respawnDelay));
 	}
 
 	[Server]
@@ -135,6 +135,13 @@ public class Bases : TeamGameMode {
 		return 0;
 	}
 
+	[ClientRpc]
+	private void RpcStartTimerFor(NetworkInstanceId localClient) {
+		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
+			clientRespawnJob = new RespawnJob(GlobalConfig.globalConfig.localClient, respawnDelay);
+		}
+	}
+
 	[Server]
 	private void initializeCRCs() {
 		foreach (Team team in teams.Values) {
@@ -148,7 +155,7 @@ public class Bases : TeamGameMode {
 
 		public RespawnJob(ClientController playerController, float respawnTime) {
 			controller = playerController;
-			this.respawnTime = respawnTime;
+			this.respawnTime = Time.time + respawnTime;
 		}
 	}
 }
