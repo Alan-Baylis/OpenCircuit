@@ -23,8 +23,6 @@ public class Menu : MonoBehaviour {
 	private string serverName = "Lazy Setup";
 	private Vector2 scrollPosition = Vector2.zero;
 
-	private bool spectator;
-
 	private NetworkDiscovery nd;
 	private NetworkDiscovery networkDiscovery { get {
 		if (nd == null)
@@ -339,11 +337,10 @@ public class Menu : MonoBehaviour {
         GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
         if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
 			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
-		        spectator = true;
-		        dropIn();
+		        dropIn(true);
 	        }
 			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
-				dropIn();
+				dropIn(false);
             }
         } else {
 			GUIUtil.adjustFontSize(skin.label, 0.07f);
@@ -375,7 +372,7 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	private void dropIn() {
+	private void dropIn(bool spectator) {
 		IntegerMessage message = new IntegerMessage(spectator ? 1 : 0);
 		ClientScene.AddPlayer(null, 0, message);
 		activeAtStart = false;
