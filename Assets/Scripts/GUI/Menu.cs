@@ -71,13 +71,13 @@ public class Menu : MonoBehaviour {
 	public void pause() {
 		if (paused()) return;
 		Cursor.visible = true;
-//		Cursor.lockState = CursorLockMode.None;
+		Cursor.lockState = CursorLockMode.None;
 		activeAtStart = true;
 	}
 
 	public void unpause() {
 		if (!paused()) return;
-//		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.lockState = CursorLockMode.Locked;
 		activeAtStart = false;
 		menuHistory.Clear();
 	}

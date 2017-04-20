@@ -2098,14 +2098,6 @@ MonoBehaviour:
     type: 2}
   robotHitEffectPrefab: {fileID: 114543538836540394, guid: c713e3d3d7237fd488d1e87c08414ed2,
     type: 2}
-  robotHitEffect:
-    prefab: {fileID: 103590, guid: c713e3d3d7237fd488d1e87c08414ed2, type: 2}
-    lifetime: 2
-    randomizePitch: 0
-  hitEffect:
-    prefab: {fileID: 196292, guid: 3159a50193feafc44b9b7ab9e7b86cb0, type: 2}
-    lifetime: 30
-    randomizePitch: 0
   gunshotSoundEmitter: {fileID: 82759292565948152}
   firing: 0
   reverseGunForward: 1
@@ -2161,7 +2153,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -1122361578
@@ -4738,7 +4730,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -1879403948
@@ -7315,7 +7307,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -1591031346
@@ -9892,7 +9884,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -495596014
@@ -12469,7 +12461,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 1034330911
@@ -15046,7 +15038,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 1180741525

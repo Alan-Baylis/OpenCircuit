@@ -1824,6 +1824,7 @@ MonoBehaviour:
   maxResponsiveness: 0.1
   stepBump: {x: 0.1, y: -0.1, z: 0}
   zoomLevel: 1.5
+  soundExpirationTime: 10
   fireSoundThreatLevel: 5
   fireSoundThreatRate: 0.3
   fireSoundVolume: 0.3
@@ -1846,7 +1847,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 8300737604f6aa242958c1a2e7c39779, type: 3}
   - {fileID: 8300000, guid: 9023a5ba9be23b54499fbf95e5e2caca, type: 3}
   - {fileID: 8300000, guid: 497b73a0c8d6291469ce5a2951353971, type: 3}
-  soundExpirationTime: 10
   inaccuracy: 0.1
   range: 1000
   damage: 5
@@ -2381,7 +2381,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -1122361578
@@ -4958,7 +4958,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -1591031346
@@ -7535,7 +7535,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -1879403948
@@ -10112,7 +10112,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 1034330911
@@ -12689,7 +12689,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 1180741525
@@ -15266,7 +15266,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -495596014
