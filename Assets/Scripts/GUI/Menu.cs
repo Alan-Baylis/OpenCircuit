@@ -373,7 +373,8 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void dropIn(bool spectator) {
-		IntegerMessage message = new IntegerMessage(spectator ? 1 : 0);
+		StringMessage message = new StringMessage(spectator ? "1" : "0" + System.Environment.MachineName);
+
 		ClientScene.AddPlayer(null, 0, message);
 		activeAtStart = false;
 		Cursor.lockState = CursorLockMode.Locked;

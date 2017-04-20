@@ -18,7 +18,7 @@ public class NetworkParenter : NetworkBehaviour {
 
 	[Server]
 	public void setParentId(NetworkInstanceId id) {
-		this.parentId = id;
+		parentId = id;
 	}
 
 	public NetworkInstanceId getParentId() {

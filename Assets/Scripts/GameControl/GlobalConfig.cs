@@ -84,10 +84,10 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
     [Server]
-    public void spawnPlayerForConnection(NetworkConnection connection, bool spectator) {
+    public void spawnPlayerForConnection(NetworkConnection connection, string username, bool spectator) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
-            connection, spectator);
+            connection, username, spectator);
     }
 
 	public int getPlayerCount() {

@@ -20,6 +20,9 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar(hook="setPlayerDead")]
 	private bool isDead;
 
+	[SyncVar]
+	public string playerName;
+
 	void Start() {
 		GlobalConfig.globalConfig.clients.Add(this);
 		if (player != null) {
@@ -81,7 +84,7 @@ public class ClientController : NetworkBehaviour {
 		playerArms.transform.parent = newPlayer.transform;
 		playerArms.transform.localPosition = playerArmsPrefab.transform.localPosition;
 
-		newPlayer.name = "player" + Random.Range(1, 20);
+		newPlayer.name = "player-" + playerName;
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
 	    if (mode != null) {
 	        TeamId team = newPlayer.GetComponent<TeamId>();
@@ -91,6 +94,7 @@ public class ClientController : NetworkBehaviour {
 
 	    NetworkServer.Spawn(newPlayer);
 		id = newPlayer.GetComponent<Player>().netId;
+		newPlayer.GetComponent<NameTag>().name = playerName;
 		playerCam.GetComponent<NetworkParenter>().setParentId(id);
 		playerLegs.GetComponent<NetworkParenter>().setParentId(id);
 		playerArms.GetComponent<NetworkParenter>().setParentId(id);
