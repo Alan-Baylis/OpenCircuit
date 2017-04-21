@@ -437,10 +437,12 @@ public class Menu : MonoBehaviour {
         //GetComponent<AudioListener>().enabled = false;
         //NetworkServer.SpawnObjects();
 	    GlobalConfig [] globalConfigs = Resources.FindObjectsOfTypeAll<GlobalConfig>();
-	    GlobalConfig globalConfig = globalConfigs[0];
+
+	    GlobalConfig globalConfig;
 	    if (globalConfigs.Length == 1) {
 		    globalConfig = Instantiate(globalConfigPrefab);
 	    } else {
+		    globalConfig = globalConfigs[0].gameObject.scene.name == null ? globalConfigs[1] : globalConfigs[0];
 		    globalConfig.gameObject.SetActive(true);
 	    }
 

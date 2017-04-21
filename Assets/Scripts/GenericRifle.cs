@@ -86,9 +86,9 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     [Server]
-    private void doBullet(Vector3 direction, Vector3? position = null, Vector3? normal = null, NetworkInstanceId? hit = null) {
+    private void doBullet(Vector3 direction, Vector3? position = null, Vector3? normal = null, Label hit = null) {
         if (hit != null) {
-            applyDamage(hit.Value, direction, normal.Value);
+            applyDamage(hit, direction, normal.Value);
         }
     }
 
@@ -99,11 +99,12 @@ public class GenericRifle : NetworkBehaviour {
         RaycastHit hitInfo;
         bool hit = Physics.Raycast(position, direction, out hitInfo, range);
         if (hit) {
-            Health health = getParentComponent<Health>(hitInfo.collider.transform);
-            if (health != null) {
-                bulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
+	        Label label = getParentComponent<Label>(hitInfo.collider.transform);
+            //Health health = getParentComponent<Health>(hitInfo.collider.transform);
+            if (label != null) {
+                bulletHitHealth(direction, hitInfo.point, hitInfo.normal, label);
 
-                Rigidbody rb = health.GetComponent<Rigidbody>();
+                Rigidbody rb = label.GetComponent<Rigidbody>();
                 if (rb != null) {
                     rb.AddForceAtPosition(direction * impulse, hitInfo.point);
                 }
@@ -144,7 +145,7 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     [Server]
-    protected virtual void bulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
+    protected virtual void bulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, Label hit) {
         doBullet(direction, position, normal, hit);
         RpcCreateShotEffect(HitEffectType.ROBOT, position, direction, normal);
     }
@@ -180,10 +181,8 @@ public class GenericRifle : NetworkBehaviour {
     }
 
     [Server]
-    protected void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
-        GameObject hitObject = ClientScene.FindLocalObject(hit);
-        Health health = hitObject.GetComponent<Health>();
-        UnityEngine.AI.NavMeshAgent navAgent = hitObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
+    protected void applyDamage(Label hit, Vector3 direction, Vector3 normal) {
+        UnityEngine.AI.NavMeshAgent navAgent = hit.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if(navAgent != null) {
             navAgent.speed -= 2f;
             if(navAgent.speed < 1f) {
@@ -194,8 +193,9 @@ public class GenericRifle : NetworkBehaviour {
                 navAgent.baseOffset = 1.5f;
             }
         }
-        if(health != null && health.enabled) {
-            health.hurt(calculateDamage(direction, normal));
+        if(hit != null && hit.enabled) {
+	   		hit.sendTrigger(gameObject, new DamageTrigger(calculateDamage(direction, normal)));
+            //health.hurt(calculateDamage(direction, normal));
         }
     }
 

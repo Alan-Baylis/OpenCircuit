@@ -9,6 +9,7 @@ public class Bases : TeamGameMode {
 	public CentralRobotController centralRobotControllerPrefab;
 	public List<Label> firstTeamLocations = new List<Label>();
 	public List<Label> secondTeamLocations = new List<Label>();
+	Dictionary<ClientController, float> scoreMap = new Dictionary<ClientController, float>();
 
 	private RobotSpawner[] spawners;
 
@@ -20,6 +21,7 @@ public class Bases : TeamGameMode {
 	private int remainingRespawnTime;
 
 	private RespawnJob ? clientRespawnJob;
+	private float? clientScore;
 
 	private AbstractPlayerSpawner playerSpawner {
 		get {
@@ -64,13 +66,18 @@ public class Bases : TeamGameMode {
 			int timeLeft = Mathf.CeilToInt(clientRespawnJob.Value.respawnTime - Time.time);
 			if (timeLeft != remainingRespawnTime) {
 				HUD.hud.setFireflyElement("respawnTimer", FireflyFont.getString(
-					timeLeft.ToString(), 0.02f, new Vector2(0, -0.4f), true), false);
+					timeLeft.ToString(), 0.02f, new Vector2(-.01f, -.01f), true), false);
 				remainingRespawnTime = timeLeft;
 			}
 			if (remainingRespawnTime == 0) {
 				clientRespawnJob = null;
 				HUD.hud.clearFireflyElement("respawnTimer");
 			}
+		}
+
+		if (clientScore != null) {
+			HUD.hud.setFireflyElement("clientScore",
+				FireflyFont.getString(clientScore.Value.ToString("0."), .01f, new Vector2(-.8f, -.3f), true), false);
 		}
 	}
 
@@ -144,6 +151,35 @@ public class Bases : TeamGameMode {
 			return GlobalConfig.globalConfig.getPlayerCount();
 		}
 		return 0;
+	}
+
+	[Server]
+	public void addScore(ClientController owner, float value) {
+		if (scoreMap.ContainsKey(owner)) {
+			scoreMap[owner] += value;
+		} else {
+			scoreMap[owner] = value;
+		}
+		RpcUpdateClientScore(owner.netId, getScore(owner));
+	}
+
+	[Server]
+	public void addTeamScore( int teamId, float value) {
+		HashSet<ClientController> clients = GlobalConfig.globalConfig.clients;
+		foreach (ClientController client in clients) {
+			addScore(client, value);
+		}
+	}
+
+	public float getScore(ClientController client) {
+		return 60*scoreMap[client] / (Time.time - client.startTime);
+	}
+
+	[ClientRpc]
+	private void RpcUpdateClientScore(NetworkInstanceId localClient, float score) {
+		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
+			clientScore = score;
+		}
 	}
 
 	[ClientRpc]

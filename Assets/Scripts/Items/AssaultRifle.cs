@@ -81,11 +81,13 @@ public class AssaultRifle : AbstractGun {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
-			Health health = getParentComponent<Health>(hitInfo.collider.transform);
-			if (health != null) {
-				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
 
-				Rigidbody rb = health.GetComponent<Rigidbody>();
+			Label label = getParentComponent<Label>(hitInfo.collider.transform);
+			NetworkIdentity networkIdentity = getParentComponent<NetworkIdentity>(hitInfo.collider.transform);
+			if (label != null && networkIdentity != null) {
+				CmdBulletHitLabel(direction, hitInfo.point, hitInfo.normal, networkIdentity.netId);
+
+				Rigidbody rb = label.GetComponent<Rigidbody>();
 				if (rb != null) {
 					rb.AddForceAtPosition(direction * impulse, hitInfo.point);
 				}
@@ -118,7 +120,7 @@ public class AssaultRifle : AbstractGun {
 	[Server]
 	protected override void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
 		GameObject hitObject = ClientScene.FindLocalObject(hit);
-		Health health = hitObject.GetComponent<Health>();
+		Label label = hitObject.GetComponent<Label>();
 		UnityEngine.AI.NavMeshAgent navAgent = hitObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if(navAgent != null) {
 			navAgent.speed -= 2f;
@@ -130,8 +132,9 @@ public class AssaultRifle : AbstractGun {
 				navAgent.baseOffset = 1.5f;
 			}
 		}
-		if(health != null && health.enabled) {
-			health.hurt(calculateDamage(direction, normal));
+		if(label != null && label.enabled) {
+			label.sendTrigger(gameObject, new DamageTrigger(calculateDamage(direction, normal)));
+			//health.hurt(calculateDamage(direction, normal));
 		}
 	}
 

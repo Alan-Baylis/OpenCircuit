@@ -73,7 +73,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 	public bool sendTrigger(GameObject instigator, Trigger trig) {
         System.Type type = trig.GetType();
 		if (triggers.ContainsKey(type)) {
-			foreach (Operation e in (List<Operation>)triggers[type]) {
+			foreach (Operation e in triggers[type]) {
                 e.perform(instigator, trig);
             }
 			return true;
@@ -88,13 +88,13 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 				if (!triggers.ContainsKey(element)) {
 					triggers[element] = new List<Operation>();
                 }
-				((List<Operation>)triggers[element]).Add(operation);
+				triggers[element].Add(operation);
             }
 		}
 	}
 
 	public void OnDestroy() {
-		Label.labels.Remove(this);
+		labels.Remove(this);
 	}
 
 	public void OnBeforeSerialize() {

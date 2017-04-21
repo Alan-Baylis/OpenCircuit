@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 11475790}
   - component: {fileID: 114250860135699018}
   - component: {fileID: 114515845152755834}
+  - component: {fileID: 114727296815174734}
   m_Layer: 0
   m_Name: Player 1
   m_TagString: Player
@@ -398,7 +399,6 @@ MonoBehaviour:
   whiteOutDuration: 0
   blackOutDuration: 12
   frozen: 0
-  controller: {fileID: 0}
   zooming: 0
   effectSpec:
     prefab: {fileID: 171970, guid: 9af21fe28f030ac47b5f1d5946c0eed5, type: 2}
@@ -528,3 +528,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+--- !u!114 &114727296815174734
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ad50e109d404c24f9f6912d5734a3bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value: 100
+  owner: {fileID: 0}
+  teamOwned: 0

@@ -23,7 +23,10 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar]
 	public string playerName;
 
+	public float startTime;
+
 	void Start() {
+		startTime = Time.time;
 		GlobalConfig.globalConfig.clients.Add(this);
 		if (player != null) {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
@@ -95,6 +98,7 @@ public class ClientController : NetworkBehaviour {
 	    NetworkServer.Spawn(newPlayer);
 		id = newPlayer.GetComponent<Player>().netId;
 		newPlayer.GetComponent<NameTag>().name = playerName;
+		newPlayer.GetComponent<Score>().owner = this;
 		playerCam.GetComponent<NetworkParenter>().setParentId(id);
 		playerLegs.GetComponent<NetworkParenter>().setParentId(id);
 		playerArms.GetComponent<NetworkParenter>().setParentId(id);
@@ -138,10 +142,7 @@ public class ClientController : NetworkBehaviour {
 		this.id = id;
 		player = ClientScene.FindLocalObject(id);
 		Player playerScript = player.GetComponent<Player>();
-		playerScript.controller = this;
-		if(!playerScript.isLocalPlayer) {
-			playerScript.clientController = this;
-		}
+		playerScript.clientController = this;
 	}
 
 	[Client]

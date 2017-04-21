@@ -4,8 +4,15 @@
 public class DamageOperation : Operation {
 	
 	private static System.Type[] triggers = new System.Type[] {
-		typeof(DamageTrigger),
+		typeof(DamageTrigger)
 	};
+
+	[System.NonSerialized]
+	private Health health;
+
+	public DamageOperation(Health healthScript) {
+		health = healthScript;
+	}
 
 	//public string damageType;
 	//public float damageAmount;
@@ -16,9 +23,8 @@ public class DamageOperation : Operation {
 	
 	public override void perform(GameObject instigator, Trigger trig) {
 		DamageTrigger trigger = (DamageTrigger)trig;
-		Health health = parent.GetComponent<Health>();
 		if(health != null) {
-			health.hurt(trigger.getAmount());
+			health.hurt(trigger.getAmount(), instigator);
 		}
 
 	}
