@@ -3306,10 +3306,9 @@ Prefab:
       propertyPath: id
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114919231518167632, guid: 5d69f2e28e106e341b748e0f32fcfba8,
-        type: 2}
-      propertyPath: componentPrefabs.Array.data[4]
-      value: 
+    - target: {fileID: 1688511224520240, guid: 5d69f2e28e106e341b748e0f32fcfba8, type: 2}
+      propertyPath: m_Name
+      value: SpawnBase-1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5d69f2e28e106e341b748e0f32fcfba8, type: 2}
@@ -7397,7 +7396,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1688511224520240, guid: 5d69f2e28e106e341b748e0f32fcfba8, type: 2}
       propertyPath: m_Name
-      value: SpawnBase2.0 (1)
+      value: SpawnBase-0
       objectReference: {fileID: 0}
     - target: {fileID: 4760039187471844, guid: 5d69f2e28e106e341b748e0f32fcfba8, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -7441,11 +7440,6 @@ Prefab:
         type: 2}
       propertyPath: isVisible
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114919231518167632, guid: 5d69f2e28e106e341b748e0f32fcfba8,
-        type: 2}
-      propertyPath: componentPrefabs.Array.data[4]
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5d69f2e28e106e341b748e0f32fcfba8, type: 2}

@@ -33,6 +33,15 @@ public class Bases : TeamGameMode {
 	[ServerCallback]
 	public override void Start() {
 		base.Start();
+
+		foreach (Label location in firstTeamLocations) {
+			getCRC(0).sightingFound(location.labelHandle, location.transform.position, null);
+		}
+
+		foreach (Label location in secondTeamLocations) {
+			getCRC(1).sightingFound(location.labelHandle, location.transform.position, null);
+		}
+
 		spawners = FindObjectsOfType<RobotSpawner>();
 		foreach (RobotSpawner spawner in spawners) {
 			Label spawnerLabel = spawner.GetComponent<Label>();
