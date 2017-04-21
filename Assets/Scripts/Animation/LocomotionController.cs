@@ -54,7 +54,7 @@ public class LocomotionController : MonoBehaviour {
 		controller = GetComponentInParent<RobotController>();
 	}
 
-	public void FixedUpdate() {
+	public void Update() {
 		double startTime = Time.realtimeSinceStartup;
 		if (plantedGroup == null) {
 			plantedGroup = legGroup1;
@@ -102,7 +102,7 @@ public class LocomotionController : MonoBehaviour {
 			updateLegs(steppingGroup, stopped);
 		}
 		double endTime = Time.realtimeSinceStartup;
-		controller.getExecutionTimer().addTime(endTime-startTime);
+//		controller.getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float getMaxSpeed() {

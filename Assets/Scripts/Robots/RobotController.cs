@@ -19,7 +19,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	public Health health { get { return myHealth; } }
 
-	public AudioClip destructionSound;
 	public EffectSpec destructionEffect;
 
 #if UNITY_EDITOR
@@ -426,7 +425,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	public void dispose() {
 		GlobalConfig.globalConfig.subtractRobotCount(this);
 		CancelInvoke();
-		soundEmitter.PlayOneShot(destructionSound);
 		foreach(Endeavour e in currentEndeavours) {
 			e.stopExecution();
 		}
