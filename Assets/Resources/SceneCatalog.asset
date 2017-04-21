@@ -28,15 +28,15 @@ MonoBehaviour:
     supportedGameModes: 01000000
   - path: Assets/scenes/Bases/bases.unity
     configuration:
-      robotsPerPlayer: 10
-      robotSpawnRatePerSecond: 0.05
+      robotsPerPlayer: 5
+      robotSpawnRatePerSecond: 1
       spawnRateIncreasePerPlayer: 0.05
       gameMode: 0
     supportedGameModes: 00000000
   - path: Assets/scenes/Pair/pair.unity
     configuration:
-      robotsPerPlayer: 10
-      robotSpawnRatePerSecond: 0.1
+      robotsPerPlayer: 15
+      robotSpawnRatePerSecond: 0.5
       spawnRateIncreasePerPlayer: 0.05
       gameMode: 0
     supportedGameModes: 00000000

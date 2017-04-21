@@ -18,9 +18,9 @@ public class AttackRoute : AbstractRouteTag {
 		UnityEditor.EditorGUILayout.LabelField("Average node distance", averagePointDistance(parent)+"", new GUILayoutOption[0]);
 		nodeDistance = UnityEditor.EditorGUILayout.FloatField("Node Distance", nodeDistance);
 		if (GUILayout.Button("Apply to Path")) {
-			List<Label> points = getPoints(parent);
-			for (int i = 0; i < points.Count-1; ++i) {
-				fillInPoints(points[i], points[i + 1], parent, i);
+
+			for (int i = 0; i < getPoints(parent).Count-1; ++i) {
+				fillInPoints(getPoints(parent)[i], getPoints(parent)[i + 1], parent, i);
 
 			}
 		}
@@ -32,7 +32,6 @@ public class AttackRoute : AbstractRouteTag {
 		dir.Normalize();
 		Vector3 lastPos = first.transform.position;
 		if (remainingDistance > nodeDistance+.5f) {
-			Debug.Log("create point " + (childIndex+1));
 			GameObject newPoint = new GameObject();
 			Label label = newPoint.AddComponent<Label>();
 			label.isVisible = false;
