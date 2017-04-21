@@ -82,8 +82,14 @@ public class Bases : TeamGameMode {
 		}
 
 		if (clientScore != null) {
+			Color prevColor = HUD.hud.fireflyConfig.fireflyColor;
+			if (clientScore.Value > 100) {
+				HUD.hud.fireflyConfig.fireflyColor = Color.blue;
+			}
 			HUD.hud.setFireflyElement("clientScore",
 				FireflyFont.getString(clientScore.Value.ToString("0."), .01f, new Vector2(-.8f, -.3f), true), false);
+			HUD.hud.fireflyConfig.fireflyColor = prevColor;
+
 		}
 
 		if (scoreUpdates.Count > 0) {
