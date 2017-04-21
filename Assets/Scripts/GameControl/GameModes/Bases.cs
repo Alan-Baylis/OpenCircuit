@@ -7,6 +7,8 @@ public class Bases : TeamGameMode {
     public float playerRobotPenalty = 1.5f;
     public float respawnDelay = 3f;
 	public CentralRobotController centralRobotControllerPrefab;
+	public List<Label> firstTeamLocations = new List<Label>();
+	public List<Label> secondTeamLocations = new List<Label>();
 
 	private RobotSpawner[] spawners;
 

@@ -208,3 +208,5 @@ MonoBehaviour:
   respawnDelay: 3
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
+  firstTeamLocations: []
+  secondTeamLocations: []

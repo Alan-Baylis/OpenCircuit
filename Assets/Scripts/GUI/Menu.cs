@@ -436,8 +436,15 @@ public class Menu : MonoBehaviour {
         //GetComponent<Camera>().enabled = false;
         //GetComponent<AudioListener>().enabled = false;
         //NetworkServer.SpawnObjects();
-        GlobalConfig globalConfig = Instantiate(globalConfigPrefab);
-        NetworkServer.Spawn(globalConfig.gameObject);
+	    GlobalConfig [] globalConfigs = Resources.FindObjectsOfTypeAll<GlobalConfig>();
+	    GlobalConfig globalConfig = globalConfigs[0];
+	    if (globalConfigs.Length == 1) {
+		    globalConfig = Instantiate(globalConfigPrefab);
+	    } else {
+		    globalConfig.gameObject.SetActive(true);
+	    }
+
+	    NetworkServer.Spawn(globalConfig.gameObject);
         menuHistory.Clear();
         currentMenu = state.ClientLobby;
     }
