@@ -112,10 +112,8 @@ public class GenericRifle : NetworkBehaviour {
                 //if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
                 //	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
                 //}
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, Vector3.Reflect(direction,hitInfo.normal));
             } else {
                 bulletHit(direction, hitInfo.point, hitInfo.normal);
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
             }
         } else {
             bulletMiss(direction);
@@ -168,15 +166,12 @@ public class GenericRifle : NetworkBehaviour {
 
     [ClientRpc]
     protected void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 direction, Vector3 normal) {
-        if (!isServer) {
-            if (type == HitEffectType.DEFAULT) {
-
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location, normal);
-            } else if (type == HitEffectType.ROBOT) {
-	            GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, Vector3.Reflect(direction, normal));
-            }
-            doFireEffects();
-        }
+		if (type == HitEffectType.DEFAULT) {
+			GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location, normal);
+		} else if (type == HitEffectType.ROBOT) {
+			GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, Vector3.Reflect(direction, normal));
+		}
+	    doFireEffects();
     }
 
     [Server]
@@ -214,15 +209,15 @@ public class GenericRifle : NetworkBehaviour {
     private void playFireSound() {
         // play sound effect
         if (gunshotSoundEmitter != null) {
-            gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];
-            gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+            gunshotSoundEmitter.clip = fireSounds[Random.Range(0, fireSounds.Length - 1)];
+            gunshotSoundEmitter.pitch = Random.Range(0.95f, 1.05f);
         }
         playSound(gunshotSoundEmitter);
     }
 
     protected void playSound(AudioSource soundEmitter) {
         if(soundEmitter != null && soundEmitter.clip != null) {
-            soundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
+	        soundEmitter.Stop();
             soundEmitter.Play();
         } else if(soundEmitter == null) {
             Debug.LogWarning("AudioSource not set for the '"+GetType()+"' component attached to '" + gameObject.name + "'");

@@ -54,17 +54,17 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 8a2d305ad28244b4a864761366bb2852, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.02
-  m_Pitch: 1
+  m_Pitch: 1.5
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 200
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 20
+  MaxDistance: 10
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -130,7 +130,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1168817583226036}
   serializedVersion: 5
   lengthInSec: 0.1
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
