@@ -83,20 +83,26 @@ public class AssaultRifle : AbstractGun {
 		if (hit) {
 
 			Label label = getParentComponent<Label>(hitInfo.collider.transform);
-			NetworkIdentity networkIdentity = getParentComponent<NetworkIdentity>(hitInfo.collider.transform);
-			if (label != null && networkIdentity != null) {
-				CmdBulletHitLabel(direction, hitInfo.point, hitInfo.normal, networkIdentity.netId);
+			if (label != null) {
+				NetworkIdentity networkIdentity = label.GetComponent<NetworkIdentity>();
+				if (networkIdentity != null) {
+					CmdBulletHitLabel(direction, hitInfo.point, hitInfo.normal, networkIdentity.netId);
 
-				Rigidbody rb = label.GetComponent<Rigidbody>();
-				if (rb != null) {
-					rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+					Rigidbody rb = label.GetComponent<Rigidbody>();
+					if (rb != null) {
+						rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+					}
+
+					// do ricochet
+					//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
+					//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
+					//}
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point,
+						Vector3.Reflect(direction, hitInfo.normal));
+				} else {
+					CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
 				}
-
-				// do ricochet
-				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
-				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
-				//}
-				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, Vector3.Reflect(direction, hitInfo.normal));
 			} else {
 				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
 				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
