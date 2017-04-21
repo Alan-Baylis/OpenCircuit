@@ -6,6 +6,9 @@ public class Bases : TeamGameMode {
 
     public float playerRobotPenalty = 1.5f;
     public float respawnDelay = 3f;
+	public float scoreCoalescePeriod = 1f;
+	public float scoreDisplayPeriod = 5f;
+
 	public CentralRobotController centralRobotControllerPrefab;
 	public List<Label> firstTeamLocations = new List<Label>();
 	public List<Label> secondTeamLocations = new List<Label>();
@@ -20,6 +23,9 @@ public class Bases : TeamGameMode {
 	private AbstractPlayerSpawner myPlayerSpawner;
 	private int remainingRespawnTime;
 
+
+	//Fields for client side display
+	private List<ScoreAdd> scoreUpdates = new List<ScoreAdd>();
 	private RespawnJob ? clientRespawnJob;
 	private float? clientScore;
 
@@ -79,6 +85,15 @@ public class Bases : TeamGameMode {
 			HUD.hud.setFireflyElement("clientScore",
 				FireflyFont.getString(clientScore.Value.ToString("0."), .01f, new Vector2(-.8f, -.3f), true), false);
 		}
+
+		if (scoreUpdates.Count > 0) {
+			for (int i = 0; i < scoreUpdates.Count; ++i) {
+				ScoreAdd update = scoreUpdates[i];
+				HUD.hud.setFireflyElement("scoreUpdate-" +i ,
+					FireflyFont.getString("+"+update.amount.ToString("0."), .01f, new Vector2(-.8f, -.2f + i*0.1f), true), false);
+			}
+			cleanupScoreDisplay();
+		}
 	}
 
     public override void initialize() {
@@ -135,8 +150,7 @@ public class Bases : TeamGameMode {
 	public double getRobotTiming()
 	{
 		double robotAITime = 0f;
-		foreach (CentralRobotController controller in centralRobotControllers.Values)
-		{
+		foreach (CentralRobotController controller in centralRobotControllers.Values) {
 			robotAITime += controller.robotExecutionTimer.getMeasuredTimePerSecond();
 		}
 		return robotAITime;
@@ -160,7 +174,7 @@ public class Bases : TeamGameMode {
 		} else {
 			scoreMap[owner] = value;
 		}
-		RpcUpdateClientScore(owner.netId, getScore(owner));
+		RpcUpdateClientScore(owner.netId, getScore(owner), value);
 	}
 
 	[Server]
@@ -176,9 +190,10 @@ public class Bases : TeamGameMode {
 	}
 
 	[ClientRpc]
-	private void RpcUpdateClientScore(NetworkInstanceId localClient, float score) {
+	private void RpcUpdateClientScore(NetworkInstanceId localClient, float currentScore, float scoreAdd) {
 		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
-			clientScore = score;
+			clientScore = currentScore;
+			addScoreItem(new ScoreAdd(scoreAdd, scoreCoalescePeriod, scoreDisplayPeriod));
 		}
 	}
 
@@ -189,10 +204,46 @@ public class Bases : TeamGameMode {
 		}
 	}
 
+	private void addScoreItem(ScoreAdd item) {
+		if (scoreUpdates.Count > 0) {
+			if (scoreUpdates[scoreUpdates.Count-1].coalescePeriod > Time.time) {
+				ScoreAdd lastUpdate = scoreUpdates[scoreUpdates.Count-1];
+				scoreUpdates[scoreUpdates.Count-1] = new ScoreAdd(lastUpdate.amount + item.amount, scoreCoalescePeriod, scoreDisplayPeriod);
+			} else {
+				scoreUpdates.Add(item);
+			}
+		} else {
+			scoreUpdates.Add(item);
+		}
+	}
+
+	private void cleanupScoreDisplay() {
+		for (int i = scoreUpdates.Count - 1; i >= 0; --i) {
+			ScoreAdd update = scoreUpdates[i];
+
+			if (update.expirationTime < Time.time) {
+				HUD.hud.clearFireflyElement("scoreUpdate-"+(scoreUpdates.Count-1));
+				scoreUpdates.RemoveAt(i);
+			}
+		}
+	}
+
 	[Server]
 	private void initializeCRCs() {
 		foreach (Team team in teams.Values) {
 			centralRobotControllers.Add(team.id, Instantiate(centralRobotControllerPrefab, Vector3.zero, Quaternion.identity));
+		}
+	}
+
+	private struct ScoreAdd {
+		public readonly float coalescePeriod;
+		public readonly float expirationTime;
+		public readonly float amount;
+
+		public ScoreAdd(float amount, float coalescePeriod, float expirationPeriod) {
+			expirationTime = Time.time + expirationPeriod;
+			this.coalescePeriod = Time.time + coalescePeriod;
+			this.amount = amount;
 		}
 	}
 
