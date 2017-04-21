@@ -18,7 +18,7 @@ public class InvestigateAction : Endeavour {
 
 	public override void update() {
 		var canSee = eyes.lookAt(sound.getLabelHandle().getPosition()) == null;
-		if ((canSee || sound.isExpired()) && controller.knowsTarget(sound.getLabelHandle())) {
+		if (canSee && controller.knowsTarget(sound.getLabelHandle())) {
 			controller.sightingLost(sound.getLabelHandle(), sound.getLabelHandle().getPosition(), null);
 		}
 		sighted = canSee && Vector3.Distance(controller.transform.position, sound.getLabelHandle().getPosition()) < 5f;
