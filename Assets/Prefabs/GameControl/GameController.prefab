@@ -204,8 +204,11 @@ MonoBehaviour:
   teamConfig:
   - color: {r: 0, g: 0, b: 0.49803922, a: 1}
   - color: {r: 0.49803922, g: 0, b: 0, a: 1}
+  maxTowers: 3
   playerRobotPenalty: 1.5
   respawnDelay: 3
+  scoreCoalescePeriod: 1
+  scoreDisplayPeriod: 5
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
   firstTeamLocations: []

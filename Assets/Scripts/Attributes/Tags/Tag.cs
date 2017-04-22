@@ -15,6 +15,8 @@ public class Tag : InspectorListElement {
 				return new PatrolTag(0, null);
 			case TagEnum.AttackRoute:
 				return new AttackRoute(0, null);
+			case TagEnum.BuildDirective:
+				return new BuildDirectiveTag(null, 0, null);
 			default:
 				return new Tag(type, 0, null);
 		}

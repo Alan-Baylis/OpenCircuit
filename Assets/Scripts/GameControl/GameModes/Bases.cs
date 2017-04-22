@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Bases : TeamGameMode {
 
+	public int maxTowers = 3;
+
     public float playerRobotPenalty = 1.5f;
     public float respawnDelay = 3f;
 	public float scoreCoalescePeriod = 1f;
@@ -13,6 +15,7 @@ public class Bases : TeamGameMode {
 	public List<Label> firstTeamLocations = new List<Label>();
 	public List<Label> secondTeamLocations = new List<Label>();
 	Dictionary<ClientController, float> scoreMap = new Dictionary<ClientController, float>();
+	Dictionary<ClientController, List<GameObject>> towerMap  = new Dictionary<ClientController, List<GameObject>>();
 
 	private RobotSpawner[] spawners;
 
@@ -174,6 +177,42 @@ public class Bases : TeamGameMode {
 	}
 
 	[Server]
+	public void addTower(ClientController owner, GameObject tower) {
+		if (!towerMap.ContainsKey(owner)) {
+			towerMap[owner] = new List<GameObject>();
+		}
+		towerMap[owner].Add(tower);
+	}
+
+	[Server]
+	public bool canBuildTower(ClientController owner) {
+		int towerCount = getTowers(owner);
+		if (towerCount >= maxTowers)
+			return false;
+		switch (towerCount) {
+			case 0:
+				return getScore(owner) > 100;
+			case 1:
+				return getScore(owner) > 500;
+			default:
+				return getScore(owner) > 1000;
+		}
+	}
+
+	[Server]
+	private int getTowers(ClientController owner) {
+		if (!towerMap.ContainsKey(owner))
+			return 0;
+		List<GameObject> towers = towerMap[owner];
+		for (int i = towers.Count - 1; i >= 0; --i) {
+			if (towers[i] == null) {
+				towers.RemoveAt(i);
+			}
+		}
+		return towers.Count;
+	}
+
+	[Server]
 	public void addScore(ClientController owner, float value) {
 		if (scoreMap.ContainsKey(owner)) {
 			scoreMap[owner] += value;
@@ -192,6 +231,8 @@ public class Bases : TeamGameMode {
 	}
 
 	public float getScore(ClientController client) {
+		if (!scoreMap.ContainsKey(client))
+			return 0;
 		return 60*scoreMap[client] / (Time.time - client.startTime);
 	}
 

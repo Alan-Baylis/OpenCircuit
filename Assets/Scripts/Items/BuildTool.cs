@@ -22,13 +22,19 @@ public class BuildTool : ContextItem {
 
 	[Command]
 	private void CmdSpawnTower(Vector3 location) {
-		TeamId team = holder.GetComponent<TeamId>();
-		CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.id);
-		Label towerBase =
-			Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();
-		crc.sightingFound(towerBase.labelHandle, towerBase.transform.position,
-			null);
-		NetworkServer.Spawn(towerBase.gameObject);
+		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
+		if (bases != null && bases.canBuildTower(holder.getPlayer().clientController)) {
+
+			TeamId team = holder.GetComponent<TeamId>();
+			CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.id);
+			Label towerBase =
+				Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();
+			crc.sightingFound(towerBase.labelHandle, towerBase.transform.position,
+				null);
+			(towerBase.getTag(TagEnum.BuildDirective) as BuildDirectiveTag).owner = holder.getPlayer().clientController;
+			NetworkServer.Spawn(towerBase.gameObject);
+			bases.addTower(holder.getPlayer().clientController, towerBase.gameObject);
+		}
 	}
 
 }
