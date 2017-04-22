@@ -85,8 +85,8 @@ public class Bases : TeamGameMode {
 		if (clientRespawnJob != null) {
 			int timeLeft = Mathf.CeilToInt(clientRespawnJob.Value.respawnTime - Time.time);
 			if (timeLeft != remainingRespawnTime) {
-				HUD.hud.setFireflyElement("respawnTimer", FireflyFont.getString(
-					timeLeft.ToString(), 0.02f, new Vector2(-.01f, -.01f), true), false);
+				HUD.hud.setFireflyElement("respawnTimer", this, FireflyFont.getString(
+					timeLeft.ToString(), 0.02f, new Vector2(-.01f, -.01f), FireflyFont.HAlign.CENTER), false);
 				remainingRespawnTime = timeLeft;
 			}
 			if (remainingRespawnTime == 0) {
@@ -100,8 +100,8 @@ public class Bases : TeamGameMode {
 			if (clientScore.Value > 100) {
 				HUD.hud.fireflyConfig.fireflyColor = Color.blue;
 			}
-			HUD.hud.setFireflyElement("clientScore",
-				FireflyFont.getString(clientScore.Value.ToString("0."), .01f, new Vector2(-.8f, -.3f), true), false);
+			HUD.hud.setFireflyElement("clientScore", this,
+				FireflyFont.getString(clientScore.Value.ToString("0."), .01f, new Vector2(-.8f, -.3f), FireflyFont.HAlign.CENTER), false);
 			HUD.hud.fireflyConfig.fireflyColor = prevColor;
 
 		}
@@ -109,8 +109,8 @@ public class Bases : TeamGameMode {
 		if (scoreUpdates.Count > 0) {
 			for (int i = 0; i < scoreUpdates.Count; ++i) {
 				ScoreAdd update = scoreUpdates[i];
-				HUD.hud.setFireflyElement("scoreUpdate-" +i ,
-					FireflyFont.getString("+"+update.amount.ToString("0."), .01f, new Vector2(-.8f, -.2f + i*0.1f), true), false);
+				HUD.hud.setFireflyElement("scoreUpdate-" +i, this,
+					FireflyFont.getString("+"+update.amount.ToString("0."), .01f, new Vector2(-.8f, -.2f + i*0.1f), FireflyFont.HAlign.CENTER), false);
 			}
 			cleanupScoreDisplay();
 		}

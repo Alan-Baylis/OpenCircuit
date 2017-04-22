@@ -3,14 +3,36 @@ using UnityEngine;
 
 public class FireflyFont {
 
-	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, bool center=false) {
+	public enum HAlign {
+		LEFT, CENTER, RIGHT
+	}
+	public enum VAlign {
+		TOP, CENTER, BOTTOM
+	}
+
+	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, HAlign hAlign=HAlign.LEFT, VAlign vAlign=VAlign.TOP) {
 		List<Vector2> positions = new List<Vector2>();
-		offset.x += center ? -(s.Length *letterWidth + (s.Length - 1) *letterGap) *0.5f *fontSize : 0;
+
+		// apply alignment
+		if (hAlign == HAlign.CENTER)
+			offset.x -= getTextWidth(s, fontSize) *0.5f;
+		else if (hAlign == HAlign.RIGHT)
+			offset.x -= getTextWidth(s, fontSize);
+		if (vAlign == VAlign.CENTER)
+			offset.y -= letterHeight * fontSize * 0.5f;
+		if (vAlign == VAlign.BOTTOM)
+			offset.y -= letterHeight * fontSize;
+
+		// get positions
 		foreach (char c in s) {
 			getChar(c, positions, offset, fontSize);
 			offset.x += (letterWidth + letterGap) *fontSize;
 		}
 		return positions;
+	}
+
+	public static float getTextWidth(string text, float fontSize) {
+		return (text.Length * letterWidth + (text.Length - 1) * letterGap) * fontSize;
 	}
 
 	public static List<Vector2> getChar(char c, Vector2 offset, float multiplier) {
@@ -244,6 +266,16 @@ public class FireflyFont {
 		{':', new Vector2[] {
 				new Vector2(1, 6),
 				new Vector2(1, 2),
+			}},
+		{'|', new Vector2[] {
+				new Vector2(2, 0),
+				new Vector2(2, 1),
+				new Vector2(2, 2),
+				new Vector2(2, 3),
+				new Vector2(2, 4),
+				new Vector2(2, 5),
+				new Vector2(2, 6),
+				new Vector2(2, 7),
 			}},
 
 

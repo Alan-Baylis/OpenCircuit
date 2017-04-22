@@ -34,16 +34,12 @@ public class Leaderboard : NetworkBehaviour {
 	void Update() {
 		if (GlobalConfig.globalConfig.localClient != null && GlobalConfig.globalConfig.localClient.spectator && GlobalConfig.globalConfig.cameraManager.getSceneCamera()
 			    .enabled) {
-			HUD.hud.setFireflyElement("leaderboard",
+			HUD.hud.setFireflyElement("leaderboard", this,
 				FireflyFont.getString("leaderboard", .02f, new Vector2(-.6f, -.45f)), false);
 			for (int i = 0; i < leaderboardEntries.Count; i++) {
 				LeaderboardEntry entry = leaderboardEntries[i];
-				HUD.hud.setFireflyElement("leaderboard-" + i,
-					FireflyFont.getString(entry.name + "      " + entry.score.ToString("0."), .01f, new Vector2(-.5f, -.3f + i * 0.1f),
-						false), false);
-//				HUD.hud.setFireflyElement("leaderboard-" + i,
-//					FireflyFont.getString("blah", .01f, new Vector2(-.3f, -.2f + i * 0.1f),
-//						true), false);
+				HUD.hud.setFireflyElement("leaderboard-" + i, this,
+					FireflyFont.getString(entry.name + "      " + entry.score.ToString("0."), .01f, new Vector2(-.5f, -.3f + i * 0.1f)), false);
 			}
 		} else {
 			clearLeaderboardDisplay();
