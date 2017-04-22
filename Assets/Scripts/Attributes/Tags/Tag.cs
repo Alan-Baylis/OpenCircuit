@@ -27,8 +27,6 @@ public class Tag : InspectorListElement {
 	public TagEnum type;
 	public float severity;
 
-	private string labelId;
-
 	[System.NonSerialized]
 	protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();
 

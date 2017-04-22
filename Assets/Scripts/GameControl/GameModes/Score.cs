@@ -28,11 +28,8 @@ public class Score : MonoBehaviour {
 		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
 		if (bases != null) {
 			if (teamOwned) {
-				print("on destroy hurt team score");
-
 				bases.addTeamScore(GetComponent<TeamId>().id, -value);
 			} else if (owner != null) {
-				print("on destroy hurt owner score");
 				bases.addScore(owner, -value);
 			}
 		}
