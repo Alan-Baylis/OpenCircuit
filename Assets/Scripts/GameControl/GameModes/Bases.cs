@@ -61,6 +61,17 @@ public class Bases : TeamGameMode {
 		}
 	}
 
+	public override void onWinGame() {
+
+		HashSet<ClientController> clients = GlobalConfig.globalConfig.clients;
+		foreach (ClientController client in clients) {
+			GlobalConfig.globalConfig.leaderboard.addScore(new Leaderboard.LeaderboardEntry(
+				client.playerName,
+				getScore(client)
+			));
+		}
+	}
+
 	protected override void Update() {
 		if (isServer) {
 			base.Update();

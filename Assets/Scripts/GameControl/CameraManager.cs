@@ -68,6 +68,10 @@ public class CameraManager : MonoBehaviour {
 		nextCameraIndex = 0;
 	}
 
+	public Camera getSceneCamera() {
+		return sceneCamera.cam;
+	}
+
 	private void enableCamera(Camera cam) {
 		if (cam != null) {
 			cam.enabled = true;

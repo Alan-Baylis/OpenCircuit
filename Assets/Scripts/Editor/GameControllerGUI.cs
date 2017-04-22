@@ -10,6 +10,7 @@ public class GameControllerGUI : Editor {
         EditorGUILayout.PropertyField(serializedObject.FindProperty("configuration"), true, null);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("cameraManager"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("effectsManager"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("leaderboard"));
         serializedObject.ApplyModifiedProperties();
     }
 }

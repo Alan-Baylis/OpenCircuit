@@ -14,7 +14,6 @@ public class Score : MonoBehaviour {
 	}
 
 	public void recordScore(ClientController destroyer) {
-		print("record score");
 		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
 		if (bases != null) {
 			if (GetComponent<TeamId>().id == 0) {

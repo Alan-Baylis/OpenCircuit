@@ -15,9 +15,7 @@ public class CountScoreOperation : Operation {
 
 		Player player = instigator.GetComponentInParent<Player>();
 		Score score = parent.GetComponent<Score>();
-		Debug.Log("perform score by " + instigator);
 		if (score != null && player != null) {
-			Debug.Log("perform record score");
 			score.recordScore(player.clientController);
 		}
 	}
