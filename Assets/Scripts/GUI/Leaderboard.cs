@@ -59,6 +59,7 @@ public class Leaderboard : NetworkBehaviour {
 				} else if (i == scores.Count - 1) {
 					scores.Add(entry);
 					leaderboardEntries.Add(entry);
+					break;
 				}
 			}
 		} else {
