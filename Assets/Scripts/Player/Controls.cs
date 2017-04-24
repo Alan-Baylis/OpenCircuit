@@ -22,7 +22,7 @@ public class Controls : NetworkBehaviour {
 	}
 
 	void Awake () {
-		myPlayer = this.GetComponent<Player> ();
+		myPlayer = GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 

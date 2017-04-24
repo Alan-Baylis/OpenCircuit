@@ -41,6 +41,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7634e523dcca3344f855c7138ff3234c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spectatorPrefab: {fileID: 1634808784219320, guid: 9a602cd8f4fde484d821f521ebdb3cfe,
+    type: 2}
   playerPrefab: {fileID: 144342, guid: 93f30fedd45ade9458e6cb1493939b9a, type: 2}
   playerCamPrefab: {fileID: 1423059799441900, guid: 0fbfc8e24628d9542a5b8b095be261f9,
     type: 2}
@@ -48,6 +50,9 @@ MonoBehaviour:
     type: 2}
   playerArmsPrefab: {fileID: 1404083573619808, guid: 990697ed79f4fb543b69e28721f15684,
     type: 2}
+  spectator: 0
+  playerName: 
+  startTime: 0
 --- !u!114 &11494366
 MonoBehaviour:
   m_ObjectHideFlags: 1

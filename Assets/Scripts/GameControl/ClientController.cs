@@ -3,6 +3,8 @@ using UnityEngine.Networking;
 
 public class ClientController : NetworkBehaviour {
 
+	public GameObject spectatorPrefab;
+
 	public GameObject playerPrefab;
 	public GameObject playerCamPrefab;
 	public GameObject playerLegsPrefab;
@@ -34,19 +36,23 @@ public class ClientController : NetworkBehaviour {
 		if (isLocalPlayer)
 			GlobalConfig.globalConfig.localClient = this;
 
-		if(isServer && !spectator) {
-			AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
-			if (spawner != null) {
-				spawnPlayerAt(spawner.nextSpawnPos());
+		if(isServer) {
+			if (spectator) {
+				spawnSpectator();
 			} else {
-				Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
+				AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
+				if (spawner != null) {
+					spawnPlayerAt(spawner.nextSpawnPos());
+				} else {
+					Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
+				}
 			}
 		}
 	}
 
 	[ClientCallback]
 	void Update() {
-		if (isLocalPlayer && (isDead || spectator) && Input.GetButtonDown("Use")) {
+		if (isLocalPlayer && isDead && Input.GetButtonDown("Use")) {
 			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
 	}
@@ -65,6 +71,12 @@ public class ClientController : NetworkBehaviour {
 	//anyone can call!!
 	public bool isAlive() {
 		return !isDead;
+	}
+
+	[Server]
+	private void spawnSpectator() {
+		GameObject newSpectator = Instantiate(spectatorPrefab);
+		NetworkServer.AddPlayerForConnection(connectionToClient, newSpectator, 1);
 	}
 	
 	[Server]
