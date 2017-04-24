@@ -21,7 +21,7 @@ public class Menu : MonoBehaviour {
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 	private string serverName = "Lazy Setup";
-	private string username = "dead_meat";
+	private string username = System.Environment.MachineName.ToLower();
 	private Vector2 scrollPosition = Vector2.zero;
 
 	private NetworkDiscovery nd;
@@ -339,7 +339,7 @@ public class Menu : MonoBehaviour {
         if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
 
 			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
-	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username);
+	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
 
 			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
 		        dropIn(true);
