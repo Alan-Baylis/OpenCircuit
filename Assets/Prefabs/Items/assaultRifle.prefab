@@ -144,7 +144,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 447710}
-  - component: {fileID: 6510298}
   - component: {fileID: 11493642}
   - component: {fileID: 11472894}
   - component: {fileID: 8299550}
@@ -1621,18 +1620,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 110502}
   m_Mesh: {fileID: 4300020, guid: c1837d70db7efd144a82ae772451c123, type: 3}
---- !u!65 &6510298
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 137264}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.1, y: 0.2, z: 0.75}
-  m_Center: {x: 0, y: -0.06, z: -0.02}
 --- !u!82 &8231792
 AudioSource:
   m_ObjectHideFlags: 1
@@ -2337,7 +2324,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1758836241970322}
   serializedVersion: 5
   lengthInSec: 0.4
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -4914,7 +4901,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1179183714366324}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -7491,7 +7478,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1704049821335294}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -10068,7 +10055,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1610905354457142}
   serializedVersion: 5
   lengthInSec: 0.4
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -12645,7 +12632,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1837649427697660}
   serializedVersion: 5
   lengthInSec: 0.4
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -15222,7 +15209,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1714750960614114}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0

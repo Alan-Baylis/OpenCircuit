@@ -111,7 +111,7 @@ public class ClientController : NetworkBehaviour {
 	[Server]
 	public void destroyPlayer() {
 		isDead = true;
-		Destroy(player);
+		player.GetComponent<Player>().dismantle();
 	}
 
 	[Client]
