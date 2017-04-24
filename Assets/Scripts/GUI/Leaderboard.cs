@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -34,13 +35,19 @@ public class Leaderboard : NetworkBehaviour {
 	void Update() {
 		if (GlobalConfig.globalConfig.localClient != null && GlobalConfig.globalConfig.localClient.spectator && GlobalConfig.globalConfig.cameraManager.getSceneCamera()
 			    .enabled) {
+
+			Color prevColor = HUD.hud.fireflyConfig.fireflyColor;
+			HUD.hud.fireflyConfig.fireflyColor = new Color(.25f, .25f, 1);
 			HUD.hud.setFireflyElement("leaderboard", this,
-				FireflyFont.getString("leaderboard", .02f, new Vector2(-.6f, -.45f)), false);
+				FireflyFont.getString("leaderboard", .02f, new Vector2(0f, -.45f), FireflyFont.HAlign.CENTER), false);
 			for (int i = 0; i < leaderboardEntries.Count; i++) {
 				LeaderboardEntry entry = leaderboardEntries[i];
+				string entryString = entry.name.Substring(0, Math.Min(entry.name.Length, 10)).PadRight(10);
+				entryString += entry.score.ToString("0.").PadLeft(15);
 				HUD.hud.setFireflyElement("leaderboard-" + i, this,
-					FireflyFont.getString(entry.name + "      " + entry.score.ToString("0."), .01f, new Vector2(-.5f, -.3f + i * 0.1f)), false);
+					FireflyFont.getString(entryString , .01f, new Vector2(0f, -.3f + i * 0.1f), FireflyFont.HAlign.CENTER), false);
 			}
+			HUD.hud.fireflyConfig.fireflyColor = prevColor;
 		} else {
 			clearLeaderboardDisplay();
 		}
