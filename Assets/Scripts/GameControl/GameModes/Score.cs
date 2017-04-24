@@ -9,7 +9,9 @@ public class Score : MonoBehaviour {
 	void Start() {
 		Label label = GetComponent<Label>();
 		if (label != null) {
-			label.addOperation(new CountScoreOperation(), new [] { typeof(DestructTrigger) });
+			label.addOperation(new CountScoreOperation(), new[] {typeof(DestructTrigger)});
+		} else {
+			Debug.LogWarning("Score component attached to '" + name + "' requires a label!");
 		}
 	}
 

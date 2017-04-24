@@ -61,6 +61,7 @@ public class Bases : TeamGameMode {
 		}
 	}
 
+	[Server]
 	public override void onWinGame() {
 
 		HashSet<ClientController> clients = GlobalConfig.globalConfig.clients;

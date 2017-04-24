@@ -100,7 +100,6 @@ public class GenericRifle : NetworkBehaviour {
         bool hit = Physics.Raycast(position, direction, out hitInfo, range);
         if (hit) {
 	        Label label = getParentComponent<Label>(hitInfo.collider.transform);
-            //Health health = getParentComponent<Health>(hitInfo.collider.transform);
             if (label != null) {
                 bulletHitHealth(direction, hitInfo.point, hitInfo.normal, label);
 
