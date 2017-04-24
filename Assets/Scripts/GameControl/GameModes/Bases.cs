@@ -4,95 +4,169 @@ using UnityEngine;
 
 public class Bases : TeamGameMode {
 
+    public float playerRobotPenalty = 1.5f;
     public float respawnDelay = 3f;
 	public CentralRobotController centralRobotControllerPrefab;
+	public List<Label> firstTeamLocations = new List<Label>();
+	public List<Label> secondTeamLocations = new List<Label>();
 
 	private RobotSpawner[] spawners;
+
 	private List<RespawnJob> respawnJobs = new List<RespawnJob>();
 
-	private List<CentralRobotController> centralRobotControllers = new List<CentralRobotController>();
+	private Dictionary<int, CentralRobotController> centralRobotControllers = new Dictionary<int, CentralRobotController>();
+
+	private AbstractPlayerSpawner myPlayerSpawner;
+	private int remainingRespawnTime;
+
+	private RespawnJob ? clientRespawnJob;
+
+	private AbstractPlayerSpawner playerSpawner {
+		get {
+			if (myPlayerSpawner == null) {
+				myPlayerSpawner = FindObjectOfType<AbstractPlayerSpawner>();
+			}
+			return myPlayerSpawner;
+		}
+	}
 
 	[ServerCallback]
-    public new void Start() {
-        base.Start();
-        spawners = FindObjectsOfType<RobotSpawner>();
-    }
+	public override void Start() {
+		base.Start();
 
-    [ServerCallback]
-    protected override void Update() {
-        base.Update();
-        for (int i = 0; i < respawnJobs.Count; ++i) {
-            if (respawnJobs[i].timeRemaining <= 0f) {
-                FindObjectOfType<AbstractPlayerSpawner>().respawnPlayer(respawnJobs[i].controller);
-            } else {
-                respawnJobs[i] = new RespawnJob(respawnJobs[i].controller, respawnJobs[i].timeRemaining - Time.deltaTime);
-            }
-        }
-    }
+		foreach (Label location in firstTeamLocations) {
+			getCRC(0).sightingFound(location.labelHandle, location.transform.position, null);
+		}
+
+		foreach (Label location in secondTeamLocations) {
+			getCRC(1).sightingFound(location.labelHandle, location.transform.position, null);
+		}
+
+		spawners = FindObjectsOfType<RobotSpawner>();
+		foreach (RobotSpawner spawner in spawners) {
+			Label spawnerLabel = spawner.GetComponent<Label>();
+			spawnerLabel.setTag(new Tag(TagEnum.Defendable, 0, spawnerLabel.labelHandle));
+			getCRC(spawner.teamId.id).sightingFound(spawnerLabel.labelHandle, spawner.transform.position, null);
+		}
+	}
+
+	protected override void Update() {
+		if (isServer) {
+			base.Update();
+			for (int i = respawnJobs.Count - 1; i >= 0; --i) {
+				if (respawnJobs[i].respawnTime <= Time.time) {
+					playerSpawner.respawnPlayer(respawnJobs[i].controller);
+					respawnJobs.RemoveAt(i);
+				}
+			}
+		}
+		if (clientRespawnJob != null) {
+			int timeLeft = Mathf.CeilToInt(clientRespawnJob.Value.respawnTime - Time.time);
+			if (timeLeft != remainingRespawnTime) {
+				HUD.hud.setFireflyElement("respawnTimer", FireflyFont.getString(
+					timeLeft.ToString(), 0.02f, new Vector2(0, -0.4f), true), false);
+				remainingRespawnTime = timeLeft;
+			}
+			if (remainingRespawnTime == 0) {
+				clientRespawnJob = null;
+				HUD.hud.clearFireflyElement("respawnTimer");
+			}
+		}
+	}
 
     public override void initialize() {
-        localTeam = teams[0];
+        base.initialize();
+        localTeamId =0;
 		if (isServer) {
 			initializeCRCs();
 		}
 	}
 
-    [Server]
+	[Server]
 	public override bool winConditionMet() {
-        foreach (RobotSpawner spawner in spawners) {
-            if (spawner == null) {
-                continue;
-            }
-            if (spawner.team.Id != localTeam.Id) {
-                return false;
-            }
-        }
+		foreach (RobotSpawner spawner in spawners) {
+			if (spawner == null) {
+				continue;
+			}
+			if (spawner.teamId.id != localTeamId) {
+				return false;
+			}
+		}
 		return true;
 	}
 
-    [Server]
-    public override bool loseConditionMet() {
-        foreach (RobotSpawner spawner in spawners) {
-            if (spawner == null) {
-                continue;
-            }
-            if (spawner.team.Id == localTeam.Id) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    [Server]
-    public override void onPlayerDeath(Player player) {
-        player.clientController.destroyPlayer();
-        respawnJobs.Add(new RespawnJob(player.clientController, respawnDelay));
-    }
+	[Server]
+	public override bool loseConditionMet() {
+		foreach (RobotSpawner spawner in spawners) {
+			if (spawner == null) {
+				continue;
+			}
+			if (spawner.teamId.id == localTeamId) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	[Server]
-    public override void onPlayerRevive(Player player) {
-        throw new System.NotImplementedException();
-    }
+	public override void onPlayerDeath(Player player) {
+		RpcStartTimerFor(player.clientController.netId);
+		player.clientController.destroyPlayer();
+		respawnJobs.Add(new RespawnJob(player.clientController, respawnDelay));
+	}
+
+	[Server]
+	public override void onPlayerRevive(Player player) {
+		throw new System.NotImplementedException();
+	}
 
 	[Server]
 	public CentralRobotController getCRC(int teamIndex) {
 		return teamIndex < 0 || teamIndex > centralRobotControllers.Count ? null : centralRobotControllers[teamIndex];
 	}
 
-	[Server]
-	private void initializeCRCs() {
-		foreach (TeamData teamData in teams) {
-			centralRobotControllers.Add(Instantiate(centralRobotControllerPrefab, Vector3.zero, Quaternion.identity));
+	public double getRobotTiming()
+	{
+		double robotAITime = 0f;
+		foreach (CentralRobotController controller in centralRobotControllers.Values)
+		{
+			robotAITime += controller.robotExecutionTimer.getMeasuredTimePerSecond();
+		}
+		return robotAITime;
+	}
+
+	public override int getMaxRobots(int teamIndex) {
+		return (int)(GlobalConfig.globalConfig.configuration.robotsPerPlayer - getJoinedPlayerCount(teamIndex) *playerRobotPenalty);
+	}
+
+	public override int getJoinedPlayerCount(int teamIndex) {
+		if (teamIndex == 0) {
+			return GlobalConfig.globalConfig.getPlayerCount();
+		}
+		return 0;
+	}
+
+	[ClientRpc]
+	private void RpcStartTimerFor(NetworkInstanceId localClient) {
+		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
+			clientRespawnJob = new RespawnJob(GlobalConfig.globalConfig.localClient, respawnDelay);
 		}
 	}
 
-    private struct RespawnJob {
-        public ClientController controller;
-        public float timeRemaining;
+	[Server]
+	private void initializeCRCs() {
+		foreach (Team team in teams.Values) {
+			centralRobotControllers.Add(team.id, Instantiate(centralRobotControllerPrefab, Vector3.zero, Quaternion.identity));
+		}
+	}
 
-        public RespawnJob(ClientController playerController, float time) {
-            controller = playerController;
-            timeRemaining = time;
-        }
-    }
+	private struct RespawnJob {
+		public readonly ClientController controller;
+		public readonly float respawnTime;
+
+		public RespawnJob(ClientController playerController, float respawnTime) {
+			controller = playerController;
+			this.respawnTime = Time.time + respawnTime;
+		}
+	}
 }

@@ -3,24 +3,26 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using UnityEngine.Networking.NetworkSystem;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
 [RequireComponent(typeof(NetworkDiscovery))]
 public class Menu : MonoBehaviour {
 
-	private Rect hostRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
+	private Rect topRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
-	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect optionsRect = new Rect(0.05f, 0.35f, 0.5f, 0.07f);
+	private Rect spectateRect = new Rect(0.05f, 0.55f, 0.5f, 0.07f);
+	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect backRect = new Rect(0.05f, 0.8f, 0.5f, 0.07f);
 	private Rect titleRect = new Rect(0.05f, 0.05f, 0.75f, 0.1f);
-	private Rect resumeRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 	private string serverName = "Lazy Setup";
 	private Vector2 scrollPosition = Vector2.zero;
+
 	private NetworkDiscovery nd;
 	private NetworkDiscovery networkDiscovery { get {
 		if (nd == null)
@@ -94,7 +96,7 @@ public class Menu : MonoBehaviour {
 		GUI.skin = skin;
 		float menuWidth = 0.6f;
 		float width = background.width / background.height;
-		GUI.DrawTexture(convertRect(new Rect(menuWidth -width, 0, width, 1), false), background);
+		GUI.DrawTexture(GUIUtil.convertRect(new Rect(menuWidth -width, 0, width, 1), false), background);
 	    switch (currentMenu) {
 	        case state.MainMenu:
 	            doMainMenu();
@@ -134,40 +136,43 @@ public class Menu : MonoBehaviour {
     }
 
 	private void doLose() {
-		adjustFontSize(skin.button, exitRect.height * 0.8f);
-		if (GUI.Button(convertRect(exitRect, false), "To Lobby", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
+		if (GUIUtil.button("To Lobby", exitRect, skin.button)) {
 		    returnToLobby();
 		}
 		int width = 400;
 		int height = 50;
 		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
-		adjustFontSize(skin.button, endTextFontSize);
+		GUIUtil.adjustFontSize(skin.button, endTextFontSize);
 		GUI.Label(position, "You Lost!", skin.button);
 	}
 
 	private void doWin() {
-		adjustFontSize(skin.button, exitRect.height *0.8f);
-		if (GUI.Button(convertRect(exitRect, false), "To Lobby", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, exitRect.height *0.8f);
+		if (GUIUtil.button("To Lobby", exitRect, skin.button)) {
 		    returnToLobby();
 		}
 		int width = 400;
 		int height = 50;
 		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
-		adjustFontSize(skin.button, endTextFontSize);
+		GUIUtil.adjustFontSize(skin.button, endTextFontSize);
 		GUI.Label(position, "You Won!", skin.button);
 	}
 
 	private void doInGameMenu() {
-		adjustFontSize(skin.button, resumeRect.height *0.8f);
-		if (GUI.Button(convertRect(resumeRect, false), "Resume", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, topRect.height *0.8f);
+		if (GUIUtil.button("Resume", topRect, skin.button)) {
 			toggleInGameMenu();
 		}
-		adjustFontSize(skin.button, exitRect.height * 0.8f);
-		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
+		if (GUIUtil.button("Drop out", joinRect, skin.button)) {
+			dropOut();
+		}
+		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
+		if (GUIUtil.button("Quit", exitRect, skin.button)) {
             quit();
 		}
-		adjustFontSize(skin.button, optionsRect.height * 0.8f);
-		if (GUI.Button(convertRect(optionsRect, false), "Options", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, optionsRect.height * 0.8f);
+		if (GUIUtil.button("Options", optionsRect, skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Options;
 		}
@@ -175,11 +180,11 @@ public class Menu : MonoBehaviour {
 
 	private void doMainMenu() {
 		// draw title
-		adjustFontSize(skin.label, titleRect.height);
-		GUI.Label(convertRect(titleRect, false), "Guns 'n' Robots", skin.label);
+		GUIUtil.adjustFontSize(skin.label, titleRect.height);
+		GUI.Label(GUIUtil.convertRect(titleRect, false), "Guns 'n' Robots", skin.label);
 
-		adjustFontSize(skin.button, hostRect.height * 0.8f);
-		if (GUI.Button(convertRect(hostRect, false), "Host", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, topRect.height * 0.8f);
+		if (GUIUtil.button("Host", topRect, skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Host;
 		    SceneData ? activeSceneData = SceneCatalog.sceneCatalog.getSceneData(SceneManager.GetActiveScene().path);
@@ -188,20 +193,20 @@ public class Menu : MonoBehaviour {
 		    }
 		    startListen();
 		}
-		adjustFontSize(skin.button, joinRect.height * 0.8f);
-		if(GUI.Button(convertRect(joinRect, false), "Join", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, joinRect.height * 0.8f);
+		if(GUIUtil.button("Join", joinRect, skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Join;
 			networkDiscovery.Initialize();
 			networkDiscovery.StartAsClient();
 		}
-		adjustFontSize(skin.button, optionsRect.height * 0.8f);
-		if (GUI.Button(convertRect(optionsRect, false), "Options", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, optionsRect.height * 0.8f);
+		if (GUIUtil.button("Options", optionsRect, skin.button)) {
 			menuHistory.Push(currentMenu);
 			currentMenu = state.Options;
 		}
-		adjustFontSize(skin.button, exitRect.height * 0.8f);
-		if (GUI.Button(convertRect(exitRect, false), "Quit", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
+		if (GUIUtil.button("Quit", exitRect, skin.button)) {
             quit();
 		}
 	}
@@ -211,16 +216,16 @@ public class Menu : MonoBehaviour {
 		// graphics settings
 
 		// shadow distance
-		adjustFontSize(skin.label, 0.05f);
-		GUI.Label(convertRect(new Rect(0.05f, 0.1f, 0.4f, 0.05f), false), "Shadow Distance:  " +QualitySettings.shadowDistance.ToString("##,0.") +" m");
-		QualitySettings.shadowDistance = GUI.HorizontalSlider(convertRect(new Rect(0.05f, 0.16f, 0.25f, 0.04f), false), QualitySettings.shadowDistance, 0, 200);
+		GUIUtil.adjustFontSize(skin.label, 0.05f);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.1f, 0.4f, 0.05f), false), "Shadow Distance:  " +QualitySettings.shadowDistance.ToString("##,0.") +" m");
+		QualitySettings.shadowDistance = GUI.HorizontalSlider(GUIUtil.convertRect(new Rect(0.05f, 0.16f, 0.25f, 0.04f), false), QualitySettings.shadowDistance, 0, 200);
 
 		// vsync setting
 		string[] vSyncOptions = { "None", "Full", "Half" };
-		adjustFontSize(skin.label, 0.05f);
-		GUI.Label(convertRect(new Rect(0.05f, 0.18f, 0.2f, 0.05f), false), "VSync: " +vSyncOptions[QualitySettings.vSyncCount]);
+		GUIUtil.adjustFontSize(skin.label, 0.05f);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.18f, 0.2f, 0.05f), false), "VSync: " +vSyncOptions[QualitySettings.vSyncCount]);
 		//QualitySettings.vSyncCount = GUI.SelectionGrid(convertRect(new Rect(0.1f, 0.2f, 0.3f, 0.04f)), QualitySettings.vSyncCount, vSyncOptions, 3);
-		QualitySettings.vSyncCount = (int)(GUI.HorizontalSlider(convertRect(new Rect(0.05f, 0.24f, 0.2f, 0.04f), false), QualitySettings.vSyncCount, 0, 2) +0.5f);
+		QualitySettings.vSyncCount = (int)(GUI.HorizontalSlider(GUIUtil.convertRect(new Rect(0.05f, 0.24f, 0.2f, 0.04f), false), QualitySettings.vSyncCount, 0, 2) +0.5f);
 
 
 		// input settings
@@ -238,71 +243,72 @@ public class Menu : MonoBehaviour {
 		
 
 		// back button
-		adjustFontSize(skin.button, backRect.height);
-		if (GUI.Button(convertRect(backRect, false), "Back", skin.button)) {
+		GUIUtil.adjustFontSize(skin.button, backRect.height);
+		if (GUIUtil.button("Back", backRect, skin.button)) {
 			currentMenu = menuHistory.Pop();
 		}
 	}
 
 	private void doHost() {	
-		adjustFontSize(skin.label, 0.07f);
-		GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Configure Server");
+		GUIUtil.adjustFontSize(skin.label, 0.07f);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Configure Server");
 
 		// start button
-		adjustFontSize(skin.button, hostRect.height * 0.8f);
-		if (GUI.Button(convertRect(hostRect, false), "Start Hosting")) {
+		GUIUtil.adjustFontSize(skin.button, topRect.height * 0.8f);
+		if (GUIUtil.button("Start Game", topRect)) {
 			begin();
         }
 
 		// configuration
-		adjustFontSize(skin.label, 0.03f);
-		adjustFontSize(skin.textField, 0.03f);
-		adjustFontSize(skin.button, 0.03f);
-		GUI.Label(convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Server Name: ");
-		serverName = GUI.TextField(convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), serverName);
-		GUI.Label(convertRect(new Rect(0.05f, 0.45f, 0.3f, 0.03f), false), "Robot Spawn Rate: ");
-		serverConfig.robotSpawnRatePerSecond = numberField(new Rect(0.35f, 0.45f, 0.2f, 0.03f), serverConfig.robotSpawnRatePerSecond);
-		GUI.Label(convertRect(new Rect(0.05f, 0.5f, 0.3f, 0.03f), false), "Spawn Rate Increase: ");
-		serverConfig.spawnRateIncreasePerPlayer = numberField(new Rect(0.35f, 0.5f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
-		GUI.Label(convertRect(new Rect(0.05f, 0.55f, 0.3f, 0.03f), false), "Robots per Player: ");
-		serverConfig.robotsPerPlayer = numberField(new Rect(0.35f, 0.55f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
+		GUIUtil.adjustFontSize(skin.label, 0.03f);
+		GUIUtil.adjustFontSize(skin.textField, 0.03f);
+		GUIUtil.adjustFontSize(skin.button, 0.03f);
+//		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Server Name: ");
+//		serverName = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), serverName);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.3f, 0.03f), false), "Robot Spawn Rate: ");
+		serverConfig.robotSpawnRatePerSecond = GUIUtil.numberField(new Rect(0.35f, 0.3f, 0.2f, 0.03f), serverConfig.robotSpawnRatePerSecond);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.35f, 0.3f, 0.03f), false), "Spawn Rate Increase: ");
+		serverConfig.spawnRateIncreasePerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.35f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.4f, 0.3f, 0.03f), false), "Robots per Team: ");
+		serverConfig.robotsPerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.4f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
 		GameMode.GameModes [] modes = (GameMode.GameModes[])System.Enum.GetValues(typeof(GameMode.GameModes));
 		List<string> modeStrings = new List<string>();
 		foreach (GameMode.GameModes mode in modes) {
 			modeStrings.Add(mode.ToString());
 		}
 
-		int returnValue = dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
-	    GameMode.GameModes selectedMode =
-	        (GameMode.GameModes) System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
-	    if (selectedMode != serverConfig.gameMode) {
-	        loadDefaultSceneConfigurationFor(SceneCatalog.sceneCatalog.getScenesForGameMode(selectedMode)[0].path);
-	        serverConfig.gameMode = selectedMode;
-	    }
-
+//		int returnValue = GUIUtil.dropDownSelector(new Rect(0.05f, 0.60f, 0.5f, 0.05f), modeStrings, (int)serverConfig.gameMode);
+//	    GameMode.GameModes selectedMode =
+//	        (GameMode.GameModes) System.Enum.Parse(typeof(GameMode.GameModes), modeStrings[returnValue]);
+//	    if (selectedMode != serverConfig.gameMode) {
+//	        loadDefaultSceneConfigurationFor(SceneCatalog.sceneCatalog.getScenesForGameMode(selectedMode)[0].path);
+//	        serverConfig.gameMode = selectedMode;
+//	    }
+		serverConfig.gameMode = GameMode.GameModes.BASES;
 	    // back button
-		adjustFontSize(skin.button, backRect.height * 0.8f);
-		if (GUI.Button(convertRect(backRect, false), "Back", skin.button)) {
-			currentMenu = menuHistory.Pop();
-		}
+		//GUIUtil.adjustFontSize(skin.button, backRect.height * 0.8f);
+		//if (GUIUtil.button("Cancel", backRect, skin.button)) {
+		//	currentMenu = menuHistory.Pop();
+		//	stopListen();
+		//}
 	}
 
 	private void doJoin() {
-		adjustFontSize(skin.label, 0.07f);
-		GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "LAN Servers");
+		GUIUtil.adjustFontSize(skin.label, 0.07f);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "LAN Servers");
 
 		// server list
 		List<NetworkBroadcastResult> servers =
 			new List<NetworkBroadcastResult>(networkDiscovery.broadcastsReceived.Values);
-		Rect pos = convertRect(new Rect(0.05f, 0.12f, 0.5f, 0.5f), false);
+		Rect pos = GUIUtil.convertRect(new Rect(0.05f, 0.12f, 0.5f, 0.5f), false);
 		GUI.BeginGroup(pos, skin.box);
         scrollPosition = GUI.BeginScrollView(new Rect(0, 0, pos.width, pos.height), scrollPosition,
-			convertRect(new Rect(0, 0, 0.5f, Mathf.Max(0.05f *servers.Count, 0.2f)), false));
-		adjustFontSize(skin.button, 0.04f);
+			GUIUtil.convertRect(new Rect(0, 0, 0.5f, Mathf.Max(0.05f *servers.Count, 0.2f)), false));
+		GUIUtil.adjustFontSize(skin.button, 0.04f);
 		int position = 0;
 		foreach(NetworkBroadcastResult server in servers) {
 			string serverName = System.Text.Encoding.Unicode.GetString(server.broadcastData);  
-			if (GUI.Button(convertRect(new Rect(0, 0.05f * position, 0.5f, 0.05f), false), serverName + "   -   " + server.serverAddress)) {
+			if (GUIUtil.button(serverName + "   -   " + server.serverAddress, new Rect(0, 0.05f * position, 0.5f, 0.05f))) {
 				host = server.serverAddress;
 				join();
 				return;
@@ -312,64 +318,35 @@ public class Menu : MonoBehaviour {
 		GUI.EndGroup();
 
 		// join custom address
-		adjustFontSize(skin.textArea, 0.05f);
-		host = GUI.TextField(convertRect(new Rect(0.2f, 0.65f, 0.35f, 0.05f), false), host);
-		adjustFontSize(skin.button, 0.05f);
-		if (GUI.Button(convertRect(new Rect(0.05f, 0.64f, 0.15f, 0.07f), false), "Join")) {
+		GUIUtil.adjustFontSize(skin.textArea, 0.05f);
+		host = GUI.TextField(GUIUtil.convertRect(new Rect(0.2f, 0.65f, 0.35f, 0.05f), false), host);
+		GUIUtil.adjustFontSize(skin.button, 0.05f);
+		if (GUIUtil.button("Join", new Rect(0.05f, 0.64f, 0.15f, 0.07f))) {
 			join();
 		}
 
 		// back button
-		adjustFontSize(skin.button, backRect.height);
-		if (GUI.Button(convertRect(backRect, false), "Back")) {
+		GUIUtil.adjustFontSize(skin.button, backRect.height);
+		if (GUIUtil.button("Back", backRect)) {
 			networkDiscovery.StopBroadcast();
 			currentMenu = menuHistory.Pop();
 		}
 	}
 
     private void doLobby() {
-        adjustFontSize(skin.button, exitRect.height * 0.8f);
+        GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
         if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
-            if (GUI.Button(convertRect(exitRect, false), "Drop In", skin.button)) {
-                ClientScene.AddPlayer(0);
-                activeAtStart = false;
-                Cursor.lockState = CursorLockMode.Locked;
+			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
+		        dropIn(true);
+	        }
+			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
+				dropIn(false);
             }
         } else {
-            adjustFontSize(skin.label, 0.07f);
-            GUI.Label(convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Waiting on host...");
+			GUIUtil.adjustFontSize(skin.label, 0.07f);
+			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.05f, 0.5f, 0.07f), false), "Waiting on host...");
         }
     }
-
-	private int dropDownSelector(Rect relativePosition, List<string> options, int startValue) {
-		return GUI.SelectionGrid(convertRect(relativePosition, false), startValue, options.ToArray(), 2);
-	}
-
-
-	private float numberField(Rect relativePosition, float startValue) {
-		try {
-			return float.Parse(GUI.TextField(convertRect(relativePosition, false), startValue.ToString()));
-		} catch (System.FormatException) {
-			return startValue;
-		}
-	}
-	private int numberField(Rect relativePosition, int startValue) {
-		try {
-			return int.Parse(GUI.TextField(convertRect(relativePosition, false), startValue.ToString()));
-		} catch (System.FormatException) {
-			return startValue;
-		}
-	}
-
-	private void adjustFontSize(GUIStyle style, float height) {
-		style.fontSize = (int)(height *Screen.height);
-	}
-
-	private Rect convertRect(Rect r, bool fixedHeight) {
-		if (fixedHeight)
-			return new Rect(r.x * Screen.height, r.y * Screen.height, r.width * Screen.height, r.height);
-		return new Rect(r.x * Screen.height, r.y * Screen.height, r.width * Screen.height, r.height * Screen.height);
-	}
 
 	private void join() {
 		NetworkManager manager = NetworkManager.singleton;
@@ -395,6 +372,21 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
+	private void dropIn(bool spectator) {
+		StringMessage message = new StringMessage(spectator ? "1" : "0" + System.Environment.MachineName);
+
+		ClientScene.AddPlayer(null, 0, message);
+		activeAtStart = false;
+		Cursor.lockState = CursorLockMode.Locked;
+	}
+
+	private void dropOut() {
+		ClientScene.RemovePlayer(0);
+		activeAtStart = true;
+		currentMenu = state.ClientLobby;
+		Cursor.lockState = CursorLockMode.None;
+	}
+
     private void returnToLobby() {
         menuHistory.Clear();
         activeAtStart = true;
@@ -417,10 +409,16 @@ public class Menu : MonoBehaviour {
         NetworkController.networkController.listen();
         if (!networkDiscovery.running) {
             networkDiscovery.Initialize();
-            networkDiscovery.broadcastData = serverName;
+	        networkDiscovery.broadcastData = System.Environment.MachineName;
             networkDiscovery.StartAsServer();
+	        networkDiscovery.Initialize();
         }
     }
+
+	private void stopListen() {
+		networkDiscovery.StopBroadcast();
+		NetworkController.networkController.stopListening();
+	}
 
     IEnumerator startGameWhenReady() {
         while (!NetworkController.networkController.allClientsReady()) {
@@ -438,8 +436,15 @@ public class Menu : MonoBehaviour {
         //GetComponent<Camera>().enabled = false;
         //GetComponent<AudioListener>().enabled = false;
         //NetworkServer.SpawnObjects();
-        GlobalConfig globalConfig = Instantiate(globalConfigPrefab);
-        NetworkServer.Spawn(globalConfig.gameObject);
+	    GlobalConfig [] globalConfigs = Resources.FindObjectsOfTypeAll<GlobalConfig>();
+	    GlobalConfig globalConfig = globalConfigs[0];
+	    if (globalConfigs.Length == 1) {
+		    globalConfig = Instantiate(globalConfigPrefab);
+	    } else {
+		    globalConfig.gameObject.SetActive(true);
+	    }
+
+	    NetworkServer.Spawn(globalConfig.gameObject);
         menuHistory.Clear();
         currentMenu = state.ClientLobby;
     }

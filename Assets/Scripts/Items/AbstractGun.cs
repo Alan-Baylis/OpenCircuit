@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 using UnityEngine.Networking;
 
 public abstract class AbstractGun : Item {
+
+	public float soundExpirationTime = 10f;
 
 	public float fireSoundThreatLevel = 5;
 	public float fireSoundThreatRate = 0.3f;
@@ -18,10 +19,7 @@ public abstract class AbstractGun : Item {
 	public Vector2 recoilMaxRotation = new Vector3(0.1f, 0.2f);
 	public HoldPosition reloadPosition;
 
-	public Vector3 fireEffectLocation;
-	public EffectSpec fireEffect;
-	public EffectSpec fireEffectSideways;
-	public EffectSpec fireEffectLight;
+	public GunEffectsController effectsController;
 
 	public GUISkin guiSkin;
 		
@@ -30,7 +28,6 @@ public abstract class AbstractGun : Item {
 
 	protected float lastFiredTime = 0;
 	protected float reloadTimeRemaining = 0;
-	protected LabelHandle audioLabel;
 
 	public AudioSource gunshotSoundEmitter;
 	public AudioSource reloadSoundEmitter;
@@ -78,7 +75,7 @@ public abstract class AbstractGun : Item {
 	public abstract bool addAmmo(int quantity);
 
 	[ClientRpc]
-	protected abstract void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal);
+	protected abstract void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 direction, Vector3 normal);
 
 	[ClientRpc]
 	protected abstract void RpcCreateFireEffects();
@@ -119,13 +116,13 @@ public abstract class AbstractGun : Item {
 	[Command]
 	protected virtual void CmdBulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
 		serverDoBullet(direction, position, normal, hit);
-		RpcCreateShotEffect(HitEffectType.ROBOT, position, normal);
+		RpcCreateShotEffect(HitEffectType.ROBOT, position, direction, normal);
 	}
 
 	[Command]
 	protected virtual void CmdBulletHit(Vector3 direction, Vector3 position, Vector3 normal) {
 		serverDoBullet(direction, position, normal);
-		RpcCreateShotEffect(HitEffectType.DEFAULT, position, normal);
+		RpcCreateShotEffect(HitEffectType.DEFAULT, position, direction, normal);
 	}
 
 	[Command]
@@ -139,6 +136,25 @@ public abstract class AbstractGun : Item {
 		consumeAmmo();
 		if (hit != null) {
 			applyDamage(hit.Value, direction, normal.Value);
+		}
+		if (Time.time - lastFiredTime > 1f) {
+			LabelHandle audioLabel = new LabelHandle(transform.position, "gunshots");
+			TeamId team = holder.GetComponent<TeamId>();
+			if (team != null && team.enabled) {
+				audioLabel.teamId = team.id;
+			}
+			audioLabel.addTag(new SoundTag(TagEnum.Sound, 0, audioLabel, Time.time, soundExpirationTime));
+			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
+
+			audioLabel.setPosition(transform.position);
+			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
+			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
+			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
+			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
+			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
+		}
+		if (!hasAuthority) {
+			lastFiredTime = Time.time;
 		}
 	}
 

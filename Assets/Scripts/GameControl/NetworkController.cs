@@ -6,6 +6,8 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 
     public static NetworkController networkController;
 
+	public LogFilter.FilterLevel logLevel;
+
     //Server fields
     private NetworkClient localClient;
 
@@ -17,6 +19,7 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 	void Start () {
 	    DontDestroyOnLoad(gameObject);
 	    networkController = this;
+		LogFilter.currentLogLevel = (int)logLevel;
 	}
 
     public bool listen() {
@@ -52,6 +55,19 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
         connectLocalClient();
         return true;
     }
+
+	public void stopListening() {
+		if (!NetworkServer.active)
+			return;
+
+		NetworkServer.Shutdown();
+
+		if (localClient != null) {
+			localClient.Disconnect();
+			localClient.Shutdown();
+			localClient = null;
+		}
+	}
 
     public void connect() {
 
@@ -92,8 +108,12 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
         //return client;
     }
 
-    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, short playerControllerId = 0) {
+    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, string username,  bool spectator, short playerControllerId = 0) {
         GameObject player = Instantiate(playerPrefab, pos, rotation);
+	    ClientController controller = player.GetComponent<ClientController>();
+	    controller.spectator = spectator;
+	    controller.playerName = username;
+	    controller.name = username;
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
     }
 
@@ -124,6 +144,7 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 
     private void registerServerMessages() {
         NetworkServer.RegisterHandler(MsgType.AddPlayer, serverSpawnPlayer);
+	    NetworkServer.RegisterHandler(MsgType.RemovePlayer, serverRemovePlayer);
         NetworkServer.RegisterHandler(MsgType.Ready, serverOnClientReady);
     }
 
@@ -163,8 +184,17 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
     *
     */
     private void serverSpawnPlayer(NetworkMessage netMsg) {
-        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn);
+	    netMsg.reader.ReadInt32();
+	    string message = netMsg.reader.ReadString();
+	    bool isSpectator = message[0] == '1';
+	    string username = message.Remove(0, 1);
+
+        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, username, isSpectator);
     }
+
+	private void serverRemovePlayer(NetworkMessage netMsg) {
+		NetworkServer.DestroyPlayersForConnection(netMsg.conn);
+	}
 
     private void serverOnClientReady(NetworkMessage netMsg) {
         NetworkServer.SetClientReady(netMsg.conn);

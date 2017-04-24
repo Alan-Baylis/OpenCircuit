@@ -9,7 +9,7 @@ public class SpawnerHunt : GameMode {
 	private RobotSpawner[] spawners;
 
 	[ServerCallback]
-	public new void Start() {
+	public override void Start() {
 	    base.Start();
 		spawners = FindObjectsOfType<RobotSpawner>();
 	}
@@ -27,7 +27,7 @@ public class SpawnerHunt : GameMode {
 
     [Server]
     public override bool loseConditionMet() {
-        return frozenPlayers > 0 && frozenPlayers >= ClientController.numPlayers;
+        return frozenPlayers > 0 && frozenPlayers >= GlobalConfig.globalConfig.getPlayerCount();
     }
 
     [Server]

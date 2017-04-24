@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class NetworkParenter : NetworkBehaviour {
 
@@ -19,7 +18,11 @@ public class NetworkParenter : NetworkBehaviour {
 
 	[Server]
 	public void setParentId(NetworkInstanceId id) {
-		this.parentId = id;
+		parentId = id;
+	}
+
+	public NetworkInstanceId getParentId() {
+		return parentId;
 	}
 
 	[Client]

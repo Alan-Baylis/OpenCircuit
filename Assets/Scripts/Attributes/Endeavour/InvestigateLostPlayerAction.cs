@@ -4,7 +4,7 @@ using UnityEngine;
 public class InvestigateLostPlayerAction : Endeavour {
 
 	private Tag player;
-	private bool reached = false;
+	private bool reached;
 
 #if UNITY_EDITOR
 	private GameObject mySphere;
@@ -20,8 +20,8 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 #endif
 	public InvestigateLostPlayerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
-		this.name = "investigateLostPlayer";
-		this.player = getTagOfType<Tag>(TagEnum.Player);
+		name = "investigateLostPlayer";
+		player = getTagOfType<Tag>(TagEnum.Player);
 	}
 
 	public override void update() {
@@ -40,13 +40,16 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
 	}
 
 	public override bool isStale() {
+		if (player.getLabelHandle().label == null)
+			return true;
+
 		bool isAlly = false;
 		if (GlobalConfig.globalConfig.gamemode is Bases) {
-			isAlly = player.getLabelHandle().label.GetComponent<Team>().team.Id == getController().GetComponent<Team>().team.Id;
+			isAlly = player.getLabelHandle().label.GetComponent<TeamId>().id == getController().GetComponent<TeamId>().id;
 		}
 		return reached || isAlly;
 	}

@@ -10,8 +10,8 @@ public class AssaultRifle : AbstractGun {
 	public float damage = 10;
 	public float impulse = 1;
 
-	public EffectSpec hitEffect;
-	public EffectSpec robotHitEffect;
+	public AbstractEffectController hitEffectPrefab;
+	public AbstractEffectController robotHitEffectPrefab;
 
 	public float reloadTime = 1f;
 	public int magazineSize = 20;
@@ -94,10 +94,10 @@ public class AssaultRifle : AbstractGun {
 				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
 				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
 				//}
-				robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, Vector3.Reflect(direction, hitInfo.normal));
 			} else {
 				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
-				hitEffect.spawn(hitInfo.point, hitInfo.normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
 			}
 		} else {
 			CmdBulletMiss(direction);
@@ -130,7 +130,7 @@ public class AssaultRifle : AbstractGun {
 				navAgent.baseOffset = 1.5f;
 			}
 		}
-		if(health != null) {
+		if(health != null && health.enabled) {
 			health.hurt(calculateDamage(direction, normal));
 		}
 	}
@@ -152,12 +152,12 @@ public class AssaultRifle : AbstractGun {
 	}
 
 	[ClientRpc]
-	protected override void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
+	protected override void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 direction, Vector3 normal) {
 		if (!hasAuthority) {
 			if (type == HitEffectType.DEFAULT) {
-				hitEffect.spawn(location, normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location, Vector3.Reflect(direction, normal));
 			} else if (type == HitEffectType.ROBOT) {
-				robotHitEffect.spawn(location, normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, Vector3.Reflect(direction, normal));
 			}
 			doFireEffects();
 		}
@@ -170,36 +170,13 @@ public class AssaultRifle : AbstractGun {
 
 	protected override void doFireEffects() {
 		playFireSound();
-
-		// do fire effects
-		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
-		fireEffect.spawn(effectPosition, -transform.forward);
-		fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
-		fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
-		fireEffectLight.spawn(effectPosition);
+		effectsController.doEffects();
 	}
 
 	private void playFireSound() {
 		// create sound event
 		//float volume = gunshotSoundEmitter.volume;
-		if (Time.time - lastFiredTime > .5f || audioLabel == null) {
-			audioLabel = new LabelHandle(transform.position, "gunshots");
-			audioLabel.addTag(new Tag(TagEnum.Sound, 0, audioLabel));
-			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 
-			audioLabel.setPosition(transform.position);
-			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
-		} else {
-			audioLabel.setPosition(transform.position);
-			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			//Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-		}
 		// play sound effect
 		if (gunshotSoundEmitter != null) {
 		    //gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];

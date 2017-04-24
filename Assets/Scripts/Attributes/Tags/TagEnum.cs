@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public enum TagEnum {
-	Active, Inactive, Player, Spawner, Threat, GrabTarget, Sound, Grabbed, GuardPoint, PatrolRoute, PowerStation, Searchable, SentryPoint, None, Occupied, Frozen, BuildDirective, Team
+﻿public enum TagEnum {
+	Active, Inactive, Player, Spawner, Threat, GrabTarget,
+	Sound, Grabbed, GuardPoint, PatrolRoute, PowerStation,
+	Searchable, SentryPoint, None, Occupied, Frozen,
+	BuildDirective, Team, AttackRoute, Health, Defendable
 }

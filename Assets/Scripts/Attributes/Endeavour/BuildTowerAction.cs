@@ -36,6 +36,7 @@ public class BuildTowerAction : Endeavour {
 		if (message.Message.Equals(HoverJet.TARGET_REACHED)) {
 			MonoBehaviour.Destroy(towerBase.getLabelHandle().label.gameObject);
 			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition());
+			controller.getMentalModel().removeSighting(towerBase.getLabelHandle(), towerBase.getLabelHandle().getPosition(), null);
 		}
 	}
 

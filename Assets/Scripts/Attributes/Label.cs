@@ -47,7 +47,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		labelHandle = new LabelHandle(transform.position, name);
 		labelHandle.label = this;
 
-		Label.labels.Add(this);
+		labels.Add(this);
 		if (isVisible) {
 			visibleLabels.Add(this);
 		}
@@ -171,7 +171,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
         foreach (Tag tag in tags) {
             if (tag == null)
                 continue;
-            tag.drawGizmo();
+            tag.drawGizmo(this);
         }
 	}
 #endif

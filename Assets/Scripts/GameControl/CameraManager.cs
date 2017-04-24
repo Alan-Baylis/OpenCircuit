@@ -29,9 +29,12 @@ public class CameraManager : MonoBehaviour {
 	}
 
 	public void removeCamera(ClientController controller) {
+		if (cameraMap[controller].cam != null) {
+			disableCamera(cameraMap[controller].cam);
+		}
 		availableCameras.Remove(cameraMap[controller]);
 		cameraMap.Remove(controller);
-		if (GlobalConfig.globalConfig.localPlayerDead && lastCamera.controller == controller) {
+		if (lastCamera != null && lastCamera.controller == controller) {
 			nextCameraIndex = 0;
 			switchCamera();
 		}
@@ -43,25 +46,40 @@ public class CameraManager : MonoBehaviour {
 		lastCamera = availableCameras[nextCameraIndex];
 		enableCamera(lastCamera.cam);
 
+		//If the index gets off, incrementCamera() will fix it
 		incrementCamera();
 	}
 
 	public void usePlayerCam(Camera camera) {
 		if (lastCamera != null) {
 			disableCamera(lastCamera.cam);
+			lastCamera = null;
 		}
 		enableCamera(camera);
 		nextCameraIndex = 0;
 	}
 
+	public void useSceneCamera() {
+		if (lastCamera != null) {
+			disableCamera(lastCamera.cam);
+		}
+		lastCamera = sceneCamera;
+		enableCamera(sceneCamera.cam);
+		nextCameraIndex = 0;
+	}
+
 	private void enableCamera(Camera cam) {
-		cam.enabled = true;
-		cam.GetComponent<AudioListener>().enabled = true;
+		if (cam != null) {
+			cam.enabled = true;
+			cam.GetComponent<AudioListener>().enabled = true;
+		}
 	}
 
 	private void disableCamera(Camera cam) {
-		cam.enabled = false;
-		cam.GetComponent<AudioListener>().enabled = false;
+		if (cam != null) {
+			cam.enabled = false;
+			cam.GetComponent<AudioListener>().enabled = false;
+		}
 	}
 
 	private void incrementCamera() {

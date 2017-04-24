@@ -11,9 +11,11 @@ GameObject:
   - component: {fileID: 11460716}
   - component: {fileID: 11483592}
   - component: {fileID: 114000012641137478}
+  - component: {fileID: 114762472885982036}
+  - component: {fileID: 114550412258392786}
+  - component: {fileID: 114685695393273014}
   - component: {fileID: 114192725487870188}
   - component: {fileID: 114875189402417868}
-  - component: {fileID: 114762472885982036}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GlobalConfig
@@ -45,17 +47,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73575c9d3520046a38ae8378239a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localPlayerDead: 0
   playerPrefab: {fileID: 175040, guid: 7ecf7c856d9af924086760e0e85174a4, type: 2}
   configuration:
-    robotsPerPlayer: 3
+    robotsPerPlayer: 10
     robotSpawnRatePerSecond: 1
     spawnRateIncreasePerPlayer: 0.1
     gameMode: 1
   gameStarted: 0
   gamemode: {fileID: 0}
   cameraManager: {fileID: 114762472885982036}
-  robotControllers: 0
+  effectsManager: {fileID: 114685695393273014}
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -126,6 +127,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frozenPlayers: 0
   freezeLockPrefab: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
+--- !u!114 &114550412258392786
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 522add28afee545b2a90bea785e1b7d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireflyConfig:
+    fireflySize: 0.02
+    fireflyGravity: 400
+    damper: 20
+    randomAcceleration: 0
+    shuffleSpeed: 10
+    fadeSpeed: 5
+    fireflyTexture: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
+    glowTexture: {fileID: 2800000, guid: 4dbdac1fe2b35954d9029417fd785115, type: 3}
+    fireflyColor: {r: 1, g: 1, b: 0.816, a: 1}
+    spawnPosition:
+      serializedVersion: 2
+      x: -0.1
+      y: -0.5
+      width: 0.2
+      height: 0.1
+    spawnSpeed:
+      serializedVersion: 2
+      x: -10
+      y: 50
+      width: 10
+      height: 50
+    escapeSpeed:
+      serializedVersion: 2
+      x: -20
+      y: -25
+      width: 40
+      height: 50
+--- !u!114 &114685695393273014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f27c9e3fbdc1044fbb19ee3db81cef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxEffects: 500
 --- !u!114 &114762472885982036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -148,14 +200,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935f37758805a6b48aa4e2b2dc7259a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localTeam:
-    Id: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
-  teams:
-  - Id: 0
-    color: {r: 0, g: 0, b: 0.47843137, a: 1}
-  - Id: 1
-    color: {r: 0.47794116, g: 0, b: 0, a: 1}
+  localTeamId: 0
+  teamConfig:
+  - color: {r: 0, g: 0, b: 0.49803922, a: 1}
+  - color: {r: 0.49803922, g: 0, b: 0, a: 1}
+  playerRobotPenalty: 1.5
   respawnDelay: 3
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
+  firstTeamLocations: []
+  secondTeamLocations: []

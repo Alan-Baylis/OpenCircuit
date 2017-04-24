@@ -8,7 +8,6 @@ public class SceneInitializer : MonoBehaviour {
     public SceneLoader sceneLoaderPrefab;
     public NetworkController networkControllerPrefab;
 
-	// Use this for initialization
 	void Start () {
 	    if (NetworkManager.singleton == null) {
 	        Instantiate(networkManagerPrefab.gameObject, Vector3.zero, Quaternion.identity);

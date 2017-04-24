@@ -8,6 +8,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/scenes/Loading/Loading.unity
   - enabled: 1
-    path: Assets/scenes/Bases/bases.unity
-  - enabled: 1
-    path: Assets/scenes/quicktest/quicktest.unity
+    path: Assets/scenes/Pair/pair.unity

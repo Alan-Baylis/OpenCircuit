@@ -113,14 +113,16 @@ public abstract class Item : NetworkBehaviour {
 
 	public virtual void onEquip(Inventory equipper) {
 		transform.localPosition = normalPosition.position;
-		col.enabled = false;
+		if (col != null)
+			col.enabled = false;
 		gameObject.SetActive(true);
 	}
 
 	public virtual void onUnequip(Inventory equipper) {
 		gameObject.SetActive(false);
 		endInvoke(equipper);
-		col.enabled = true;
+		if (col != null)
+			col.enabled = true;
 	}
 
 	protected RaycastHit reach() { Vector3 fake; return reach(out fake); }

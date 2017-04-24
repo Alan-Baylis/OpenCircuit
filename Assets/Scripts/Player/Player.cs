@@ -14,6 +14,7 @@ public class Player : NetworkBehaviour {
 	public AudioClip teleportSound;
 	public float whiteOutDuration;
 	public float blackOutDuration;
+	public EffectSpec destroyEffect;
     [SyncVar]
     public bool frozen;
 
@@ -159,7 +160,26 @@ public class Player : NetworkBehaviour {
 		if (!alive)
 			return;
 	    GlobalConfig.globalConfig.gamemode.onPlayerDeath(this);
+	}
 
+	[Server]
+	public void dismantle() {
+		enabled = false;
+		RpcDismantle();
+	}
+
+	[ClientRpc]
+	public void RpcDismantle() {
+		enabled = false;
+		dismantleEffect();
+	}
+
+	public void dismantleEffect() {
+		destroyEffect.spawn(transform.position);
+		while (transform.childCount > 0) {
+			DismantleEffect.dismantle(transform.GetChild(0), 30, isServer, GetComponent<Rigidbody>().velocity);
+		}
+		Destroy(gameObject);
 	}
 
 	public void teleport(Vector3 position) {

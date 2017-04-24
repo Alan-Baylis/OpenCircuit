@@ -34,7 +34,7 @@ public class HuntAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet), typeof(AbstractArms) };
+		return new [] { typeof(HoverJet), typeof(AbstractArms) };
 	}
 
 	public override bool singleExecutor() {

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -14,10 +15,10 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	private Dictionary<Tag, List<Endeavour>> tagUsageMap = new Dictionary<Tag, List<Endeavour>>();
 	private AudioSource soundEmitter;
 	private Health myHealth;
+    private Timing executionTimer;
 
 	public Health health { get { return myHealth; } }
 
-	public AudioClip destructionSound;
 	public EffectSpec destructionEffect;
 
 #if UNITY_EDITOR
@@ -48,9 +49,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	MentalModel mentalModel = new MentalModel ();
 	[System.NonSerialized]
 	MentalModel externalMentalModel = null;
-
-	[System.NonSerialized]
-	private bool dirty = false;
 
 	[ServerCallback]
 	void Start() {
@@ -119,25 +117,26 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //			}
 //		}
 //#endif
-		foreach(Endeavour endeavour in currentEndeavours) {
-			endeavour.update();
-		}
-		if (dirty) {
-			evaluateActions();
-		}
-	}
+	    double startTime = Time.realtimeSinceStartup;
+		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
+		foreach(Endeavour endeavour in endeavours) {
+			try {
+				endeavour.update();
 
-	public void addEndeavour(Endeavour action) {
-		availableEndeavours.Add (action);
-		//evaluateActions ();
-		dirty = true;
+			} catch (Exception e) {
+				Debug.LogError("Endeavour '" + endeavour.getName() + "' threw an exception during update.");
+				Debug.LogException(e);
+			}
+		}
+	    double endTime = Time.realtimeSinceStartup;
+	    executionTimer.addTime(endTime-startTime);
 	}
 
 	public bool knowsTarget(LabelHandle target) {
 		return getMentalModel ().canSee (target);
 	}
 
-	public System.Nullable<Vector3> getLastKnownPosition(LabelHandle target) {
+	public Vector3? getLastKnownPosition(LabelHandle target) {
 		return getMentalModel().getLastKnownPosition(target);
 	}
 
@@ -147,7 +146,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public void enqueueMessage(RobotMessage message) {
-		foreach (Endeavour action in currentEndeavours) {
+		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
+		foreach (Endeavour action in endeavours) {
 			action.onMessage(message);
 		}
 	}
@@ -172,7 +172,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	}
 
 	public AbstractRobotComponent getRobotComponent(System.Type type) {
-		List<AbstractRobotComponent> compList = null;
+		List<AbstractRobotComponent> compList;
 		componentMap.TryGetValue(type, out compList);
 		return compList == null ? null : compList[0];
 	}
@@ -212,6 +212,14 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				removeEndeavour(endeavours[endeavours.Count - 1]);
 			}
 		}
+    }
+
+    public void attachExecutionTimer(Timing timer) {
+        executionTimer = timer;
+    }
+
+    public Timing getExecutionTimer() {
+        return executionTimer;
     }
 
     private void constructAllEndeavours() {
@@ -265,7 +273,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		List<DecisionInfoObject> debugText = new List<DecisionInfoObject>();
 #endif
 		//print("****EVALUATE****");
-		dirty = false;
         DictionaryHeap endeavourQueue = new DictionaryHeap();
 		List<Endeavour> staleEndeavours = new List<Endeavour>();
 		//print("\tCurrent Endeavours");
@@ -283,12 +290,17 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 		//print("\tAvailable Endeavours");
 		foreach(Endeavour action in availableEndeavours) {
-			if(action.isStale()) {
-				//print("\t\t--" + action.getName());
-				staleEndeavours.Add(action);
-			} else if (!action.isMissingComponents(componentMap)) {
-				//print("\t\t++" + action.getName());
-				endeavourQueue.Enqueue(action);
+			try {
+				if (action.isStale()) {
+					//print("\t\t--" + action.getName());
+					staleEndeavours.Add(action);
+				} else if (!action.isMissingComponents(componentMap)) {
+					//print("\t\t++" + action.getName());
+					endeavourQueue.Enqueue(action);
+				}
+			} catch (Exception e) {
+				Debug.LogError("Endeavour '" +action.getName()+"' threw an exception from isStale()");
+				Debug.LogException(e);
 			}
 		}
 
@@ -350,7 +362,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 #if UNITY_EDITOR
 		if(debug) {
 			lines = debugText;
-			maxPriority = (Mathf.Abs(localMaxPriority) > Mathf.Abs(localMinPriority)) ? Mathf.Abs(localMaxPriority) : Mathf.Abs(localMinPriority);
+			maxPriority = Mathf.Abs(localMaxPriority) > Mathf.Abs(localMinPriority) ? Mathf.Abs(localMaxPriority) : Mathf.Abs(localMinPriority);
 			if(shouldAlphabetize) {
 				alphabetize();
 			}
@@ -405,20 +417,18 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	public MentalModel getMentalModel() {
 		if (externalMentalModel == null) {
 			return mentalModel;
-		} else {
-			return externalMentalModel; 
 		}
+		return externalMentalModel;
 	}
 
 	[Server]
 	public void dispose() {
-		--GlobalConfig.globalConfig.robotControllers;
+		GlobalConfig.globalConfig.subtractRobotCount(this);
 		CancelInvoke();
-		soundEmitter.PlayOneShot(destructionSound);
 		foreach(Endeavour e in currentEndeavours) {
 			e.stopExecution();
 		}
-		this.enabled = false;
+		enabled = false;
 
 		int randomSeed = UnityEngine.Random.seed;
 
@@ -525,14 +535,12 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			Vector2 size = new Vector2(200, shownLines * lineHeight);
 			for (int i = 0; i < shownLines; ++i) {
 				DecisionInfoObject obj = lines[i];
-				float percentFilled = 0;
-
-				percentFilled = (Mathf.Abs(obj.getPriority()) / (maxPriority));
+				float percentFilled = Mathf.Abs(obj.getPriority()) / maxPriority;
 				if(obj.getPriority() < 0) {
 					percentFilled = -percentFilled;
 				}
 
-				Rect rectng = new Rect(pos.x - size.x / 2, Screen.height - pos.y - size.y + (i * lineHeight), size.x, lineHeight);
+				Rect rectng = new Rect(pos.x - size.x / 2, Screen.height - pos.y - size.y + i * lineHeight, size.x, lineHeight);
 
 				GUI.skin.box.normal.background = red;
 
@@ -540,9 +548,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 				Rect filled;
 				if(percentFilled < 0) {
-					filled = new Rect(pos.x + ((size.x / 2) * percentFilled), Screen.height - pos.y - size.y + (i * lineHeight), -((size.x / 2) * percentFilled), lineHeight);
+					filled = new Rect(pos.x + size.x / 2 * percentFilled, Screen.height - pos.y - size.y + i * lineHeight, -(size.x / 2 * percentFilled), lineHeight);
 				} else {
-					filled = new Rect(pos.x, Screen.height - pos.y - size.y + (i * lineHeight), (size.x / 2) * (percentFilled), lineHeight);
+					filled = new Rect(pos.x, Screen.height - pos.y - size.y + i * lineHeight, size.x / 2 * percentFilled, lineHeight);
 				}
 
 				//GUI.skin.box.normal.background = green;
@@ -552,14 +560,14 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				//	GUI.Label(textCentered, "+" + obj.getTitle());
 				//} else {
 				//}
-				Rect boxRectangle = new Rect(pos.x - size.x/2, Screen.height - pos.y - size.y + (i*lineHeight)+lineHeight/4, 15, 15);
+				Rect boxRectangle = new Rect(pos.x - size.x/2, Screen.height - pos.y - size.y + i*lineHeight+lineHeight/4, 15, 15);
 				if(obj.isChosen()) {
 					GUI.DrawTexture(boxRectangle, green);
 				} else {
 					GUI.DrawTexture(boxRectangle, red);
 				}
 
-				Rect textCentered = new Rect(pos.x - size.x / 2 + 17, Screen.height - pos.y - size.y + (i * lineHeight) + 4, size.x, lineHeight);
+				Rect textCentered = new Rect(pos.x - size.x / 2 + 17, Screen.height - pos.y - size.y + i * lineHeight + 4, size.x, lineHeight);
 				GUI.Label(textCentered, obj.getTitle());
 
 

@@ -4,8 +4,6 @@ using UnityEngine.Networking;
 
 public class GlobalConfig : NetworkBehaviour {
 
-	public bool localPlayerDead;
-
     public GameObject playerPrefab;
 
 	[SyncVar]
@@ -16,8 +14,22 @@ public class GlobalConfig : NetworkBehaviour {
 
 	public GameMode gamemode;
 	public CameraManager cameraManager;
+	public EffectsManager effectsManager;
 
-    public int robotControllers;
+	[System.NonSerialized]
+	public ClientController localClient;
+
+    private int robotControllers;
+
+	public HashSet<ClientController> clients = new HashSet<ClientController>();
+
+	public TeamGameMode teamGameMode {
+		get {
+			if (!(gamemode is TeamGameMode))
+				Debug.LogError("Unsupported game mode.  Must be a team game mode.");
+			return gamemode as TeamGameMode;
+		}
+	}
 
     void Start() {
         myGlobalConfig = this;
@@ -72,11 +84,37 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
     [Server]
-    public void spawnPlayerForConnection(NetworkConnection connection) {
+    public void spawnPlayerForConnection(NetworkConnection connection, string username, bool spectator) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
-            connection);
+            connection, username, spectator);
     }
+
+	public int getPlayerCount() {
+		int count = 0;
+		foreach (ClientController clientController in clients) {
+			count += clientController.spectator ? 0 : 1;
+		}
+		return count;
+	}
+
+	public int getRobotCount() {
+		return robotControllers;
+	}
+
+	public void addRobotCount(RobotController robotController) {
+		++robotControllers;
+		if (gamemode is TeamGameMode) {
+			++teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
+		}
+	}
+
+	public void subtractRobotCount(RobotController robotController) {
+		--robotControllers;
+		if (gamemode is TeamGameMode) {
+			--teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
+		}
+	}
 
 	private void clearLocalPlayers() {
 		List<short> playerIds = new List<short>();
@@ -86,6 +124,8 @@ public class GlobalConfig : NetworkBehaviour {
 		foreach (short Id in playerIds) {
 			ClientScene.RemovePlayer(Id);
 		}
+
+		cameraManager.switchCamera();
 	}
 
     private GameMode getGameMode(GameMode.GameModes gameType) {

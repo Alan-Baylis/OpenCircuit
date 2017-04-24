@@ -13,9 +13,9 @@ public class RoboEyes : AbstractVisualSensor {
 	[ServerCallback]
 	public override void Start () {
         base.Start();
-	    Team teamComponent = getController().GetComponent<Team>();
-	    if (teamComponent.enabled) {
-			eyeColor = teamComponent.team.color;
+	    TeamId teamIdComponent = getController().GetComponent<TeamId>();
+	    if (teamIdComponent.enabled) {
+			eyeColor = teamIdComponent.team.config.color;
 	    }
 		scanner = GetComponent<LaserProjector>();
 	}

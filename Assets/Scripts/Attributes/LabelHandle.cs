@@ -2,20 +2,24 @@
 using System.Collections.Generic;
 
 public class LabelHandle {
-    public Label label;
-    public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
+	public Dictionary<TagEnum, Tag> tagMap = new Dictionary<TagEnum, Tag>();
 
-    private Vector3 position;
+	private Vector3 position;
 
-    public LabelHandle(Vector3 pos, string name) {
+	public Label label;
+	private string name;
+	public int? teamId { get; set; }
+
+	public LabelHandle(Vector3 pos, string name) {
         position = pos;
-    }
+		this.name = name;
+	}
 
-    public string getName() {
+	public string getName() {
         if (label != null) {
             return label.name;
         }
-        return "";
+        return name;
     }
 
     public bool hasTag(TagEnum tagName) {
@@ -64,6 +68,8 @@ public class LabelHandle {
 		}
 		tagMap.Add(tag.type, tag);
 	}
+
+
 
 	public Vector3 getPosition() {
 		if(label != null) {

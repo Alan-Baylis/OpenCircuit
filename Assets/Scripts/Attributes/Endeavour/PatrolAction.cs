@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 
 public class PatrolAction : Endeavour {
 
@@ -10,24 +8,22 @@ public class PatrolAction : Endeavour {
 
 	public PatrolAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap)
 		: base(factory, controller, goals, tagMap) {
-		this.name = "patrol";
+		name = "patrol";
 
 		PatrolTag patrolTag = getTagOfType<PatrolTag>(TagEnum.PatrolRoute);
-		if (patrolTag.getPoints() == null || patrolTag.getPoints().Count == 0) {
+		if (patrolTag.getPointHandles() == null || patrolTag.getPointHandles().Count == 0) {
 			Debug.LogWarning("Patrol route '" + patrolTag.getLabelHandle().label.name + "' has no route points");
 		}
 		routePoints = patrolTag.getPointHandles();
 	}
 
 	protected override void onExecute() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 		currentDestination = getNearest(controller.transform.position);
 		jet.setTarget(routePoints[currentDestination], false);
 	}
 
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals (HoverJet.TARGET_REACHED)) {
-			HoverJet jet = controller.GetComponentInChildren<HoverJet> ();
 			if (routePoints[currentDestination] == message.Target) {
 				++currentDestination;
 				if (currentDestination == routePoints.Count) {
@@ -70,7 +66,7 @@ public class PatrolAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
 	}
 
 	public override bool singleExecutor() {

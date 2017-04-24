@@ -7,7 +7,9 @@ public class ClientController : NetworkBehaviour {
 	public GameObject playerCamPrefab;
 	public GameObject playerLegsPrefab;
 	public GameObject playerArmsPrefab;
-    public static int numPlayers = 0;
+
+	[SyncVar]
+	public bool spectator;
 
 	[SyncVar(hook="setPlayerId")]
 	private NetworkInstanceId id;
@@ -18,33 +20,48 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar(hook="setPlayerDead")]
 	private bool isDead;
 
-	[ClientCallback]
+	[SyncVar]
+	public string playerName;
+
 	void Start() {
+		GlobalConfig.globalConfig.clients.Add(this);
 		if (player != null) {
 			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
+		if (isLocalPlayer)
+			GlobalConfig.globalConfig.localClient = this;
 
-		if(isLocalPlayer) {
-			CmdSpawnPlayerAt(transform.position);
+		if(isServer && !spectator) {
+			AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
+			if (spawner != null) {
+				spawnPlayerAt(spawner.nextSpawnPos());
+			} else {
+				Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
+			}
 		}
 	}
 
 	[ClientCallback]
 	void Update() {
-		if(isLocalPlayer && isDead && Input.GetButtonDown("Use")) {
+		if (isLocalPlayer && (isDead || spectator) && Input.GetButtonDown("Use")) {
 			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
+	}
+
+	[ClientCallback]
+	public void OnDestroy() {
+		if (!isDead && !spectator) {
+			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
+		}
+		if (isLocalPlayer) {
+			GlobalConfig.globalConfig.cameraManager.useSceneCamera();
+		}
+		GlobalConfig.globalConfig.clients.Remove(this);
 	}
 
 	//anyone can call!!
 	public bool isAlive() {
 		return !isDead;
-	}
-
-	[Command]
-	private void CmdSpawnPlayerAt(Vector3 position) {
-		spawnPlayerAt(position);
-        numPlayers++;
 	}
 	
 	[Server]
@@ -67,16 +84,17 @@ public class ClientController : NetworkBehaviour {
 		playerArms.transform.parent = newPlayer.transform;
 		playerArms.transform.localPosition = playerArmsPrefab.transform.localPosition;
 
-		newPlayer.name = "player" + Random.Range(1, 20);
+		newPlayer.name = "player-" + playerName;
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
 	    if (mode != null) {
-	        Team team = newPlayer.GetComponent<Team>();
-	        team.team = mode.localTeam;
+	        TeamId team = newPlayer.GetComponent<TeamId>();
+	        team.id = mode.localTeamId;
 	        team.enabled = true;
 	    }
 
 	    NetworkServer.Spawn(newPlayer);
 		id = newPlayer.GetComponent<Player>().netId;
+		newPlayer.GetComponent<NameTag>().name = playerName;
 		playerCam.GetComponent<NetworkParenter>().setParentId(id);
 		playerLegs.GetComponent<NetworkParenter>().setParentId(id);
 		playerArms.GetComponent<NetworkParenter>().setParentId(id);
@@ -93,15 +111,12 @@ public class ClientController : NetworkBehaviour {
 	[Server]
 	public void destroyPlayer() {
 		isDead = true;
-		Destroy(player);
+		player.GetComponent<Player>().dismantle();
 	}
 
 	[Client]
 	private void setPlayerDead(bool dead) {
 		isDead = dead;
-		if (isLocalPlayer) {
-			GlobalConfig.globalConfig.localPlayerDead = isDead;
-		}
 		if (isDead) {
 			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
 			if(isLocalPlayer) {

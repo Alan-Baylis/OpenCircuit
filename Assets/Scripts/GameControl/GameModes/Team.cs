@@ -1,35 +1,22 @@
-﻿using UnityEngine.Networking;
+﻿using UnityEngine;
 
-public class Team : NetworkBehaviour {
+public class Team {
 
-    [SyncVar]
-    public TeamData team;
+	public readonly int id;
+	public int robotCount;
+	public Config config;
 
-	[SyncVar(hook = "isEnabledSet")]
-	private bool isEnabled;
-
-    [ServerCallback]
-    void Start() {
-        Label label = GetComponent<Label>();
-        label.setTag(new Tag(TagEnum.Team, 0, label.labelHandle));
-    }
-
-	[ServerCallback]
-	void OnEnable() {
-		print("server set enabled on");
-		isEnabled = true;
+	public Team(int id, Config config) {
+		this.id = id;
+		this.config = config;
 	}
 
-	[ServerCallback]
-	void OnDisable() {
-		print("server set enabled off");
-		isEnabled = false;
-	}
+	[System.Serializable]
+	public struct Config {
+		public Color color;
 
-	[Client]
-	private void isEnabledSet(bool enabled) {
-		isEnabled = enabled;
-		this.enabled = enabled;
-
+		public Config(Color color) {
+			this.color = color;
+		}
 	}
 }

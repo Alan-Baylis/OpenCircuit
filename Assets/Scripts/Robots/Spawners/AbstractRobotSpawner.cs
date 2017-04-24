@@ -11,8 +11,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 	public GameObject bodyPrefab;
 	public GameObject[] componentPrefabs;
 
-    public int teamIndex;
-
     public Vector3 spawnPos;
 
     private Vector3 worldSpawnPos {
@@ -21,17 +19,18 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
 	private GlobalConfig config;
     private Label label;
-    public TeamData team;
+
+	private TeamId myTeamId;
+
+	public TeamId teamId {
+		get { return myTeamId ?? (myTeamId = GetComponent<TeamId>()); }
+	}
 
     [ServerCallback]
     void Start() {
         if (isTeamMode()) {
             TeamGameMode gameMode = (TeamGameMode) GlobalConfig.globalConfig.gamemode;
-            if (teamIndex >= 0 && teamIndex < gameMode.teams.Count)
-                team = gameMode.teams[teamIndex];
-            Team teamComponent = GetComponent<Team>();
-            teamComponent.team = team;
-            teamComponent.enabled = true;
+            teamId.enabled = true;
         }
     }
 
@@ -48,17 +47,17 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
     [Server]
 	protected void spawnRobot() {
-        ++GlobalConfig.globalConfig.robotControllers;
 		if (bodyPrefab != null) {
 			GameObject body = Instantiate(bodyPrefab, worldSpawnPos, bodyPrefab.transform.rotation);
 
 			//WinZone winZone = FindObjectOfType<WinZone>();
 			RobotController robotController = body.GetComponent<RobotController>();
 		    if (isTeamMode()) {
-		        Team teamComponent = body.GetComponent<Team>();
-		        teamComponent.team = team;
-		        teamComponent.enabled = true;
+		        TeamId teamIdComponent = body.GetComponent<TeamId>();
+		        teamIdComponent.id = teamId.id;
+		        teamIdComponent.enabled = true;
 		    }
+			GlobalConfig.globalConfig.addRobotCount(robotController);
 
 			addKnowledge(robotController);
 
@@ -101,8 +100,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 			navAgent.avoidancePriority = Random.Range(0, 100);
 			navAgent.enabled = true;
 
-			if (GetComponent<Team>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
-			    ((Bases)GlobalConfig.globalConfig.gamemode).getCRC(teamIndex).forceAddListener(robotController);
+			if (GetComponent<TeamId>().enabled && GlobalConfig.globalConfig.gamemode is Bases) {
+			    ((Bases)GlobalConfig.globalConfig.gamemode).getCRC(teamId.id).forceAddListener(robotController);
 			}
 		} else {
 			Debug.LogError("Null body prefab in spawner: " +name);

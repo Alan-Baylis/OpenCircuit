@@ -9,7 +9,7 @@ public abstract class GameMode : NetworkBehaviour {
 	}
 
     [ServerCallback]
-    public void Start() {
+    public virtual void Start() {
         NetworkServer.SpawnObjects();
     }
 

@@ -15,6 +15,11 @@ public class Health : NetworkBehaviour {
 	private float suffering = 0;
 
 	void Start() {
+		Label label = GetComponent<Label>();
+		if (label != null) {
+			label.setTag(new Tag(TagEnum.Health, 0, label.labelHandle));
+		}
+
 		soundEmitter = gameObject.AddComponent<AudioSource>();
 		soundEmitter.clip = hurtSound;
 	}

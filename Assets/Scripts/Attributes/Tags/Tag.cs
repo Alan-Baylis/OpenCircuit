@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 [System.Serializable]
 public class Tag : InspectorListElement {
@@ -10,10 +9,23 @@ public class Tag : InspectorListElement {
 		return new Tag((TagEnum)Enum.GetValues(typeof(TagEnum)).GetValue(0), 0, null);
 	}
 
+	public static Tag constructTag(TagEnum type) {
+		switch (type) {
+			case TagEnum.PatrolRoute:
+				return new PatrolTag(0, null);
+			case TagEnum.AttackRoute:
+				return new AttackRoute(0, null);
+			default:
+				return new Tag(type, 0, null);
+		}
+	}
+
 	public static readonly TagEnum[] tagEnums;
 
 	public TagEnum type;
 	public float severity;
+
+	private string labelId;
 
 	[System.NonSerialized]
 	protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();
@@ -24,11 +36,11 @@ public class Tag : InspectorListElement {
 	public Tag(TagEnum type, float severity, LabelHandle handle) {
 		this.type = type;
 		this.severity = severity;
-		this.labelHandle = handle;
+		labelHandle = handle;
 	}
 
     public void setLabelHandle(LabelHandle label) {
-        this.labelHandle = label;
+        labelHandle = label;
     }
 
     public LabelHandle getLabelHandle() {
@@ -62,19 +74,33 @@ public class Tag : InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-	InspectorListElement InspectorListElement.doListElementGUI() {
-		type = (TagEnum)UnityEditor.EditorGUILayout.Popup((int)type, Enum.GetNames(typeof(TagEnum)));
+	InspectorListElement InspectorListElement.doListElementGUI(GameObject parent) {
 
-		doGUI();
+		TagEnum newType = (TagEnum)UnityEditor.EditorGUILayout.Popup((int)type, Enum.GetNames(typeof(TagEnum)));
+		if (newType != type) {
+			return constructTag(newType);
+		}
+		doGUI(parent);
 		return this;
 	}
 
-    public virtual void drawGizmo() {
+    public virtual void drawGizmo(Label label) {
 
     }
 
-	public virtual void doGUI() {
+	public virtual void doGUI(GameObject parent) {
+		UnityEditor.EditorGUILayout.LabelField("Executors: " + getAllExecutions());
 		severity = UnityEditor.EditorGUILayout.FloatField("Severity: ", severity);
+	}
+
+	private int getAllExecutions() {
+		int result = 0;
+		if (executors != null) {
+			foreach (HashSet<RobotController> hashSet in executors.Values) {
+				result += hashSet.Count;
+			}
+		}
+		return result;
 	}
 #endif
 }

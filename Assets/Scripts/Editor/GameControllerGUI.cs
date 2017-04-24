@@ -9,6 +9,7 @@ public class GameControllerGUI : Editor {
         EditorGUILayout.PropertyField(serializedObject.FindProperty("playerPrefab"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("configuration"), true, null);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("cameraManager"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("effectsManager"));
         serializedObject.ApplyModifiedProperties();
     }
 }

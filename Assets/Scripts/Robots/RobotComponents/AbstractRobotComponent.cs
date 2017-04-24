@@ -70,59 +70,6 @@ public abstract class AbstractRobotComponent : NetworkBehaviour {
     }
 
 	protected virtual void dismantleEffect() {
-		dismantleEffect(transform);
+		DismantleEffect.dismantle(transform, lingerTime, isServer, Vector3.zero);
 	}
-
-    protected void dismantleEffect(Transform trans) {
-        trans.parent = null;
-        trans.gameObject.hideFlags |= HideFlags.HideInHierarchy;
-        while (trans.childCount > 0)
-            dismantleEffect(trans.GetChild(0));
-        Collider [] cols = trans.GetComponents<Collider>();
-
-        bool hasCollider = false;
-        foreach (Collider col in cols) {
-
-            if (col.isTrigger) {
-                continue;
-            } else {
-                hasCollider = true;
-                if (col as MeshCollider != null)
-                    ((MeshCollider)col).convex = true;
-                col.enabled = true;
-            }
-        }
-		
-        if (isServer || trans.GetComponent<NetworkIdentity>() == null) {
-			if (hasCollider) {
-				useAsTemporaryDebris(trans);
-			} else {
-				Destroy(trans.gameObject);
-			}
-		} else if (hasCollider) {
-			convertToDebris(trans);
-        }
-    }
-
-    protected static void useAsTemporaryDebris(Transform trans) {
-        convertToDebris(trans);
-        Destroy(trans.gameObject, lingerTime);
-    }
-
-    protected static void convertToDebris(Transform trans) {
-        const float maxForce = 200;
-        Rigidbody rb = trans.GetComponent<Rigidbody>();
-        if (rb == null)
-            rb = trans.gameObject.AddComponent<Rigidbody>();
-        rb.isKinematic = false;
-        rb.useGravity = true;
-        rb.AddForce(randomRange(Vector3.one * -maxForce, Vector3.one * maxForce));
-    }
-
-    protected static Vector3 randomRange(Vector3 min, Vector3 max) {
-        return new Vector3(
-            UnityEngine.Random.Range(min.x, max.x),
-            UnityEngine.Random.Range(min.y, max.y),
-            UnityEngine.Random.Range(min.z, max.z));
-    }
 }
