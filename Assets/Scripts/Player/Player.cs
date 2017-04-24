@@ -19,8 +19,6 @@ public class Player : NetworkBehaviour {
     public bool frozen;
 
 	[HideInInspector]
-	public ClientController controller;
-	[HideInInspector]
 	public bool zooming = false;
 
 	private Attack myAttacker;

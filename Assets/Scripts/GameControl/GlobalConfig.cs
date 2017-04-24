@@ -15,6 +15,7 @@ public class GlobalConfig : NetworkBehaviour {
 	public GameMode gamemode;
 	public CameraManager cameraManager;
 	public EffectsManager effectsManager;
+	public Leaderboard leaderboard;
 
 	[System.NonSerialized]
 	public ClientController localClient;

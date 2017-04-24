@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class AttackRoute : AbstractRouteTag {
 
 	public AttackRoute(float severity, LabelHandle handle) : base(TagEnum.AttackRoute, severity, handle) {
@@ -12,16 +13,16 @@ public class AttackRoute : AbstractRouteTag {
 	}
 
 #if UNITY_EDITOR
+	[System.NonSerialized]
 	public float nodeDistance;
 	public override void doGUI(GameObject parent) {
 		base.doGUI(parent);
-		UnityEditor.EditorGUILayout.LabelField("Average node distance", averagePointDistance(parent)+"", new GUILayoutOption[0]);
+		UnityEditor.EditorGUILayout.LabelField("Average node distance", averagePointDistance(parent)+"");
 		nodeDistance = UnityEditor.EditorGUILayout.FloatField("Node Distance", nodeDistance);
 		if (GUILayout.Button("Apply to Path")) {
 
 			for (int i = 0; i < getPoints(parent).Count-1; ++i) {
 				fillInPoints(getPoints(parent)[i], getPoints(parent)[i + 1], parent, i);
-
 			}
 		}
 	}

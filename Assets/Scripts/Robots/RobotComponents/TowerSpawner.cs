@@ -9,7 +9,7 @@ public class TowerSpawner : AbstractRobotComponent {
 
 
 	[Server]
-	public void buildTower(Vector3 position) {
+	public void buildTower(Vector3 position, ClientController owner) {
 		GameObject newTower = Instantiate(towerPrefab, position + offset, towerPrefab.transform.rotation);
 
 		RobotController controller = newTower.GetComponent<RobotController>();
@@ -20,6 +20,11 @@ public class TowerSpawner : AbstractRobotComponent {
 			TeamId team = newTower.GetComponent<TeamId>();
 			team.id = teamId;
 			team.enabled = true;
+		}
+		newTower.GetComponent<Score>().owner = owner;
+		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
+		if (bases != null) {
+			bases.addTower(owner, newTower);
 		}
 		NetworkServer.Spawn(newTower);
 

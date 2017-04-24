@@ -29,7 +29,7 @@ public class GuardAction : Endeavour {
 	}
 
 	public override bool singleExecutor() {
-		return false;
+		return true;
 	}
 
 	protected override float getCost() {

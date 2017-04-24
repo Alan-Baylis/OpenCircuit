@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class PlayerDeathOperation : Operation {
+public class CountScoreOperation : Operation {
 
 	private static System.Type[] triggers = {
 		typeof(DestructTrigger)
@@ -12,10 +12,11 @@ public class PlayerDeathOperation : Operation {
 	}
 
 	public override void perform(GameObject instigator, Trigger trig) {
-		Player player = parent.GetComponent<Player>();
-	    //TODO: frozen players are invincible. This may bite us one day...
-		if(player != null && !player.frozen) {
-			player.die();
+
+		Player player = instigator.GetComponentInParent<Player>();
+		Score score = parent.GetComponent<Score>();
+		if (score != null && player != null) {
+			score.recordScore(player.clientController);
 		}
 	}
 }

@@ -15,6 +15,10 @@ public class Tag : InspectorListElement {
 				return new PatrolTag(0, null);
 			case TagEnum.AttackRoute:
 				return new AttackRoute(0, null);
+			case TagEnum.BuildDirective:
+				return new BuildDirectiveTag(null, 0, null);
+			case TagEnum.GuardPoint:
+				return new GuardTag(0, null);
 			default:
 				return new Tag(type, 0, null);
 		}
@@ -24,8 +28,6 @@ public class Tag : InspectorListElement {
 
 	public TagEnum type;
 	public float severity;
-
-	private string labelId;
 
 	[System.NonSerialized]
 	protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();

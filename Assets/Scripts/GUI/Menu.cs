@@ -21,6 +21,7 @@ public class Menu : MonoBehaviour {
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 	private string serverName = "Lazy Setup";
+	private string username = "dead_meat";
 	private Vector2 scrollPosition = Vector2.zero;
 
 	private NetworkDiscovery nd;
@@ -336,6 +337,10 @@ public class Menu : MonoBehaviour {
     private void doLobby() {
         GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
         if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
+
+			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
+	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username);
+
 			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
 		        dropIn(true);
 	        }
@@ -373,7 +378,7 @@ public class Menu : MonoBehaviour {
 	}
 
 	private void dropIn(bool spectator) {
-		StringMessage message = new StringMessage(spectator ? "1" : "0" + System.Environment.MachineName);
+		StringMessage message = new StringMessage(spectator ? "1" : "0" + username);
 
 		ClientScene.AddPlayer(null, 0, message);
 		activeAtStart = false;
@@ -437,10 +442,12 @@ public class Menu : MonoBehaviour {
         //GetComponent<AudioListener>().enabled = false;
         //NetworkServer.SpawnObjects();
 	    GlobalConfig [] globalConfigs = Resources.FindObjectsOfTypeAll<GlobalConfig>();
-	    GlobalConfig globalConfig = globalConfigs[0];
+
+	    GlobalConfig globalConfig;
 	    if (globalConfigs.Length == 1) {
 		    globalConfig = Instantiate(globalConfigPrefab);
 	    } else {
+		    globalConfig = globalConfigs[0].gameObject.scene.name == null ? globalConfigs[1] : globalConfigs[0];
 		    globalConfig.gameObject.SetActive(true);
 	    }
 

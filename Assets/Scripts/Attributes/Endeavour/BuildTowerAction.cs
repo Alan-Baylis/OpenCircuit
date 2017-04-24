@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class BuildTowerAction : Endeavour {
 
-	private Tag towerBase;
+	private BuildDirectiveTag towerBase;
 
 	public BuildTowerAction (EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
 		: base(factory, controller, goals, tags) {
-		towerBase = getTagOfType<Tag>(TagEnum.BuildDirective);
+		towerBase = getTagOfType<BuildDirectiveTag>(TagEnum.BuildDirective);
 		name = "build tower";
 	}
 
@@ -35,7 +35,7 @@ public class BuildTowerAction : Endeavour {
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals(HoverJet.TARGET_REACHED)) {
 			MonoBehaviour.Destroy(towerBase.getLabelHandle().label.gameObject);
-			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition());
+			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition(), towerBase.owner);
 			controller.getMentalModel().removeSighting(towerBase.getLabelHandle(), towerBase.getLabelHandle().getPosition(), null);
 		}
 	}

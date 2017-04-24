@@ -40,7 +40,7 @@ public class NameTag : NetworkBehaviour {
 
 	private void onSetName(string name) {
 		this.name = name;
-		if (!enabled)
+		if (!enabled && !GetComponent<Player>().clientController.isLocalPlayer)
 			enabled = true;
 	}
 }
