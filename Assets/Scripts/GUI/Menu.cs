@@ -168,10 +168,10 @@ public class Menu : MonoBehaviour {
 		if (GUIUtil.button("Drop out", joinRect, skin.button)) {
 			dropOut();
 		}
-		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
-		if (GUIUtil.button("Quit", exitRect, skin.button)) {
-            quit();
-		}
+//		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
+//		if (GUIUtil.button("Quit", exitRect, skin.button)) {
+//            quit();
+//		}
 		GUIUtil.adjustFontSize(skin.button, optionsRect.height * 0.8f);
 		if (GUIUtil.button("Options", optionsRect, skin.button)) {
 			menuHistory.Push(currentMenu);
