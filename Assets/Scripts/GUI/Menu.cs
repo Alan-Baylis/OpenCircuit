@@ -336,11 +336,10 @@ public class Menu : MonoBehaviour {
 
     private void doLobby() {
         GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
-        if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
+        if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted && !GlobalConfig.globalConfig.gamemode.isGameOver) {
 
 			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
 	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
-
 			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
 		        dropIn(true);
 	        }

@@ -2,7 +2,12 @@
 
 public abstract class GameMode : NetworkBehaviour {
 
+	[SyncVar]
     private bool gameOver = false;
+
+	public bool isGameOver {
+		get { return gameOver; }
+	}
 
 	public enum GameModes {
 		BASES, SPAWNER_HUNT
