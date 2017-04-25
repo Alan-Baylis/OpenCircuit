@@ -202,7 +202,7 @@ public class AssaultRifle : AbstractGun {
 			GUI.skin = guiSkin;
 
 			int padding = 10;
-			int boxWidth = 80 + padding * 3;
+			int boxWidth = 80 + padding * 2;
 			int boxHeight = 30 + padding * 2;
 			int boxCornerX = Screen.width - boxWidth - padding;
 			int boxCornerY = Screen.height - boxHeight - padding;
@@ -214,8 +214,8 @@ public class AssaultRifle : AbstractGun {
 			//int imageWidth = 50;
 			//int imageHeight = 50;
 			//GUI.DrawTexture(new Rect(boxCornerX + padding, boxCornerY + padding * 2 + 20, imageWidth, imageHeight), bulletIcon);
-			GUI.Label(new Rect(boxCornerX + padding * 2, boxCornerY + padding, 60, 40), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize), Menu.menu.skin.textArea);
-			GUI.Label(new Rect(boxCornerX + padding * 2 + 40, boxCornerY + padding, 60, 40), "" + currentMagazineFill, Menu.menu.skin.textArea);
+			GUI.Label(new Rect(boxCornerX, boxCornerY, 50, 50), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize), Menu.menu.skin.textArea);
+			GUI.Label(new Rect(boxCornerX + padding + 40, boxCornerY, 50, 50), "" + currentMagazineFill, Menu.menu.skin.textArea);
 		}
 	}
 }
