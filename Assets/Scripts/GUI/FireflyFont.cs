@@ -13,26 +13,24 @@ public class FireflyFont {
 	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, HAlign hAlign=HAlign.LEFT, VAlign vAlign=VAlign.TOP) {
 		List<Vector2> positions = new List<Vector2>();
 
+		float sizeMult = fontSize /(letterHeight + lineGap);
+
 		// apply alignment
 		if (hAlign == HAlign.CENTER)
-			offset.x -= getTextWidth(s, fontSize) *0.5f;
+			offset.x -= getTextWidth(s, sizeMult) *0.5f;
 		else if (hAlign == HAlign.RIGHT)
-			offset.x -= getTextWidth(s, fontSize);
+			offset.x -= getTextWidth(s, sizeMult);
 		if (vAlign == VAlign.CENTER)
-			offset.y -= letterHeight * fontSize * 0.5f;
-		if (vAlign == VAlign.BOTTOM)
-			offset.y -= letterHeight * fontSize;
+			offset.y -= getTextHeight(sizeMult) *0.5f;
+		else if (vAlign == VAlign.BOTTOM)
+			offset.y -= getTextHeight(sizeMult);
 
 		// get positions
 		foreach (char c in s) {
-			getChar(c, positions, offset, fontSize);
-			offset.x += (letterWidth + letterGap) *fontSize;
+			getChar(c, positions, offset, sizeMult);
+			offset.x += (letterWidth + letterGap) *sizeMult;
 		}
 		return positions;
-	}
-
-	public static float getTextWidth(string text, float fontSize) {
-		return (text.Length * letterWidth + (text.Length - 1) * letterGap) * fontSize;
 	}
 
 	public static List<Vector2> getChar(char c, Vector2 offset, float multiplier) {
@@ -51,11 +49,20 @@ public class FireflyFont {
 		}
 	}
 
+	private static float getTextWidth(string text, float sizeMult) {
+		return (text.Length * letterWidth + (text.Length - 1) * letterGap) * sizeMult;
+	}
+
+	private static float getTextHeight(float sizeMult) {
+		return (letterHeight + lineGap) *sizeMult;
+	}
+
 	private FireflyFont() {}
 
 	private const int letterWidth = 5;
 	private const int letterHeight = 9; // 7 for primary, 2 for hanging letters
 	private const float letterGap = 1;
+	private const float lineGap = 1;
 
 	private static readonly Dictionary<char, Vector2[]> characters = new Dictionary<char, Vector2[]> {
 

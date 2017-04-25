@@ -154,6 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireflyConfig:
     fireflySize: 0.02
+    glowSizeMult: 3
+    glowAlphaMult: 0.2
     fireflyGravity: 400
     damper: 20
     randomAcceleration: 0
@@ -221,8 +223,7 @@ MonoBehaviour:
   maxTowers: 3
   playerRobotPenalty: 1.5
   respawnDelay: 3
-  scoreCoalescePeriod: 1
-  scoreDisplayPeriod: 5
+  scoreDisplayPeriod: 3
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
   firstTeamLocations: []

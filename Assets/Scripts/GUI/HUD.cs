@@ -57,6 +57,13 @@ public class HUD : MonoBehaviour {
 		e.expiration = Time.time +lifetime;
 	}
 
+	public void setFireflyElementConfig(string elementName, Fireflies.Config config) {
+		if (!elements.ContainsKey(elementName))
+			elements[elementName] = new Element (config);
+		else
+			elements[elementName].flies.config = config;
+	}
+
 	public bool clearFireflyElement(string elementName) {
 		if (!elements.ContainsKey(elementName))
 			return false;

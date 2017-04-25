@@ -8,7 +8,6 @@ public class Bases : TeamGameMode {
 
     public float playerRobotPenalty = 1.5f;
     public float respawnDelay = 3f;
-	public float scoreCoalescePeriod = 1f;
 	public float scoreDisplayPeriod = 5f;
 
 	public CentralRobotController centralRobotControllerPrefab;
@@ -28,9 +27,13 @@ public class Bases : TeamGameMode {
 
 
 	//Fields for client side display
-	private List<ScoreAdd> scoreUpdates = new List<ScoreAdd>();
+	private float scoreAdd;
+	private float scoreSubtract;
+	private float lastScoreAdd;
+	private float lastScoreSubtract;
 	private RespawnJob ? clientRespawnJob;
 	private float? clientScore;
+	private float nextScoreUpdate;
 
 	private AbstractPlayerSpawner playerSpawner {
 		get {
@@ -96,25 +99,15 @@ public class Bases : TeamGameMode {
 			}
 		}
 
-		if (clientScore != null) {
-			Color prevColor = HUD.hud.fireflyConfig.fireflyColor;
-			if (clientScore.Value > 100) {
-				HUD.hud.fireflyConfig.fireflyColor = Color.blue;
-			}
-			HUD.hud.setFireflyElement("clientScore", this,
-				FireflyFont.getString(clientScore.Value.ToString("0."), .01f, new Vector2(-.8f, -.3f), FireflyFont.HAlign.CENTER), false);
-			HUD.hud.fireflyConfig.fireflyColor = prevColor;
-
+		if (nextScoreUpdate < Time.time) {
+			showClientScore(false);
+			nextScoreUpdate = Time.time + 1;
 		}
 
-		if (scoreUpdates.Count > 0) {
-			for (int i = 0; i < scoreUpdates.Count; ++i) {
-				ScoreAdd update = scoreUpdates[i];
-				HUD.hud.setFireflyElement("scoreUpdate-" +i, this,
-					FireflyFont.getString("+"+update.amount.ToString("0."), .01f, new Vector2(-.8f, -.2f + i*0.1f), FireflyFont.HAlign.CENTER), false);
-			}
-			cleanupScoreDisplay();
-		}
+		if (Input.GetButtonDown("Use"))
+			addScore(GlobalConfig.globalConfig.localClient, 100);
+
+		showScoreUpdates(false);
 	}
 
     public override void initialize() {
@@ -252,7 +245,7 @@ public class Bases : TeamGameMode {
 	private void RpcUpdateClientScore(NetworkInstanceId localClient, float currentScore, float scoreAdd) {
 		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
 			clientScore = currentScore;
-			addScoreItem(new ScoreAdd(scoreAdd, scoreCoalescePeriod, scoreDisplayPeriod));
+			addScore(scoreAdd);
 		}
 	}
 
@@ -263,27 +256,47 @@ public class Bases : TeamGameMode {
 		}
 	}
 
-	private void addScoreItem(ScoreAdd item) {
-		if (scoreUpdates.Count > 0) {
-			if (scoreUpdates[scoreUpdates.Count-1].coalescePeriod > Time.time) {
-				ScoreAdd lastUpdate = scoreUpdates[scoreUpdates.Count-1];
-				scoreUpdates[scoreUpdates.Count-1] = new ScoreAdd(lastUpdate.amount + item.amount, scoreCoalescePeriod, scoreDisplayPeriod);
-			} else {
-				scoreUpdates.Add(item);
-			}
+	private void addScore(float value) {
+		if (value < 0) {
+			
 		} else {
-			scoreUpdates.Add(item);
+			scoreAdd += value;
+			lastScoreAdd = Time.time;
+			showScoreUpdates(true);
+		}
+		showClientScore(true);
+	}
+
+	private void showClientScore(bool shuffle) {
+		if (clientScore != null) {
+			Fireflies.Config config = HUD.hud.fireflyConfig;
+			config.fireflySize *= 0.25f;
+			if (clientScore.Value >= 100)
+				config.fireflyColor = new Color(0.25f, 0.25f, 1);
+			HUD.hud.setFireflyElementConfig("clientScore", config);
+
+			HUD.hud.setFireflyElement("clientScore", this,
+				FireflyFont.getString(getScore(GlobalConfig.globalConfig.localClient).ToString("0."), 0.035f,
+					new Vector2(0, -0.48f), FireflyFont.HAlign.CENTER), shuffle);
 		}
 	}
 
-	private void cleanupScoreDisplay() {
-		for (int i = scoreUpdates.Count - 1; i >= 0; --i) {
-			ScoreAdd update = scoreUpdates[i];
+	private void showScoreUpdates(bool shuffle) {
+		if (scoreAdd <= 0)
+			return;
+		if (lastScoreAdd < Time.time - scoreDisplayPeriod) {
+			scoreAdd = 0;
+			HUD.hud.clearFireflyElement("scoreAdd");
+		} else {
+			Fireflies.Config config = HUD.hud.fireflyConfig;
+			config.fireflySize *= 0.5f;
+			config.spawnPosition = new Rect(-0.1f, -0.1f, 0.2f, 0.2f);
+			config.spawnSpeed = new Rect(-10, -50, 20, 50);
+			HUD.hud.setFireflyElementConfig("scoreAdd", config);
 
-			if (update.expirationTime < Time.time) {
-				HUD.hud.clearFireflyElement("scoreUpdate-"+(scoreUpdates.Count-1));
-				scoreUpdates.RemoveAt(i);
-			}
+			HUD.hud.setFireflyElement("scoreAdd", this,
+				FireflyFont.getString("+" + scoreAdd.ToString("0."), 0.06f,
+					new Vector2(0, -0.4f), FireflyFont.HAlign.CENTER), shuffle);
 		}
 	}
 
