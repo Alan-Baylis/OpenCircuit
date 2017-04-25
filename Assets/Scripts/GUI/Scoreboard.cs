@@ -9,7 +9,7 @@ public class Scoreboard : MonoBehaviour {
 	private const string HEADER_KEY = "scoreboard";
 	private const string ENTRY_KEY_PREFIX = "score-";
 	private int scoreEntries;
-	private float lastUpdate = Time.time;
+	private float lastUpdate;
 
 	private Bases myBases;
 

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine.Networking.NetworkSystem;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
@@ -23,6 +24,7 @@ public class Menu : MonoBehaviour {
 	private string serverName = "Lazy Setup";
 	private string username;
 	private Vector2 scrollPosition = Vector2.zero;
+	private MessageDialog currentDialogBox;
 
 	private NetworkDiscovery nd;
 	private NetworkDiscovery networkDiscovery { get {
@@ -33,6 +35,7 @@ public class Menu : MonoBehaviour {
 
     private bool isHost;
 
+	public MessageDialog dialogBoxPrefab;
     public GlobalConfig globalConfigPrefab;
 
 	[System.NonSerialized]
@@ -140,25 +143,23 @@ public class Menu : MonoBehaviour {
 	private void doLose() {
 		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
 		if (GUIUtil.button("To Lobby", exitRect, skin.button)) {
-		    returnToLobby();
+			Destroy(currentDialogBox);
+			returnToLobby();
+		} else if (currentDialogBox == null) {
+				MessageDialog box = Instantiate(dialogBoxPrefab);
+				box.message = "Critical Failure.";
 		}
-		int width = 400;
-		int height = 50;
-		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
-		GUIUtil.adjustFontSize(skin.button, endTextFontSize);
-		GUI.Label(position, "You Lost!", skin.button);
 	}
 
 	private void doWin() {
 		GUIUtil.adjustFontSize(skin.button, exitRect.height *0.8f);
 		if (GUIUtil.button("To Lobby", exitRect, skin.button)) {
+			Destroy(currentDialogBox);
 		    returnToLobby();
+		}else if (currentDialogBox == null) {
+			MessageDialog box = Instantiate(dialogBoxPrefab);
+			box.message = "Domination Achieved.";
 		}
-		int width = 400;
-		int height = 50;
-		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
-		GUIUtil.adjustFontSize(skin.button, endTextFontSize);
-		GUI.Label(position, "You Won!", skin.button);
 	}
 
 	private void doInGameMenu() {

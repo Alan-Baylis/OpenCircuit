@@ -42,6 +42,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a9c076ac121ca4998e2524e5c118b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dialogBoxPrefab: {fileID: 114546001042819648, guid: c27710f7e30d61f41940c7536aba326c,
+    type: 2}
   globalConfigPrefab: {fileID: 11460716, guid: 71c2b24eb311b0e4b84685bc99ef5ee0, type: 2}
   defaultScreenHeight: 1080
   activeAtStart: 0
