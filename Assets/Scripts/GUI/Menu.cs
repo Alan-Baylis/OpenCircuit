@@ -21,7 +21,7 @@ public class Menu : MonoBehaviour {
 	private float endTextFontSize = .2f;
 	private string host = "localhost";
 	private string serverName = "Lazy Setup";
-	private string username = System.Environment.MachineName.ToLower();
+	private string username;
 	private Vector2 scrollPosition = Vector2.zero;
 
 	private NetworkDiscovery nd;
@@ -85,6 +85,7 @@ public class Menu : MonoBehaviour {
 	public void Start() {
 	    DontDestroyOnLoad(gameObject);
 	    myMenu = this;
+		username = System.Environment.MachineName.ToLower();
 		if (activeAtStart) {
 			pause();
 			currentMenu = state.MainMenu;
