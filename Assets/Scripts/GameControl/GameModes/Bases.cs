@@ -27,12 +27,13 @@ public class Bases : TeamGameMode {
 
 
 	//Fields for client side display
+	Dictionary<ClientController, float> clientScoreMap = new Dictionary<ClientController, float>();
+
 	private float scoreAdd;
 	private float scoreSubtract;
 	private float lastScoreAdd;
 	private float lastScoreSubtract;
 	private RespawnJob ? clientRespawnJob;
-	private float? clientScore;
 	private float nextScoreUpdate;
 
 	private AbstractPlayerSpawner playerSpawner {
@@ -100,7 +101,7 @@ public class Bases : TeamGameMode {
 		}
 
 		if (nextScoreUpdate < Time.time) {
-			showClientScore(false);
+			showClientScore(GlobalConfig.globalConfig.localClient, false);
 			nextScoreUpdate = Time.time + 1;
 		}
 
@@ -236,14 +237,18 @@ public class Bases : TeamGameMode {
 	public float getScore(ClientController client) {
 		if (!scoreMap.ContainsKey(client))
 			return 0;
-		return 60*scoreMap[client] / (Time.time - client.startTime);
+		return adjustScoreForTime(scoreMap[client], client.startTime);
 	}
 
 	[ClientRpc]
 	private void RpcUpdateClientScore(NetworkInstanceId localClient, float currentScore, float scoreAdd) {
+		ClientController clientController = ClientScene.FindLocalObject(localClient).GetComponent<ClientController>();
+		if (clientController != null) {
+			clientScoreMap[clientController] = currentScore;
+		}
 		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
-			clientScore = currentScore;
 			addScore(scoreAdd);
+			showClientScore(clientController, true);
 		}
 	}
 
@@ -254,6 +259,7 @@ public class Bases : TeamGameMode {
 		}
 	}
 
+	[Client]
 	private void addScore(float value) {
 		if (value < 0) {
 			scoreSubtract += value;
@@ -264,19 +270,19 @@ public class Bases : TeamGameMode {
 			lastScoreAdd = Time.time;
 			showScoreAddition(true);
 		}
-		showClientScore(true);
 	}
 
-	private void showClientScore(bool shuffle) {
-		if (clientScore != null) {
+	private void showClientScore(ClientController client, bool shuffle) {
+		if (clientScoreMap.ContainsKey(GlobalConfig.globalConfig.localClient)) {
+			float score = clientScoreMap[GlobalConfig.globalConfig.localClient];
 			Fireflies.Config config = HUD.hud.fireflyConfig;
 			config.fireflySize *= 0.25f;
-			if (clientScore.Value >= 100)
+			if (score >= 100)
 				config.fireflyColor = new Color(0.25f, 0.25f, 1);
 			HUD.hud.setFireflyElementConfig("clientScore", config);
 
 			HUD.hud.setFireflyElement("clientScore", this,
-				FireflyFont.getString(getScore(GlobalConfig.globalConfig.localClient).ToString("0."), 0.035f,
+				FireflyFont.getString(adjustScoreForTime(score, client.startTime).ToString("0."), 0.035f,
 					new Vector2(0, -0.48f), FireflyFont.HAlign.CENTER), shuffle);
 		}
 	}
@@ -325,16 +331,8 @@ public class Bases : TeamGameMode {
 		}
 	}
 
-	private struct ScoreAdd {
-		public readonly float coalescePeriod;
-		public readonly float expirationTime;
-		public readonly float amount;
-
-		public ScoreAdd(float amount, float coalescePeriod, float expirationPeriod) {
-			expirationTime = Time.time + expirationPeriod;
-			this.coalescePeriod = Time.time + coalescePeriod;
-			this.amount = amount;
-		}
+	private float adjustScoreForTime(float score, float startTime) {
+		return 60 * score / (Time.time - startTime);
 	}
 
 	private struct RespawnJob {
