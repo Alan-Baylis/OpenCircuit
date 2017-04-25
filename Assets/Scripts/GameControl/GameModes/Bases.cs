@@ -104,10 +104,8 @@ public class Bases : TeamGameMode {
 			nextScoreUpdate = Time.time + 1;
 		}
 
-		if (Input.GetButtonDown("Use"))
-			addScore(GlobalConfig.globalConfig.localClient, 100);
-
-		showScoreUpdates(false);
+		showScoreAddition(false);
+		showScoreSubtraction(false);
 	}
 
     public override void initialize() {
@@ -258,11 +256,13 @@ public class Bases : TeamGameMode {
 
 	private void addScore(float value) {
 		if (value < 0) {
-			
+			scoreSubtract += value;
+			lastScoreSubtract = Time.time;
+			showScoreSubtraction(true);
 		} else {
 			scoreAdd += value;
 			lastScoreAdd = Time.time;
-			showScoreUpdates(true);
+			showScoreAddition(true);
 		}
 		showClientScore(true);
 	}
@@ -281,7 +281,7 @@ public class Bases : TeamGameMode {
 		}
 	}
 
-	private void showScoreUpdates(bool shuffle) {
+	private void showScoreAddition(bool shuffle) {
 		if (scoreAdd <= 0)
 			return;
 		if (lastScoreAdd < Time.time - scoreDisplayPeriod) {
@@ -297,6 +297,24 @@ public class Bases : TeamGameMode {
 			HUD.hud.setFireflyElement("scoreAdd", this,
 				FireflyFont.getString("+" + scoreAdd.ToString("0."), 0.06f,
 					new Vector2(0, -0.4f), FireflyFont.HAlign.CENTER), shuffle);
+		}
+	}
+
+	private void showScoreSubtraction(bool shuffle) {
+		if (scoreSubtract >= 0)
+			return;
+		if (lastScoreSubtract < Time.time - scoreDisplayPeriod) {
+			scoreSubtract = 0;
+			HUD.hud.clearFireflyElement("scoreSubtract");
+		} else {
+			Fireflies.Config config = HUD.hud.fireflyConfig;
+			config.fireflySize *= 0.5f;
+			config.fireflyColor = Color.red;
+			HUD.hud.setFireflyElementConfig("scoreSubtract", config);
+
+			HUD.hud.setFireflyElement("scoreSubtract", this,
+				FireflyFont.getString(scoreSubtract.ToString("0."), 0.05f,
+					new Vector2(0, -0.34f), FireflyFont.HAlign.CENTER), shuffle);
 		}
 	}
 
