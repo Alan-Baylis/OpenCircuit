@@ -77,6 +77,7 @@ GameObject:
   - component: {fileID: 114853030978314040}
   - component: {fileID: 114477694137725366}
   - component: {fileID: 114550178943139322}
+  - component: {fileID: 114948022942763490}
   m_Layer: 0
   m_Name: Head
   m_TagString: MainCamera
@@ -633,6 +634,21 @@ MonoBehaviour:
     i15: 249
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114948022942763490
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1423059799441900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 10
+  margin: 1
+  vOffset: -2
+  leaveEnabled: []
 --- !u!124 &124200132024519040
 Behaviour:
   m_ObjectHideFlags: 1

@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 82433911799545816}
   - component: {fileID: 82414488840466470}
   - component: {fileID: 114283653580523484}
+  - component: {fileID: 114760539038558924}
   m_Layer: 0
   m_Name: RoboRifleMount-pt1
   m_TagString: Untagged
@@ -345,13 +346,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61e40b70f996af443aaa99fb3188e244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rifle: {fileID: 0}
   riflePrefab: {fileID: 114814748893345218, guid: cdbb3d51e1b779b45ae7207f6db7f638,
     type: 2}
   elbowPrefab: {fileID: 114114207910008170, guid: a3c62828aae97bb47b314de4d659c5f3,
     type: 2}
   recoilAnimationDistance: {x: 0, y: -0.01, z: -0.03}
-  rotatable: {fileID: 0}
-  rifle: {fileID: 0}
+  elbow: {fileID: 0}
+--- !u!114 &114760539038558924
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1747337828594172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 10
+  margin: 1
+  vOffset: -3
+  leaveEnabled: []
 --- !u!136 &136411233013382532
 CapsuleCollider:
   m_ObjectHideFlags: 1

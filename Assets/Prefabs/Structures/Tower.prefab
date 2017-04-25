@@ -1373,12 +1373,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   time: 5
   margin: 0.5
-  buildOrder: []
-  initialized: 0
-  completed: 0
-  waiting: 0
-  startTime: 0
-  timePerObject: 0
+  vOffset: -2
+  leaveEnabled: []
 --- !u!114 &114657157657239662
 MonoBehaviour:
   m_ObjectHideFlags: 1
