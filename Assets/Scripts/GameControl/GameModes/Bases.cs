@@ -90,7 +90,7 @@ public class Bases : TeamGameMode {
 			int timeLeft = Mathf.CeilToInt(clientRespawnJob.Value.respawnTime - Time.time);
 			if (timeLeft != remainingRespawnTime) {
 				HUD.hud.setFireflyElement("respawnTimer", this, FireflyFont.getString(
-					timeLeft.ToString(), 0.02f, new Vector2(-.01f, -.01f), FireflyFont.HAlign.CENTER), false);
+					timeLeft.ToString(), 0.2f, new Vector2(-.01f, -.01f), FireflyFont.HAlign.CENTER), false);
 				remainingRespawnTime = timeLeft;
 			}
 			if (remainingRespawnTime == 0) {
