@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 114192725487870188}
   - component: {fileID: 114875189402417868}
   - component: {fileID: 114343986674943158}
+  - component: {fileID: 114854041120764408}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GlobalConfig
@@ -59,6 +60,7 @@ MonoBehaviour:
   cameraManager: {fileID: 114762472885982036}
   effectsManager: {fileID: 114685695393273014}
   leaderboard: {fileID: 114343986674943158}
+  scoreboard: {fileID: 114854041120764408}
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -205,6 +207,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7aabe173522f0f4d99c6320d67a9d97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114854041120764408
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39198526347fc974783d9703be0d6f1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateInterval: 1
 --- !u!114 &114875189402417868
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -27,7 +27,7 @@ public class Bases : TeamGameMode {
 
 
 	//Fields for client side display
-	Dictionary<ClientController, float> clientScoreMap = new Dictionary<ClientController, float>();
+	public Dictionary<ClientController, float> clientScoreMap = new Dictionary<ClientController, float>();
 
 	private float scoreAdd;
 	private float scoreSubtract;
@@ -273,7 +273,7 @@ public class Bases : TeamGameMode {
 	}
 
 	private void showClientScore(ClientController client, bool shuffle) {
-		if (clientScoreMap.ContainsKey(GlobalConfig.globalConfig.localClient)) {
+		if (clientScoreMap.ContainsKey(client)) {
 			float score = clientScoreMap[GlobalConfig.globalConfig.localClient];
 			Fireflies.Config config = HUD.hud.fireflyConfig;
 			config.fireflySize *= 0.25f;
@@ -331,7 +331,7 @@ public class Bases : TeamGameMode {
 		}
 	}
 
-	private float adjustScoreForTime(float score, float startTime) {
+	public static float adjustScoreForTime(float score, float startTime) {
 		return 60 * score / (Time.time - startTime);
 	}
 

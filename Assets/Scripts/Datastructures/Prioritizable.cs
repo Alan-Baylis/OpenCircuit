@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public interface Prioritizable {
+﻿public interface Prioritizable {
 
 	float getPriority();
 

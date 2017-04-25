@@ -67,6 +67,12 @@ public class Controls : NetworkBehaviour {
 			CmdSetCrouch(status.crouching);
 		}
 
+		if (hasControls() && Input.GetButton("Score")) {
+			GlobalConfig.globalConfig.scoreboard.enabled = true;
+		} else {
+			GlobalConfig.globalConfig.scoreboard.enabled = false;
+		}
+
 		if(hasControls() && Input.GetButtonDown("Reload")) {
 			myPlayer.inventory.reloadEquipped();
 			if (!isServer)
