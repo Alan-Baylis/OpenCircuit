@@ -57,6 +57,7 @@ public class RoboEyes : AbstractVisualSensor {
 			mat.SetColor("_EmissionColor", color);
 			mat.SetColor("_Albedo", color);
 			eyeLight.color = color;
+			eyeLight.enabled = true;
 		}
 	}
 }
