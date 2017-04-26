@@ -10,6 +10,7 @@ public class StructureBuilder : NetworkBehaviour {
 	public float margin = 1f;
 	public float vOffset;
 	public MonoBehaviour[] leaveEnabled;
+	public AbstractEffectController partBuiltEffect;
 
 	private List<Transform> buildOrder = new List<Transform>();
 	private List<MoveJob> moveJobList = new List<MoveJob>();
@@ -83,6 +84,7 @@ public class StructureBuilder : NetworkBehaviour {
 				float partPercentComplete = (Time.time - job.startTime) /timePerObject;
 				if (partPercentComplete >= 1) {
 					moveJobList.RemoveAt(i);
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(partBuiltEffect, job.copy.transform.position, Quaternion.identity);
 					Destroy(job.copy);
 					setEnabledIfPresent<MeshRenderer>(job.original.transform, true);
 				} else {

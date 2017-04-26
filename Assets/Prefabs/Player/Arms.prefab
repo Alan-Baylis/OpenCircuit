@@ -2566,6 +2566,8 @@ MonoBehaviour:
   margin: 1
   vOffset: -2
   leaveEnabled: []
+  partBuiltEffect: {fileID: 114843042589390852, guid: cbb40064a935546e393c62ff52ea0d23,
+    type: 2}
 --- !u!114 &114311410544483738
 MonoBehaviour:
   m_ObjectHideFlags: 1
