@@ -16,13 +16,13 @@ public class CameraSync : TransformSync {
     }
 
     protected override void syncPosition() {
-        if (!player.isLocalPlayer || isServer) {
+        if (player != null && !player.isLocalPlayer || isServer) {
             base.syncPosition();
         }
     }
 
     protected override void syncRotation() {
-        if (!player.isLocalPlayer || isServer) {
+        if (player != null && !player.isLocalPlayer || isServer) {
             base.syncRotation();
         }
     }
