@@ -12,11 +12,10 @@ public class CountScoreOperation : Operation {
 	}
 
 	public override void perform(GameObject instigator, Trigger trig) {
-
-		Player player = instigator.GetComponentInParent<Player>();
+		ScoreAgent agent = instigator.GetComponentInParent<ScoreAgent>();
 		Score score = parent.GetComponent<Score>();
-		if (score != null && player != null) {
-			score.recordScore(player.clientController);
+		if (score != null && agent != null && agent.owner != null) {
+			score.recordScore(agent.owner);
 		}
 	}
 }

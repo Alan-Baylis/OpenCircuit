@@ -130,6 +130,7 @@ public class Player : NetworkBehaviour {
 		} else {
 			eyeColor = Color.blue;
 		}
+		GetComponent<ScoreAgent>().owner = clientController;
 	}
 
     [ClientCallback]

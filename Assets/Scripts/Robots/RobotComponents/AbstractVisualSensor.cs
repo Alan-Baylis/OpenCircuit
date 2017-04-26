@@ -34,28 +34,29 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
 	protected bool canSee(Transform obj) {
 		Vector3 objPos = obj.position;
+		Vector3 eyePos = eye.transform.position;
 		bool result = false;
-		if (Vector3.Distance(objPos, eye.transform.position) < sightDistance) {
+		if (Vector3.Distance(objPos, eyePos) < sightDistance) {
 			RaycastHit hit;
-			Vector3 dir = objPos - eye.transform.position;
+			Vector3 dir = objPos - eyePos;
 			dir.Normalize();
 			float angle = Vector3.Angle(dir, eye.transform.forward);
 			//			print (getController().gameObject.name);
 			//			print (angle);
 			if (angle < fieldOfViewAngle * 0.5f) {
-				Physics.Raycast(eye.transform.position, dir, out hit, sightDistance);
+				Physics.Raycast(eyePos, dir, out hit, sightDistance);
 				if (hit.transform == obj || hit.transform.root == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
 					result = true;
 #if UNITY_EDITOR
 					if (getController().debug)
-						drawLine(eye.transform.position, hit.point, Color.green);
+						drawLine(eyePos, hit.point, Color.green);
 #endif
 				} else {
 					//print("looking for: " + obj.gameObject.name);
 					//print("blocked by: " + hit.collider.gameObject.name);
 #if UNITY_EDITOR
 					if (getController().debug)
-						drawLine(eye.transform.position, hit.point, Color.red);
+						drawLine(eyePos, hit.point, Color.red);
 #endif
 					//print("lost: " + obj.gameObject.name + "obscured by: " + hit.transform.gameObject.name);
 				}

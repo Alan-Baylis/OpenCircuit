@@ -22,6 +22,7 @@ public class TowerSpawner : AbstractRobotComponent {
 			team.enabled = true;
 		}
 		newTower.GetComponent<Score>().owner = owner;
+		newTower.GetComponent<ScoreAgent>().owner = owner;
 		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
 		if (bases != null && owner != null) {
 			bases.addTower(owner, newTower);

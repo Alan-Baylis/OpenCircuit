@@ -95,6 +95,9 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 	public void OnDestroy() {
 		labels.Remove(this);
+		if (isVisible) {
+			visibleLabels.Remove(this);
+		}
 	}
 
 	public void OnBeforeSerialize() {
