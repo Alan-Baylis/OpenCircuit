@@ -42,6 +42,9 @@ public class Player : NetworkBehaviour {
 	public EffectSpec effectSpec;
 
     private ClientController myClientController;
+
+	[SyncVar(hook = "changeEyeColor")]
+	private Color eyeColor;
 	
 	public Attack attacker { get {
 		if(myAttacker == null) {
@@ -119,6 +122,16 @@ public class Player : NetworkBehaviour {
 		fadeIn(); // fade in for dramatic start
 	}
 
+	[ServerCallback]
+	public void Start() {
+		TeamId team = GetComponent<TeamId>();
+		if (team.enabled) {
+			eyeColor = team.team.config.color;
+		} else {
+			eyeColor = Color.blue;
+		}
+	}
+
     [ClientCallback]
 	void Update () {
         if (isLocalPlayer) {
@@ -185,6 +198,17 @@ public class Player : NetworkBehaviour {
 		breathingSource.PlayOneShot(teleportSound);
 		transform.position = position;
 		whiteOutTime = whiteOutDuration;
+	}
+
+	private void changeEyeColor(Color color) {
+		eyeColor = color;
+		Renderer renderer = head.transform.FindChild("Eye").GetComponent<Renderer>();
+		if (renderer != null) {
+			Material mat = renderer.material;
+
+			mat.SetColor("_EmissionColor", color);
+			mat.SetColor("_Albedo", color);
+		}
 	}
 
 	[ClientCallback]
