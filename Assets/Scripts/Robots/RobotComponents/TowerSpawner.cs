@@ -23,7 +23,7 @@ public class TowerSpawner : AbstractRobotComponent {
 		}
 		newTower.GetComponent<Score>().owner = owner;
 		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
-		if (bases != null) {
+		if (bases != null && owner != null) {
 			bases.addTower(owner, newTower);
 		}
 		NetworkServer.Spawn(newTower);
