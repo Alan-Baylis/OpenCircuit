@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 
 public abstract class AbstractRobotGun : AbstractRobotComponent {
