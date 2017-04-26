@@ -34,23 +34,23 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 
 	protected bool canSee(Transform obj) {
 		Vector3 objPos = obj.position;
-		Vector3 eyePos = eye.transform.position;
-		bool result = false;
-		if (Vector3.Distance(objPos, eyePos) < sightDistance) {
-			RaycastHit hit;
-			Vector3 dir = objPos - eyePos;
-			dir.Normalize();
-			float angle = Vector3.Angle(dir, eye.transform.forward);
-			//			print (getController().gameObject.name);
-			//			print (angle);
+		Transform eyeTrans = eye.transform;
+		Vector3 eyePos = eyeTrans.position;
+		Vector3 diff = objPos - eyePos;
+		if (diff.sqrMagnitude < sightDistance *sightDistance) {
+			float angle = Vector3.Angle(diff, eyeTrans.forward);
+//			print (getController().gameObject.name);
+//			print (angle);
 			if (angle < fieldOfViewAngle * 0.5f) {
-				Physics.Raycast(eyePos, dir, out hit, sightDistance);
-				if (hit.transform == obj || hit.transform.root == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
-					result = true;
+				RaycastHit hit;
+				Physics.Raycast(eyePos, diff, out hit, sightDistance);
+				Transform hitTrans = hit.transform;
+				if (hitTrans == obj || hitTrans.root == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
 #if UNITY_EDITOR
 					if (getController().debug)
 						drawLine(eyePos, hit.point, Color.green);
 #endif
+					return true;
 				} else {
 					//print("looking for: " + obj.gameObject.name);
 					//print("blocked by: " + hit.collider.gameObject.name);
@@ -62,7 +62,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 				}
 			}
 		}
-		return result;
+		return false;
 	}
 
 	private void lookAround() {
