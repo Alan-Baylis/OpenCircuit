@@ -12,6 +12,10 @@ public class EffectsManager : MonoBehaviour {
 	}
 
 	public void spawnEffect(AbstractEffectController effectPrefab, Vector3 position, Quaternion direction) {
+		if (effectPrefab == null) {
+			print("EMPTY EFFECT");
+			return;
+		}
 		if (effectsMap.ContainsKey(effectPrefab)) {
 			Queue<AbstractEffectController> effectQueue = effectsMap[effectPrefab];
 			AbstractEffectController effectController = effectQueue.Peek();
