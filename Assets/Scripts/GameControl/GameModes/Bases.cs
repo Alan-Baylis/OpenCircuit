@@ -100,7 +100,7 @@ public class Bases : TeamGameMode {
 			}
 		}
 
-		if (nextScoreUpdate < Time.time) {
+		if (nextScoreUpdate < Time.time && GlobalConfig.globalConfig.localClient != null) {
 			showClientScore(GlobalConfig.globalConfig.localClient, false);
 			nextScoreUpdate = Time.time + 1;
 		}

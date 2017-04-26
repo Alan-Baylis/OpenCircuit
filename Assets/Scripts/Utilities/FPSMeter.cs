@@ -25,7 +25,7 @@ public class FPSMeter : NetworkBehaviour {
 		msec = deltaTime * 1000;
 		fps = 1f / deltaTime;
 		barLevel += (getFPSMeterPosition(fps, targetFramerate) -barLevel) *trackRate;
-		aiTime = ((Bases) GlobalConfig.globalConfig.gamemode).getRobotTiming() * 1000.0;
+//		aiTime = ((Bases) GlobalConfig.globalConfig.gamemode).getRobotTiming() * 1000.0;
 	}
 
 	public void OnGUI() {

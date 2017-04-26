@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildTowerAction : Endeavour {
+public class BuildTowerAction : BidBasedEndeavour {
 
 	private BuildDirectiveTag towerBase;
 
@@ -26,10 +26,6 @@ public class BuildTowerAction : Endeavour {
 
 	public override bool isStale() {
 		return towerBase.getLabelHandle().label == null;
-	}
-
-	public override bool singleExecutor() {
-		return true;
 	}
 
 	public override void onMessage(RobotMessage message) {

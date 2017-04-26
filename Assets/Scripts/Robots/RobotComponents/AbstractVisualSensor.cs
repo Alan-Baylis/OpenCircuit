@@ -65,7 +65,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 	}
 
 	private void lookAround() {
-		double startTime = Time.realtimeSinceStartup;
+//		double startTime = Time.realtimeSinceStartup;
 #if UNITY_EDITOR
 		clearLines();
 #endif
@@ -94,8 +94,8 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 				clearSighting(label);
 			}
 		}
-		double endTime = Time.realtimeSinceStartup;
-		getController().getExecutionTimer().addTime(endTime-startTime);
+//		double endTime = Time.realtimeSinceStartup;
+//		getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	private void registerSightingFound(Label label) {

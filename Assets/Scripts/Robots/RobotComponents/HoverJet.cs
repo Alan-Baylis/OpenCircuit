@@ -92,7 +92,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	void Update () {
-		double startTime = Time.realtimeSinceStartup;
+//		double startTime = Time.realtimeSinceStartup;
 		float actualSpeed = regularSpeed * speedMultipler;
 		if(nav.speed < actualSpeed) {
 			nav.speed += speedRegenRate * Time.deltaTime;
@@ -116,8 +116,8 @@ public class HoverJet : AbstractRobotComponent {
 		}
 		goToTarget();
 		nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
-		double endTime = Time.realtimeSinceStartup;
-		getController().getExecutionTimer().addTime(endTime-startTime);
+//		double endTime = Time.realtimeSinceStartup;
+//		getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float calculatePathCost(Label label) {

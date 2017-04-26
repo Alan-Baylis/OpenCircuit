@@ -117,7 +117,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //			}
 //		}
 //#endif
-	    double startTime = Time.realtimeSinceStartup;
+//	    double startTime = Time.realtimeSinceStartup;
 		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
 		foreach(Endeavour endeavour in endeavours) {
 			try {
@@ -128,8 +128,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				Debug.LogException(e);
 			}
 		}
-	    double endTime = Time.realtimeSinceStartup;
-	    executionTimer.addTime(endTime-startTime);
+//	    double endTime = Time.realtimeSinceStartup;
+//	    executionTimer.addTime(endTime-startTime);
 	}
 
 	public bool knowsTarget(LabelHandle target) {
