@@ -657,9 +657,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: e7c16300e76a50d4a81a35129b232946, type: 3}
   maximumMovementInaccuracy: 0.1
   movementInaccuracySoftness: 10
-  baseInaccuracy: 0.1
+  baseInaccuracy: 0.005
   range: 1000
-  impulse: 1
+  impulse: 50
   damage: 10
   fireDelay: 0.1
   soundExpirationTime: 10
@@ -787,7 +787,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1561814985727134}
   serializedVersion: 5
   lengthInSec: 0.1
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -3364,7 +3364,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1258429726133362}
   serializedVersion: 5
   lengthInSec: 0.4
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -5941,7 +5941,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1900253896859654}
   serializedVersion: 5
   lengthInSec: 0.4
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -8518,7 +8518,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1505570006043020}
   serializedVersion: 5
   lengthInSec: 0.1
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -11095,7 +11095,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1532562286942134}
   serializedVersion: 5
   lengthInSec: 0.4
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -13672,7 +13672,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1334868232738346}
   serializedVersion: 5
   lengthInSec: 0.1
-  simulationSpeed: 1
+  speed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
