@@ -8,6 +8,7 @@ public abstract class Item : NetworkBehaviour {
 	public HoldPosition sprintPosition;
 	public HoldPosition zoomPosition;
 	public Vector3 grabPosition;
+	public bool twoHanded;
 	public Vector3 secondaryGrabPosition;
 	public float responsiveness = 0.5f;
 	public float positionalResponsiveness = 0.5f;

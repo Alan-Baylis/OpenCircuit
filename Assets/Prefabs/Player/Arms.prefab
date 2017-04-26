@@ -2565,7 +2565,7 @@ MonoBehaviour:
   time: 10
   margin: 1
   vOffset: -2
-  buildOrder: []
+  leaveEnabled: []
 --- !u!114 &114311410544483738
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2577,7 +2577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f05a4549bf13de48b87e16d5c4149aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPos: {x: 0, y: 0.2, z: -0.8}
+  defaultPos: {x: 0, y: 0.5, z: -0.4}
   shoulderConfig:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0.1, y: 0, z: 0}
@@ -2646,7 +2646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f05a4549bf13de48b87e16d5c4149aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPos: {x: 0, y: 0.2, z: -0.8}
+  defaultPos: {x: 0, y: 0.5, z: -0.4}
   shoulderConfig:
     offset: {x: 0, y: 0, z: 0}
     tip: {x: 0.1, y: 0, z: 0}

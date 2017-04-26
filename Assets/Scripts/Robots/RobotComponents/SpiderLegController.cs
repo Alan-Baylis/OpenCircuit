@@ -24,7 +24,7 @@ public class SpiderLegController : LimbController {
 
 	private float upperLegLength;
 	
-	public void Awake () {
+	public void Awake() {
 		leg = GetComponent<Transform>();
 		hip = leg.FindChild("Hip");
 		upperLeg = hip.FindChild("Upper Leg");

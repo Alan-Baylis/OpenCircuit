@@ -27,7 +27,7 @@ public class Controls : NetworkBehaviour {
 	}
 
 	[ClientCallback]
-	void Update () {
+	void Update() {
 		if(!isLocalPlayer) {
 			return;
 		}

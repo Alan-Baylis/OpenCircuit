@@ -370,8 +370,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1788622650521166}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 72.793, y: 98.373, z: 59.22}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 209.23178, y: 90.96001, z: 180.4399}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children:
   - {fileID: 4900851000735942}
   - {fileID: 4291112927330344}
@@ -684,7 +684,7 @@ BoxCollider:
   m_GameObject: {fileID: 1853980115244834}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -696,7 +696,7 @@ BoxCollider:
   m_GameObject: {fileID: 1031146553143248}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -708,7 +708,7 @@ BoxCollider:
   m_GameObject: {fileID: 1506798809644534}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -720,7 +720,7 @@ BoxCollider:
   m_GameObject: {fileID: 1917828562339416}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -732,7 +732,7 @@ BoxCollider:
   m_GameObject: {fileID: 1146526091794460}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -781,21 +781,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 0}
   normalPosition:
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    cameraRelative: 0
+    position: {x: 0.15, y: -0.1, z: 0.5}
+    rotation: {x: 0, y: 45, z: 0}
+    cameraRelative: 1
   sprintPosition:
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+    position: {x: 0.1, y: 0.3, z: 0.4}
+    rotation: {x: 45, y: 0, z: 0}
     cameraRelative: 0
   zoomPosition:
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
-    cameraRelative: 0
-  responsiveness: 0.5
-  positionalResponsiveness: 0.5
-  maxResponsiveness: 0.5
-  stepBump: {x: 0, y: -0.1, z: 0.05}
+    position: {x: 0.15, y: -0.1, z: 0.5}
+    rotation: {x: 0, y: 45, z: 0}
+    cameraRelative: 1
+  grabPosition: {x: 0, y: -0.4, z: 0}
+  twoHanded: 0
+  secondaryGrabPosition: {x: 0, y: 0, z: 0}
+  responsiveness: 30
+  positionalResponsiveness: 18
+  maxResponsiveness: 0.1
+  stepBump: {x: 0.1, y: -0.1, z: 0}
   zoomLevel: 1.5
   range: 20
   structureBase: {fileID: 1095805329720462, guid: 05b05a70f7e2f58438d5b86a3b9c1950,
@@ -808,7 +811,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1581258476510754}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -821,7 +824,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1670854457890070}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
