@@ -38,3 +38,10 @@ ExportedObj/
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# ============ #
+# rider generated #
+# ============ #
+Assets/Plugins
+Assets/Plugins.meta
+.idea
