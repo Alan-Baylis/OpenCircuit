@@ -8,11 +8,14 @@ public class BuildTool : ContextItem {
 	public Vector3 offset;
 	public GameObject structureBase;
 	public Material ghostMaterial;
+	public float minFlatness;
 
 	private GameObject ghost;
 	private Material currentGhostMaterial;
+	private bool canBuild;
 
 	public void Update() {
+		canBuild = false;
 		if (holder == null) {
 			destroyGhost();
 			return;
@@ -20,15 +23,21 @@ public class BuildTool : ContextItem {
 		Transform cam = holder.getPlayer().cam.transform;
 
 		RaycastHit hitInfo;
-		if (Physics.Raycast (cam.position, cam.forward, out hitInfo, range)) {
+		if (Physics.Raycast(cam.position, cam.forward, out hitInfo, range)) {
 			if (!ghost.activeSelf)
 				ghost.SetActive(true);
-
-			ghost.transform.position = hitInfo.point + offset;
+			UnityEngine.AI.NavMeshHit navHit;
+			if (UnityEngine.AI.NavMesh.SamplePosition (hitInfo.point, out navHit, 0.5f, UnityEngine.AI.NavMesh.AllAreas)) {
+				canBuild = navHit.normal.y >= minFlatness;
+				ghost.transform.position = navHit.position + offset;
+			} else {
+				ghost.transform.position = hitInfo.point + offset;
+			}
 		} else {
 			if (ghost.activeSelf)
 				ghost.SetActive(false);
 		}
+		currentGhostMaterial.SetColor("_EmissionColor", canBuild ? Color.green : Color.red);
 	}
 
 	public void OnDestroy() {
@@ -48,7 +57,7 @@ public class BuildTool : ContextItem {
 	public override void beginInvoke(Inventory invoker) {
 		TeamId team = holder.GetComponent<TeamId>();
 		if (team != null && team.enabled && GlobalConfig.globalConfig.gamemode is Bases
-			&& ghost != null && ghost.activeSelf) {
+			&& canBuild) {
 			CmdSpawnTower(ghost.transform.position);
 			invoker.popContext(typeof(BuildTool));
 		}
@@ -74,11 +83,21 @@ public class BuildTool : ContextItem {
 		destroyGhost();
 		ghost = Instantiate(structureBase);
 		currentGhostMaterial = new Material(ghostMaterial);
+		setGhostMaterial(ghost.transform);
 	}
 
 	private void destroyGhost() {
 		if (ghost != null)
 			Destroy (ghost);
+	}
+
+	private void setGhostMaterial(Transform transform) {
+		Renderer renderer = transform.GetComponent<Renderer>();
+		if (renderer != null)
+			renderer.material = currentGhostMaterial;
+		for(int i=0; i<transform.childCount; ++i) {
+			setGhostMaterial(transform.GetChild(i));
+		}
 	}
 
 }

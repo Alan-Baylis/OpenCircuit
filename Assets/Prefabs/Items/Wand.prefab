@@ -801,10 +801,11 @@ MonoBehaviour:
   stepBump: {x: 0.1, y: -0.1, z: 0}
   zoomLevel: 1.5
   range: 20
-  offset: {x: 0, y: 1, z: 0}
+  offset: {x: 0, y: 0.5, z: 0}
   structureBase: {fileID: 1696115305767442, guid: 4b5fed39887874fbaac8636e30292f30,
     type: 2}
   ghostMaterial: {fileID: 2100000, guid: 960f3b0ad1c044501b9851866901323a, type: 2}
+  minFlatness: 0
 --- !u!136 &136082391838792212
 CapsuleCollider:
   m_ObjectHideFlags: 1
