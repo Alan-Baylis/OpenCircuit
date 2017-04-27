@@ -29,7 +29,7 @@ public struct EffectSpec {
 		if (lifetime > 0)
 			MonoBehaviour.Destroy(effect.gameObject, lifetime);
 
-        if (randomizePitch ) {
+        if (randomizePitch) {
             AudioSource source = effect.GetComponent<AudioSource>();
             if (source != null) {
                 source.pitch = UnityEngine.Random.Range(source.pitch - 0.05f, source.pitch + 0.05f);

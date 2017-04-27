@@ -59,7 +59,7 @@ MonoBehaviour:
   - {fileID: 1862426679671266, guid: c4e4a02159bf1fb4da32fffc217bbe66, type: 2}
   - {fileID: 1148032884675158, guid: 4e6a9fe742f38784d8249ae0a4295b78, type: 2}
   - {fileID: 1100082223894380, guid: daf2a1f7b91d09b4f929e82f4ec6245b, type: 2}
-  offset: {x: 0, y: 1, z: 0}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!114 &114130357571481062
 MonoBehaviour:
   m_ObjectHideFlags: 1

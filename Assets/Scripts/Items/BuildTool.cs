@@ -5,18 +5,52 @@ using UnityEngine.Networking;
 public class BuildTool : ContextItem {
 
 	public float range = 20;
+	public Vector3 offset;
 	public GameObject structureBase;
+	public Material ghostMaterial;
+
+	private GameObject ghost;
+	private Material currentGhostMaterial;
+
+	public void Update() {
+		if (holder == null) {
+			destroyGhost();
+			return;
+		}
+		Transform cam = holder.getPlayer().cam.transform;
+
+		RaycastHit hitInfo;
+		if (Physics.Raycast (cam.position, cam.forward, out hitInfo, range)) {
+			if (!ghost.activeSelf)
+				ghost.SetActive(true);
+
+			ghost.transform.position = hitInfo.point + offset;
+		} else {
+			if (ghost.activeSelf)
+				ghost.SetActive(false);
+		}
+	}
+
+	public void OnDestroy() {
+		destroyGhost();
+	}
+
+	public override void onEquip(Inventory equipper) {
+		base.onEquip(equipper);
+		buildGhost();
+	}
+
+	public override void onUnequip(Inventory equipper) {
+		base.onUnequip(equipper);
+		destroyGhost();
+	}
 
 	public override void beginInvoke(Inventory invoker) {
 		TeamId team = holder.GetComponent<TeamId>();
-		if (team != null && team.enabled && GlobalConfig.globalConfig.gamemode is Bases) {
-			Transform cam = holder.getPlayer().cam.transform;
-
-			RaycastHit hitInfo;
-			if (Physics.Raycast(cam.position, cam.forward, out hitInfo, range)) {
-				CmdSpawnTower(hitInfo.point);
-				invoker.popContext(GetType());
-			}
+		if (team != null && team.enabled && GlobalConfig.globalConfig.gamemode is Bases
+			&& ghost != null && ghost.activeSelf) {
+			CmdSpawnTower(ghost.transform.position);
+			invoker.popContext(typeof(BuildTool));
 		}
 	}
 
@@ -27,14 +61,24 @@ public class BuildTool : ContextItem {
 
 			TeamId team = holder.GetComponent<TeamId>();
 			CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.id);
-			Label towerBase =
-				Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();
-			crc.sightingFound(towerBase.labelHandle, towerBase.transform.position,
-				null);
+			Label towerBase = Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();
+			towerBase.enabled = true;
+			crc.sightingFound(towerBase.labelHandle, towerBase.transform.position, null);
 			(towerBase.getTag(TagEnum.BuildDirective) as BuildDirectiveTag).owner = holder.getPlayer().clientController;
 			NetworkServer.Spawn(towerBase.gameObject);
 			bases.addTower(holder.getPlayer().clientController, towerBase.gameObject);
 		}
+	}
+
+	private void buildGhost() {
+		destroyGhost();
+		ghost = Instantiate(structureBase);
+		currentGhostMaterial = new Material(ghostMaterial);
+	}
+
+	private void destroyGhost() {
+		if (ghost != null)
+			Destroy (ghost);
 	}
 
 }
