@@ -1377,6 +1377,7 @@ MonoBehaviour:
   margin: 0.5
   vOffset: -2
   leaveEnabled: []
+  partBuiltEffect: {fileID: 0}
 --- !u!114 &114531111737307056
 MonoBehaviour:
   m_ObjectHideFlags: 1

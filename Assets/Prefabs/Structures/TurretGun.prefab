@@ -657,10 +657,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: e7c16300e76a50d4a81a35129b232946, type: 3}
   maximumMovementInaccuracy: 0.1
   movementInaccuracySoftness: 10
-  baseInaccuracy: 0.005
+  baseInaccuracy: 0.01
   range: 1000
   impulse: 50
-  damage: 10
+  damage: 8
   fireDelay: 0.1
   soundExpirationTime: 10
   effectsController: {fileID: 114975457883450202}
