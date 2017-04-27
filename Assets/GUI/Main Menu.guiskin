@@ -404,7 +404,7 @@ MonoBehaviour:
     m_Font: {fileID: 0}
     m_FontSize: 32
     m_FontStyle: 0
-    m_Alignment: 0
+    m_Alignment: 4
     m_WordWrap: 1
     m_RichText: 0
     m_TextClipping: 1
