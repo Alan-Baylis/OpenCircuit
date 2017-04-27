@@ -17,12 +17,15 @@ public class BuildTool : ContextItem {
 	public override void Update() {
 		base.Update();
 		canBuild = false;
+
+		if (ghost == null)
+			return;
 		if (holder == null) {
 			destroyGhost();
 			return;
 		}
-		Transform cam = holder.getPlayer().cam.transform;
 
+		Transform cam = holder.getPlayer().cam.transform;
 		RaycastHit hitInfo;
 		if (Physics.Raycast(cam.position, cam.forward, out hitInfo, range)) {
 			if (!ghost.activeSelf)
@@ -81,6 +84,8 @@ public class BuildTool : ContextItem {
 	}
 
 	private void buildGhost() {
+		if (!holder.getPlayer().isLocalPlayer)
+			return;
 		destroyGhost();
 		ghost = Instantiate(structureBase);
 		currentGhostMaterial = new Material(ghostMaterial);
