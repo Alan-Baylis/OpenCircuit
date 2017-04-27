@@ -51,5 +51,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ecc70069f2858b47ad8d63b7662d7fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fontSize: 0.2
+  fontSize: 30
   message: 

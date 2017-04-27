@@ -481,6 +481,10 @@ Prefab:
       propertyPath: m_Name
       value: AmmoSpawner (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 11460274, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
+      propertyPath: inherentKnowledge
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
   m_IsPrefabParent: 0
@@ -558,6 +562,10 @@ Prefab:
     - target: {fileID: 189802, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
       propertyPath: m_Name
       value: AmmoSpawner (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 11460274, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
+      propertyPath: inherentKnowledge
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
@@ -768,6 +776,11 @@ Prefab:
       value: 
       objectReference: {fileID: 1747337828594172, guid: d082099b724b8104cb99414a99c0cfe4,
         type: 2}
+    - target: {fileID: 114749755642132046, guid: 5d69f2e28e106e341b748e0f32fcfba8,
+        type: 2}
+      propertyPath: id
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5d69f2e28e106e341b748e0f32fcfba8, type: 2}
   m_IsPrefabParent: 0
@@ -855,6 +868,10 @@ Prefab:
     - target: {fileID: 497670, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
       propertyPath: m_RootOrder
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 11460274, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
+      propertyPath: inherentKnowledge
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1e6a71089d147644cb25ca81cafbe780, type: 2}
