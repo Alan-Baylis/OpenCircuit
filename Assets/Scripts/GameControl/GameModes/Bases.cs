@@ -13,8 +13,7 @@ public class Bases : TeamGameMode {
 	public CentralRobotController centralRobotControllerPrefab;
 	public List<Label> firstTeamLocations = new List<Label>();
 	public List<Label> secondTeamLocations = new List<Label>();
-	Dictionary<ClientController, float> scoreMap = new Dictionary<ClientController, float>();
-	Dictionary<ClientController, List<GameObject>> towerMap  = new Dictionary<ClientController, List<GameObject>>();
+	Dictionary<ClientController, ClientInfo> clientInfoMap = new Dictionary<ClientController, ClientInfo>();
 
 	private RobotSpawner[] spawners;
 
@@ -182,10 +181,7 @@ public class Bases : TeamGameMode {
 
 	[Server]
 	public void addTower(ClientController owner, GameObject tower) {
-		if (!towerMap.ContainsKey(owner)) {
-			towerMap[owner] = new List<GameObject>();
-		}
-		towerMap[owner].Add(tower);
+		getInfo(owner).towers.Add(tower);
 	}
 
 	[Server]
@@ -205,9 +201,7 @@ public class Bases : TeamGameMode {
 
 	[Server]
 	private int getTowers(ClientController owner) {
-		if (!towerMap.ContainsKey(owner))
-			return 0;
-		List<GameObject> towers = towerMap[owner];
+		List<GameObject> towers = getInfo(owner).towers;
 		for (int i = towers.Count - 1; i >= 0; --i) {
 			if (towers[i] == null) {
 				towers.RemoveAt(i);
@@ -218,11 +212,7 @@ public class Bases : TeamGameMode {
 
 	[Server]
 	public void addScore(ClientController owner, float value) {
-		if (scoreMap.ContainsKey(owner)) {
-			scoreMap[owner] += value;
-		} else {
-			scoreMap[owner] = value;
-		}
+		getInfo(owner).score += value;
 		RpcUpdateClientScore(owner.netId, getScore(owner), value);
 	}
 
@@ -235,9 +225,11 @@ public class Bases : TeamGameMode {
 	}
 
 	public float getScore(ClientController client) {
-		if (!scoreMap.ContainsKey(client))
-			return 0;
-		return adjustScoreForTime(scoreMap[client], client.startTime);
+		return adjustScoreForTime(getInfo(client).score, client.startTime);
+	}
+
+	public static float adjustScoreForTime(float score, float startTime) {
+		return 60 * score / (Time.time - startTime);
 	}
 
 	[ClientRpc]
@@ -331,8 +323,13 @@ public class Bases : TeamGameMode {
 		}
 	}
 
-	public static float adjustScoreForTime(float score, float startTime) {
-		return 60 * score / (Time.time - startTime);
+	private ClientInfo getInfo(ClientController clientController) {
+		ClientInfo info;
+		if (!clientInfoMap.TryGetValue(clientController, out info)) {
+			info = new ClientInfo();
+			clientInfoMap.Add(clientController, info);
+		}
+		return info;
 	}
 
 	private struct RespawnJob {
@@ -343,5 +340,11 @@ public class Bases : TeamGameMode {
 			controller = playerController;
 			this.respawnTime = Time.time + respawnTime;
 		}
+	}
+
+	private class ClientInfo {
+		public float score, comboScore;
+		public int buildPoints;
+		public List<GameObject> towers = new List<GameObject>();
 	}
 }
