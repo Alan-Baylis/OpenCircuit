@@ -109,7 +109,7 @@ public class ClientController : NetworkBehaviour {
 
 	    NetworkServer.Spawn(newPlayer);
 		id = newPlayer.GetComponent<Player>().netId;
-		newPlayer.GetComponent<NameTag>().name = playerName;
+		newPlayer.GetComponent<NameTag>().displayName = playerName;
 		newPlayer.GetComponent<Score>().owner = this;
 		playerCam.GetComponent<NetworkParenter>().setParentId(id);
 		playerLegs.GetComponent<NetworkParenter>().setParentId(id);

@@ -4,12 +4,12 @@ using UnityEngine.Networking;
 public class NameTag : NetworkBehaviour {
 
 	[SyncVar(hook = "onSetName")]
-	public string name;
+	public string displayName;
 
 	public override void OnStartClient() {
 		base.OnStartClient();
-		if (!string.IsNullOrEmpty(name)) {
-			onSetName(name);
+		if (!string.IsNullOrEmpty(displayName)) {
+			onSetName(displayName);
 		}
 	}
 
@@ -32,14 +32,14 @@ public class NameTag : NetworkBehaviour {
 		GUIStyle style = new GUIStyle(GUI.skin.label);
 		style.font = font;
 		style.fontSize = 14;
-		Vector2 labelSize = style.CalcSize(new GUIContent(name));
+		Vector2 labelSize = style.CalcSize(new GUIContent(displayName));
 
 		Rect textCentered = new Rect(pos.x - labelSize.x / 2, Screen.height - pos.y - labelSize.y + 4, labelSize.x, labelSize.y);
-		GUI.Label(textCentered, name, style);
+		GUI.Label(textCentered, displayName, style);
 	}
 
 	private void onSetName(string name) {
-		this.name = name;
+		displayName = name;
 		if (!enabled && !GetComponent<Player>().clientController.isLocalPlayer)
 			enabled = true;
 	}

@@ -32,7 +32,6 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
     [ServerCallback]
     void Start() {
         if (isTeamMode()) {
-            TeamGameMode gameMode = (TeamGameMode) GlobalConfig.globalConfig.gamemode;
             teamId.enabled = true;
 			displayColor = teamId.team.config.color;
         }

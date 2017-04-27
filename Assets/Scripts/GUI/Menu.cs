@@ -19,9 +19,7 @@ public class Menu : MonoBehaviour {
 	private Rect titleRect = new Rect(0.05f, 0.05f, 0.75f, 0.1f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
-	private float endTextFontSize = .2f;
 	private string host = "localhost";
-	private string serverName = "Lazy Setup";
 	private string username;
 	private Vector2 scrollPosition = Vector2.zero;
 	private MessageDialog currentDialogBox;
@@ -146,8 +144,8 @@ public class Menu : MonoBehaviour {
 			Destroy(currentDialogBox);
 			returnToLobby();
 		} else if (currentDialogBox == null) {
-				MessageDialog box = Instantiate(dialogBoxPrefab);
-				box.message = "Critical Failure.";
+				currentDialogBox = Instantiate(dialogBoxPrefab);
+				currentDialogBox.message = "Critical Failure.";
 		}
 	}
 
@@ -157,8 +155,8 @@ public class Menu : MonoBehaviour {
 			Destroy(currentDialogBox);
 		    returnToLobby();
 		}else if (currentDialogBox == null) {
-			MessageDialog box = Instantiate(dialogBoxPrefab);
-			box.message = "Domination Achieved.";
+			currentDialogBox = Instantiate(dialogBoxPrefab);
+			currentDialogBox.message = "Domination Achieved.";
 		}
 	}
 

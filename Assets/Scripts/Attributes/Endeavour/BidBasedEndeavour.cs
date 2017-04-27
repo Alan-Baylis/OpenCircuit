@@ -19,7 +19,7 @@ public abstract class BidBasedEndeavour : Endeavour {
 		return priorityCache;
 	}
 
-	protected virtual float calculateFinalPriority() {
+	protected override float calculateFinalPriority() {
 		float finalPriority = calculatePriority();
 		finalPriority -= getCost();
 		return finalPriority;

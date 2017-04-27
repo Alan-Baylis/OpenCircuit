@@ -14,7 +14,8 @@ public class BuildTool : ContextItem {
 	private Material currentGhostMaterial;
 	private bool canBuild;
 
-	public void Update() {
+	public override void Update() {
+		base.Update();
 		canBuild = false;
 		if (holder == null) {
 			destroyGhost();
