@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AttackEnemyBaseAction : Endeavour {
 
 	private List<LabelHandle> routePoints;
 	private AttackRoute route;
+	private int goalNode;
 	private int currentDestination;
 	private bool reached;
 
 	private float ?pathLength;
+	private AttackRoute.Squad squad;
+	private Vector3? waitPoint;
 
 	public AttackEnemyBaseAction(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) : base(parentFactory, controller, goals, tagMap) {
 		route = getTagOfType<AttackRoute>(TagEnum.AttackRoute);
@@ -17,15 +20,57 @@ public class AttackEnemyBaseAction : Endeavour {
 		routePoints = route.getPointHandles();
 	}
 
+	public override void update() {
+		if (squad == null) {
+			if (reached) {
+				squad = route.formSquad(getController(), goalNode);
+				if (waitPoint == null && !squad.isReady()) {
+					spreadOut();
+				}
+			} else {
+				setGoalNode(route.getRallyNode());
+			}
+		} else if (squad.isReady()) {
+			//Debug.Log("Squad ready!");
+			waitPoint = null;
+			setGoalNode(routePoints.Count - 1);
+		} else {
+			setGoalNode(route.getRallyNode());
+			route.setRallyNode(squad);
+			if (reached && waitPoint != null) {
+				spreadOut();
+			}
+		}
+	}
+
+	private void spreadOut() {
+		Vector3 randomPoint = 10 * Random.insideUnitSphere;
+		randomPoint.y = 0f;
+		NavMeshHit hit;
+		while (!NavMesh.SamplePosition(randomPoint + routePoints[goalNode].getPosition(), out hit, 2f,
+			NavMesh.AllAreas)) {
+			waitPoint = hit.position;
+			Vector3 dir = routePoints[goalNode + 1].getPosition() - routePoints[goalNode].getPosition();
+			jet.goToPosition(hit.position, dir.normalized, true);
+		}
+	}
+
 	public override bool isStale() {
-		return reached || route.getLabelHandle().label.GetComponent<TeamId>().id != controller.GetComponent<TeamId>().id;
+		return route.getLabelHandle().label.GetComponent<TeamId>().id != controller.GetComponent<TeamId>().id;
 	}
 
 	protected override void onExecute() {
 		currentDestination = getNearest(controller.transform.position);
-		jet.setTarget(routePoints[currentDestination], false);	}
+		jet.setTarget(routePoints[currentDestination], false);
+	}
 
-	public override Type[] getRequiredComponents() {
+	protected override void onStopExecution() {
+		if (squad != null) {
+			route.removeFromSquad(getController(), squad);
+		}
+	}
+
+	public override System.Type[] getRequiredComponents() {
 		return new [] { typeof(HoverJet) };
 	}
 
@@ -43,12 +88,18 @@ public class AttackEnemyBaseAction : Endeavour {
 
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals (HoverJet.TARGET_REACHED)) {
+//			if (squad != null && squad.isReady())
 			if (routePoints[currentDestination] == message.Target) {
-				++currentDestination;
-				if (currentDestination == routePoints.Count) {
+				route.updateLastReachedNode(currentDestination);
+				if (currentDestination == goalNode) {
 					reached = true;
 					return;
 				}
+
+				if (currentDestination < routePoints.Count - 1) {
+					++currentDestination;
+				}
+
 				if(routePoints[currentDestination] == null) {
 					Debug.LogWarning("Robot '" + controller.name + "' has detected a missing patrol route point. ");
 					Debug.LogWarning("Robot '" + controller.name + "' halted. ");
@@ -88,7 +139,7 @@ public class AttackEnemyBaseAction : Endeavour {
 
 	protected override float getCost() {
 		int index = getNearest(controller.transform.position);
-		return Vector3.Distance(controller.transform.position, routePoints[index].getPosition()) + getRemainingPathLength(index);
+		return Vector3.Distance(controller.transform.position, routePoints[index].getPosition()) + getRemainingPathLength(goalNode);
 	}
 
 	private float getRemainingPathLength(int nodeIndex) {
@@ -118,4 +169,24 @@ public class AttackEnemyBaseAction : Endeavour {
 		}
 		return pathLength.Value;
 	}
+
+	private void setGoalNode(int value) {
+		if (value != goalNode) {
+			reached = false;
+			jet.setTarget(routePoints[value], false);
+		}
+		goalNode = value;
+	}
+
+//	protected override float calculateMobBenefit() {
+//		int executors = tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType());
+//		float mobEffect = 0;
+//		if (route.isPreparingSquad()) {
+//			mobEffect += factory.maxMobBenefit;
+//		} else if (!route.isSquadRobot(getController())) {
+//			mobEffect -= executors * factory.mobCostPerRobot;
+//		}
+//
+//		return mobEffect;
+//	}
 }

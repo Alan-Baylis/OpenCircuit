@@ -49,11 +49,13 @@ public class Bases : TeamGameMode {
 		base.Start();
 
 		foreach (Label location in firstTeamLocations) {
-			getCRC(0).sightingFound(location.labelHandle, location.transform.position, null);
+			if(location != null && location.gameObject.activeInHierarchy)
+				getCRC(0).sightingFound(location.labelHandle, location.transform.position, null);
 		}
 
 		foreach (Label location in secondTeamLocations) {
-			getCRC(1).sightingFound(location.labelHandle, location.transform.position, null);
+			if(location != null && location.gameObject.activeInHierarchy)
+				getCRC(1).sightingFound(location.labelHandle, location.transform.position, null);
 		}
 
 		spawners = FindObjectsOfType<RobotSpawner>();

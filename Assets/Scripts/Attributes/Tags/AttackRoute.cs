@@ -1,15 +1,174 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class AttackRoute : AbstractRouteTag {
+
+	private const float EXPIRATION_TIME = 5f;
+
+	[System.NonSerialized]
+	private int lastReachedNode;
+	[System.NonSerialized]
+	private List<NodeArrival> arrivals;
+	[System.NonSerialized]
+	private List<Squad> squads;
+	[System.NonSerialized]
+	public RouteState status = RouteState.UNKNOWN;
+
+	[System.NonSerialized]
+	private HashSet<RobotController> squadRobots;
 
 	public AttackRoute(float severity, LabelHandle handle) : base(TagEnum.AttackRoute, severity, handle) {
 	}
 
 	public Vector3 getEndPoint() {
 		return getPointHandles()[getPointHandles().Count - 1].getPosition();
+	}
+
+	public void updateLastReachedNode(int node) {
+		if (node > lastReachedNode) {
+			status = RouteState.PUSHING;
+		}
+		arrivals.Add(new NodeArrival(node, Time.time));
+		for (int i = arrivals.Count - 1; i >= 0; --i) {
+			if (Time.time - arrivals[i].timeStamp > EXPIRATION_TIME) {
+				arrivals.RemoveAt(i);
+			}
+		}
+
+		int prev = lastReachedNode;
+		lastReachedNode = 0;
+		foreach (NodeArrival arrival in arrivals) {
+			if (arrival.node > lastReachedNode) {
+				lastReachedNode = arrival.node;
+			}
+		}
+		if (lastReachedNode < prev) {
+			status = RouteState.IN_RETREAT;
+		} else if (lastReachedNode == 0) {
+			status = RouteState.UNKNOWN;
+		}
+	}
+
+	public void setRallyNode(Squad squad) {
+		status = RouteState.HOLDING;
+		squad.setNode(getRallyNode());
+	}
+
+	public Squad formSquad(RobotController controller, int node) {
+		foreach (Squad squad in squads) {
+//			Debug.Log(squad.isReady() + " " + node + " " + squad.getNode());
+			if (!squad.isReady() && squad.getNode() == node) {
+				squadRobots.Add(controller);
+				Debug.Log("add member");
+				squad.addMember(controller);
+				return squad;
+			}
+		}
+		Debug.Log("Begin squad formation");
+		Squad newSquad = new Squad(node);
+		newSquad.addMember(controller);
+		squads.Add(newSquad);
+		squadRobots.Add(controller);
+		return newSquad;
+	}
+
+	public int getLastReachedNode() {
+		return lastReachedNode;
+	}
+
+	public int getRallyNode() {
+		if (status == RouteState.PUSHING)
+			return 0;
+		return System.Math.Max(lastReachedNode - 2, 0);
+
+	}
+
+	public void removeFromSquad(RobotController controller, Squad squad) {
+		squad.removeMember(controller);
+		squadRobots.Remove(controller);
+		if (squad.getMemberCount() == 0) {
+			squads.Remove(squad);
+		}
+	}
+
+	public enum RouteState {
+		PUSHING, HOLDING, CONTESTED, IN_RETREAT, UNKNOWN
+	}
+
+	public bool isSquadRobot(RobotController controller) {
+		return squadRobots.Contains(controller);
+	}
+
+	public bool isPreparingSquad() {
+		foreach (Squad squad in squads) {
+			if (!squad.isReady()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public class Squad {
+		private List<RobotController> members = new List<RobotController>();
+		private int size;
+		private bool formed;
+		private int node;
+
+
+		public Squad(int node) {
+			this.node = node;
+			size = Random.Range(3, 4);
+		}
+
+		public void addMember(RobotController controller) {
+			members.Add(controller);
+			if (members.Count >= size) {
+				formed = true;
+				Debug.Log("Finish forming squad. Members: " + members.Count);
+			}
+		}
+
+		public void removeMember(RobotController controller) {
+			members.Remove(controller);
+			if (members.Count < 2) {
+				formed = false;
+			}
+		}
+
+		public bool isReady() {
+			return formed;
+		}
+
+		public int getMemberCount() {
+			return members.Count;
+		}
+
+		public int getNode() {
+			return node;
+		}
+
+		public void setNode(int node) {
+			this.node = node;
+		}
+	}
+
+	private struct NodeArrival {
+		public readonly float timeStamp;
+		public readonly int node;
+
+		public NodeArrival(int node, float time) {
+			timeStamp = time;
+			this.node = node;
+		}
+	}
+
+	[OnDeserialized]
+	internal void onDeserialized(StreamingContext context) {
+		arrivals = new List<NodeArrival>();
+		squads = new List<Squad>();
+		squadRobots = new HashSet<RobotController>();
 	}
 
 #if UNITY_EDITOR

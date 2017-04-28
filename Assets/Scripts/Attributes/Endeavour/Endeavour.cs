@@ -147,7 +147,7 @@ public abstract class Endeavour : Prioritizable {
 		return calculatedPriority + BENEFIT_CONSTANT_TERM;
 	}
 
-	protected float calculateMobBenefit() {
+	protected virtual float calculateMobBenefit() {
 		int executors = tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType());
 		return Mathf.Min(factory.maxMobBenefit, factory.maxMobBenefit *(executors + 1f) / factory.optimalMobSize)
 			   -executors * factory.mobCostPerRobot;
