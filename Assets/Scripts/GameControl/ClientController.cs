@@ -13,10 +13,6 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar]
 	public bool spectator;
 
-	[SyncVar(hook="setPlayerId")]
-	private NetworkInstanceId id;
-	[SyncVar(hook="setCamId")]
-	private NetworkInstanceId camId;
 	private GameObject player;
 
 	[SyncVar(hook="setPlayerDead")]
@@ -88,7 +84,7 @@ public class ClientController : NetworkBehaviour {
 		GameObject playerArms = Instantiate(playerArmsPrefab, position, Quaternion.identity);
 
 		Player playerScript = newPlayer.GetComponent<Player>();
-		playerScript.clientController = this;
+		playerScript.clientControllerId = netId;
 
 		newPlayer.SetActive(true);
 
@@ -108,16 +104,14 @@ public class ClientController : NetworkBehaviour {
 	    }
 
 	    NetworkServer.Spawn(newPlayer);
-		id = newPlayer.GetComponent<Player>().netId;
+		NetworkInstanceId playerId = newPlayer.GetComponent<Player>().netId;
 		newPlayer.GetComponent<NameTag>().displayName = playerName;
 		newPlayer.GetComponent<Score>().owner = this;
-		playerCam.GetComponent<NetworkParenter>().setParentId(id);
-		playerLegs.GetComponent<NetworkParenter>().setParentId(id);
-		playerArms.GetComponent<NetworkParenter>().setParentId(id);
+		playerCam.GetComponent<NetworkParenter>().setParentId(playerId);
+		playerLegs.GetComponent<NetworkParenter>().setParentId(playerId);
+		playerArms.GetComponent<NetworkParenter>().setParentId(playerId);
 
 		NetworkServer.Spawn(playerCam);
-		camId = playerCam.GetComponent<NetworkIdentity>().netId;
-
 		NetworkServer.Spawn(playerLegs);
 		NetworkServer.Spawn(playerArms);
 
@@ -128,6 +122,11 @@ public class ClientController : NetworkBehaviour {
 	public void destroyPlayer() {
 		isDead = true;
 		player.GetComponent<Player>().dismantle();
+	}
+
+	[Client]
+	public void setPlayer(GameObject player) {
+		this.player = player;
 	}
 
 	[Client]
@@ -148,26 +147,4 @@ public class ClientController : NetworkBehaviour {
 			spawnPlayerAt(position);
 		}
 	}
-
-	[Client]
-	private void setPlayerId(NetworkInstanceId id) {
-		this.id = id;
-		player = ClientScene.FindLocalObject(id);
-		Player playerScript = player.GetComponent<Player>();
-		playerScript.clientController = this;
-	}
-
-	[Client]
-	private void setCamId(NetworkInstanceId camId) {
-		this.camId = camId;
-		player = ClientScene.FindLocalObject(id);
-		GameObject camObject = ClientScene.FindLocalObject(camId);
-		Camera cam = camObject.GetComponentInChildren<Camera>();
-		GlobalConfig.globalConfig.cameraManager.addCamera(this, cam);
-		if (isLocalPlayer) {
-			GlobalConfig.globalConfig.cameraManager.usePlayerCam(cam);
-		}
-	}
-
-
 }

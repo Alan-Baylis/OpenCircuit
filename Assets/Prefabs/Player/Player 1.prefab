@@ -498,6 +498,7 @@ MonoBehaviour:
   vOffset: -2
   leaveEnabled:
   - {fileID: 11467974}
+  partBuiltEffect: {fileID: 0}
 --- !u!114 &114414119356732828
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -521,7 +522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b770fea2f163384ba6b273e39d2ef75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: 
+  displayName: 
 --- !u!114 &114727296815174734
 MonoBehaviour:
   m_ObjectHideFlags: 1

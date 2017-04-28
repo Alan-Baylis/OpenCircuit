@@ -16,7 +16,7 @@ public class Leaderboard : NetworkBehaviour {
 
 	private List<LeaderboardEntry> scores;
 
-	[Server]
+	[ServerCallback]
 	void Start() {
 		scores = new List<LeaderboardEntry>();
 		for (int i = 0; i < entries; ++i) {
@@ -78,8 +78,6 @@ public class Leaderboard : NetworkBehaviour {
 
 	[Server]
 	public void writeScores() {
-		print("write scores " + scores.Count);
-
 		for (int i = 0; i < entries && i < scores.Count; ++i) {
 			LeaderboardEntry entry = scores[i];
 			PlayerPrefs.SetString("scoreName" + i, entry.name);

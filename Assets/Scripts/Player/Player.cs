@@ -41,6 +41,8 @@ public class Player : NetworkBehaviour {
 
 	public EffectSpec effectSpec;
 
+	[SyncVar]
+	public NetworkInstanceId clientControllerId;
     private ClientController myClientController;
 
 	[SyncVar(hook = "changeEyeColor")]
@@ -104,10 +106,9 @@ public class Player : NetworkBehaviour {
 
     public ClientController clientController {
         get {
+	        if (myClientController == null)
+		        myClientController = ClientScene.FindLocalObject(clientControllerId).GetComponent<ClientController>();
             return myClientController;
-        }
-        set {
-            myClientController = value;
         }
     }
 
@@ -122,15 +123,18 @@ public class Player : NetworkBehaviour {
 		fadeIn(); // fade in for dramatic start
 	}
 
-	[ServerCallback]
+
 	public void Start() {
-		TeamId team = GetComponent<TeamId>();
-		if (team.enabled) {
-			eyeColor = team.team.config.color;
-		} else {
-			eyeColor = Color.blue;
+		if (isServer) {
+			TeamId team = GetComponent<TeamId>();
+			if (team.enabled) {
+				eyeColor = team.team.config.color;
+			} else {
+				eyeColor = Color.blue;
+			}
+			GetComponent<ScoreAgent>().owner = clientController;
 		}
-		GetComponent<ScoreAgent>().owner = clientController;
+		clientController.setPlayer(gameObject);
 	}
 
     [ClientCallback]
