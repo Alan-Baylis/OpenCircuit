@@ -36,7 +36,7 @@ MonoBehaviour:
   - path: Assets/scenes/Pair/pair.unity
     configuration:
       robotsPerPlayer: 15
-      robotSpawnRatePerSecond: 0.05
+      robotSpawnRatePerSecond: 0.2
       spawnRateIncreasePerPlayer: 0.01
       gameMode: 0
     supportedGameModes: 00000000

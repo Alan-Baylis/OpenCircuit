@@ -660,7 +660,7 @@ MonoBehaviour:
   baseInaccuracy: 0.01
   range: 1000
   impulse: 50
-  damage: 8
+  damage: 4
   fireDelay: 0.1
   soundExpirationTime: 10
   effectsController: {fileID: 114975457883450202}

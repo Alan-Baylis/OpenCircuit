@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldOfViewAngle: 360
-  sightDistance: 30
+  sightDistance: 35
   lookAroundInterval: 0.1
   eye: {fileID: 1148032884675158}
   eyeLight: {fileID: 0}
