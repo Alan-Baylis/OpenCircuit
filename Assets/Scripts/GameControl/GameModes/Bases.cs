@@ -240,7 +240,7 @@ public class Bases : TeamGameMode {
 	}
 
 	public static float adjustScoreForTime(float score, float startTime) {
-		return 60 * score / (Time.time - startTime);
+		return 60 * score / (Time.time - startTime + 60);
 	}
 
 	[ClientRpc]
