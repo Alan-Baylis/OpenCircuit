@@ -81,8 +81,12 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
 	[Server]
-	public float getDelay() {
-		return 1f/(NetworkServer.connections.Count * configuration.spawnRateIncreasePerPlayer + configuration.robotSpawnRatePerSecond); 
+	public float getDelay(int teamId=-1) {
+		float multiplier = teamId != 0 ? 1 :
+			Mathf.Pow(configuration.friendlySpawnRateMultiplierPerPlayer, NetworkServer.connections.Count);
+		print(multiplier);
+		return 1f/(NetworkServer.connections.Count
+		           *configuration.spawnRateIncreasePerPlayer + configuration.robotSpawnRatePerSecond) /multiplier;
 	}
 
     [Server]
@@ -150,6 +154,7 @@ public struct GlobalConfigData {
 	public int robotsPerPlayer;
     public float robotSpawnRatePerSecond;
 	public float spawnRateIncreasePerPlayer;
+	public float friendlySpawnRateMultiplierPerPlayer;
     public GameMode.GameModes gameMode;
 
 	public static GlobalConfigData getDefault() {
@@ -157,6 +162,7 @@ public struct GlobalConfigData {
 		data.robotsPerPlayer = 3;
 		data.robotSpawnRatePerSecond = 1f;
 		data.spawnRateIncreasePerPlayer = 0.1f;
+		data.friendlySpawnRateMultiplierPerPlayer = 0.9f;
 	    data.gameMode = GameMode.GameModes.BASES;
 		return data;
 	}
