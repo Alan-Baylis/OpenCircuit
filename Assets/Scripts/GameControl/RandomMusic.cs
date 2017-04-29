@@ -6,10 +6,10 @@ public class RandomMusic : MonoBehaviour {
 	public int minTimeWait;
 	public int maxTimeWait;
 	public AudioClip[] tracks;
+	public bool isActive = true;
 
 	private float nextTime;
 	private AudioClip last;
-	private bool isActive = false;
 	private AudioSource source;
 
 	// Use this for initialization
