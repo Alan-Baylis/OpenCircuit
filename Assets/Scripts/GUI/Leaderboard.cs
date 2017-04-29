@@ -1,29 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class Leaderboard : NetworkBehaviour {
 
-	public class LeaderboardSyncClass : SyncListStruct<LeaderboardEntry> {
-
-	}
+	private const string SCORE_NAME_KEY = "scoreName";
+	private const string SCORE_VALUE_KEY = "score";
+	private const string SCORE_VALID_KEY = "scoreValid";
 
 	public LeaderboardSyncClass leaderboardEntries = new LeaderboardSyncClass();
 
-
 	public int entries;
-
-	private List<LeaderboardEntry> scores;
 
 	[ServerCallback]
 	void Start() {
-		scores = new List<LeaderboardEntry>();
 		for (int i = 0; i < entries; ++i) {
-			if (PlayerPrefs.HasKey("scoreName" + i)) {
-				LeaderboardEntry entry = new LeaderboardEntry(PlayerPrefs.GetString("scoreName" + i),
-					PlayerPrefs.GetFloat("score" + i));
-				scores.Add(entry);
+			if (PlayerPrefs.HasKey(SCORE_NAME_KEY + i) && PlayerPrefs.GetInt(SCORE_VALID_KEY+i) == 1) {
+				LeaderboardEntry entry = new LeaderboardEntry(PlayerPrefs.GetString(SCORE_NAME_KEY + i),
+					PlayerPrefs.GetFloat(SCORE_VALUE_KEY + i));
 				leaderboardEntries.Add(entry);
 			} else {
 				break;
@@ -37,7 +31,7 @@ public class Leaderboard : NetworkBehaviour {
 			    .enabled) {
 
 			Color prevColor = HUD.hud.fireflyConfig.fireflyColor;
-			HUD.hud.fireflyConfig.fireflyColor = new Color(.25f, .25f, 1);
+			HUD.hud.fireflyConfig.fireflyColor = new Color(.33f, .33f, 1);
 			HUD.hud.setFireflyElement("leaderboard", this,
 				FireflyFont.getString("leaderboard", .2f, new Vector2(0f, -.45f), FireflyFont.HAlign.CENTER), false);
 			for (int i = 0; i < leaderboardEntries.Count; i++) {
@@ -55,33 +49,53 @@ public class Leaderboard : NetworkBehaviour {
 
 	[Server]
 	public void addScore(LeaderboardEntry entry) {
-		if (scores.Count > 0) {
-
-			for (int i = 0; i < scores.Count; ++i) {
-				LeaderboardEntry currentEntry = scores[i];
+		if (leaderboardEntries.Count > 0) {
+			for (int i = 0; i < leaderboardEntries.Count; ++i) {
+				LeaderboardEntry currentEntry = leaderboardEntries[i];
 				if (entry.score > currentEntry.score) {
-					scores.Insert(i, entry);
 					leaderboardEntries.Insert(i, entry);
 					break;
-				} else if (i == scores.Count - 1) {
-					scores.Add(entry);
+				} else if (i == leaderboardEntries.Count - 1) {
 					leaderboardEntries.Add(entry);
 					break;
 				}
 			}
 		} else {
-			scores.Add(entry);
 			leaderboardEntries.Add(entry);
 		}
 		writeScores();
 	}
 
 	[Server]
+	public void removeScore(int index) {
+		if (index >= 0 && index < leaderboardEntries.Count) {
+			clearLeaderboardDisplay();
+			leaderboardEntries.RemoveAt(index);
+		}
+		writeScores();
+	}
+
+	[Command]
+	public void CmdRemoveScore(int index) {
+		removeScore(index);
+	}
+
+	//[Either]
+	public int getScoreCount() {
+		return leaderboardEntries.Count;
+	}
+
+	[Server]
 	public void writeScores() {
-		for (int i = 0; i < entries && i < scores.Count; ++i) {
-			LeaderboardEntry entry = scores[i];
-			PlayerPrefs.SetString("scoreName" + i, entry.name);
-			PlayerPrefs.SetFloat("score" + i, entry.score);
+		for (int i = 0; i < entries; ++i) {
+			if (i < leaderboardEntries.Count) {
+				LeaderboardEntry entry = leaderboardEntries[i];
+				PlayerPrefs.SetInt(SCORE_VALID_KEY+i, 1);
+				PlayerPrefs.SetString(SCORE_NAME_KEY + i, entry.name);
+				PlayerPrefs.SetFloat(SCORE_VALUE_KEY + i, entry.score);
+			} else {
+				PlayerPrefs.SetInt(SCORE_VALID_KEY+i, 0);
+			}
 		}
 		PlayerPrefs.Save();
 	}
@@ -91,6 +105,10 @@ public class Leaderboard : NetworkBehaviour {
 		for (int i = 0; i < leaderboardEntries.Count; i++) {
 			HUD.hud.clearFireflyElement("leaderboard-" + i);
 		}
+	}
+
+	public class LeaderboardSyncClass : SyncListStruct<LeaderboardEntry> {
+
 	}
 
 	public struct LeaderboardEntry {

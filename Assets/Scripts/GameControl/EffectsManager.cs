@@ -13,7 +13,9 @@ public class EffectsManager : MonoBehaviour {
 
 	public void spawnEffect(AbstractEffectController effectPrefab, Vector3 position, Quaternion direction) {
 		if (effectPrefab == null) {
+#if UNITY_EDITOR
 			print("EMPTY EFFECT");
+#endif
 			return;
 		}
 		if (effectsMap.ContainsKey(effectPrefab)) {

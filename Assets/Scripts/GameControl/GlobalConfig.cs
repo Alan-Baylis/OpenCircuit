@@ -86,10 +86,10 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
     [Server]
-    public void spawnPlayerForConnection(NetworkConnection connection, string username, bool spectator) {
+    public void spawnPlayerForConnection(NetworkConnection connection, string username, bool spectator, bool isAdmin = false) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
-            connection, username, spectator);
+            connection, username, spectator, isAdmin);
     }
 
 	public int getPlayerCount() {

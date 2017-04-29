@@ -13,6 +13,9 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar]
 	public bool spectator;
 
+	[SyncVar]
+	public bool admin;
+
 	private GameObject player;
 
 	[SyncVar(hook="setPlayerDead")]
@@ -72,6 +75,8 @@ public class ClientController : NetworkBehaviour {
 	[Server]
 	private void spawnSpectator() {
 		GameObject newSpectator = Instantiate(spectatorPrefab);
+		newSpectator.GetComponent<Spectator>().clientControllerId = netId;
+		NetworkServer.Spawn(newSpectator);
 		NetworkServer.AddPlayerForConnection(connectionToClient, newSpectator, 1);
 	}
 	

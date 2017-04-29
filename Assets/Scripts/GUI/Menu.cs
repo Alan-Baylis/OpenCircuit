@@ -13,6 +13,7 @@ public class Menu : MonoBehaviour {
 	private Rect topRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
 	private Rect optionsRect = new Rect(0.05f, 0.35f, 0.5f, 0.07f);
+	private Rect adminRect = new Rect(0.05f, 0.45f, 0.5f, 0.07f);
 	private Rect spectateRect = new Rect(0.05f, 0.55f, 0.5f, 0.07f);
 	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect backRect = new Rect(0.05f, 0.8f, 0.5f, 0.07f);
@@ -340,11 +341,15 @@ public class Menu : MonoBehaviour {
 	        GUIUtil.adjustFontSize(skin.label, 0.03f);
 			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
 	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
+	        //TODO build this specially ;)
+//	        if (GUIUtil.button("Admin", adminRect, skin.button)) {
+//		        dropIn(ClientType.ADMIN);
+//	        }
 			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
-		        dropIn(true);
+		        dropIn(ClientType.SPECTATOR);
 	        }
 			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
-				dropIn(false);
+				dropIn(ClientType.PLAYER);
             }
         } else {
 			GUIUtil.adjustFontSize(skin.label, 0.07f);
@@ -376,8 +381,9 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	private void dropIn(bool spectator) {
-		StringMessage message = new StringMessage(spectator ? "1" : "0" + username);
+	private void dropIn(ClientType type) {
+		string roleCode = ((int)type).ToString();
+		StringMessage message = new StringMessage(roleCode + username);
 
 		ClientScene.AddPlayer(null, 0, message);
 		activeAtStart = false;
@@ -461,4 +467,8 @@ public class Menu : MonoBehaviour {
         if (sceneData != null)
             menu.serverConfig = sceneData.Value.configuration;
     }
+
+	private enum ClientType {
+		PLAYER,SPECTATOR,ADMIN
+	}
 }
