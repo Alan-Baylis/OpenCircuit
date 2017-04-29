@@ -71,7 +71,6 @@ public class BuildTool : ContextItem {
 	private void CmdSpawnTower(Vector3 location) {
 		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
 		if (bases != null && bases.canBuildTower(holder.getPlayer().clientController)) {
-
 			TeamId team = holder.GetComponent<TeamId>();
 			CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.id);
 			Label towerBase = Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();

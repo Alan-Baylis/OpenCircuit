@@ -109,7 +109,15 @@ public class Controls : NetworkBehaviour {
 
 		if (hasControls() && Input.GetButtonDown("Build")) {
 			if (!myPlayer.inventory.inContext()) {
-				myPlayer.inventory.pushContext(typeof(BuildTool));
+				if (((Bases)GlobalConfig.globalConfig.gamemode).canBuildTower(myPlayer.clientController)) {
+					myPlayer.inventory.pushContext(typeof(BuildTool));
+				} else {
+					Fireflies.Config config = HUD.hud.fireflyConfig;
+					config.fireflySize *= 0.5f;
+					HUD.hud.setFireflyElementConfig("noBuildToolMessage", config);
+					HUD.hud.setFireflyElement("noBuildToolMessage", 3,
+						FireflyFont.getString("kill robots to\nincrement build_point", 0.05f, new Vector2(0, 0.1f), FireflyFont.HAlign.CENTER), true);
+				}
 			} else {
 				myPlayer.inventory.popContext(typeof(BuildTool));
 			}

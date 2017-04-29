@@ -224,7 +224,7 @@ public class Inventory : NetworkBehaviour {
 	}
 
     protected void showSlottedItems() {
-        float offset = (Screen.width / 2f) - (iconDimensions.x * 1.5f + iconSpacing);
+        float offset = Screen.width / 2f - (iconDimensions.x * 1.5f + iconSpacing);
         for (int i = 0; i < slots.Length; ++i) {
             if (slots[i] != null) {
                 Item item = getItem(slots[i]);
