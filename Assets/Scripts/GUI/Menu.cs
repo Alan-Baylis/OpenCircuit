@@ -271,8 +271,10 @@ public class Menu : MonoBehaviour {
 		serverConfig.robotSpawnRatePerSecond = GUIUtil.numberField(new Rect(0.35f, 0.3f, 0.2f, 0.03f), serverConfig.robotSpawnRatePerSecond);
 		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.35f, 0.3f, 0.03f), false), "Spawn Rate Increase: ");
 		serverConfig.spawnRateIncreasePerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.35f, 0.2f, 0.03f), serverConfig.spawnRateIncreasePerPlayer);
-		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.4f, 0.3f, 0.03f), false), "Robots per Team: ");
-		serverConfig.robotsPerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.4f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.4f, 0.3f, 0.03f), false), "Spawn Rate Penalty: ");
+		serverConfig.friendlySpawnRateMultiplierPerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.4f, 0.2f, 0.03f), serverConfig.friendlySpawnRateMultiplierPerPlayer);
+		GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.45f, 0.3f, 0.03f), false), "Robots per Team: ");
+		serverConfig.robotsPerPlayer = GUIUtil.numberField(new Rect(0.35f, 0.45f, 0.2f, 0.03f), serverConfig.robotsPerPlayer);
 		GameMode.GameModes [] modes = (GameMode.GameModes[])System.Enum.GetValues(typeof(GameMode.GameModes));
 		List<string> modeStrings = new List<string>();
 		foreach (GameMode.GameModes mode in modes) {

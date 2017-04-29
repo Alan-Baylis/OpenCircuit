@@ -54,6 +54,7 @@ MonoBehaviour:
     robotsPerPlayer: 10
     robotSpawnRatePerSecond: 1
     spawnRateIncreasePerPlayer: 0.1
+    friendlySpawnRateMultiplierPerPlayer: 0.9
     gameMode: 1
   gameStarted: 0
   gamemode: {fileID: 0}

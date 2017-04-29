@@ -84,7 +84,6 @@ public class GlobalConfig : NetworkBehaviour {
 	public float getDelay(int teamId=-1) {
 		float multiplier = teamId != 0 ? 1 :
 			Mathf.Pow(configuration.friendlySpawnRateMultiplierPerPlayer, NetworkServer.connections.Count);
-		print(multiplier);
 		return 1f/(NetworkServer.connections.Count
 		           *configuration.spawnRateIncreasePerPlayer + configuration.robotSpawnRatePerSecond) /multiplier;
 	}
