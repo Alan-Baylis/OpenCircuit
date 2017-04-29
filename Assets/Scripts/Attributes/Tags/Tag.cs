@@ -72,6 +72,14 @@ public class Tag : InspectorListElement {
 		return true;
 	}
 
+	public void withdrawBid(RobotController robotController, System.Type endeavourType) {
+		if (bidders.ContainsKey(endeavourType)) {
+			if (bidders[endeavourType].bidder == robotController) {
+				bidders.Remove(endeavourType);
+			}
+		}
+	}
+
 	public bool hasBid(RobotController robotController, System.Type endeavourType) {
 		return bidders.ContainsKey(endeavourType) && bidders[endeavourType].bidder == robotController;
 	}

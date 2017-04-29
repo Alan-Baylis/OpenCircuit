@@ -238,6 +238,12 @@ MonoBehaviour:
   playerRobotPenalty: 1.5
   respawnDelay: 3
   scoreDisplayPeriod: 3
+  buildPointDisplayPeriod: 6
+  comboDeteriorationRate: 8
+  comboScorePerBuildPoint:
+  - 100
+  - 300
+  - 600
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
   firstTeamLocations: []

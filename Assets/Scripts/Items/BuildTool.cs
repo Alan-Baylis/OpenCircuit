@@ -79,7 +79,7 @@ public class BuildTool : ContextItem {
 			crc.sightingFound(towerBase.labelHandle, towerBase.transform.position, null);
 			(towerBase.getTag(TagEnum.BuildDirective) as BuildDirectiveTag).owner = holder.getPlayer().clientController;
 			NetworkServer.Spawn(towerBase.gameObject);
-			bases.addTower(holder.getPlayer().clientController, towerBase.gameObject);
+			bases.spendBuildPoint(holder.getPlayer().clientController, towerBase.gameObject);
 		}
 	}
 

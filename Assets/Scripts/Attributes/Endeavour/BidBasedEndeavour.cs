@@ -29,5 +29,7 @@ public abstract class BidBasedEndeavour : Endeavour {
 		return true;
 	}
 
-
+	protected override void onStopExecution() {
+		tagMap[getPrimaryTagType()].withdrawBid(getController(), GetType());
+	}
 }

@@ -10,25 +10,32 @@ public class FireflyFont {
 		TOP, CENTER, BOTTOM
 	}
 
-	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, HAlign hAlign=HAlign.LEFT, VAlign vAlign=VAlign.TOP) {
+	public static List<Vector2> getString(string text, float fontSize, Vector2 offset, HAlign hAlign=HAlign.LEFT, VAlign vAlign=VAlign.TOP) {
 		List<Vector2> positions = new List<Vector2>();
+		string[] lines = text.Split('\n');
+		int line = 0;
+		foreach (string s in lines) {
+			Vector2 lineOffset = offset;
+			float sizeMult = fontSize / (letterHeight + lineGap);
 
-		float sizeMult = fontSize /(letterHeight + lineGap);
+			// apply alignment
+			if (hAlign == HAlign.CENTER)
+				lineOffset.x -= getTextWidth(s, sizeMult) *0.5f;
+			else if (hAlign == HAlign.RIGHT)
+				lineOffset.x -= getTextWidth(s, sizeMult);
+			if (vAlign == VAlign.CENTER)
+				lineOffset.y -= getTextHeight(sizeMult) *0.5f *(lines.Length - line);
+			else if (vAlign == VAlign.BOTTOM)
+				lineOffset.y -= getTextHeight(sizeMult) *(lines.Length - line);
+			else
+				lineOffset.y += getTextHeight(sizeMult) *line;
 
-		// apply alignment
-		if (hAlign == HAlign.CENTER)
-			offset.x -= getTextWidth(s, sizeMult) *0.5f;
-		else if (hAlign == HAlign.RIGHT)
-			offset.x -= getTextWidth(s, sizeMult);
-		if (vAlign == VAlign.CENTER)
-			offset.y -= getTextHeight(sizeMult) *0.5f;
-		else if (vAlign == VAlign.BOTTOM)
-			offset.y -= getTextHeight(sizeMult);
-
-		// get positions
-		foreach (char c in s) {
-			getChar(c, positions, offset, sizeMult);
-			offset.x += (letterWidth + letterGap) *sizeMult;
+			// get positions
+			foreach (char c in s) {
+				getChar(c, positions, lineOffset, sizeMult);
+				lineOffset.x += (letterWidth + letterGap) * sizeMult;
+			}
+			++line;
 		}
 		return positions;
 	}
