@@ -1643,6 +1643,61 @@ Transform:
   m_PrefabParentObject: {fileID: 4307406466298140, guid: fcc618c8f8bae574dad112a9fad6a600,
     type: 2}
   m_PrefabInternal: {fileID: 297090555}
+--- !u!1 &306721333
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 306721334}
+  - component: {fileID: 306721335}
+  - component: {fileID: 306721336}
+  m_Layer: 0
+  m_Name: SimulatedDeath
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &306721334
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 306721333}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 11.410004, y: -69.1, z: 31.8}
+  m_LocalScale: {x: 20, y: 5, z: 20}
+  m_Children: []
+  m_Father: {fileID: 656811694}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!64 &306721335
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 306721333}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 1
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &306721336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 306721333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed0158bcd66ce24da1d8fe35d72f239, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &316405647
 Prefab:
   m_ObjectHideFlags: 0
@@ -4338,6 +4393,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d9cc1388b63e5f141903bd19a5284b0e, type: 2}
   m_IsPrefabParent: 0
+--- !u!4 &656811694 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4226735281924928, guid: eca3af7ab9564ee448b699ce7e134509,
+    type: 2}
+  m_PrefabInternal: {fileID: 1654322217}
 --- !u!1001 &658219642
 Prefab:
   m_ObjectHideFlags: 0
@@ -8243,9 +8303,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1354428581}
-  - component: {fileID: 1354428580}
   - component: {fileID: 1354428579}
-  - component: {fileID: 1354428578}
   - component: {fileID: 1354428577}
   m_Layer: 0
   m_Name: Death
@@ -8265,37 +8323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98760718017f6f44afc01cded98f74d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!23 &1354428578
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1354428576}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 1
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
 --- !u!64 &1354428579
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8309,13 +8336,6 @@ MeshCollider:
   m_Convex: 1
   m_InflateMesh: 0
   m_SkinWidth: 0.01
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!33 &1354428580
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1354428576}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &1354428581
 Transform:
@@ -10760,7 +10780,17 @@ Prefab:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 43.444
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 23673720411843818, guid: eca3af7ab9564ee448b699ce7e134509,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6c48106ae4c1c754889a8655683bf623, type: 2}
+    m_RemovedComponents:
+    - {fileID: 114671447721058134, guid: eca3af7ab9564ee448b699ce7e134509, type: 2}
+    - {fileID: 114487020445309820, guid: eca3af7ab9564ee448b699ce7e134509, type: 2}
+    - {fileID: 114005571812813200, guid: eca3af7ab9564ee448b699ce7e134509, type: 2}
+    - {fileID: 114034079289963652, guid: eca3af7ab9564ee448b699ce7e134509, type: 2}
+    - {fileID: 114647839262751378, guid: eca3af7ab9564ee448b699ce7e134509, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: eca3af7ab9564ee448b699ce7e134509, type: 2}
   m_IsPrefabParent: 0
 --- !u!1001 &1657535107
@@ -12210,9 +12240,9 @@ MonoBehaviour:
   gridUseVoxelUnits: 0
   gridSize: 1
   maskDisplayAlpha: 0.3
-  selectedMode: 1
+  selectedMode: 0
   selectedBrush: 0
-  sphereBrushSize: 0.5
+  sphereBrushSize: 4.785714
   sphereBrushSubstance: 0
   sphereSubstanceOnly: 0
   cubeBrushDimensions: {x: 3, y: 20, z: 3}
