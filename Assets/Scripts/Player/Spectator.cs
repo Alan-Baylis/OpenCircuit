@@ -42,7 +42,7 @@ public class Spectator : NetworkBehaviour {
 			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
 
-		if (clientController.admin && GlobalConfig.globalConfig.cameraManager.getSceneCamera().enabled) {
+		if (clientController.clientType == NetworkController.ClientType.ADMIN && GlobalConfig.globalConfig.cameraManager.getSceneCamera().enabled) {
 			if (selectedScore != null) {
 				HUD.hud.setFireflyElement("deleteMarker", this,
 					FireflyFont.getString("-", .2f, new Vector2(0f, -.3f + selectedScore.Value * .1f)));

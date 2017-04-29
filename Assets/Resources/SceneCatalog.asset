@@ -40,6 +40,13 @@ MonoBehaviour:
       spawnRateIncreasePerPlayer: 0.01
       gameMode: 0
     supportedGameModes: 00000000
+  - path: Assets/brian/scenes/tutorial/tutorial.unity
+    configuration:
+      robotsPerPlayer: 0
+      robotSpawnRatePerSecond: 0
+      spawnRateIncreasePerPlayer: 0
+      gameMode: 0
+    supportedGameModes: 00000000
   scenes:
   - Assets/scenes/Loading/Loading.unity
   - Assets/scenes/Pair/pair.unity

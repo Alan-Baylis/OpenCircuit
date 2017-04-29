@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine.Networking.NetworkSystem;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
@@ -337,19 +336,23 @@ public class Menu : MonoBehaviour {
 
     private void doLobby() {
         GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
-        if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted && !GlobalConfig.globalConfig.gamemode.isGameOver) {
-	        GUIUtil.adjustFontSize(skin.label, 0.03f);
-			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
-	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
-	        //TODO build this specially ;)
+	    if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted &&
+	        !GlobalConfig.globalConfig.gamemode.isGameOver) {
+		    GUIUtil.adjustFontSize(skin.label, 0.03f);
+		    GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
+		    username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
+		    //TODO build this specially ;)
 //	        if (GUIUtil.button("Admin", adminRect, skin.button)) {
 //		        dropIn(ClientType.ADMIN);
 //	        }
-			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
-		        dropIn(ClientType.SPECTATOR);
+		    if (GUIUtil.button("Tutorial", adminRect, skin.button)) {
+			    dropIn(NetworkController.ClientType.TUTORIAL);
+		    }
+	    if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
+		        dropIn(NetworkController.ClientType.SPECTATOR);
 	        }
 			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
-				dropIn(ClientType.PLAYER);
+				dropIn(NetworkController.ClientType.PLAYER);
             }
         } else {
 			GUIUtil.adjustFontSize(skin.label, 0.07f);
@@ -381,7 +384,7 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	private void dropIn(ClientType type) {
+	private void dropIn(NetworkController.ClientType type) {
 		string roleCode = ((int)type).ToString();
 		StringMessage message = new StringMessage(roleCode + username);
 
@@ -467,8 +470,4 @@ public class Menu : MonoBehaviour {
         if (sceneData != null)
             menu.serverConfig = sceneData.Value.configuration;
     }
-
-	private enum ClientType {
-		PLAYER,SPECTATOR,ADMIN
-	}
 }
