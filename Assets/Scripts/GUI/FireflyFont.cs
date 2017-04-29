@@ -274,6 +274,18 @@ public class FireflyFont {
 				new Vector2(2, 4),
 				new Vector2(2, 5),
 			}},
+		{'=', new Vector2[] {
+			new Vector2(0, 2),
+			new Vector2(1, 2),
+			new Vector2(2, 2),
+			new Vector2(3, 2),
+			new Vector2(4, 2),
+			new Vector2(0, 4),
+			new Vector2(1, 4),
+			new Vector2(2, 4),
+			new Vector2(3, 4),
+			new Vector2(4, 4),
+		}},
 		{'.', new Vector2[] {
 				new Vector2(1, 6),
 			}},
