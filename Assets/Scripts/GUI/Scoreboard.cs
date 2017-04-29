@@ -28,9 +28,9 @@ public class Scoreboard : MonoBehaviour {
 		if (GlobalConfig.globalConfig != null && bases != null) {
 			if (Time.time - lastUpdate > updateInterval) {
 				lastUpdate = Time.time;
-				if (scoreEntries != bases.clientScoreMap.Count) {
+				if (scoreEntries != bases.clientInfoMap.Count) {
 					clearScoreboardDisplay();
-					scoreEntries = bases.clientScoreMap.Count;
+					scoreEntries = bases.clientInfoMap.Count;
 				}
 
 				Color prevColor = HUD.hud.fireflyConfig.fireflyColor;
@@ -39,9 +39,9 @@ public class Scoreboard : MonoBehaviour {
 					FireflyFont.getString("scoreboard", .2f, new Vector2(0f, -.45f), FireflyFont.HAlign.CENTER), false);
 
 				PriorityQueue priorityQueue = new PriorityQueue();
-				foreach (KeyValuePair<ClientController, float> score in bases.clientScoreMap) {
-					priorityQueue.Enqueue(new FloatPrioritizable(score.Key.playerName,
-						Bases.adjustScoreForTime(score.Value, score.Key.startTime)));
+				foreach (KeyValuePair<ClientController, Bases.ClientInfo> info in bases.clientInfoMap) {
+					priorityQueue.Enqueue(new FloatPrioritizable(info.Key.playerName,
+						Bases.adjustScoreForTime(info.Value.score.total, info.Key.startTime)));
 
 				}
 				int index = 0;

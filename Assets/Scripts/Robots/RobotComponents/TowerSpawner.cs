@@ -9,7 +9,7 @@ public class TowerSpawner : AbstractRobotComponent {
 
 
 	[Server]
-	public void buildTower(Vector3 position, ClientController owner) {
+	public void buildTower(Vector3 position, BuildDirectiveTag towerBase) {
 		RaycastHit hit;
 		if (Physics.Raycast(position, new Vector3(0, -1, 0), out hit, 3f)) {
 			GameObject newTower = Instantiate(towerPrefab, hit.point + offset, towerPrefab.transform.rotation);
@@ -23,11 +23,12 @@ public class TowerSpawner : AbstractRobotComponent {
 				team.id = teamId;
 				team.enabled = true;
 			}
+			ClientController owner = towerBase.owner;
 			newTower.GetComponent<Score>().owner = owner;
 			newTower.GetComponent<ScoreAgent>().owner = owner;
 			Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
 			if (bases != null && owner != null) {
-				bases.addTower(owner, newTower);
+				bases.addTower(owner, newTower, towerBase.getLabelHandle().label.gameObject);
 			}
 			NetworkServer.Spawn(newTower);
 

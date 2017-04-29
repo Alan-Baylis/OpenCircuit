@@ -31,7 +31,7 @@ public class BuildTowerAction : BidBasedEndeavour {
 	public override void onMessage(RobotMessage message) {
 		if (message.Message.Equals(HoverJet.TARGET_REACHED)) {
 			MonoBehaviour.Destroy(towerBase.getLabelHandle().label.gameObject);
-			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition(), towerBase.owner);
+			towerSpawner.buildTower(towerBase.getLabelHandle().getPosition(), towerBase);
 			controller.getMentalModel().removeSighting(towerBase.getLabelHandle(), towerBase.getLabelHandle().getPosition(), null);
 		}
 	}
