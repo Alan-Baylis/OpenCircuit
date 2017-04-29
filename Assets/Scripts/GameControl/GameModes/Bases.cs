@@ -15,6 +15,10 @@ public class Bases : TeamGameMode {
 	public float[] comboScorePerBuildPoint;
 
 	public CentralRobotController centralRobotControllerPrefab;
+
+	public AbstractPlayerSpawner primarySpawner;
+	public AbstractPlayerSpawner tutorialSpawner;
+
 	public List<Label> firstTeamLocations = new List<Label>();
 	public List<Label> secondTeamLocations = new List<Label>();
 	public Dictionary<ClientController, ClientInfo> clientInfoMap = new Dictionary<ClientController, ClientInfo>();
@@ -76,6 +80,17 @@ public class Bases : TeamGameMode {
 				client.playerName,
 				getScore(client)
 			));
+		}
+	}
+
+	public override AbstractPlayerSpawner getPlayerSpawner(ClientController controller) {
+		switch (controller.clientType) {
+			case NetworkController.ClientType.PLAYER:
+				return primarySpawner;
+			case NetworkController.ClientType.TUTORIAL:
+				return tutorialSpawner;
+			default:
+				return primarySpawner;
 		}
 	}
 

@@ -7,7 +7,6 @@ public abstract class AbstractDialogBox : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		menu = Menu.menu;
-		menu.pause();
 	}
 
 	protected abstract void OnGUI();

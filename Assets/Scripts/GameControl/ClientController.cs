@@ -35,12 +35,7 @@ public class ClientController : NetworkBehaviour {
 			if (isSpectator()) {
 				spawnSpectator();
 			} else {
-				AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
-				if (spawner != null) {
-					spawnPlayerAt(spawner.nextSpawnPos());
-				} else {
-					Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
-				}
+				spawnPlayerAt(GlobalConfig.globalConfig.gamemode.getPlayerSpawner(this).nextSpawnPos());
 			}
 		}
 	}

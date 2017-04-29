@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 
-public class Teleport : MonoBehaviour {
+public class TutorialTrigger : MonoBehaviour {
 
-	public AbstractPlayerSpawner target;
+	public Tutorial tutorial;
 
 	private void OnTriggerEnter(Collider other) {
 		Player player = other.transform.root.GetComponent<Player>();
+		print(player);
 		if (player != null && player.isLocalPlayer) {
-			player.transform.position = target.nextSpawnPos();
+			tutorial.nextMessage();
+			player.inventory.unequip();
 		}
 	}
 }

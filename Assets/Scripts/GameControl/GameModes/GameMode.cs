@@ -55,4 +55,6 @@ public abstract class GameMode : NetworkBehaviour {
 	[Server]
 	public virtual void onLoseGame() {
 	}
+
+	public abstract AbstractPlayerSpawner getPlayerSpawner(ClientController controller);
 }
