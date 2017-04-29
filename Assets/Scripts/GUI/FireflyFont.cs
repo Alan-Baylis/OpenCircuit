@@ -3,12 +3,32 @@ using UnityEngine;
 
 public class FireflyFont {
 
-	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, bool center=false) {
+	public enum HAlign {
+		LEFT, CENTER, RIGHT
+	}
+	public enum VAlign {
+		TOP, CENTER, BOTTOM
+	}
+
+	public static List<Vector2> getString(string s, float fontSize, Vector2 offset, HAlign hAlign=HAlign.LEFT, VAlign vAlign=VAlign.TOP) {
 		List<Vector2> positions = new List<Vector2>();
-		offset.x += center ? -(s.Length *letterWidth + (s.Length - 1) *letterGap) *0.5f *fontSize : 0;
+
+		float sizeMult = fontSize /(letterHeight + lineGap);
+
+		// apply alignment
+		if (hAlign == HAlign.CENTER)
+			offset.x -= getTextWidth(s, sizeMult) *0.5f;
+		else if (hAlign == HAlign.RIGHT)
+			offset.x -= getTextWidth(s, sizeMult);
+		if (vAlign == VAlign.CENTER)
+			offset.y -= getTextHeight(sizeMult) *0.5f;
+		else if (vAlign == VAlign.BOTTOM)
+			offset.y -= getTextHeight(sizeMult);
+
+		// get positions
 		foreach (char c in s) {
-			getChar(c, positions, offset, fontSize);
-			offset.x += (letterWidth + letterGap) *fontSize;
+			getChar(c, positions, offset, sizeMult);
+			offset.x += (letterWidth + letterGap) *sizeMult;
 		}
 		return positions;
 	}
@@ -29,11 +49,20 @@ public class FireflyFont {
 		}
 	}
 
+	private static float getTextWidth(string text, float sizeMult) {
+		return (text.Length * letterWidth + (text.Length - 1) * letterGap) * sizeMult;
+	}
+
+	private static float getTextHeight(float sizeMult) {
+		return (letterHeight + lineGap) *sizeMult;
+	}
+
 	private FireflyFont() {}
 
 	private const int letterWidth = 5;
 	private const int letterHeight = 9; // 7 for primary, 2 for hanging letters
 	private const float letterGap = 1;
+	private const float lineGap = 1;
 
 	private static readonly Dictionary<char, Vector2[]> characters = new Dictionary<char, Vector2[]> {
 
@@ -244,6 +273,16 @@ public class FireflyFont {
 		{':', new Vector2[] {
 				new Vector2(1, 6),
 				new Vector2(1, 2),
+			}},
+		{'|', new Vector2[] {
+				new Vector2(2, 0),
+				new Vector2(2, 1),
+				new Vector2(2, 2),
+				new Vector2(2, 3),
+				new Vector2(2, 4),
+				new Vector2(2, 5),
+				new Vector2(2, 6),
+				new Vector2(2, 7),
 			}},
 
 

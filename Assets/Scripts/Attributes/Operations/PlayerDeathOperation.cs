@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [System.Serializable]
 public class PlayerDeathOperation : Operation {
 
-	private static System.Type[] triggers = new System.Type[] {
-		typeof(DestructTrigger),
+	private static System.Type[] triggers = {
+		typeof(DestructTrigger)
 	};
 
 	public override System.Type[] getTriggers() {

@@ -1805,6 +1805,7 @@ MonoBehaviour:
     rotation: {x: 0, y: 180, z: 0}
     cameraRelative: 1
   grabPosition: {x: 0, y: -0.07, z: 0.05}
+  twoHanded: 1
   secondaryGrabPosition: {x: 0, y: -0.02, z: -0.18}
   responsiveness: 30
   positionalResponsiveness: 18

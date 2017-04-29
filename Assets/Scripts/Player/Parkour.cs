@@ -286,7 +286,7 @@ public class Parkour : MovementController {
 				//print("Force: " + averageForce);
 				if (averageForce > fallHurtSpeed && collisionSpeed > fallHurtSpeed / 2f) {
 					float damage = (averageForce - fallHurtSpeed) / (fallDeathSpeed - fallHurtSpeed);
-					player.health.hurt(damage * player.health.maxSuffering);
+					player.health.hurt(damage * player.health.maxSuffering, gameObject);
 					//pastForces[pastForces.Count - 1] *= 0.5f;
 				}
 		}

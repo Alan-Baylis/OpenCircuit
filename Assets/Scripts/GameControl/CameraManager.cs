@@ -68,10 +68,16 @@ public class CameraManager : MonoBehaviour {
 		nextCameraIndex = 0;
 	}
 
+	public Camera getSceneCamera() {
+		return sceneCamera.cam;
+	}
+
 	private void enableCamera(Camera cam) {
 		if (cam != null) {
 			cam.enabled = true;
 			cam.GetComponent<AudioListener>().enabled = true;
+		} else {
+			Debug.LogWarning("Attempted to enable null camera.");
 		}
 	}
 
@@ -79,6 +85,8 @@ public class CameraManager : MonoBehaviour {
 		if (cam != null) {
 			cam.enabled = false;
 			cam.GetComponent<AudioListener>().enabled = false;
+		} else {
+			Debug.LogWarning("Attempted to disable null camera.");
 		}
 	}
 

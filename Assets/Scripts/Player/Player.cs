@@ -19,8 +19,6 @@ public class Player : NetworkBehaviour {
     public bool frozen;
 
 	[HideInInspector]
-	public ClientController controller;
-	[HideInInspector]
 	public bool zooming = false;
 
 	private Attack myAttacker;
@@ -43,7 +41,12 @@ public class Player : NetworkBehaviour {
 
 	public EffectSpec effectSpec;
 
+	[SyncVar]
+	public NetworkInstanceId clientControllerId;
     private ClientController myClientController;
+
+	[SyncVar(hook = "changeEyeColor")]
+	private Color eyeColor;
 	
 	public Attack attacker { get {
 		if(myAttacker == null) {
@@ -103,10 +106,9 @@ public class Player : NetworkBehaviour {
 
     public ClientController clientController {
         get {
+	        if (myClientController == null)
+		        myClientController = ClientScene.FindLocalObject(clientControllerId).GetComponent<ClientController>();
             return myClientController;
-        }
-        set {
-            myClientController = value;
         }
     }
 
@@ -119,6 +121,20 @@ public class Player : NetworkBehaviour {
 		whiteOutTexture = new Texture2D (1, 1, TextureFormat.RGB24, false);
 		whiteOutTexture.SetPixel (0, 0, Color.white);
 		fadeIn(); // fade in for dramatic start
+	}
+
+
+	public void Start() {
+		if (isServer) {
+			TeamId team = GetComponent<TeamId>();
+			if (team.enabled) {
+				eyeColor = team.team.config.color;
+			} else {
+				eyeColor = Color.blue;
+			}
+			GetComponent<ScoreAgent>().owner = clientController;
+		}
+		clientController.setPlayer(gameObject);
 	}
 
     [ClientCallback]
@@ -187,6 +203,17 @@ public class Player : NetworkBehaviour {
 		breathingSource.PlayOneShot(teleportSound);
 		transform.position = position;
 		whiteOutTime = whiteOutDuration;
+	}
+
+	private void changeEyeColor(Color color) {
+		eyeColor = color;
+		Renderer renderer = head.transform.FindChild("Eye").GetComponent<Renderer>();
+		if (renderer != null) {
+			Material mat = renderer.material;
+
+			mat.SetColor("_EmissionColor", color);
+			mat.SetColor("_Albedo", color);
+		}
 	}
 
 	[ClientCallback]

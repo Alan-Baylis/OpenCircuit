@@ -40,14 +40,14 @@ public class ArmsController : MonoBehaviour {
 	private HandTarget getRightHandTarget() {
 		Item equipped = player.inventory.getEquipped();
 		if (equipped == null)
-			return new HandTarget(rightArm.defaultPos, minHandMoveUrgency);
+			return new HandTarget(rightArm.getDefaultPos(), minHandMoveUrgency);
 		return new HandTarget(equipped.transform.TransformPoint(equipped.grabPosition), 1f);
 	}
 
 	private HandTarget getLeftHandTarget() {
 		Item equipped = player.inventory.getEquipped();
-		if (equipped == null)
-			return new HandTarget(leftArm.defaultPos, minHandMoveUrgency);
+		if (equipped == null || !equipped.twoHanded)
+			return new HandTarget(leftArm.getDefaultPos(), minHandMoveUrgency);
 		return new HandTarget(equipped.transform.TransformPoint(equipped.secondaryGrabPosition), 1f);
 	}
 

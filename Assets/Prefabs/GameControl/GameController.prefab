@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 114685695393273014}
   - component: {fileID: 114192725487870188}
   - component: {fileID: 114875189402417868}
+  - component: {fileID: 114343986674943158}
+  - component: {fileID: 114854041120764408}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GlobalConfig
@@ -57,6 +59,8 @@ MonoBehaviour:
   gamemode: {fileID: 0}
   cameraManager: {fileID: 114762472885982036}
   effectsManager: {fileID: 114685695393273014}
+  leaderboard: {fileID: 114343986674943158}
+  scoreboard: {fileID: 114854041120764408}
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -127,6 +131,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frozenPlayers: 0
   freezeLockPrefab: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
+--- !u!114 &114343986674943158
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b40372c774123b74f9fad1b64ebce0ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entries: 10
 --- !u!114 &114550412258392786
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -140,6 +156,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireflyConfig:
     fireflySize: 0.02
+    glowSizeMult: 3
+    glowAlphaMult: 0.2
     fireflyGravity: 400
     damper: 20
     randomAcceleration: 0
@@ -189,6 +207,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7aabe173522f0f4d99c6320d67a9d97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114854041120764408
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39198526347fc974783d9703be0d6f1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateInterval: 1
 --- !u!114 &114875189402417868
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -204,8 +234,10 @@ MonoBehaviour:
   teamConfig:
   - color: {r: 0, g: 0, b: 0.49803922, a: 1}
   - color: {r: 0.49803922, g: 0, b: 0, a: 1}
+  maxTowers: 3
   playerRobotPenalty: 1.5
   respawnDelay: 3
+  scoreDisplayPeriod: 3
   centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
     type: 2}
   firstTeamLocations: []

@@ -22,12 +22,12 @@ public class Controls : NetworkBehaviour {
 	}
 
 	void Awake () {
-		myPlayer = this.GetComponent<Player> ();
+		myPlayer = GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
 	[ClientCallback]
-	void Update () {
+	void Update() {
 		if(!isLocalPlayer) {
 			return;
 		}
@@ -65,6 +65,12 @@ public class Controls : NetworkBehaviour {
 		if (updateStatus(ref status.crouching, Input.GetButton("Crouch"), status.crouching)) {
 			myPlayer.mover.setCrouching(status.crouching);
 			CmdSetCrouch(status.crouching);
+		}
+
+		if (hasControls() && Input.GetButton("Score")) {
+			GlobalConfig.globalConfig.scoreboard.enabled = true;
+		} else {
+			GlobalConfig.globalConfig.scoreboard.enabled = false;
 		}
 
 		if(hasControls() && Input.GetButtonDown("Reload")) {

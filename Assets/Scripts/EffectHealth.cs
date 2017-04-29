@@ -19,8 +19,8 @@ public class EffectHealth : Health {
 		}
 	}
 
-	public override void hurt(float pain) {
-		base.hurt(pain);
+	public override void hurt(float pain, GameObject instigator) {
+		base.hurt(pain, instigator);
 		foreach (EffectSpec effect in hurtEffects)
 			effect.spawn(transform.position, transform.rotation);
 	}

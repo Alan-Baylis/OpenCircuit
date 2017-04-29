@@ -23,14 +23,14 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 
 	[ServerCallback]
 	void FixedUpdate() {
-		double startTime = Time.realtimeSinceStartup;
+//		double startTime = Time.realtimeSinceStartup;
 		if (currentTarget != null) {
 			trackTarget(currentTarget.getPosition());
 		} else {
 			trackTarget(getRestPosition());
 		}
-		double endTime = Time.realtimeSinceStartup;
-		getController().getExecutionTimer().addTime(endTime-startTime);
+//		double endTime = Time.realtimeSinceStartup;
+//		getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public override void release() {
@@ -49,13 +49,17 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 	public bool targetObstructed(LabelHandle handle) {
 		Vector3 objPos = handle.getPosition();
 		bool result = true;
-		RaycastHit hit;
-		Vector3 fireEffectLocation = rifle.effectsController.transform.position;
-		Vector3 dir = objPos - fireEffectLocation;
+		Vector3 rayStart = transform.position;
+		Vector3 dir = objPos - rayStart;
 		dir.Normalize();
-		Physics.Raycast(fireEffectLocation, dir, out hit, rifle.range);
-		if (hit.transform == handle.label.transform || hit.transform.root == handle.label.transform) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
-			result = false;
+		RaycastHit[] hits = Physics.RaycastAll(rayStart, dir, (Vector3.Distance(rayStart, objPos)));
+		foreach (RaycastHit hit in hits) {
+			if (hit.transform == handle.label.transform || hit.transform.root == handle.label.transform) {
+				result = false;
+				break;
+			} else if (hit.transform.root != transform.root) {
+				break;
+			}
 		}
 		return result;
 	}

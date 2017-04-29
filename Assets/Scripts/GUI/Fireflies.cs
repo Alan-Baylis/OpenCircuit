@@ -74,7 +74,9 @@ public class Fireflies {
 			Vector2 velocitySize = normalSize *sizeMult;
 			Vector2 flyPosition = offset + fly.position *scale;
 			GUI.DrawTexture(centeredRect(flyPosition, normalSize), config.fireflyTexture);
-			GUI.DrawTexture(centeredRect(flyPosition, velocitySize), config.glowTexture);
+			col.a = fly.alpha *config.glowAlphaMult;
+			GUI.color = col;
+			GUI.DrawTexture(centeredRect(flyPosition, velocitySize *config.glowSizeMult), config.glowTexture);
 		}
 	}
 
@@ -142,6 +144,8 @@ public class Fireflies {
 	[System.Serializable]
 	public struct Config {
 		public float fireflySize;
+		public float glowSizeMult;
+		public float glowAlphaMult;
 		public float fireflyGravity;
 		public float damper;
 		public float randomAcceleration;

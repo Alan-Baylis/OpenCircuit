@@ -13,6 +13,9 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 
     public Vector3 spawnPos;
 
+	[SyncVar(hook = "changeDisplayColor")]
+	private Color displayColor;
+
     private Vector3 worldSpawnPos {
         get { return transform.position + transform.TransformDirection(spawnPos); }
     }
@@ -29,8 +32,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
     [ServerCallback]
     void Start() {
         if (isTeamMode()) {
-            TeamGameMode gameMode = (TeamGameMode) GlobalConfig.globalConfig.gamemode;
             teamId.enabled = true;
+			displayColor = teamId.team.config.color;
         }
     }
 
@@ -132,6 +135,17 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
     private bool isTeamMode() {
         return GlobalConfig.globalConfig.gamemode is TeamGameMode;
     }
+
+	private void changeDisplayColor(Color color) {
+		displayColor = color;
+		Renderer renderer = GetComponent<Renderer>();
+		if (renderer != null) {
+			Material mat = renderer.material;
+
+			mat.SetColor("_EmissionColor", color);
+			mat.SetColor("_Albedo", color);
+		}
+	}
 
     void OnDrawGizmos() {
         Gizmos.color = Color.green;

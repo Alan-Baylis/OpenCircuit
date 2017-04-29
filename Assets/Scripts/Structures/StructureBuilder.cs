@@ -8,16 +8,20 @@ public class StructureBuilder : NetworkBehaviour {
 
 	public float time = 10f;
 	public float margin = 1f;
-	public List<Transform> buildOrder = new List<Transform>();
+	public float vOffset;
+	public MonoBehaviour[] leaveEnabled;
+	public AbstractEffectController partBuiltEffect;
 
+	private List<Transform> buildOrder = new List<Transform>();
 	private List<MoveJob> moveJobList = new List<MoveJob>();
 
-	public bool initialized;
-	public bool completed;
-	public bool waiting;
-	public float startTime;
-	public float timePerObject;
+	private bool initialized;
+	private bool completed;
+	private bool waiting;
+	private float startTime;
+	private float timePerObject;
 	private int objectsSpawned;
+	private int partCount;
 
 	private StructureBuilder parent;
 	private NetworkParenter parenter;
@@ -28,14 +32,11 @@ public class StructureBuilder : NetworkBehaviour {
 		get { return time - margin; }
 	}
 
-	public float timeRemaining {
-		get { return startTime + buildTime - Time.time; }
-	}
-
 	void Awake() {
 		parenter = transform.GetComponent<NetworkParenter>();
 
 		exploreTransform(transform);
+		partCount = buildOrder.Count;
 		if (parenter == null) {
 			startTime = Time.time;
 			timePerObject = buildTime / buildOrder.Count;
@@ -46,9 +47,9 @@ public class StructureBuilder : NetworkBehaviour {
 
 	[ClientCallback]
 	void Update () {
-		if (completed)
-			return;
-		if (waiting) {
+		if (completed) {
+			Destroy(this);
+		} else if (waiting) {
 			foreach (StructureBuilder builder in children) {
 				if (!builder.completed) {
 					return;
@@ -62,50 +63,43 @@ public class StructureBuilder : NetworkBehaviour {
 			}
 		}
 		else if (initialized) {
-			if (Time.time > startTime + time) {
-				Destroy(this);
-			}
+			double percentComplete = (Time.time - startTime) /buildTime;
 
-			if (startTime + timePerObject * objectsSpawned <= Time.time && buildOrder.Count > 0) {
-				int chosen = Random.Range(0, buildOrder.Count);
+			while(buildOrder.Count > 0 && percentComplete *partCount > objectsSpawned) {
+				int chosen = 0;//Random.Range(0, buildOrder.Count);
 
 				GameObject copy = copyGameObject(buildOrder[chosen].gameObject);
-				copy.transform.position = buildOrder[chosen].transform.position + Vector3.up;
-				moveJobList.Add(new MoveJob(copy, buildOrder[chosen].gameObject, buildOrder[chosen].transform.position));
+				copy.transform.position = buildOrder[chosen].transform.position + Vector3.up *vOffset;
+				moveJobList.Add(new MoveJob(copy, buildOrder[chosen].gameObject));
 				buildOrder.RemoveAt(chosen);
 
 				++objectsSpawned;
-			} else if (buildOrder.Count == 0 && moveJobList.Count == 0) {
+			}
+			if (buildOrder.Count == 0 && moveJobList.Count == 0) {
 				waiting = true;
 			}
 
 			for (int i = moveJobList.Count - 1; i >= 0; --i) {
 				MoveJob job = moveJobList[i];
-				Vector3 startPos = job.copy.transform.position;
-				if (Vector3.Distance(startPos, job.targetPos) < .001f) {
+				float partPercentComplete = (Time.time - job.startTime) /timePerObject;
+				if (partPercentComplete >= 1) {
 					moveJobList.RemoveAt(i);
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(partBuiltEffect, job.copy.transform.position, Quaternion.identity);
 					Destroy(job.copy);
 					setEnabledIfPresent<MeshRenderer>(job.original.transform, true);
-
 				} else {
-					job.copy.transform.position = Vector3.MoveTowards(startPos, job.targetPos, Time.deltaTime
-					                                                                           * Vector3.Distance(startPos,
-						                                                                           job.targetPos)
-					                                                                           /
-					                                                                           (startTime + timePerObject *
-					                                                                            (objectsSpawned) - Time.time));
+					job.copy.transform.position = Vector3.Lerp(job.startPos, job.targetPos, partPercentComplete);
 				}
 			}
 		} else if (parenter != null && transform.parent != null){
 			parent = transform.root.GetComponent<StructureBuilder>();
-			if (parent != null) {
-				if (!parent.completed) {
-					parent.addChild(this);
-					time = parent.timeRemaining;
-					startTime = parent.startTime;
-					timePerObject = buildTime / buildOrder.Count;
-					initialized = true;
-				}
+			if (parent != null && !parent.completed) {
+				parent.addChild(this);
+				time = parent.time;
+				margin = parent.margin;
+				startTime = parent.startTime;
+				timePerObject = buildTime / buildOrder.Count;
+				initialized = true;
 			}
 		}
 	}
@@ -155,7 +149,7 @@ public class StructureBuilder : NetworkBehaviour {
 	private void disableScripts(Transform target) {
 		MonoBehaviour [] scripts = target.GetComponents<MonoBehaviour>();
 		foreach (MonoBehaviour script in scripts) {
-			if (script != this) {
+			if (script != this && !System.Array.Exists(leaveEnabled, e => e == script)) {
 				script.enabled = false;
 			}
 		}
@@ -211,11 +205,15 @@ public class StructureBuilder : NetworkBehaviour {
 		public readonly GameObject copy;
 		public readonly GameObject original;
 		public readonly Vector3 targetPos;
+		public readonly Vector3 startPos;
+		public readonly float startTime;
 
-		public MoveJob(GameObject copy, GameObject original, Vector3 targetPos) {
+		public MoveJob(GameObject copy, GameObject original) {
 			this.copy = copy;
 			this.original = original;
-			this.targetPos = targetPos;
+			this.targetPos = original.transform.position;
+			startPos = copy.transform.position;
+			startTime = Time.time;
 		}
 	}
 }

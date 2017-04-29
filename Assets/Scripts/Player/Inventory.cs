@@ -145,12 +145,19 @@ public class Inventory : NetworkBehaviour {
 
 	public void pushContext(System.Type contextItem) {
 		contextStack.Insert(0, contextItem);
+		if (equipped != null)
+			equipped.onUnequip(this);
+		getItem(contextItem).onEquip(this);
 		selecting = -1;
     }
 
 	public void popContext(System.Type contextItem) {
-		if (contextStack.Count > 0 && contextStack[0] == contextItem)
-			contextStack.RemoveAt(0);
+		if (contextStack.Count > 0 && contextStack [0] == contextItem) {
+			contextStack.RemoveAt (0);
+			getItem(contextItem).onUnequip(this);
+			if (equipped != null)
+				equipped.onEquip(this);
+		}
 	}
 
     public void doSelect(int slot) {
@@ -211,6 +218,8 @@ public class Inventory : NetworkBehaviour {
 	}
 
 	public Item getEquipped() {
+		if (contextStack.Count > 0)
+			return getItem(contextStack[0]);
 		return equipped;
 	}
 

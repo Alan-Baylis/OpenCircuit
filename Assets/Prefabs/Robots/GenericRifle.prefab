@@ -2089,7 +2089,7 @@ MonoBehaviour:
   movementInaccuracySoftness: 10
   baseInaccuracy: 0.005
   range: 1000
-  impulse: 50
+  impulse: 40
   damage: 1
   fireDelay: 0.1
   soundExpirationTime: 10

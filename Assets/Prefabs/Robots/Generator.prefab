@@ -5,11 +5,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 471672}
-  - 33: {fileID: 3352258}
-  - 23: {fileID: 2377068}
+  - component: {fileID: 471672}
+  - component: {fileID: 3352258}
+  - component: {fileID: 2377068}
   m_Layer: 0
   m_Name: Cylinder (1)
   m_TagString: Untagged
@@ -22,11 +22,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 400856}
-  - 33: {fileID: 3308882}
-  - 23: {fileID: 2331594}
+  - component: {fileID: 400856}
+  - component: {fileID: 3308882}
+  - component: {fileID: 2331594}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -39,16 +39,17 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 471346}
-  - 33: {fileID: 3337030}
-  - 136: {fileID: 13600892}
-  - 23: {fileID: 2320656}
-  - 114: {fileID: 11423706}
-  - 114: {fileID: 11443422}
-  - 114: {fileID: 11488354}
-  - 114: {fileID: 11473364}
+  - component: {fileID: 471346}
+  - component: {fileID: 3337030}
+  - component: {fileID: 13600892}
+  - component: {fileID: 2320656}
+  - component: {fileID: 11423706}
+  - component: {fileID: 11443422}
+  - component: {fileID: 11488354}
+  - component: {fileID: 11473364}
+  - component: {fileID: 114631566050193160}
   m_Layer: 0
   m_Name: Generator
   m_TagString: Untagged
@@ -65,10 +66,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0.92, z: 0}
   m_LocalScale: {x: 2, y: 0.09999999, z: 2}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 471346}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &471346
 Transform:
   m_ObjectHideFlags: 1
@@ -78,12 +79,12 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071067}
   m_LocalPosition: {x: 0, y: 0, z: -0.5}
   m_LocalScale: {x: 0.10000001, y: 0.10000001, z: 0.1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 400856}
   - {fileID: 471672}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &471672
 Transform:
   m_ObjectHideFlags: 1
@@ -93,10 +94,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: -0.92, z: -0.000019073486}
   m_LocalScale: {x: 2, y: 0.09999997, z: 2}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 471346}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2320656
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -111,7 +112,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_Materials:
   - {fileID: 2100000, guid: 20213c8ba6b1bde4989d4610fa0b090c, type: 2}
-  m_SubsetIndices: 
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
@@ -119,7 +122,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_SelectedWireframeHidden: 0
+  m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -140,7 +143,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_Materials:
   - {fileID: 2100000, guid: 20213c8ba6b1bde4989d4610fa0b090c, type: 2}
-  m_SubsetIndices: 
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
@@ -148,7 +153,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_SelectedWireframeHidden: 0
+  m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -169,7 +174,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_Materials:
   - {fileID: 2100000, guid: 20213c8ba6b1bde4989d4610fa0b090c, type: 2}
-  m_SubsetIndices: 
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
@@ -177,7 +184,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_SelectedWireframeHidden: 0
+  m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -228,7 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4ee53a815e183744b32bca72a2ff041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000000000004094f7065726174696f6e020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000410456e646561766f7572466163746f7279020000000b
+  serializedData: 0001000000ffffffff01000000000000000c020000000f417373656d626c792d43536861727007010000000001000000000000000403546167020000000b0001000000ffffffff01000000000000000c020000000f417373656d626c792d435368617270070100000000010000000000000004094f7065726174696f6e020000000b
   isVisible: 0
   inherentKnowledge: 0
 --- !u!114 &11473364
@@ -318,3 +325,20 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 170158}
   m_IsPrefabParent: 1
+--- !u!114 &114631566050193160
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 170158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 10
+  margin: 1
+  vOffset: -3
+  leaveEnabled: []
+  partBuiltEffect: {fileID: 114843042589390852, guid: cbb40064a935546e393c62ff52ea0d23,
+    type: 2}

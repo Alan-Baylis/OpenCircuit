@@ -3,14 +3,14 @@ using System.Collections;
 
 public class RandomMusic : MonoBehaviour {
 
-	private float nextTime;
-	private AudioSource source;
-	private AudioClip last;
-	private bool isActive = false;
-
 	public int minTimeWait;
 	public int maxTimeWait;
 	public AudioClip[] tracks;
+
+	private float nextTime;
+	private AudioClip last;
+	private bool isActive = false;
+	private AudioSource source;
 
 	// Use this for initialization
 	void Start () {

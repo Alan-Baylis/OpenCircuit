@@ -114,7 +114,7 @@ public abstract class AbstractGun : Item {
 	protected abstract void doBullet(Vector3 position, Vector3 direction, float power);
 
 	[Command]
-	protected virtual void CmdBulletHitHealth(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
+	protected virtual void CmdBulletHitLabel(Vector3 direction, Vector3 position, Vector3 normal, NetworkInstanceId hit) {
 		serverDoBullet(direction, position, normal, hit);
 		RpcCreateShotEffect(HitEffectType.ROBOT, position, direction, normal);
 	}

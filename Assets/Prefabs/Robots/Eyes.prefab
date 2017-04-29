@@ -28,9 +28,9 @@ GameObject:
   - component: {fileID: 6539896}
   - component: {fileID: 2327558}
   - component: {fileID: 11451438}
-  - component: {fileID: 11426314}
   - component: {fileID: 11488654}
   - component: {fileID: 11407536}
+  - component: {fileID: 114971007755667404}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
@@ -121,7 +121,7 @@ Light:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 193280}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 7
   m_Type: 2
   m_Color: {r: 1, g: 0, b: 0, a: 1}
@@ -164,27 +164,6 @@ MonoBehaviour:
   positionAndRotation:
     position: {x: 0.005, y: 0.176, z: 0.439}
     rotation: {x: 0, y: 0, z: 0}
---- !u!114 &11426314
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 194710}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15bd774a3550e314fa95cd936175dc66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  laserWidth: 0.01
-  numLasers: 15
-  laserSpread: 1
-  movementRange: 0.9
-  laserLength: 0.7
-  verticalOffset: 1.2
-  color: {r: 0.298, g: 0.27, b: 1, a: 0.5}
-  scanTime: 3
-  zOffset: 0
-  scanSound: {fileID: 8300000, guid: dee82de8b78f17f45aeb4119e0ed4f19, type: 3}
 --- !u!114 &11451438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -304,3 +283,20 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 194710}
   m_IsPrefabParent: 1
+--- !u!114 &114971007755667404
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 194710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 10
+  margin: 1
+  vOffset: -3
+  leaveEnabled: []
+  partBuiltEffect: {fileID: 114843042589390852, guid: cbb40064a935546e393c62ff52ea0d23,
+    type: 2}

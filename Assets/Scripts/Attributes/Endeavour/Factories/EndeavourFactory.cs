@@ -5,6 +5,8 @@ using System.Collections.Generic;
 [System.Serializable]
 public abstract class EndeavourFactory : InspectorListElement {
 
+	[System.NonSerialized] public List<TagRequirement> requiredTagsCache;
+
 	public List<Goal> goals = new List<Goal> ();
     public float maxMobBenefit;
     public int optimalMobSize = 1;
@@ -67,7 +69,10 @@ public abstract class EndeavourFactory : InspectorListElement {
 	}
 
 	public List<TagRequirement> getRequiredTagsList() {
-		return (List<TagRequirement>)GetType().GetMethod("getRequiredTags").Invoke(null, null);
+		if (requiredTagsCache == null) {
+			requiredTagsCache = (List<TagRequirement>)GetType().GetMethod("getRequiredTags").Invoke(null, null);
+		}
+		return requiredTagsCache;
 	}
 
     public static EndeavourFactory constructDefault() {

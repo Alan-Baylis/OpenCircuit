@@ -15,6 +15,10 @@ public class Tag : InspectorListElement {
 				return new PatrolTag(0, null);
 			case TagEnum.AttackRoute:
 				return new AttackRoute(0, null);
+			case TagEnum.BuildDirective:
+				return new BuildDirectiveTag(null, 0, null);
+			case TagEnum.GuardPoint:
+				return new GuardTag(0, null);
 			default:
 				return new Tag(type, 0, null);
 		}
@@ -25,10 +29,19 @@ public class Tag : InspectorListElement {
 	public TagEnum type;
 	public float severity;
 
-	private string labelId;
-
 	[System.NonSerialized]
 	protected Dictionary<System.Type, HashSet<RobotController>> executors = new Dictionary<System.Type, HashSet<RobotController>>();
+
+	[System.NonSerialized]
+	protected Dictionary<System.Type, Bidder> myBidders = new Dictionary<Type, Bidder>();
+
+	protected Dictionary<System.Type, Bidder> bidders {
+		get {
+			if (myBidders == null)
+				myBidders = new Dictionary<Type, Bidder>();
+			return myBidders;
+		}
+	}
 
 	[System.NonSerialized]
     private LabelHandle labelHandle;
@@ -46,6 +59,22 @@ public class Tag : InspectorListElement {
     public LabelHandle getLabelHandle() {
         return labelHandle;
     }
+
+	public bool makeBid(RobotController robotController, System.Type endeavourType, float amount) {
+		if (bidders.ContainsKey(endeavourType)) {
+			if (amount > bidders[endeavourType].value || bidders[endeavourType].bidder == robotController) {
+				bidders[endeavourType] = new Bidder(robotController, amount);
+				return true;
+			}
+			return false;
+		}
+		bidders[endeavourType] = new Bidder(robotController, amount);
+		return true;
+	}
+
+	public bool hasBid(RobotController robotController, System.Type endeavourType) {
+		return bidders.ContainsKey(endeavourType) && bidders[endeavourType].bidder == robotController;
+	}
 
 	public void addExecution(RobotController executor, System.Type endeavourType) {
 		getExecutors(endeavourType).Add(executor);
@@ -71,6 +100,24 @@ public class Tag : InspectorListElement {
 			executors[endeavourType] = new HashSet<RobotController>();
 		}
 		return executors[endeavourType];
+	}
+
+	protected class Bidder {
+		private RobotController myBidder;
+		private float myValue;
+
+		public Bidder(RobotController controller, float value) {
+			myBidder = controller;
+			myValue = value;
+		}
+
+		public RobotController bidder {
+			get { return myBidder; }
+		}
+
+		public float value {
+			get { return myValue; }
+		}
 	}
 
 #if UNITY_EDITOR

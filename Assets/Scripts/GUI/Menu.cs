@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine.Networking.NetworkSystem;
 
 [AddComponentMenu("Scripts/Menu/Menu")]
@@ -12,16 +13,17 @@ public class Menu : MonoBehaviour {
 	private Rect topRect = new Rect(0.05f, 0.15f, 0.5f, 0.07f);
 	private Rect joinRect = new Rect(0.05f, 0.25f, 0.5f, 0.07f);
 	private Rect optionsRect = new Rect(0.05f, 0.35f, 0.5f, 0.07f);
+	private Rect adminRect = new Rect(0.05f, 0.45f, 0.5f, 0.07f);
 	private Rect spectateRect = new Rect(0.05f, 0.55f, 0.5f, 0.07f);
 	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
 	private Rect backRect = new Rect(0.05f, 0.8f, 0.5f, 0.07f);
 	private Rect titleRect = new Rect(0.05f, 0.05f, 0.75f, 0.1f);
 	private state currentMenu = state.MainMenu;
 	private Stack<state> menuHistory = new Stack<state>();
-	private float endTextFontSize = .2f;
 	private string host = "localhost";
-	private string serverName = "Lazy Setup";
+	private string username;
 	private Vector2 scrollPosition = Vector2.zero;
+	private MessageDialog currentDialogBox;
 
 	private NetworkDiscovery nd;
 	private NetworkDiscovery networkDiscovery { get {
@@ -32,6 +34,7 @@ public class Menu : MonoBehaviour {
 
     private bool isHost;
 
+	public MessageDialog dialogBoxPrefab;
     public GlobalConfig globalConfigPrefab;
 
 	[System.NonSerialized]
@@ -84,6 +87,7 @@ public class Menu : MonoBehaviour {
 	public void Start() {
 	    DontDestroyOnLoad(gameObject);
 	    myMenu = this;
+		username = System.Environment.MachineName.ToLower();
 		if (activeAtStart) {
 			pause();
 			currentMenu = state.MainMenu;
@@ -138,25 +142,23 @@ public class Menu : MonoBehaviour {
 	private void doLose() {
 		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
 		if (GUIUtil.button("To Lobby", exitRect, skin.button)) {
-		    returnToLobby();
+			Destroy(currentDialogBox);
+			returnToLobby();
+		} else if (currentDialogBox == null) {
+				currentDialogBox = Instantiate(dialogBoxPrefab);
+				currentDialogBox.message = "Critical Failure.";
 		}
-		int width = 400;
-		int height = 50;
-		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
-		GUIUtil.adjustFontSize(skin.button, endTextFontSize);
-		GUI.Label(position, "You Lost!", skin.button);
 	}
 
 	private void doWin() {
 		GUIUtil.adjustFontSize(skin.button, exitRect.height *0.8f);
 		if (GUIUtil.button("To Lobby", exitRect, skin.button)) {
+			Destroy(currentDialogBox);
 		    returnToLobby();
+		}else if (currentDialogBox == null) {
+			currentDialogBox = Instantiate(dialogBoxPrefab);
+			currentDialogBox.message = "Domination Achieved.";
 		}
-		int width = 400;
-		int height = 50;
-		Rect position = new Rect((Screen.width - width) / 2, (Screen.height - height) / 2, width, height);
-		GUIUtil.adjustFontSize(skin.button, endTextFontSize);
-		GUI.Label(position, "You Won!", skin.button);
 	}
 
 	private void doInGameMenu() {
@@ -167,10 +169,10 @@ public class Menu : MonoBehaviour {
 		if (GUIUtil.button("Drop out", joinRect, skin.button)) {
 			dropOut();
 		}
-		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
-		if (GUIUtil.button("Quit", exitRect, skin.button)) {
-            quit();
-		}
+//		GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
+//		if (GUIUtil.button("Quit", exitRect, skin.button)) {
+//            quit();
+//		}
 		GUIUtil.adjustFontSize(skin.button, optionsRect.height * 0.8f);
 		if (GUIUtil.button("Options", optionsRect, skin.button)) {
 			menuHistory.Push(currentMenu);
@@ -335,12 +337,19 @@ public class Menu : MonoBehaviour {
 
     private void doLobby() {
         GUIUtil.adjustFontSize(skin.button, exitRect.height * 0.8f);
-        if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted) {
+        if (GlobalConfig.globalConfig != null && GlobalConfig.globalConfig.gameStarted && !GlobalConfig.globalConfig.gamemode.isGameOver) {
+	        GUIUtil.adjustFontSize(skin.label, 0.03f);
+			GUI.Label(GUIUtil.convertRect(new Rect(0.05f, 0.3f, 0.2f, 0.03f), false), "Player Name: ");
+	        username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
+	        //TODO build this specially ;)
+//	        if (GUIUtil.button("Admin", adminRect, skin.button)) {
+//		        dropIn(ClientType.ADMIN);
+//	        }
 			if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
-		        dropIn(true);
+		        dropIn(ClientType.SPECTATOR);
 	        }
 			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
-				dropIn(false);
+				dropIn(ClientType.PLAYER);
             }
         } else {
 			GUIUtil.adjustFontSize(skin.label, 0.07f);
@@ -372,8 +381,9 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	private void dropIn(bool spectator) {
-		StringMessage message = new StringMessage(spectator ? "1" : "0" + System.Environment.MachineName);
+	private void dropIn(ClientType type) {
+		string roleCode = ((int)type).ToString();
+		StringMessage message = new StringMessage(roleCode + username);
 
 		ClientScene.AddPlayer(null, 0, message);
 		activeAtStart = false;
@@ -437,10 +447,12 @@ public class Menu : MonoBehaviour {
         //GetComponent<AudioListener>().enabled = false;
         //NetworkServer.SpawnObjects();
 	    GlobalConfig [] globalConfigs = Resources.FindObjectsOfTypeAll<GlobalConfig>();
-	    GlobalConfig globalConfig = globalConfigs[0];
+
+	    GlobalConfig globalConfig;
 	    if (globalConfigs.Length == 1) {
 		    globalConfig = Instantiate(globalConfigPrefab);
 	    } else {
+		    globalConfig = globalConfigs[0].gameObject.scene.name == null ? globalConfigs[1] : globalConfigs[0];
 		    globalConfig.gameObject.SetActive(true);
 	    }
 
@@ -455,4 +467,8 @@ public class Menu : MonoBehaviour {
         if (sceneData != null)
             menu.serverConfig = sceneData.Value.configuration;
     }
+
+	private enum ClientType {
+		PLAYER,SPECTATOR,ADMIN
+	}
 }

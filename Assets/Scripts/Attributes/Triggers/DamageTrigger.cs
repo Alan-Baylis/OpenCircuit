@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
+﻿
 public class DamageTrigger : Trigger {
 
 	private float amount;

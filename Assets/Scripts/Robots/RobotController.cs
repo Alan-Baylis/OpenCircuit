@@ -13,7 +13,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	private HashSet<Endeavour> availableEndeavours = new HashSet<Endeavour> (new EndeavourComparer());
 	private Dictionary<Tag, List<Endeavour>> tagUsageMap = new Dictionary<Tag, List<Endeavour>>();
-	private AudioSource soundEmitter;
 	private Health myHealth;
     private Timing executionTimer;
 
@@ -54,7 +53,6 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	void Start() {
         mentalModel.addUpdateListener(this);
 		myHealth = GetComponent<Health>();
-		soundEmitter = gameObject.AddComponent<AudioSource>();
 	    foreach(Goal goal in goals) {
             if(!goalMap.ContainsKey(goal.type)) {
                 goalMap.Add(goal.type, goal);
@@ -117,7 +115,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 //			}
 //		}
 //#endif
-	    double startTime = Time.realtimeSinceStartup;
+//	    double startTime = Time.realtimeSinceStartup;
 		List<Endeavour> endeavours = new List<Endeavour>(currentEndeavours);
 		foreach(Endeavour endeavour in endeavours) {
 			try {
@@ -128,8 +126,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 				Debug.LogException(e);
 			}
 		}
-	    double endTime = Time.realtimeSinceStartup;
-	    executionTimer.addTime(endTime-startTime);
+//	    double endTime = Time.realtimeSinceStartup;
+//	    executionTimer.addTime(endTime-startTime);
 	}
 
 	public bool knowsTarget(LabelHandle target) {

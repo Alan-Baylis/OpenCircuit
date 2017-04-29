@@ -81,20 +81,28 @@ public class AssaultRifle : AbstractGun {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
-			Health health = getParentComponent<Health>(hitInfo.collider.transform);
-			if (health != null) {
-				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
 
-				Rigidbody rb = health.GetComponent<Rigidbody>();
-				if (rb != null) {
-					rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+			Label label = getParentComponent<Label>(hitInfo.collider.transform);
+			if (label != null) {
+				NetworkIdentity networkIdentity = label.GetComponent<NetworkIdentity>();
+				if (networkIdentity != null) {
+					CmdBulletHitLabel(direction, hitInfo.point, hitInfo.normal, networkIdentity.netId);
+
+					Rigidbody rb = label.GetComponent<Rigidbody>();
+					if (rb != null) {
+						rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+					}
+
+					// do ricochet
+					//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
+					//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
+					//}
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point,
+						Vector3.Reflect(direction, hitInfo.normal));
+				} else {
+					CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
 				}
-
-				// do ricochet
-				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
-				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
-				//}
-				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point, Vector3.Reflect(direction, hitInfo.normal));
 			} else {
 				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
 				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
@@ -118,7 +126,7 @@ public class AssaultRifle : AbstractGun {
 	[Server]
 	protected override void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
 		GameObject hitObject = ClientScene.FindLocalObject(hit);
-		Health health = hitObject.GetComponent<Health>();
+		Label label = hitObject.GetComponent<Label>();
 		UnityEngine.AI.NavMeshAgent navAgent = hitObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if(navAgent != null) {
 			navAgent.speed -= 2f;
@@ -130,8 +138,9 @@ public class AssaultRifle : AbstractGun {
 				navAgent.baseOffset = 1.5f;
 			}
 		}
-		if(health != null && health.enabled) {
-			health.hurt(calculateDamage(direction, normal));
+		if(label != null && label.enabled) {
+			label.sendTrigger(gameObject, new DamageTrigger(calculateDamage(direction, normal)));
+			//health.hurt(calculateDamage(direction, normal));
 		}
 	}
 
@@ -193,7 +202,7 @@ public class AssaultRifle : AbstractGun {
 			GUI.skin = guiSkin;
 
 			int padding = 10;
-			int boxWidth = 80 + padding * 3;
+			int boxWidth = 80 + padding * 2;
 			int boxHeight = 30 + padding * 2;
 			int boxCornerX = Screen.width - boxWidth - padding;
 			int boxCornerY = Screen.height - boxHeight - padding;
@@ -205,8 +214,8 @@ public class AssaultRifle : AbstractGun {
 			//int imageWidth = 50;
 			//int imageHeight = 50;
 			//GUI.DrawTexture(new Rect(boxCornerX + padding, boxCornerY + padding * 2 + 20, imageWidth, imageHeight), bulletIcon);
-			GUI.TextArea(new Rect(boxCornerX + padding * 2, boxCornerY + padding, 60, 40), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize));
-			GUI.TextArea(new Rect(boxCornerX + padding * 2 + 40, boxCornerY + padding, 60, 40), "" + currentMagazineFill);
+			GUI.Label(new Rect(boxCornerX, boxCornerY, 50, 50), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize), Menu.menu.skin.textArea);
+			GUI.Label(new Rect(boxCornerX + padding + 40, boxCornerY, 50, 50), "" + currentMagazineFill, Menu.menu.skin.textArea);
 		}
 	}
 }

@@ -20,9 +20,9 @@ public abstract class Endeavour : Prioritizable {
 
     public bool active;
 
-    private float priorityCache;
-    private int lastFrameEvaluated = -1;
-	private Dictionary<TagEnum, Tag> tagMap;
+    protected float priorityCache;
+    protected int lastFrameEvaluated = -1;
+	protected Dictionary<TagEnum, Tag> tagMap;
 
     private AbstractArms myArms;
 	private AbstractRobotGun myRifle;
@@ -67,11 +67,11 @@ public abstract class Endeavour : Prioritizable {
     }
 
 
-	public bool isReady(Dictionary<System.Type, int> availableComponents) {
+	public virtual bool isReady(Dictionary<System.Type, int> availableComponents) {
 		return (!singleExecutor() || tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType()) == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
-	public float getPriority() {
+	public virtual float getPriority() {
 		if (lastFrameEvaluated != Time.frameCount) {
 			priorityCache = calculateFinalPriority();
 			lastFrameEvaluated = Time.frameCount;
@@ -87,7 +87,7 @@ public abstract class Endeavour : Prioritizable {
 		return new List<Tag>(tagMap.Values);
 	}
 
-	protected float calculateFinalPriority() {
+	protected virtual float calculateFinalPriority() {
 		float finalPriority = calculatePriority();
 		finalPriority += calculateMobBenefit();
 		if (active) {
@@ -198,7 +198,7 @@ public abstract class Endeavour : Prioritizable {
         }
     }
 
-	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
+	protected bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
 		foreach (System.Type type in getRequiredComponents()) {
 			if (!availableComponents.ContainsKey(type) || availableComponents[type] < 1) {
 				return false;

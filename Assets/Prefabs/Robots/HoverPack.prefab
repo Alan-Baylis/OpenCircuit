@@ -257,6 +257,7 @@ GameObject:
   - component: {fileID: 11460476}
   - component: {fileID: 11476926}
   - component: {fileID: 11421436}
+  - component: {fileID: 114393006150850902}
   m_Layer: 0
   m_Name: HoverPack
   m_TagString: Untagged
@@ -2026,6 +2027,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114393006150850902
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 167118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2247dcd085bc50749990a19b01ed7912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 10
+  margin: 1
+  vOffset: -3
+  leaveEnabled: []
+  partBuiltEffect: {fileID: 114843042589390852, guid: cbb40064a935546e393c62ff52ea0d23,
+    type: 2}
 --- !u!198 &198106383924747320
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -2034,7 +2052,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1963190729333618}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
@@ -4599,7 +4617,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1317565265060554}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
@@ -7164,7 +7182,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1184704862239074}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
@@ -9729,7 +9747,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1259929209903980}
   serializedVersion: 5
   lengthInSec: 0.1
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 1
