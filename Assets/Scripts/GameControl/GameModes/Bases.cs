@@ -43,15 +43,6 @@ public class Bases : TeamGameMode {
 	private RespawnJob ? clientRespawnJob;
 	private float nextScoreUpdate;
 
-	private AbstractPlayerSpawner playerSpawner {
-		get {
-			if (myPlayerSpawner == null) {
-				myPlayerSpawner = FindObjectOfType<AbstractPlayerSpawner>();
-			}
-			return myPlayerSpawner;
-		}
-	}
-
 	[ServerCallback]
 	public override void Start() {
 		base.Start();
@@ -99,7 +90,7 @@ public class Bases : TeamGameMode {
 			base.Update();
 			for (int i = respawnJobs.Count - 1; i >= 0; --i) {
 				if (respawnJobs[i].respawnTime <= Time.time) {
-					playerSpawner.respawnPlayer(respawnJobs[i].controller);
+					primarySpawner.respawnPlayer(respawnJobs[i].controller);
 					respawnJobs.RemoveAt(i);
 				}
 			}

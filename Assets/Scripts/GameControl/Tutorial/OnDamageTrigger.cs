@@ -13,7 +13,7 @@ public class OnDamageTrigger : MonoBehaviour {
 	}
 
 	public void doTheThing(Player player) {
-		if (enabled && this.player == null) {
+		if (enabled && this.player == null && player.isLocalPlayer) {
 			this.player = player;
 			StartCoroutine("teleportPlayer");
 		}

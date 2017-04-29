@@ -9,7 +9,7 @@ public class TutorialDamageOperation : Operation {
 
 	public override void perform(GameObject instigator, Trigger trig) {
 		Player player = instigator.GetComponentInParent<Player>();
-		if (player != null) {
+		if (player != null && player.isLocalPlayer) {
 			parent.GetComponent<OnDamageTrigger>().doTheThing(player);
 		}
 	}
