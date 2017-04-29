@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
+using Vox;
 
 [CustomEditor(typeof(Vox.VoxelEditor))]
 public class VoxelEditorGUI : Editor {
@@ -163,7 +165,7 @@ public class VoxelEditorGUI : Editor {
 
         // brush list
 		GUILayout.Label("Brush", labelBigFont);
-        editor.selectedBrush = GUILayout.Toolbar(editor.selectedBrush, brushes, GUILayout.MinHeight(20));
+        editor.selectedBrush = (VoxelEditor.BrushType)Enum.Parse(typeof(VoxelEditor.BrushType), GUILayout.Toolbar(((int)editor.selectedBrush), brushes, GUILayout.MinHeight(20)).ToString());
 
 		// brush substance type
 		string[] substances = new string[editor.voxelSubstances.Length];
@@ -172,7 +174,7 @@ public class VoxelEditorGUI : Editor {
 
 		// brush size
 		switch(editor.selectedBrush) {
-		case 0:
+		case VoxelEditor.BrushType.Sphere:
             GUILayout.Label("Hold 'Shift' to subtract.");
 			editor.sphereBrushSize = doSliderFloatField("Sphere Radius (m)", editor.sphereBrushSize, 0, maxBrushSize(editor));
 			editor.sphereSubstanceOnly = GUILayout.Toggle(editor.sphereSubstanceOnly, "Change Substance Only");
@@ -180,7 +182,7 @@ public class VoxelEditorGUI : Editor {
 			editor.sphereBrushSubstance = (byte)GUILayout.SelectionGrid(editor.sphereBrushSubstance, substances, 1);
 			break;
 
-		case 1:
+		case VoxelEditor.BrushType.Rectangle:
 			GUILayout.Label("Hold 'Shift' to subtract.");
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("Dimensions (m)");
@@ -194,7 +196,7 @@ public class VoxelEditorGUI : Editor {
 			editor.cubeBrushSubstance = (byte)GUILayout.SelectionGrid(editor.cubeBrushSubstance, substances, 1);
 			break;
 
-		case 2:
+		case VoxelEditor.BrushType.Smooth:
 			editor.smoothBrushSize = doSliderFloatField("Radius (m)", editor.smoothBrushSize, 0, maxBrushSize(editor));
 			editor.smoothBrushStrength = doSliderFloatField("Strength", editor.smoothBrushStrength, 0, 5);
 			editor.smoothBrushBlurRadius = EditorGUILayout.IntField("Blur Radius", editor.smoothBrushBlurRadius);
@@ -202,7 +204,7 @@ public class VoxelEditorGUI : Editor {
 		}
 
 		// PATH GUI
-		if(editor.selectedBrush != 0 && editor.selectedBrush != 1)
+		if(editor.selectedBrush != VoxelEditor.BrushType.Rectangle && editor.selectedBrush != VoxelEditor.BrushType.Sphere)
 			return;
 		GUILayout.Label("Path Tool", labelBigFont);
 
@@ -565,11 +567,11 @@ public class VoxelEditorGUI : Editor {
 
 		// create mutator (and maybe apply)
 		switch (editor.	selectedBrush) {
-			case 0:
+			case VoxelEditor.BrushType.Sphere:
 				Vox.SphereMutator sphereMod = new Vox.SphereMutator(point, editor.sphereBrushSize, new Vox.Voxel(editor.sphereBrushSubstance, opacity));
 				sphereMod.overwriteShape = !editor.sphereSubstanceOnly;
 				return sphereMod;
-			case 1:
+			case VoxelEditor.BrushType.Rectangle:
 				Vox.CubeMutator cubeMod = new Vox.CubeMutator(editor, point, editor.cubeBrushDimensions, new Vox.Voxel(editor.cubeBrushSubstance, opacity), true);
 				cubeMod.overwriteShape = !editor.cubeSubstanceOnly;
 				return cubeMod;

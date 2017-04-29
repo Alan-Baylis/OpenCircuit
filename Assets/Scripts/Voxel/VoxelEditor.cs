@@ -27,7 +27,7 @@ namespace Vox {
 
         // editor data
 		public int selectedMode = 0;
-		public int selectedBrush = 0;
+		public BrushType selectedBrush;
 		public float sphereBrushSize = 1;
 		public byte sphereBrushSubstance = 0;
 		public bool sphereSubstanceOnly = false;
@@ -191,10 +191,15 @@ namespace Vox {
 				currentBrushGroup.transform.position = point;
 				BrushGroup group = currentBrushGroup.AddComponent<BrushGroup>();
 				group.voxelEditor = this;
+				group.brushType = selectedBrush;
 			}
 			GameObject newBrush = new GameObject("1-"+currentBrushGroup.transform.childCount);
 			newBrush.transform.position = point;
 			newBrush.transform.parent = currentBrushGroup.transform;
+		}
+
+		public enum BrushType {
+			Sphere, Rectangle, Smooth
 		}
 
 #if UNITY_EDITOR
@@ -220,16 +225,16 @@ namespace Vox {
 		}
 
 		public bool isSelectedBrushPathable() {
-			return selectedBrush == 0 || selectedBrush == 1;
+			return selectedBrush == BrushType.Rectangle || selectedBrush == BrushType.Sphere;
 		}
 
 		public Color getBrushColor() {
 			switch (selectedBrush) {
-				case 0:
+				case BrushType.Sphere:
 					if (sphereSubstanceOnly)
 						return brushGhostPaintColor;
 					return isSubtracting() ? brushGhostSubtractColor : brushGhostColor;
-				case 1:
+				case BrushType.Rectangle:
 					if (cubeSubstanceOnly)
 						return brushGhostPaintColor;
 					return isSubtracting() ? brushGhostSubtractColor : brushGhostColor;

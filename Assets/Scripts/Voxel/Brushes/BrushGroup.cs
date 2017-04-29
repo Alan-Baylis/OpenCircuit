@@ -5,7 +5,7 @@ using Vox;
 public class BrushGroup : MonoBehaviour {
 
 	public VoxelEditor voxelEditor;
-	public BrushType brushType;
+	public VoxelEditor.BrushType brushType;
 
 	public void apply() {
 		applyBrushGroups();
@@ -78,11 +78,11 @@ public class BrushGroup : MonoBehaviour {
 
 		// create mutator (and maybe apply)
 		switch (brushType) {
-			case BrushType.Sphere:
+			case VoxelEditor.BrushType.Sphere:
 				Vox.SphereMutator sphereMod = new Vox.SphereMutator(point, editor.sphereBrushSize, new Vox.Voxel(editor.sphereBrushSubstance, opacity));
 				sphereMod.overwriteShape = !editor.sphereSubstanceOnly;
 				return sphereMod;
-			case BrushType.Rectangle:
+			case VoxelEditor.BrushType.Rectangle:
 				Vox.CubeMutator cubeMod = new Vox.CubeMutator(editor, point, editor.cubeBrushDimensions, new Vox.Voxel(editor.cubeBrushSubstance, opacity), true);
 				cubeMod.overwriteShape = !editor.cubeSubstanceOnly;
 				return cubeMod;
@@ -100,13 +100,13 @@ public class BrushGroup : MonoBehaviour {
 
 	private void drawBrushGizmo(Vector3 location) {
 		switch (brushType) {
-			case BrushType.Sphere:
+			case VoxelEditor.BrushType.Sphere:
 				Gizmos.DrawSphere(location, voxelEditor.sphereBrushSize);
 				break;
-			case BrushType.Rectangle:
+			case VoxelEditor.BrushType.Rectangle:
 				Gizmos.DrawMesh(generateRectangleMesh(voxelEditor.cubeBrushDimensions), location);
 				break;
-			case BrushType.Smooth:
+			case VoxelEditor.BrushType.Smooth:
 				Gizmos.DrawSphere(location, voxelEditor.smoothBrushSize);
 				break;
 		}
@@ -142,9 +142,5 @@ public class BrushGroup : MonoBehaviour {
 			4, 6, 2,
 		};
 		return mesh;
-	}
-
-	public enum BrushType {
-		Sphere, Rectangle, Smooth
 	}
 }
