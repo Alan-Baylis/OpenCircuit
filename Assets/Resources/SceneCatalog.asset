@@ -17,6 +17,7 @@ MonoBehaviour:
       robotsPerPlayer: 3
       robotSpawnRatePerSecond: 1
       spawnRateIncreasePerPlayer: 0.1
+      friendlySpawnRateMultiplierPerPlayer: 0
       gameMode: 1
     supportedGameModes: 
   - path: Assets/scenes/quicktest/quicktest.unity
@@ -24,6 +25,7 @@ MonoBehaviour:
       robotsPerPlayer: 1
       robotSpawnRatePerSecond: 1
       spawnRateIncreasePerPlayer: 0.1
+      friendlySpawnRateMultiplierPerPlayer: 0
       gameMode: 1
     supportedGameModes: 01000000
   - path: Assets/scenes/Bases/bases.unity
@@ -31,6 +33,7 @@ MonoBehaviour:
       robotsPerPlayer: 5
       robotSpawnRatePerSecond: 1
       spawnRateIncreasePerPlayer: 0.05
+      friendlySpawnRateMultiplierPerPlayer: 0
       gameMode: 0
     supportedGameModes: 00000000
   - path: Assets/scenes/Pair/pair.unity
@@ -38,6 +41,7 @@ MonoBehaviour:
       robotsPerPlayer: 15
       robotSpawnRatePerSecond: 0.2
       spawnRateIncreasePerPlayer: 0.01
+      friendlySpawnRateMultiplierPerPlayer: 0.9
       gameMode: 0
     supportedGameModes: 00000000
   - path: Assets/brian/scenes/tutorial/tutorial.unity

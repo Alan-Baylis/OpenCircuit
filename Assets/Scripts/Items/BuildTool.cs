@@ -56,6 +56,8 @@ public class BuildTool : ContextItem {
 	public override void onUnequip(Inventory equipper) {
 		base.onUnequip(equipper);
 		destroyGhost();
+		if (holder.getPlayer().isLocalPlayer)
+			HUD.hud.clearFireflyElement("buildToolUsageMessage");
 	}
 
 	public override void beginInvoke(Inventory invoker) {
@@ -71,7 +73,6 @@ public class BuildTool : ContextItem {
 	private void CmdSpawnTower(Vector3 location) {
 		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
 		if (bases != null && bases.canBuildTower(holder.getPlayer().clientController)) {
-
 			TeamId team = holder.GetComponent<TeamId>();
 			CentralRobotController crc = ((Bases) GlobalConfig.globalConfig.gamemode).getCRC(team.id);
 			Label towerBase = Instantiate(structureBase, location, Quaternion.identity).GetComponent<Label>();
@@ -90,11 +91,16 @@ public class BuildTool : ContextItem {
 		ghost = Instantiate(structureBase);
 		currentGhostMaterial = new Material(ghostMaterial);
 		setGhostMaterial(ghost.transform);
+		Fireflies.Config config = HUD.hud.fireflyConfig;
+		config.fireflySize *= 0.5f;
+		HUD.hud.setFireflyElementConfig("buildToolUsageMessage", config);
+		HUD.hud.setFireflyElement("buildToolUsageMessage", this,
+			FireflyFont.getString("click to\nbuild tower", 0.05f, new Vector2(0, -0.25f), FireflyFont.HAlign.CENTER), true);
 	}
 
 	private void destroyGhost() {
 		if (ghost != null)
-			Destroy (ghost);
+			Destroy(ghost);
 	}
 
 	private void setGhostMaterial(Transform transform) {

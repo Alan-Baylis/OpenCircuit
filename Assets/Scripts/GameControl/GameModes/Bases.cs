@@ -358,7 +358,7 @@ public class Bases : TeamGameMode {
 		HUD.hud.setFireflyElementConfig("clientBuildPoints", config);
 
 		HUD.hud.setFireflyElement("clientBuildPoints", this,
-			FireflyFont.getString(buildPoints.ToString("0.") + " build_point\npress e to use", 0.04f,
+			FireflyFont.getString("build_point == " +buildPoints.ToString("0.") +"\npress 'e' to use", 0.04f,
 				new Vector2(-0.5f, -0.48f)), shuffle);
 	}
 
