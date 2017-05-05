@@ -26,7 +26,6 @@ public class Teleport : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcTeleportPlayer(NetworkInstanceId playerId, Vector3 pos) {
-		print("teleported player");
 		Player player = ClientScene.FindLocalObject(playerId).GetComponent<Player>();
 		player.transform.position = pos;
 	}
