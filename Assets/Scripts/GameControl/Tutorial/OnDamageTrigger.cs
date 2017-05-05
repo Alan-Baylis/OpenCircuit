@@ -1,27 +1,38 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class OnDamageTrigger : MonoBehaviour {
+public class OnDamageTrigger : NetworkBehaviour {
 
 	public Tutorial tutorial;
 	public AbstractPlayerSpawner spawner;
-	public float timer = .25f;
+	public float timer = .5f;
 
-	private Player player;
+	private Queue<Player> playersQueue = new Queue<Player>();
 
-	void Start() {
-	}
-
+	[Server]
 	public void doTheThing(Player player) {
-		if (enabled && this.player == null && player.isLocalPlayer) {
-			this.player = player;
-			StartCoroutine("teleportPlayer");
-		}
+		if (playersQueue.Contains(player))
+			return;
+		playersQueue.Enqueue(player);
+		StartCoroutine("teleportPlayer");
 	}
 
 	IEnumerator teleportPlayer() {
 		yield return new WaitForSeconds(timer);
-		tutorial.nextMessage();
-		player.transform.position = spawner.nextSpawnPos();
+		Vector3 pos = spawner.nextSpawnPos();
+		Player player = playersQueue.Dequeue();
+		player.transform.position = pos;
+		RpcDoTheThing(player.netId, pos);
+	}
+
+	[ClientRpc]
+	private void RpcDoTheThing(NetworkInstanceId playerId, Vector3 pos) {
+		Player player = ClientScene.FindLocalObject(playerId).GetComponent<Player>();
+		if (player.isLocalPlayer) {
+			player.transform.position = pos;
+			tutorial.nextMessage();
+		}
 	}
 }

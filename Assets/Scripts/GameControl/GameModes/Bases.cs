@@ -213,7 +213,6 @@ public class Bases : TeamGameMode {
 		RpcUpdateClientScore(owner.netId, getInfo(owner).score, 0, 0);
 	}
 
-	[Server]
 	public bool canBuildTower(ClientController owner) {
 		return getInfo(owner).score.buildPoints > 0;
 	}
@@ -446,20 +445,17 @@ public class Bases : TeamGameMode {
 			return score.buildPoints + score.towerCount;
 		}
 
-		[Server]
 		public void addTowerBase(GameObject towerBase) {
 			towers.Add(towerBase);
 			--score.buildPoints;
 			score.towerCount = towers.Count;
 		}
 
-		[Server]
 		public void addTower(GameObject tower, GameObject towerBase) {
 			towers.Remove(towerBase);
 			towers.Add(tower);
 		}
 
-		[Server]
 		public bool updateTowerCount() {
 			bool removed = false;
 			for (int i = towers.Count - 1; i >= 0; --i) {

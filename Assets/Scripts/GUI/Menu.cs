@@ -345,7 +345,7 @@ public class Menu : MonoBehaviour {
 		    username = GUI.TextField(GUIUtil.convertRect(new Rect(0.25f, 0.3f, 0.3f, 0.03f), false), username).ToLower();
 		    //TODO build this specially ;)
 //	        if (GUIUtil.button("Admin", adminRect, skin.button)) {
-//		        dropIn(ClientType.ADMIN);
+//		        dropIn(NetworkController.ClientType.ADMIN);
 //	        }
 		    if (GUIUtil.button("Tutorial", adminRect, skin.button)) {
 			    dropIn(NetworkController.ClientType.TUTORIAL);

@@ -65,6 +65,12 @@ public class AssaultRifle : AbstractGun {
 	public void clearAmmo() {
 		bulletsRemaining = 0;
 		currentMagazineFill = 0;
+		RpcClearAmmo();
+	}
+
+	[ClientRpc]
+	private void RpcClearAmmo() {
+		currentMagazineFill = 0;
 	}
 
 	public override void reload() {
