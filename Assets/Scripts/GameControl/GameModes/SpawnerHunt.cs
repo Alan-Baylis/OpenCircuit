@@ -48,4 +48,8 @@ public class SpawnerHunt : GameMode {
         player.GetComponent<Label>().clearTag(TagEnum.Frozen);
         --frozenPlayers;
     }
+
+	public override AbstractPlayerSpawner getPlayerSpawner(ClientController controller) {
+		return FindObjectOfType<AbstractPlayerSpawner>();
+	}
 }

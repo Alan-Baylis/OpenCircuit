@@ -27,8 +27,9 @@ public class Leaderboard : NetworkBehaviour {
 
 	[ClientCallback]
 	void Update() {
-		if (GlobalConfig.globalConfig.localClient != null && GlobalConfig.globalConfig.localClient.spectator && GlobalConfig.globalConfig.cameraManager.getSceneCamera()
-			    .enabled) {
+		if (GlobalConfig.globalConfig.localClient == null)
+			return;
+		if (GlobalConfig.globalConfig.localClient.isSpectator() && GlobalConfig.globalConfig.cameraManager.getSceneCamera().enabled) {
 
 			Color prevColor = HUD.hud.fireflyConfig.fireflyColor;
 			HUD.hud.fireflyConfig.fireflyColor = new Color(.33f, .33f, 1);

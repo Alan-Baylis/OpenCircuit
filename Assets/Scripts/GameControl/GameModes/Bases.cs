@@ -15,6 +15,10 @@ public class Bases : TeamGameMode {
 	public float[] comboScorePerBuildPoint;
 
 	public CentralRobotController centralRobotControllerPrefab;
+
+	public AbstractPlayerSpawner primarySpawner;
+	public AbstractPlayerSpawner tutorialSpawner;
+
 	public List<Label> firstTeamLocations = new List<Label>();
 	public List<Label> secondTeamLocations = new List<Label>();
 	public Dictionary<ClientController, ClientInfo> clientInfoMap = new Dictionary<ClientController, ClientInfo>();
@@ -38,15 +42,6 @@ public class Bases : TeamGameMode {
 	private float lastBuildPointAdd;
 	private RespawnJob ? clientRespawnJob;
 	private float nextScoreUpdate;
-
-	private AbstractPlayerSpawner playerSpawner {
-		get {
-			if (myPlayerSpawner == null) {
-				myPlayerSpawner = FindObjectOfType<AbstractPlayerSpawner>();
-			}
-			return myPlayerSpawner;
-		}
-	}
 
 	[ServerCallback]
 	public override void Start() {
@@ -79,12 +74,23 @@ public class Bases : TeamGameMode {
 		}
 	}
 
+	public override AbstractPlayerSpawner getPlayerSpawner(ClientController controller) {
+		switch (controller.clientType) {
+			case NetworkController.ClientType.PLAYER:
+				return primarySpawner;
+			case NetworkController.ClientType.TUTORIAL:
+				return tutorialSpawner;
+			default:
+				return primarySpawner;
+		}
+	}
+
 	protected override void Update() {
 		if (isServer) {
 			base.Update();
 			for (int i = respawnJobs.Count - 1; i >= 0; --i) {
 				if (respawnJobs[i].respawnTime <= Time.time) {
-					playerSpawner.respawnPlayer(respawnJobs[i].controller);
+					primarySpawner.respawnPlayer(respawnJobs[i].controller);
 					respawnJobs.RemoveAt(i);
 				}
 			}
@@ -207,7 +213,6 @@ public class Bases : TeamGameMode {
 		RpcUpdateClientScore(owner.netId, getInfo(owner).score, 0, 0);
 	}
 
-	[Server]
 	public bool canBuildTower(ClientController owner) {
 		return getInfo(owner).score.buildPoints > 0;
 	}
@@ -440,20 +445,17 @@ public class Bases : TeamGameMode {
 			return score.buildPoints + score.towerCount;
 		}
 
-		[Server]
 		public void addTowerBase(GameObject towerBase) {
 			towers.Add(towerBase);
 			--score.buildPoints;
 			score.towerCount = towers.Count;
 		}
 
-		[Server]
 		public void addTower(GameObject tower, GameObject towerBase) {
 			towers.Remove(towerBase);
 			towers.Add(tower);
 		}
 
-		[Server]
 		public bool updateTowerCount() {
 			bool removed = false;
 			for (int i = towers.Count - 1; i >= 0; --i) {

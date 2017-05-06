@@ -89,16 +89,16 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
     [Server]
-    public void spawnPlayerForConnection(NetworkConnection connection, string username, bool spectator, bool isAdmin = false) {
+    public void spawnPlayerForConnection(NetworkConnection connection, string username, NetworkController.ClientType clientType) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
-            connection, username, spectator, isAdmin);
+            connection, username, clientType);
     }
 
 	public int getPlayerCount() {
 		int count = 0;
 		foreach (ClientController clientController in clients) {
-			count += clientController.spectator ? 0 : 1;
+			count += clientController.clientType == NetworkController.ClientType.PLAYER ? 0 : 1;
 		}
 		return count;
 	}

@@ -10,11 +10,7 @@ public class ClientController : NetworkBehaviour {
 	public GameObject playerLegsPrefab;
 	public GameObject playerArmsPrefab;
 
-	[SyncVar]
-	public bool spectator;
-
-	[SyncVar]
-	public bool admin;
+	[SyncVar] public NetworkController.ClientType clientType;
 
 	private GameObject player;
 
@@ -36,15 +32,10 @@ public class ClientController : NetworkBehaviour {
 			GlobalConfig.globalConfig.localClient = this;
 
 		if(isServer) {
-			if (spectator) {
+			if (isSpectator()) {
 				spawnSpectator();
 			} else {
-				AbstractPlayerSpawner spawner = FindObjectOfType<AbstractPlayerSpawner>();
-				if (spawner != null) {
-					spawnPlayerAt(spawner.nextSpawnPos());
-				} else {
-					Debug.LogError("FAILED TO SPAWN PLAYER!!! NO PLAYER SPAWNER EXISTS!!!");
-				}
+				spawnPlayerAt(GlobalConfig.globalConfig.gamemode.getPlayerSpawner(this).nextSpawnPos());
 			}
 		}
 	}
@@ -58,7 +49,7 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientCallback]
 	public void OnDestroy() {
-		if (!isDead && !spectator) {
+		if (!isDead && !isSpectator()) {
 			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
 		}
 		if (isLocalPlayer) {
@@ -151,5 +142,9 @@ public class ClientController : NetworkBehaviour {
 			isDead = false;
 			spawnPlayerAt(position);
 		}
+	}
+
+	public bool isSpectator() {
+		return clientType == NetworkController.ClientType.SPECTATOR || clientType == NetworkController.ClientType.ADMIN;
 	}
 }

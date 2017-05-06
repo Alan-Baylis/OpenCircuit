@@ -28,9 +28,7 @@ public abstract class Operation: InspectorListElement {
 	[System.NonSerialized]
 	protected Label parent;
 
-	public virtual System.Type[] getTriggers() {
-		return new System.Type[0];
-	}
+	public abstract System.Type[] getTriggers();
 
 	public abstract void perform(GameObject instigator, Trigger trig);
 	

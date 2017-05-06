@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
 
@@ -108,11 +109,10 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
         //return client;
     }
 
-    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, string username,  bool spectator, bool admin, short playerControllerId = 0) {
+    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, string username,  ClientType clientType, short playerControllerId = 0) {
         GameObject player = Instantiate(playerPrefab, pos, rotation);
 	    ClientController controller = player.GetComponent<ClientController>();
-	    controller.spectator = spectator;
-	    controller.admin = admin;
+	    controller.clientType = clientType;
 	    controller.playerName = username;
 	    controller.name = username;
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
@@ -186,12 +186,12 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
     */
     private void serverSpawnPlayer(NetworkMessage netMsg) {
 	    netMsg.reader.ReadInt32();
+
 	    string message = netMsg.reader.ReadString();
-	    bool isSpectator = message[0] == '1' || message[0] == '2';
-	    bool isAdmin = message[0] == '2';
+	    ClientType type = (ClientType)Enum.Parse(typeof(ClientType), message.Substring(0, 1));
 	    string username = message.Remove(0, 1);
 
-        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, username, isSpectator, isAdmin);
+        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, username, type);
     }
 
 	private void serverRemovePlayer(NetworkMessage netMsg) {
@@ -214,4 +214,8 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
     private void onClientConnected(NetworkMessage netMsg) {
         ClientScene.Ready(netMsg.conn);
     }
+
+	public enum ClientType {
+		PLAYER,SPECTATOR,ADMIN,TUTORIAL
+	}
 }

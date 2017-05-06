@@ -76,7 +76,8 @@ public class Inventory : NetworkBehaviour {
 
 	[ClientRpc]
 	public void RpcTake(NetworkInstanceId item) {
-		take(ClientScene.FindLocalObject(item));
+		if (!isServer)
+			take(ClientScene.FindLocalObject(item));
 	}
 
 	public bool canTake(GameObject itemObject) {
