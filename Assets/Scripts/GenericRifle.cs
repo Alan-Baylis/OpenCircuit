@@ -71,10 +71,6 @@ public class GenericRifle : NetworkBehaviour {
 			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 
 			audioLabel.setPosition(transform.position);
-			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
 			AudioBroadcaster.broadcast(audioLabel, gunshotSoundEmitter.volume);
 		}
 	}

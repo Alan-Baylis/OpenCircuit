@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 public class Spectator : NetworkBehaviour {
 
 	private Menu menu;
-	private bool playerControlsEnabled = true;
 
 	[SyncVar]
 	public NetworkInstanceId clientControllerId;

@@ -155,7 +155,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 				}
 				myLineRenderer.material = new Material(Shader.Find("Particles/Additive"));
 				myLineRenderer.startWidth = 0.02f; //thickness of line
-				myLineRenderer.numPositions = size;
+				myLineRenderer.positionCount = size;
 			}
 			return myLineRenderer;
 		}
@@ -173,13 +173,13 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 	void Update() {
 		if (this.isComponentAttached() && getController().debug) {
 			clearCircle();
-			lineRenderer.numPositions = size;
+			lineRenderer.positionCount = size;
 			drawCircle();
 		}
 	}
 
 	private void clearCircle() {
-		lineRenderer.numPositions = 0;
+		lineRenderer.positionCount = 0;
 	}
 
 	private void drawCircle() {
@@ -204,7 +204,7 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 		LineRenderer line = lineHolder.AddComponent<LineRenderer>();
 		line.startWidth = 0.025f;
 		line.startColor = color;//, color);
-		line.numPositions = 2;
+		line.positionCount = 2;
 		line.SetPositions(new [] {start, end});
 		line.material.shader = Shader.Find("Unlit/Color");
 		line.material.color = color;

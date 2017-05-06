@@ -9,10 +9,10 @@ public class FPSMeter : NetworkBehaviour {
 	public double trackRate = 0.3;
 
 	private double deltaTime;
-	private double msec;
+//	private double msec;
 	private double fps;
 	private double barLevel;
-	private double aiTime;
+//	private double aiTime;
 	private Texture2D boxColor;
 	private GUIStyle boxStyle;
 
@@ -22,15 +22,15 @@ public class FPSMeter : NetworkBehaviour {
 	
 	void Update () {
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-		msec = deltaTime * 1000;
+//		msec = deltaTime * 1000;
 		fps = 1f / deltaTime;
 		barLevel += (getFPSMeterPosition(fps, targetFramerate) -barLevel) *trackRate;
 //		aiTime = ((Bases) GlobalConfig.globalConfig.gamemode).getRobotTiming() * 1000.0;
 	}
 
 	public void OnGUI() {
-		string text = string.Format("{0:0.0} ms ({1:0.} fps) {2:0.}ms/sec / {3:0.0}% AI ", msec, fps, aiTime, ((aiTime / fps)/msec) *100.0);
-		GUI.Label(new Rect(0, 0, 250, 20), text);
+//		string text = string.Format("{0:0.0} ms ({1:0.} fps) {2:0.}ms/sec / {3:0.0}% AI ", msec, fps, aiTime, ((aiTime / fps)/msec) *100.0);
+//		GUI.Label(new Rect(0, 0, 250, 20), text);
 
 		drawFPSMeter(fps, 20);
 	}

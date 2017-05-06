@@ -36,7 +36,7 @@ public class PatrolTag : AbstractRouteTag {
                 }
                 if (j % 8 == 0) {
                     UnityEditor.Handles.color = Color.white;
-                    UnityEditor.Handles.ConeCap(0, (startPos + endPos) / 2, rotation, .15f);
+                    UnityEditor.Handles.ConeHandleCap(0, (startPos + endPos) / 2, rotation, .15f, EventType.Ignore);
                 } else {
                     Gizmos.DrawLine(startPos, endPos);
                 }

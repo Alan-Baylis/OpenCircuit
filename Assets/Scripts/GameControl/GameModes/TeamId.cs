@@ -33,7 +33,7 @@ public class TeamId : NetworkBehaviour {
 	[Client]
 	private void isEnabledSet(bool enabled) {
 		isEnabled = enabled;
-		this.enabled = enabled;
+		this.enabled = isEnabled;
 
 	}
 }

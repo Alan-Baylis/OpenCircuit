@@ -42,7 +42,6 @@ public class HoverJet : AbstractRobotComponent {
 #endif
 	private float regularHeight;
 	private float regularStrideLength;
-	private LocomotionController chassis;
 
 	public void goToPosition(Vector3 ? pos, bool autoBrake) {
 		stop();
@@ -55,7 +54,7 @@ public class HoverJet : AbstractRobotComponent {
 				return;
 			}
 			if (nav.enabled) {
-				nav.Resume();
+				nav.isStopped = false;
 			}
 		}
 	}
@@ -72,7 +71,7 @@ public class HoverJet : AbstractRobotComponent {
 				return;
 			}
 			if(nav.enabled) {
-				nav.Resume();
+				nav.isStopped = false;
 			}
 		}
 	}
@@ -83,7 +82,6 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	public void Start() {
-		chassis = GetComponentInChildren<LocomotionController>();
 		regularSpeed += Random.Range(-0.5f, 0.5f);
 		pursueSpeed += Random.Range(-0.5f, 0.5f);
 		nav.speed = regularSpeed;
@@ -156,11 +154,11 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	public void stop() {
-		this.target = null;
-		this.targetLocation = null;
-		this.matchTargetRotation = false;
+		target = null;
+		targetLocation = null;
+		matchTargetRotation = false;
 		if (nav.enabled) {
-			nav.Stop();
+			nav.isStopped = true;
 		}
 	}
 

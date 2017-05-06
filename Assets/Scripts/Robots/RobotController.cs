@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using Random = UnityEngine.Random;
 
 [AddComponentMenu("Scripts/Robot/Robot Controller")]
 public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver, MentalModelUpdateListener {
@@ -121,7 +122,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 			try {
 				endeavour.update();
 
-			} catch (Exception e) {
+			} catch (System.Exception e) {
 				Debug.LogError("Endeavour '" + endeavour.getName() + "' threw an exception during update.");
 				Debug.LogException(e);
 			}
@@ -296,7 +297,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 					//print("\t\t++" + action.getName());
 					endeavourQueue.Enqueue(action);
 				}
-			} catch (Exception e) {
+			} catch (System.Exception e) {
 				Debug.LogError("Endeavour '" +action.getName()+"' threw an exception from isStale()");
 				Debug.LogException(e);
 			}
@@ -428,7 +429,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		}
 		enabled = false;
 
-		int randomSeed = UnityEngine.Random.seed;
+		int randomSeed = (int) (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+		//Initialize
+		Random.InitState(randomSeed);
 
         disassembleRobotComponents();
 		RpcDismantle(randomSeed);

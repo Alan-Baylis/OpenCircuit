@@ -100,7 +100,7 @@ public class LaserProjector : MonoBehaviour {
 		float width = laserSpread;
 		for(int i = 0; i < lineRenderers.Count; i++) {
 			LineRenderer renderer = lineRenderers[i];
-			renderer.numPositions = 2;
+			renderer.positionCount = 2;
 			float rightness = -(width / 2f) + ((float)i) * (width / numLasers);
 			renderer.SetPosition(0, transform.position+new Vector3(0f, 0f, zOffset));
 
@@ -110,7 +110,7 @@ public class LaserProjector : MonoBehaviour {
 
 	private void clearLines() {
 		foreach(LineRenderer lineRenderer in lineRenderers) {
-			lineRenderer.numPositions = 0;
+			lineRenderer.positionCount = 0;
 		}
 	}
 
@@ -120,7 +120,7 @@ public class LaserProjector : MonoBehaviour {
 		LineRenderer lineRenderer = temp.AddComponent<LineRenderer>();
 		lineRenderer.startWidth = laserWidth;
 		lineRenderer.startColor = color;
-		lineRenderer.numPositions = 2;
+		lineRenderer.positionCount = 2;
 		lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 		lineRenderer.material.color = color;
 		return lineRenderer;

@@ -34,7 +34,6 @@ public class LocomotionController : MonoBehaviour {
 	private float stoppingPercent;
 	private float lastStepPercent;
 	private bool airborne;
-	private RobotController controller;
 
 	public bool isAirborne { get { return airborne; } }
 
@@ -48,10 +47,6 @@ public class LocomotionController : MonoBehaviour {
 		get {
 			return Application.isPlaying ? Time.deltaTime : 0.03f;
 		}
-	}
-
-	void Start() {
-		controller = GetComponentInParent<RobotController>();
 	}
 
 	public void Update() {

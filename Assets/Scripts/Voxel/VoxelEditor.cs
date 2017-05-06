@@ -95,7 +95,7 @@ namespace Vox {
 		public virtual void setToProcedural() {
 
 			// the following generates terrain from a height map
-			UnityEngine.Random.seed = proceduralSeed;
+			Random.InitState(proceduralSeed);
 			int dimension = 1 << maximumDetail;
 			float acceleration = 0;
 			float height = dimension * 0.6f;

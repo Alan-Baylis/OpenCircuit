@@ -142,8 +142,8 @@ public abstract class AbstractRobotSpawner : NetworkBehaviour {
 		if (renderer != null) {
 			Material mat = renderer.material;
 
-			mat.SetColor("_EmissionColor", color);
-			mat.SetColor("_Albedo", color);
+			mat.SetColor("_EmissionColor", displayColor);
+			mat.SetColor("_Albedo", displayColor);
 		}
 	}
 

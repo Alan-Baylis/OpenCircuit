@@ -36,7 +36,7 @@ public abstract class Item : NetworkBehaviour {
 	protected bool rightStepNext;
 
 	[SyncVar]
-	private NetworkInstanceId parent;
+	private NetworkInstanceId parent = NetworkInstanceId.Invalid;
 
 	public void Awake() {
 		col = GetComponent<Collider>();
@@ -44,8 +44,8 @@ public abstract class Item : NetworkBehaviour {
 
 	public override void OnStartClient() {
 		base.OnStartClient();
-		if (parent != null) {
-			GameObject parentObj = ClientScene.FindLocalObject(this.parent);
+		if (parent != NetworkInstanceId.Invalid) {
+			GameObject parentObj = ClientScene.FindLocalObject(parent);
 			if (parentObj != null) {
 				Inventory inventory = parentObj.GetComponent<Inventory>();
 				if (inventory != null) {
