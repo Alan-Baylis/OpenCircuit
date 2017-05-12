@@ -49,6 +49,7 @@ MonoBehaviour:
       robotsPerPlayer: 0
       robotSpawnRatePerSecond: 0
       spawnRateIncreasePerPlayer: 0
+      friendlySpawnRateMultiplierPerPlayer: 0
       gameMode: 0
     supportedGameModes: 00000000
   scenes:
