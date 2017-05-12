@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEditor;
 
 namespace Vox {
 
@@ -211,7 +210,7 @@ namespace Vox {
 			rend.enabled = false;
 			rend.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.BlendProbesAndSkybox;
 #if UNITY_EDITOR
-			EditorUtility.SetSelectedRenderState(rend, EditorSelectedRenderState.Hidden);
+			UnityEditor.EditorUtility.SetSelectedRenderState(rend, UnityEditor.EditorSelectedRenderState.Hidden);
 #endif
 			gameObject.AddComponent<MeshFilter>().sharedMesh = new Mesh();
 			gameObject.AddComponent<VoxelMeshObject>().index = index;
@@ -368,7 +367,7 @@ namespace Vox {
 #if UNITY_EDITOR
 			foreach(GameObject ob in obs) {
 				foreach(Renderer rend in ob.GetComponents<Renderer>()) {
-					EditorUtility.SetSelectedRenderState(rend, EditorSelectedRenderState.Hidden);
+					UnityEditor.EditorUtility.SetSelectedRenderState(rend, UnityEditor.EditorSelectedRenderState.Hidden);
 				}
 			}
 #endif

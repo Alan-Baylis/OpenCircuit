@@ -21,8 +21,6 @@ public class AmmoPickup : NetworkBehaviour {
 					if(gun.addAmmo(magazines)) {
 						//gameObject.SetActive(false);
 						pickedUp = true;
-						handlePickupEffects();
-						RpcHandlePickupEffects();
 						Destroy(gameObject);
 					}
 				}
@@ -30,8 +28,8 @@ public class AmmoPickup : NetworkBehaviour {
 		}
 	}
 
-	[ClientRpc]
-	private void RpcHandlePickupEffects() {
+	[ClientCallback]
+	void OnDestroy() {
 		handlePickupEffects();
 	}
 
