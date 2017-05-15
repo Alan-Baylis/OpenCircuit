@@ -42,7 +42,7 @@ public class Player : NetworkBehaviour {
 	public EffectSpec effectSpec;
 
 	[SyncVar]
-	public NetworkInstanceId clientControllerId;
+	public NetworkInstanceId clientControllerId = NetworkInstanceId.Invalid;
     private ClientController myClientController;
 
 	[SyncVar(hook = "changeEyeColor")]
@@ -106,7 +106,7 @@ public class Player : NetworkBehaviour {
 
     public ClientController clientController {
         get {
-	        if (myClientController == null)
+	        if (myClientController == null && clientControllerId != NetworkInstanceId.Invalid)
 		        myClientController = ClientScene.FindLocalObject(clientControllerId).GetComponent<ClientController>();
             return myClientController;
         }
@@ -134,7 +134,10 @@ public class Player : NetworkBehaviour {
 			}
 			GetComponent<ScoreAgent>().owner = clientController;
 		}
-		clientController.setPlayer(gameObject);
+		//Allow the player to exist without a client controller
+		if (clientController != null) {
+			clientController.setPlayer(gameObject);
+		}
 	}
 
     [ClientCallback]

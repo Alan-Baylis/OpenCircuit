@@ -7,7 +7,7 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 
     public static NetworkController networkController;
 
-	public LogFilter.FilterLevel logLevel;
+	public LogFilter.FilterLevel logLevel = LogFilter.FilterLevel.Warn;
 
     //Server fields
     private NetworkClient localClient;
