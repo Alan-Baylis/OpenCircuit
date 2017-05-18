@@ -4,7 +4,7 @@ public abstract class TeamGameMode : GameMode {
 
     public int localTeamId;
 
-    public Team.Config[] teamConfig;
+    public Team.Config[] teamConfig = new Team.Config[0];
 
 	[System.NonSerialized]
 	public Dictionary<int, Team> teams;

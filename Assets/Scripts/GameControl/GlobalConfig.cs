@@ -35,12 +35,12 @@ public class GlobalConfig : NetworkBehaviour {
 
     void Start() {
         myGlobalConfig = this;
-        configuration = Menu.menu.serverConfig;
         gamemode = getGameMode(configuration.gameMode);
         gamemode.initialize();
         gamemode.enabled = true;
-
         gameStarted = true;
+
+	    EventManager.registerForEvent(typeof(RobotDestructionEvent), subtractRobotCount);
     }
 
     private static GlobalConfig myGlobalConfig;
@@ -114,9 +114,10 @@ public class GlobalConfig : NetworkBehaviour {
 		}
 	}
 
-	public void subtractRobotCount(RobotController robotController) {
+	public void subtractRobotCount(AbstractEvent eventMessage) {
 		--robotControllers;
 		if (gamemode is TeamGameMode) {
+			RobotController robotController = ((RobotDestructionEvent) eventMessage).robotController;
 			--teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
 		}
 	}

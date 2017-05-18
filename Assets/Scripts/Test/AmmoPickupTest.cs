@@ -10,7 +10,7 @@ public class AmmoPickupTest {
 	// and allows you to yield null to skip a frame in EditMode
 	[UnityTest]
 	[PrebuildSetup(typeof(NetworkSetup))]
-	public IEnumerator AmmoPickupTestWithEnumeratorPasses() {
+	public IEnumerator testAmmoPickup() {
 		LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
 		// Use the Assert class to test conditions.
 		// yield to skip a frame
@@ -26,6 +26,22 @@ public class AmmoPickupTest {
 		yield return null;
 		LogAssert.NoUnexpectedReceived();
 		Assert.True(ammo == null);
+	}
+
+	[UnityTest]
+	[PrebuildSetup(typeof(NetworkSetup))]
+	public IEnumerator testAmmoPickup_NoRifle() {
+		// Use the Assert class to test conditions.
+		// yield to skip a frame
+
+		var gameObject = new GameObject();
+		AmmoPickup ammo = gameObject.AddComponent<AmmoPickup>();
+		Player player = createPlayer();
+		yield return null;
+		ammo.OnTriggerEnter(player.GetComponent<Collider>());
+		yield return null;
+		LogAssert.NoUnexpectedReceived();
+		Assert.True(ammo != null);
 	}
 
 	private Player createPlayer() {

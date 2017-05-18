@@ -29,8 +29,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	//public List<GameObject> trackedObjects = new List<GameObject>();
 #endif
 
-	public Label[] locations;
-    public Goal[] goals;
+	public Label[] locations = new Label[0];
+    public Goal[] goals = new Goal[0];
 	[System.NonSerialized]
 	public EndeavourFactory[] endeavourFactories = new EndeavourFactory[0];
 	[System.NonSerialized]
@@ -422,7 +422,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	[Server]
 	public void dispose() {
-		GlobalConfig.globalConfig.subtractRobotCount(this);
+		EventManager.broadcastEvent(new RobotDestructionEvent(this));
 		CancelInvoke();
 		foreach(Endeavour e in currentEndeavours) {
 			e.stopExecution();

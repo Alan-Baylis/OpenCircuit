@@ -109,7 +109,6 @@ public class HoverJet : AbstractRobotComponent {
 			}
 		}
 		if (powerSource == null) {
-			Debug.LogWarning(getController().name + " is missing a power source.");
 			return;
 		}
 		goToTarget();
