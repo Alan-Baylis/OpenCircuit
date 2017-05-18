@@ -65,13 +65,13 @@ public class GlobalConfig : NetworkBehaviour {
     [ClientRpc]
     private void RpcLoseGame() {
 		clearLocalPlayers();
-	    Menu.menu.lose();
+	    EventManager.broadcastEvent(new LoseEvent());
     }
 
     [ClientRpc]
     private void RpcWinGame() {
 	    clearLocalPlayers();
-        Menu.menu.win();
+	    EventManager.broadcastEvent(new WinEvent());
     }
 
 	[Server]
@@ -120,6 +120,10 @@ public class GlobalConfig : NetworkBehaviour {
 			RobotController robotController = ((RobotDestructionEvent) eventMessage).robotController;
 			--teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
 		}
+	}
+
+	private void OnDestroy() {
+		myGlobalConfig = null;
 	}
 
 	private void clearLocalPlayers() {

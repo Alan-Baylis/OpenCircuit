@@ -27,6 +27,7 @@ public class RobotDestructionTest {
 	[UnityTest]
 	public IEnumerator testRobotDestruction_WithHoverJet() {
 //		LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
+		PlayModeTestUtility.setupNavMesh();
 		robotController = PlayModeTestUtility.createRobot();
 		PlayModeTestUtility.addRobotComponent<PowerGenerator>(robotController);
 		NetworkServer.Spawn(PlayModeTestUtility.addRobotComponent<HoverJet>(robotController).gameObject);
@@ -47,8 +48,8 @@ public class RobotDestructionTest {
 		//LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
 		robotController = PlayModeTestUtility.createRobot();
 		PlayModeTestUtility.addRobotComponent<PowerGenerator>(robotController);
-		var component = PlayModeTestUtility.addRobotComponent<RoboEyes>(robotController).gameObject;
-		NetworkServer.Spawn(component);
+		RoboEyes component = GameObject.Instantiate(NetworkSetup.RoboEyesPrefab, robotController.transform);
+		NetworkServer.Spawn(component.gameObject);
 		NetworkServer.Spawn(robotController.gameObject);
 
 		yield return null;
@@ -60,24 +61,24 @@ public class RobotDestructionTest {
 		cleanup();
 	}
 
-	[PrebuildSetup(typeof(NetworkSetup))]
-	[UnityTest]
-	public IEnumerator testRobotDestruction_WithRifle() {
-
-		LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
-		robotController = PlayModeTestUtility.createRobot();
-		PlayModeTestUtility.addRobotComponent<PowerGenerator>(robotController);
-		NetworkServer.Spawn(PlayModeTestUtility.addRobotComponent<RoboRifle>(robotController).gameObject);
-		NetworkServer.Spawn(robotController.gameObject);
-
-		yield return null;
-		robotController.dispose();
-		yield return null;
-		LogAssert.NoUnexpectedReceived();
-		Assert.That(robotController == null);
-
-		cleanup();
-	}
+//	[PrebuildSetup(typeof(NetworkSetup))]
+//	[UnityTest]
+//	public IEnumerator testRobotDestruction_WithRifle() {
+//
+//		LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
+//		robotController = PlayModeTestUtility.createRobot();
+//		PlayModeTestUtility.addRobotComponent<PowerGenerator>(robotController);
+//		NetworkServer.Spawn(PlayModeTestUtility.addRobotComponent<RoboRifle>(robotController).gameObject);
+//		NetworkServer.Spawn(robotController.gameObject);
+//
+//		yield return null;
+//		robotController.dispose();
+//		yield return null;
+//		LogAssert.NoUnexpectedReceived();
+//		Assert.That(robotController == null);
+//
+//		cleanup();
+//	}
 
 	private void cleanup() {
 	}

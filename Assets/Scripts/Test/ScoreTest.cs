@@ -2,6 +2,7 @@
 using UnityEngine.TestTools;
 using System.Collections;
 using NUnit.Framework;
+using UnityEngine.Networking;
 
 public class ScoreTest {
 
@@ -16,79 +17,103 @@ public class ScoreTest {
 	// and allows you to yield null to skip a frame in EditMode
 	[UnityTest]
 	public IEnumerator testScoreOnDestroy() {
-		EventManager.registerForEvent(typeof(ScoreEvent), score);
-
 		GameObject clientControllerObject = new GameObject();
-		ClientController clientController = clientControllerObject.AddComponent<ClientController>();
-		clientController.enabled = false;
+		GlobalConfig globalConfig = PlayModeTestUtility.createGlobalConfig<Bases>();
+		try {
+			globalConfig.gamemode.enabled = false;
+			NetworkServer.Spawn(globalConfig.gameObject);
+			EventManager.registerForEvent(typeof(ScoreEvent), score);
 
-		scoreComponent = createScore();
-		scoreComponent.owner = clientController;
-		scoreComponent.value = 100f;
-		yield return null;
-		GameObject.Destroy(scoreComponent.gameObject);
+			ClientController clientController = clientControllerObject.AddComponent<ClientController>();
+			clientController.enabled = false;
+			globalConfig.clients.Add(clientController);
+			globalConfig.localClient = clientController;
+			NetworkServer.Spawn(clientController.gameObject);
+
+			scoreComponent = PlayModeTestUtility.createScore();
+			scoreComponent.owner = clientController;
+			scoreComponent.value = 100f;
+			yield return null;
+			GameObject.Destroy(scoreComponent.gameObject);
+			yield return null;
+			Assert.That(recieved);
+			Assert.That(value, Is.EqualTo(-100f).Within(.00001f));
+		} finally {
+
+			GameObject.Destroy(clientControllerObject);
+			GameObject.Destroy(globalConfig.gameObject);
+			cleanup();
+		}
 		yield return null;
 		LogAssert.NoUnexpectedReceived();
-		Assert.That(recieved);
-		Assert.That(value, Is.EqualTo(-100f).Within(.00001f));
-
-		cleanup();
 	}
 
 	[UnityTest]
 	public IEnumerator testScoreOnDestroy_TeamOwned() {
-		EventManager.registerForEvent(typeof(ScoreEvent), score);
-		EventManager.registerForEvent(typeof(TeamScoreEvent), teamScore);
+		try {
+			EventManager.registerForEvent(typeof(ScoreEvent), score);
+			EventManager.registerForEvent(typeof(TeamScoreEvent), teamScore);
 
-		scoreComponent = createScore();
-		scoreComponent.value = 100f;
-		TeamId teamId = scoreComponent.gameObject.AddComponent<TeamId>();
-		scoreComponent.teamOwned = true;
-		yield return null;
-		GameObject.Destroy(scoreComponent.gameObject);
+			scoreComponent = PlayModeTestUtility.createScore();
+			scoreComponent.value = 100f;
+			TeamId teamId = scoreComponent.gameObject.AddComponent<TeamId>();
+			scoreComponent.teamOwned = true;
+			yield return null;
+			GameObject.Destroy(scoreComponent.gameObject);
+			yield return null;
+			Assert.That(recievedTeam);
+			Assert.That(value, Is.EqualTo(-100).Within(.00001f));
+			Assert.That(team, Is.EqualTo(teamId.id));
+
+		} finally {
+			cleanup();
+		}
 		yield return null;
 		LogAssert.NoUnexpectedReceived();
-		Assert.That(recievedTeam);
-		Assert.That(value, Is.EqualTo(-100).Within(.00001f));
-		Assert.That(team, Is.EqualTo(teamId.id));
-
-		cleanup();
 	}
 
 	[UnityTest]
 	public IEnumerator testOnScore() {
-		EventManager.registerForEvent(typeof(ScoreEvent), score);
+		try {
+			EventManager.registerForEvent(typeof(ScoreEvent), score);
 
-		scoreComponent = createScore();
-		scoreComponent.value = 100;
-		TeamId team = scoreComponent.gameObject.AddComponent<TeamId>();
-		team.id = 1;
-		yield return null;
-		scoreComponent.recordScore(null);
+			scoreComponent = PlayModeTestUtility.createScore();
+			scoreComponent.value = 100;
+			TeamId team = scoreComponent.gameObject.AddComponent<TeamId>();
+			team.id = 1;
+			yield return null;
+			scoreComponent.recordScore(null);
+			yield return null;
+			LogAssert.NoUnexpectedReceived();
+			Assert.That(recieved);
+			Assert.That(value, Is.EqualTo(100f).Within(.00001f));
+		} finally {
+			cleanup();
+		}
 		yield return null;
 		LogAssert.NoUnexpectedReceived();
-		Assert.That(recieved);
-		Assert.That(value, Is.EqualTo(100f).Within(.00001f));
-
-		cleanup();
 	}
 
 	[UnityTest]
 	public IEnumerator testOnScore_SameTeam() {
-		EventManager.registerForEvent(typeof(ScoreEvent), score);
+		try {
+			EventManager.registerForEvent(typeof(ScoreEvent), score);
 
-		scoreComponent = createScore();
-		scoreComponent.value = 100;
-		TeamId team = scoreComponent.gameObject.AddComponent<TeamId>();
-		team.id = 0;
-		yield return null;
-		scoreComponent.recordScore(null);
+			scoreComponent = PlayModeTestUtility.createScore();
+			scoreComponent.value = 100;
+			TeamId team = scoreComponent.gameObject.AddComponent<TeamId>();
+			team.id = 0;
+			yield return null;
+			scoreComponent.recordScore(null);
+			yield return null;
+			LogAssert.NoUnexpectedReceived();
+			Assert.That(recieved);
+			Assert.That(value, Is.EqualTo(-100f).Within(.00001f));
+		} finally {
+			cleanup();
+		}
 		yield return null;
 		LogAssert.NoUnexpectedReceived();
-		Assert.That(recieved);
-		Assert.That(value, Is.EqualTo(-100f).Within(.00001f));
-
-		cleanup();
 	}
 
 	private void cleanup() {
@@ -97,6 +122,7 @@ public class ScoreTest {
 		recievedTeam = false;
 		if (scoreComponent != null)
 			GameObject.Destroy(scoreComponent.gameObject);
+		EventManager.clearInstance();
 	}
 
 	private void score(AbstractEvent incomingEvent) {
@@ -109,11 +135,5 @@ public class ScoreTest {
 		recievedTeam = true;
 		value = teamEvent.getScore();
 		team = teamEvent.getTeam();
-	}
-
-	private Score createScore() {
-		GameObject gameObject = new GameObject("");
-		gameObject.AddComponent<Label>();
-		return gameObject.AddComponent<Score>();
 	}
 }

@@ -8,9 +8,11 @@ public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 	private bool listening;
 
 	public static RobotController robotControllerPrefab;
+	public static RoboEyes RoboEyesPrefab;
 
 	void Awake() {
 		robotControllerPrefab = AssetDatabase.LoadAssetAtPath<RobotController>("Assets/Prefabs/Robots/robot.prefab");
+		RoboEyesPrefab = AssetDatabase.LoadAssetAtPath<RoboEyes>("Assets/Prefabs/Robots/Eyes.prefab");
 		if (!listening) {
 			listening = GetComponent<NetworkController>().listen();
 		}
@@ -18,12 +20,14 @@ public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 
 	public virtual void Setup() {
 		setupNetwork();
-		setupAudioListener();
+		setupSceneCamera();
 	}
 
-	private void setupAudioListener() {
-		GameObject gameObject = new GameObject("AudioListener");
+	private void setupSceneCamera() {
+		GameObject gameObject = new GameObject("SceneCamera");
 		gameObject.AddComponent<AudioListener>();
+		gameObject.AddComponent<Camera>();
+		gameObject.tag = "SceneCamera";
 	}
 
 	private void setupNetwork() {

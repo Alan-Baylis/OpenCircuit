@@ -17,7 +17,7 @@ public class AmmoPickupTest {
 
 		var gameObject = new GameObject();
 		AmmoPickup ammo = gameObject.AddComponent<AmmoPickup>();
-		AssaultRifle rifle = addRifleToPlayer(createPlayer());
+		AssaultRifle rifle = addRifleToPlayer(PlayModeTestUtility.createPlayer());
 		NetworkServer.Spawn(rifle.gameObject);
 		yield return null;
 		rifle.clearAmmo();
@@ -36,19 +36,12 @@ public class AmmoPickupTest {
 
 		var gameObject = new GameObject();
 		AmmoPickup ammo = gameObject.AddComponent<AmmoPickup>();
-		Player player = createPlayer();
+		Player player = PlayModeTestUtility.createPlayer();
 		yield return null;
 		ammo.OnTriggerEnter(player.GetComponent<Collider>());
 		yield return null;
 		LogAssert.NoUnexpectedReceived();
 		Assert.True(ammo != null);
-	}
-
-	private Player createPlayer() {
-		GameObject playerObject = new GameObject();
-		playerObject.AddComponent<NetworkIdentity>();
-		playerObject.AddComponent<BoxCollider>();
-		return playerObject.AddComponent<Player>();
 	}
 
 	private AssaultRifle addRifleToPlayer(Player player) {

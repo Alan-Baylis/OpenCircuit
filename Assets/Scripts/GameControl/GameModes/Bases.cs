@@ -12,7 +12,7 @@ public class Bases : TeamGameMode {
 	public float buildPointDisplayPeriod = 6f;
 	public float comboDeteriorationRate = 20;
 
-	public float[] comboScorePerBuildPoint;
+	public float[] comboScorePerBuildPoint = new float [0];
 
 	public CentralRobotController centralRobotControllerPrefab;
 
@@ -46,7 +46,8 @@ public class Bases : TeamGameMode {
 	[ServerCallback]
 	public override void Start() {
 		base.Start();
-
+		EventManager.registerForEvent(typeof(ScoreEvent), addScore);
+		EventManager.registerForEvent(typeof(TeamScoreEvent), addTeamScore);
 		foreach (Label location in firstTeamLocations) {
 			getCRC(0).sightingFound(location.labelHandle, location.transform.position, null);
 		}
@@ -218,7 +219,13 @@ public class Bases : TeamGameMode {
 	}
 
 	[Server]
-	public void addScore(ClientController owner, float scoreAdd) {
+	private void addScore(AbstractEvent incomingEvent) {
+		ScoreEvent scoreEvent = (ScoreEvent) incomingEvent;
+		addScore(scoreEvent.getOwner(), scoreEvent.getScore());
+	}
+
+	[Server]
+	private void addScore(ClientController owner, float scoreAdd) {
 		ClientInfo info = getInfo(owner);
 		info.score.total += scoreAdd;
 		info.score.combo += scoreAdd;
@@ -233,7 +240,13 @@ public class Bases : TeamGameMode {
 	}
 
 	[Server]
-	public void addTeamScore(int teamId, float value) {
+	private void addTeamScore(AbstractEvent incomingEvent) {
+		TeamScoreEvent teamScoreEvent = (TeamScoreEvent) incomingEvent;
+		addTeamScore(teamScoreEvent.getTeam(), teamScoreEvent.getScore());
+	}
+
+	[Server]
+	private void addTeamScore(int teamId, float value) {
 		HashSet<ClientController> clients = GlobalConfig.globalConfig.clients;
 		foreach (ClientController client in clients) {
 			addScore(client, value);

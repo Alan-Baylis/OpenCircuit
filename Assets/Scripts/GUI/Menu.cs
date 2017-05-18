@@ -85,6 +85,8 @@ public class Menu : MonoBehaviour {
 	// Use this for initialization
 	public void Start() {
 	    DontDestroyOnLoad(gameObject);
+		EventManager.registerForEvent(typeof(WinEvent), win);
+		EventManager.registerForEvent(typeof(LoseEvent), lose);
 	    myMenu = this;
 		username = System.Environment.MachineName.ToLower();
 		if (activeAtStart) {
@@ -128,12 +130,12 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	public void win() {
+	private void win(AbstractEvent winEvent) {
 		pause();
 		currentMenu = state.Win;
 	}
 
-	public void lose() {
+	private void lose(AbstractEvent loseEvent) {
 		pause();
         currentMenu = state.Lose;
     }

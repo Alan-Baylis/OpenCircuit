@@ -1,16 +1,44 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Networking;
 
 public class PlayModeTestUtility {
 
 	private static GameObject navMeshObject;
 
+	public static GlobalConfig createGlobalConfig<T>() where T : GameMode {
+		GameObject globalConfigObject = new GameObject("GlobalConfig");
+		GlobalConfig globalConfig = globalConfigObject.AddComponent<GlobalConfig>();
+		globalConfig.gamemode = globalConfigObject.AddComponent<T>();
+		globalConfig.cameraManager = globalConfigObject.AddComponent<CameraManager>();
+		return globalConfig;
+	}
+
 	public static RobotController createScratchRobot() {
 		GameObject gameObject = new GameObject();
 		gameObject.AddComponent<NavMeshAgent>();
 		return gameObject.AddComponent<RobotController>();
+	}
+
+	public static Player createPlayer() {
+		GameObject playerObject = new GameObject("Player");
+		playerObject.AddComponent<NetworkIdentity>();
+		playerObject.AddComponent<BoxCollider>();
+		return playerObject.AddComponent<Player>();
+	}
+
+	public static ClientController createClientController() {
+		GameObject clientControllerObject = new GameObject("ClientController");
+		return clientControllerObject.AddComponent<ClientController>();
+	}
+
+	public static Score createScore() {
+		GameObject gameObject = new GameObject("");
+		gameObject.AddComponent<Label>();
+		return gameObject.AddComponent<Score>();
 	}
 
 	public static RobotController createRobot() {
