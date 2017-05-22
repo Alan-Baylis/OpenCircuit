@@ -7,6 +7,9 @@ public abstract class Item : NetworkBehaviour {
 	public HoldPosition normalPosition;
 	public HoldPosition sprintPosition;
 	public HoldPosition zoomPosition;
+	public Vector3 grabPosition;
+	public bool twoHanded;
+	public Vector3 secondaryGrabPosition;
 	public float responsiveness = 0.5f;
 	public float positionalResponsiveness = 0.5f;
 	public float maxResponsiveness = 0.5f;
@@ -33,7 +36,7 @@ public abstract class Item : NetworkBehaviour {
 	protected bool rightStepNext;
 
 	[SyncVar]
-	private NetworkInstanceId parent;
+	private NetworkInstanceId parent = NetworkInstanceId.Invalid;
 
 	public void Awake() {
 		col = GetComponent<Collider>();
@@ -41,8 +44,8 @@ public abstract class Item : NetworkBehaviour {
 
 	public override void OnStartClient() {
 		base.OnStartClient();
-		if (parent != null) {
-			GameObject parentObj = ClientScene.FindLocalObject(this.parent);
+		if (parent != NetworkInstanceId.Invalid) {
+			GameObject parentObj = ClientScene.FindLocalObject(parent);
 			if (parentObj != null) {
 				Inventory inventory = parentObj.GetComponent<Inventory>();
 				if (inventory != null) {
@@ -111,21 +114,23 @@ public abstract class Item : NetworkBehaviour {
 
 	public virtual void onEquip(Inventory equipper) {
 		transform.localPosition = normalPosition.position;
-		col.enabled = false;
+		if (col != null)
+			col.enabled = false;
 		gameObject.SetActive(true);
 	}
 
 	public virtual void onUnequip(Inventory equipper) {
 		gameObject.SetActive(false);
 		endInvoke(equipper);
-		col.enabled = true;
+		if (col != null)
+			col.enabled = true;
 	}
 
 	protected RaycastHit reach() { Vector3 fake; return reach(out fake); }
 	protected RaycastHit reach(out Vector3 position) {
 		RaycastHit finalHit = new RaycastHit();
 		position = Vector3.zero;
-		Ray ray = new Ray(this.transform.parent.position, this.transform.parent.forward);
+		Ray ray = new Ray(transform.parent.position, transform.parent.forward);
 		RaycastHit[] hits = Physics.RaycastAll(ray, reachDistance);
 		float distance = reachDistance;
 
@@ -146,7 +151,7 @@ public abstract class Item : NetworkBehaviour {
 			newPosition = followingCamera.TransformPoint(position.position);
 			newRotation = followingCamera.rotation * Quaternion.Euler(position.rotation);
 		} else {
-			Quaternion rotation = Quaternion.Euler(0, followingCamera.localEulerAngles.y, 0);
+			Quaternion rotation = Quaternion.Euler(0, holder.getPlayer().head.transform.localEulerAngles.y, 0);
 			newPosition = transform.parent.TransformPoint(rotation * position.position);
 			newRotation = transform.parent.rotation * Quaternion.Euler(position.rotation);
 			newRotation = rotation * newRotation;

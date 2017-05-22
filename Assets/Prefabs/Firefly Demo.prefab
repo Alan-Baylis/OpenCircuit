@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1619450125628262}
+  m_IsPrefabParent: 1
+--- !u!1 &1619450125628262
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4962256819448192}
+  - component: {fileID: 114690002709224502}
+  m_Layer: 0
+  m_Name: Firefly Demo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4962256819448192
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1619450125628262}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114690002709224502
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1619450125628262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 191f6e131cc1e472b98140957a17aa78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 0123456789
+  fontSize: 6
+  shuffleOnChange: 1
+  fireflyConfig:
+    fireflySize: 6
+    fireflyGravity: 2000
+    damper: 20
+    randomAcceleration: 5
+    shuffleSpeed: 20
+    fadeSpeed: 5
+    fireflyTexture: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
+    glowTexture: {fileID: 2800000, guid: 4dbdac1fe2b35954d9029417fd785115, type: 3}
+    fireflyColor: {r: 1, g: 1, b: 1, a: 1}
+    spawnPosition:
+      serializedVersion: 2
+      x: -200
+      y: -50
+      width: 400
+      height: 150
+    spawnSpeed:
+      serializedVersion: 2
+      x: 200
+      y: -50
+      width: 100
+      height: 100
+    escapeSpeed:
+      serializedVersion: 2
+      x: -200
+      y: -50
+      width: 100
+      height: 100

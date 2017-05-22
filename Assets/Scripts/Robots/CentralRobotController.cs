@@ -1,30 +1,27 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [AddComponentMenu("Scripts/Robot/Central Robot Controller")]
 public class CentralRobotController : MonoBehaviour {
 
 	public RobotController[] robots;
 	public Label[] locations;
-
+	public Timing robotExecutionTimer;
 	MentalModel mentalModel = new MentalModel();
 
 	// Use this for initialization
 	void Start () {
+		robotExecutionTimer = gameObject.AddComponent<Timing>();
 		for (int i = 0; i < robots.Length; i++) {
 			if (robots[i] == null) {
-					Debug.LogWarning("Null robot attached to CRC with name: " + gameObject.name);
-					continue;
+				Debug.LogWarning("Null robot attached to CRC with name: " + gameObject.name);
+				continue;
 			}
 			addListener(robots[i]);
 		}
 		foreach (Label location in locations) {
 			if (location == null) {
-				if (location == null) {
-					Debug.LogWarning("Null location attached to CRC with name: " + gameObject.name);
-					continue;
-				}
+				Debug.LogWarning("Null location attached to CRC with name: " + gameObject.name);
 			} else {
 				mentalModel.addSighting(location.labelHandle, location.transform.position, null);
 			}
@@ -42,5 +39,36 @@ public class CentralRobotController : MonoBehaviour {
 
 	public void forceAddListener(RobotController listener) {
 		listener.attachMentalModel(mentalModel);
+		listener.attachExecutionTimer(robotExecutionTimer);
 	}
+
+	public void sightingFound(LabelHandle target, Vector3 pos, Vector3? dir) {
+		mentalModel.addSighting(target, pos, dir);
+	}
+
+#if UNITY_EDITOR
+	public bool debug;
+	public int sightingsDisplay;
+	public int staleSightingsDisplay;
+	public List<string> activeSightings =  new List<string>();
+	public List<string> staleSightings =  new List<string>();
+
+	void Update() {
+		if (debug) {
+			sightingsDisplay = mentalModel.targetSightings.Count;
+//			staleSightingsDisplay = mentalModel.staleTargetSightings.Count;
+
+			activeSightings.Clear();
+			foreach (LabelHandle handle in mentalModel.targetSightings.Keys) {
+				activeSightings.Add(handle.getName());
+			}
+
+//			staleSightings.Clear();
+//			foreach (LabelHandle handle in mentalModel.staleTargetSightings.Keys) {
+//				staleSightings.Add(handle.getName());
+//			}
+		}
+	}
+#endif
+
 }

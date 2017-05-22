@@ -4,8 +4,7 @@ using UnityEngine;
 public class InvestigateLostPlayerAction : Endeavour {
 
 	private Tag player;
-	private bool reached = false;
-	private HoverJet jet;
+	private bool reached;
 
 #if UNITY_EDITOR
 	private GameObject mySphere;
@@ -21,9 +20,8 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 #endif
 	public InvestigateLostPlayerAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags) : base(factory, controller, goals, tags) {
-		this.name = "investigateLostPlayer";
-		this.player = getTagOfType<Tag>(TagEnum.Player);
-		jet = getController().getRobotComponent<HoverJet>();
+		name = "investigateLostPlayer";
+		player = getTagOfType<Tag>(TagEnum.Player);
 	}
 
 	public override void update() {
@@ -42,11 +40,18 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet) };
+		return new [] { typeof(HoverJet) };
 	}
 
 	public override bool isStale() {
-		return reached;
+		if (player.getLabelHandle().label == null)
+			return true;
+
+		bool isAlly = false;
+		if (GlobalConfig.globalConfig.gamemode is Bases) {
+			isAlly = player.getLabelHandle().label.GetComponent<TeamId>().id == getController().GetComponent<TeamId>().id;
+		}
+		return reached || isAlly;
 	}
 
 	public override bool singleExecutor() {
@@ -54,7 +59,7 @@ public class InvestigateLostPlayerAction : Endeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if (message.Type == RobotMessage.MessageType.ACTION && message.Message == HoverJet.TARGET_REACHED) {
+		if (message.Message == HoverJet.TARGET_REACHED) {
 			reached = true;
 		}
 	}

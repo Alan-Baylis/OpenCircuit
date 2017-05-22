@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [System.Serializable]
 public class PlayerDeathOperation : Operation {
 
-	private static System.Type[] triggers = new System.Type[] {
-		typeof(DestructTrigger),
+	private static System.Type[] triggers = {
+		typeof(DestructTrigger)
 	};
 
 	public override System.Type[] getTriggers() {
@@ -14,6 +13,7 @@ public class PlayerDeathOperation : Operation {
 
 	public override void perform(GameObject instigator, Trigger trig) {
 		Player player = parent.GetComponent<Player>();
+	    //TODO: frozen players are invincible. This may bite us one day...
 		if(player != null && !player.frozen) {
 			player.die();
 		}

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Player/Parkour")]
@@ -27,6 +26,7 @@ public class Parkour : MovementController {
 	private CapsuleCollider col;
 	private AudioSource footstepEmitter;
 	private float nextFootstep;
+	private float lastSoundBroadcast;
 
 	// climbing stuff
 	private int freeFallDelay = 0;
@@ -58,6 +58,7 @@ public class Parkour : MovementController {
 	public AudioClip[] footsteps;
 	public float minimumFoostepOccurence;
 	public float foostepSpeedScale;
+	public float footstepSoundExpirationTime = 10f;
 	public float fallHurtSpeed = 10;
 	public float fallDeathSpeed = 15;
 
@@ -180,15 +181,19 @@ public class Parkour : MovementController {
 
 		float currentSpeed = rb.velocity.sqrMagnitude;
 		if (nextFootstep <= Time.fixedTime && currentSpeed > 0.1f) {
-			if (nextFootstep != 0) {
+			if (nextFootstep != 0 && Time.time - lastSoundBroadcast > 2f) {
 				float volume = 0.8f -(0.8f / (1 + currentSpeed /100));
 				playFootstep(volume);
 				LabelHandle audioLabel = new LabelHandle(transform.position, "footsteps");
-				audioLabel.addTag(new Tag(TagEnum.Sound, volume, audioLabel));
+				TeamId team = GetComponent<TeamId>();
+				if (team != null && team.enabled) {
+					audioLabel.teamId = team.id;
+				}
+				audioLabel.addTag(new SoundTag(TagEnum.Sound, volume, audioLabel, Time.time, footstepSoundExpirationTime));
 				audioLabel.addTag(new Tag(TagEnum.Threat, 5f, audioLabel));
-				AudioEvent footStepsEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-				footStepsEvent.broadcast(volume);
+				AudioBroadcaster.broadcast(audioLabel, volume*2);
 				player.inventory.doStep(volume);
+				lastSoundBroadcast = Time.time;
 			}
 			nextFootstep = Time.fixedTime + minimumFoostepOccurence / (1 + currentSpeed * foostepSpeedScale);
 		}
@@ -281,7 +286,7 @@ public class Parkour : MovementController {
 				//print("Force: " + averageForce);
 				if (averageForce > fallHurtSpeed && collisionSpeed > fallHurtSpeed / 2f) {
 					float damage = (averageForce - fallHurtSpeed) / (fallDeathSpeed - fallHurtSpeed);
-					player.health.hurt(damage * player.health.maxSuffering);
+					player.health.hurt(damage * player.health.maxSuffering, gameObject);
 					//pastForces[pastForces.Count - 1] *= 0.5f;
 				}
 		}

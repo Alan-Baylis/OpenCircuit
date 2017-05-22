@@ -36,7 +36,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 #if UNITY_EDITOR
     void Update() {
-        if (tagMap.Count > tags.Length) {
+        if (tagMap.Count != tags.Length) {
             tags = new Tag[tagMap.Count];
             tagMap.Values.CopyTo(tags, 0);
         }
@@ -47,7 +47,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 		labelHandle = new LabelHandle(transform.position, name);
 		labelHandle.label = this;
 
-		Label.labels.Add(this);
+		labels.Add(this);
 		if (isVisible) {
 			visibleLabels.Add(this);
 		}
@@ -73,7 +73,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 	public bool sendTrigger(GameObject instigator, Trigger trig) {
         System.Type type = trig.GetType();
 		if (triggers.ContainsKey(type)) {
-			foreach (Operation e in (List<Operation>)triggers[type]) {
+			foreach (Operation e in triggers[type]) {
                 e.perform(instigator, trig);
             }
 			return true;
@@ -88,13 +88,16 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 				if (!triggers.ContainsKey(element)) {
 					triggers[element] = new List<Operation>();
                 }
-				((List<Operation>)triggers[element]).Add(operation);
+				triggers[element].Add(operation);
             }
 		}
 	}
 
 	public void OnDestroy() {
-		Label.labels.Remove(this);
+		labels.Remove(this);
+		if (isVisible) {
+			visibleLabels.Remove(this);
+		}
 	}
 
 	public void OnBeforeSerialize() {
@@ -128,6 +131,10 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
 
 	public void clearTag(TagEnum type) {
 		tagMap.Remove(type);
+	}
+
+	public bool hasTags() {
+		return tagMap != null && tagMap.Count > 0;
 	}
 
 	public bool hasTag(TagEnum tagName) {
@@ -167,7 +174,7 @@ public class Label : MonoBehaviour, ISerializationCallbackReceiver {
         foreach (Tag tag in tags) {
             if (tag == null)
                 continue;
-            tag.drawGizmo();
+            tag.drawGizmo(this);
         }
 	}
 #endif

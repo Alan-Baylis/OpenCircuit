@@ -42,7 +42,6 @@ public class RechargeAction : Endeavour {
     }
 
     protected override float getCost() {
-		HoverJet jet = controller.GetComponentInChildren<HoverJet>();
 		return jet.calculatePathCost(powerStation.getLabelHandle().label);
     }
 

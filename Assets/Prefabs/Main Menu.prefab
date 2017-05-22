@@ -5,11 +5,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 435146}
-  - 114: {fileID: 11457940}
-  - 114: {fileID: 114000013160267610}
+  - component: {fileID: 435146}
+  - component: {fileID: 11457940}
+  - component: {fileID: 114000013160267610}
   m_Layer: 0
   m_Name: Main Menu
   m_TagString: Menu
@@ -26,10 +26,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &11457940
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -41,6 +41,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a9c076ac121ca4998e2524e5c118b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dialogBoxPrefab: {fileID: 114546001042819648, guid: c27710f7e30d61f41940c7536aba326c,
+    type: 2}
+  globalConfigPrefab: {fileID: 11460716, guid: 71c2b24eb311b0e4b84685bc99ef5ee0, type: 2}
   defaultScreenHeight: 1080
   activeAtStart: 0
   skin: {fileID: 11400000, guid: 4c291cb9d9421e040bdbab8ba9af4718, type: 2}

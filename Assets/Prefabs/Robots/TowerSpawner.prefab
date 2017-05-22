@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1482100421143698}
+  m_IsPrefabParent: 1
+--- !u!1 &1482100421143698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4150719078648140}
+  - component: {fileID: 114130357571481062}
+  - component: {fileID: 114119484517305958}
+  - component: {fileID: 114469025034947584}
+  m_Layer: 0
+  m_Name: TowerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4150719078648140
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1482100421143698}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114119484517305958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1482100421143698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f972aaa529956794f886aed081a51965, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerPrefab: {fileID: 1320519335677618, guid: 6537c4d4a5d624b3caca81e82f2b35a5,
+    type: 2}
+  components:
+  - {fileID: 1862426679671266, guid: c4e4a02159bf1fb4da32fffc217bbe66, type: 2}
+  - {fileID: 1148032884675158, guid: 4e6a9fe742f38784d8249ae0a4295b78, type: 2}
+  - {fileID: 1100082223894380, guid: daf2a1f7b91d09b4f929e82f4ec6245b, type: 2}
+  offset: {x: 0, y: 1, z: 0}
+--- !u!114 &114130357571481062
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1482100421143698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 65
+    i1: 16
+    i2: 26
+    i3: 164
+    i4: 192
+    i5: 225
+    i6: 140
+    i7: 52
+    i8: 152
+    i9: 87
+    i10: 193
+    i11: 151
+    i12: 199
+    i13: 252
+    i14: 44
+    i15: 253
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &114469025034947584
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1482100421143698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31a02391b900c34bb1880e4400d0f8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  setPositionAndRotation: 1
+  positionAndRotation:
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}

@@ -1,60 +1,61 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
-using System.Collections.Generic;
 
 public class ClientController : NetworkBehaviour {
 
-	private static List<NetworkInstanceId> cameras = new List<NetworkInstanceId>();
+	public GameObject spectatorPrefab;
 
 	public GameObject playerPrefab;
 	public GameObject playerCamPrefab;
-    public static int numPlayers = 0;
+	public GameObject playerLegsPrefab;
+	public GameObject playerArmsPrefab;
 
-	[SyncVar(hook="setPlayerId")]
-	private NetworkInstanceId id;
-	[SyncVar(hook="setCamId")]
-	private NetworkInstanceId camId;
-	private GameObject player = null;
+	[SyncVar] public NetworkController.ClientType clientType;
+
+	private GameObject player;
 
 	[SyncVar(hook="setPlayerDead")]
-	private bool isDead = false;
+	private bool isDead;
 
-	private int currentCamera = -1;
-	private Camera sceneCamera;
+	[SyncVar]
+	public string playerName;
 
-	[ClientCallback]
+	public float startTime;
+
 	void Start() {
-		Camera[] cams = FindObjectsOfType<Camera>();
-		foreach(Camera cam in cams) {
-			if(cam.tag == "SceneCamera") {
-				sceneCamera = cam;
-			}
+		startTime = Time.time;
+		GlobalConfig.globalConfig.clients.Add(this);
+		if (player != null) {
+			GlobalConfig.globalConfig.cameraManager.addCamera(this, player.GetComponentInChildren<Camera>());
 		}
+		if (isLocalPlayer)
+			GlobalConfig.globalConfig.localClient = this;
 
-		Player[] players = FindObjectsOfType<Player>();
-		foreach(Player player in players) {
-			if(player.netId != id) {
-				cameras.Add(player.netId);
+		if(isServer) {
+			if (isSpectator()) {
+				spawnSpectator();
+			} else {
+				spawnPlayerAt(GlobalConfig.globalConfig.gamemode.getPlayerSpawner(this).nextSpawnPos());
 			}
-		}
-		disableSceneCam();
-		if(isLocalPlayer) {
-			CmdSpawnPlayerAt(transform.position);
 		}
 	}
 
 	[ClientCallback]
 	void Update() {
-		if(isLocalPlayer) {
-			if(isDead && Input.GetButtonDown("Use")) {
-				switchCamera();
-			}
-		} else {
-			if(isDead) {
-				cameras.Remove(id);
-			}
+		if (isLocalPlayer && isDead && Input.GetButtonDown("Use")) {
+			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
+	}
+
+	[ClientCallback]
+	public void OnDestroy() {
+		if (!isDead && !isSpectator()) {
+			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
+		}
+		if (isLocalPlayer) {
+			GlobalConfig.globalConfig.cameraManager.useSceneCamera();
+		}
+		GlobalConfig.globalConfig.clients.Remove(this);
 	}
 
 	//anyone can call!!
@@ -62,51 +63,76 @@ public class ClientController : NetworkBehaviour {
 		return !isDead;
 	}
 
-	[Command]
-	private void CmdSpawnPlayerAt(Vector3 position) {
-		spawnPlayerAt(position);
-        numPlayers++;
+	[Server]
+	private void spawnSpectator() {
+		GameObject newSpectator = Instantiate(spectatorPrefab);
+		newSpectator.GetComponent<Spectator>().clientControllerId = netId;
+		NetworkServer.Spawn(newSpectator);
+		NetworkServer.AddPlayerForConnection(connectionToClient, newSpectator, 1);
 	}
 	
 	[Server]
 	private void spawnPlayerAt(Vector3 position) {
 		playerPrefab.SetActive(false);
-		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity) as GameObject;
-		GameObject playerCam = Instantiate(playerCamPrefab, position, Quaternion.identity) as GameObject;
+		GameObject newPlayer = Instantiate(playerPrefab, position, Quaternion.identity);
+		GameObject playerCam = Instantiate(playerCamPrefab, position, Quaternion.identity);
+		GameObject playerLegs = Instantiate(playerLegsPrefab, position, Quaternion.identity);
+		GameObject playerArms = Instantiate(playerArmsPrefab, position, Quaternion.identity);
 
 		Player playerScript = newPlayer.GetComponent<Player>();
-		playerScript.clientController = this;
+		playerScript.clientControllerId = netId;
 
 		newPlayer.SetActive(true);
 
 		playerCam.transform.parent = newPlayer.transform;
-		playerCam.transform.localPosition = new Vector3(0, .8f, 0);
+		playerCam.transform.localPosition = playerCamPrefab.transform.localPosition;
+		playerLegs.transform.parent = newPlayer.transform;
+		playerLegs.transform.localPosition = playerLegsPrefab.transform.localPosition;
+		playerArms.transform.parent = newPlayer.transform;
+		playerArms.transform.localPosition = playerArmsPrefab.transform.localPosition;
 
-		newPlayer.name = "player" + Random.Range(1, 20);
+		newPlayer.name = "player-" + playerName;
+	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
+	    if (mode != null) {
+	        TeamId team = newPlayer.GetComponent<TeamId>();
+	        team.id = mode.localTeamId;
+	        team.enabled = true;
+	    }
 
+	    NetworkServer.Spawn(newPlayer);
+		NetworkInstanceId playerId = newPlayer.GetComponent<Player>().netId;
+		newPlayer.GetComponent<NameTag>().displayName = playerName;
+		newPlayer.GetComponent<Score>().owner = this;
+		playerCam.GetComponent<NetworkParenter>().setParentId(playerId);
+		playerLegs.GetComponent<NetworkParenter>().setParentId(playerId);
+		playerArms.GetComponent<NetworkParenter>().setParentId(playerId);
 
-		NetworkServer.Spawn(newPlayer);
 		NetworkServer.Spawn(playerCam);
+		NetworkServer.Spawn(playerLegs);
+		NetworkServer.Spawn(playerArms);
 
 		NetworkServer.AddPlayerForConnection(connectionToClient, newPlayer, 1);
-		id = newPlayer.GetComponent<Player>().netId;
-		camId = playerCam.GetComponent<NetworkIdentity>().netId;
-		playerCam.GetComponent<NetworkParenter>().setParentId(id);
-
 	}
 
 	[Server]
-	public void destroyPlayer(NetworkConnection clientConnection, short playerID) {
+	public void destroyPlayer() {
 		isDead = true;
+		player.GetComponent<Player>().dismantle();
+	}
 
-		Destroy(player);
+	[Client]
+	public void setPlayer(GameObject player) {
+		this.player = player;
 	}
 
 	[Client]
 	private void setPlayerDead(bool dead) {
 		isDead = dead;
-		if(isLocalPlayer) {
-			switchCamera();
+		if (isDead) {
+			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
+			if(isLocalPlayer) {
+				GlobalConfig.globalConfig.cameraManager.switchCamera();
+			}
 		}
 	}
 
@@ -114,114 +140,11 @@ public class ClientController : NetworkBehaviour {
 	public void respawnPlayerAt(Vector3 position) {
 		if(isDead) {
 			isDead = false;
-			RpcResetCamera();
 			spawnPlayerAt(position);
 		}
 	}
 
-	[ClientRpc]
-	private void RpcResetCamera() {
-		if(currentCamera >= 0) {
-			disableCurrentCam();
-			disableSceneCam();
-			currentCamera = -1;
-		}
-	}
-
-	[Client]
-	private void setPlayerId(NetworkInstanceId id) {
-		this.id = id;
-		player = ClientScene.FindLocalObject(id);
-		Player playerScript = player.GetComponent<Player>();
-		playerScript.controller = this;
-		if(!playerScript.isLocalPlayer) {
-			cameras.Add(id);
-			playerScript.clientController = this;
-		}
-	}
-
-	[Client]
-	private void setCamId(NetworkInstanceId camId) {
-		this.camId = camId;
-		player = ClientScene.FindLocalObject(id);
-		GameObject cam = ClientScene.FindLocalObject(camId);
-		if(player.GetComponent<Player>().isLocalPlayer) {
-			disableSceneCam();
-			cam.GetComponent<Camera>().enabled = true;
-			cam.GetComponent<AudioListener>().enabled = true;
-		}
-	}
-
-	[ClientRpc]
-	private void RpcSwitchCam() {
-		switchCamera();
-	}
-
-	[Client]
-	private void switchCamera() {
-		if(!isDead)
-			return;
-		if(currentCamera >= 0) {
-			disableCurrentCam();
-			incrementCamera();
-		} else {
-			currentCamera = 0;
-		}
-		enableCurrentCam();
-	}
-
-	[Client]
-	private void incrementCamera() {
-		if(currentCamera >= cameras.Count - 1) {
-			currentCamera = 0;
-		} else {
-			currentCamera++;
-		}
-	}
-
-	[Client]
-	private void disableCurrentCam() {
-		if(!isLocalPlayer)
-			return;
-		if(currentCamera < cameras.Count) {
-			Camera actualCam = ClientScene.FindLocalObject(cameras[currentCamera]).GetComponentInChildren<Camera>();
-			actualCam.enabled = false;
-			actualCam.GetComponent<AudioListener>().enabled = false;
-		}
-	}
-
-	[Client]
-	private void disableSceneCam() {
-		if(!isLocalPlayer)
-			return;
-		if(sceneCamera != null) {
-			sceneCamera.enabled = false;
-			sceneCamera.GetComponent<AudioListener>().enabled = false;
-		}
-	}
-
-	[Client]
-	private void enableSceneCam() {
-		if(!isLocalPlayer)
-			return;
-		if(sceneCamera != null) {
-			sceneCamera.enabled = true;
-			sceneCamera.GetComponent<AudioListener>().enabled = true;
-		}
-	}
-
-	[Client]
-	private void enableCurrentCam() {
-		if(!isLocalPlayer)
-			return;
-		if(currentCamera < cameras.Count && currentCamera >= 0) {
-			Camera nextCam = ClientScene.FindLocalObject(cameras[currentCamera]).GetComponentInChildren<Camera>();
-			if(nextCam != null) {
-				nextCam.enabled = true;
-				nextCam.GetComponent<AudioListener>().enabled = true;
-			}
-		} else if(cameras.Count < 1) {
-			enableSceneCam();
-		}
+	public bool isSpectator() {
+		return clientType == NetworkController.ClientType.SPECTATOR || clientType == NetworkController.ClientType.ADMIN;
 	}
 }

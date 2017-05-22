@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class FPSMeter : MonoBehaviour {
+public class FPSMeter : NetworkBehaviour {
 
 	public uint targetFramerate = 60;
 	public float opacity = 0.5f;
 	public double trackRate = 0.3;
 
 	private double deltaTime;
-	private double msec;
+//	private double msec;
 	private double fps;
 	private double barLevel;
+//	private double aiTime;
 	private Texture2D boxColor;
 	private GUIStyle boxStyle;
 
@@ -20,14 +22,15 @@ public class FPSMeter : MonoBehaviour {
 	
 	void Update () {
 		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-		msec = deltaTime * 1000;
+//		msec = deltaTime * 1000;
 		fps = 1f / deltaTime;
 		barLevel += (getFPSMeterPosition(fps, targetFramerate) -barLevel) *trackRate;
-    }
+//		aiTime = ((Bases) GlobalConfig.globalConfig.gamemode).getRobotTiming() * 1000.0;
+	}
 
 	public void OnGUI() {
-		string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-		GUI.Label(new Rect(0, 0, 100, 20), text);
+//		string text = string.Format("{0:0.0} ms ({1:0.} fps) {2:0.}ms/sec / {3:0.0}% AI ", msec, fps, aiTime, ((aiTime / fps)/msec) *100.0);
+//		GUI.Label(new Rect(0, 0, 250, 20), text);
 
 		drawFPSMeter(fps, 20);
 	}
@@ -48,7 +51,7 @@ public class FPSMeter : MonoBehaviour {
 		// draw FPS level
 		float fpsClamped = Mathf.Max(0, Mathf.Min(1, (float)barLevel) * 1.5f -0.5f);
 		Color barColor = new Color(0.2f + 0.8f * (1 - fpsClamped), 0.2f + 0.8f * fpsClamped, 0.2f, opacity);
-        drawBox(new Rect(0, yPos, (float)barLevel *meterTargetWidth, meterHeight), barColor);
+		drawBox(new Rect(0, yPos, (float)barLevel *meterTargetWidth, meterHeight), barColor);
 		
 		// draw target mark
 		drawBox(new Rect(meterTargetWidth - 1, yPos, 2, meterHeight),

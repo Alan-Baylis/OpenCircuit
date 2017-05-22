@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-
 
 /**
  * Something an AI can endeavour to accomplish, or more simply put, execute
@@ -20,17 +18,24 @@ public abstract class Endeavour : Prioritizable {
 	protected RobotController controller;
 	protected EndeavourFactory factory;
 
-    public bool active = false;
+    public bool active;
 
-    private float priorityCache;
-    private int lastFrameEvaluated = -1;
-	private Dictionary<TagEnum, Tag> tagMap;
+    protected float priorityCache;
+    protected int lastFrameEvaluated = -1;
+	protected Dictionary<TagEnum, Tag> tagMap;
+
+    private AbstractArms myArms;
+	private AbstractRobotGun myRifle;
+	private HoverJet myJet;
+	private RoboEyes myEyes;
+	private TowerSpawner myTowerSpawner;
+
 
 	public Endeavour(EndeavourFactory parentFactory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tagMap) {
 		this.controller = controller;
 		this.goals = goals;
-		this.factory = parentFactory;
 		this.tagMap = tagMap;
+		factory = parentFactory;
 	}
 
 	public virtual void update() {
@@ -62,11 +67,11 @@ public abstract class Endeavour : Prioritizable {
     }
 
 
-	public bool isReady(Dictionary<System.Type, int> availableComponents) {
+	public virtual bool isReady(Dictionary<System.Type, int> availableComponents) {
 		return (!singleExecutor() || tagMap[getPrimaryTagType()].getConcurrentExecutions(controller, GetType()) == 0) && canExecute() && hasAllComponents(availableComponents);
 	}
 
-	public float getPriority() {
+	public virtual float getPriority() {
 		if (lastFrameEvaluated != Time.frameCount) {
 			priorityCache = calculateFinalPriority();
 			lastFrameEvaluated = Time.frameCount;
@@ -82,7 +87,7 @@ public abstract class Endeavour : Prioritizable {
 		return new List<Tag>(tagMap.Values);
 	}
 
-	protected float calculateFinalPriority() {
+	protected virtual float calculateFinalPriority() {
 		float finalPriority = calculatePriority();
 		finalPriority += calculateMobBenefit();
 		if (active) {
@@ -148,7 +153,52 @@ public abstract class Endeavour : Prioritizable {
 			   -executors * factory.mobCostPerRobot;
 	}
 
-	private bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
+    protected AbstractArms arms {
+        get {
+            if (myArms == null) {
+                myArms = getController().getRobotComponent<AbstractArms>();
+            }
+            return myArms;
+        }
+    }
+
+	protected AbstractRobotGun rifle {
+		get {
+			if (myRifle == null) {
+				myRifle = getController().getRobotComponent<AbstractRobotGun>();
+			}
+			return myRifle;
+		}
+	}
+
+    protected HoverJet jet {
+        get {
+            if (myJet == null) {
+                myJet = getController().getRobotComponent<HoverJet>();
+            }
+            return myJet;
+        }
+    }
+
+	protected RoboEyes eyes {
+		get {
+			if (myEyes == null) {
+				myEyes = getController().getRobotComponent<RoboEyes>();
+			}
+			return myEyes;
+		}
+	}
+
+    protected TowerSpawner towerSpawner {
+        get {
+            if (myTowerSpawner == null) {
+                myTowerSpawner = getController().getRobotComponent<TowerSpawner>();
+            }
+            return myTowerSpawner;
+        }
+    }
+
+	protected bool hasAllComponents(Dictionary<System.Type, int> availableComponents) {
 		foreach (System.Type type in getRequiredComponents()) {
 			if (!availableComponents.ContainsKey(type) || availableComponents[type] < 1) {
 				return false;
@@ -176,4 +226,13 @@ public abstract class Endeavour : Prioritizable {
 			tag.addExecution(getController(), this.GetType());
 		}
 	}
+
+    public bool isMissingComponents(Dictionary<System.Type, int> availableComponents) {
+        foreach (System.Type type in getRequiredComponents()) {
+            if (!availableComponents.ContainsKey(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Networking;
 
-public class DeathZone : MonoBehaviour {
+public class DeathZone : NetworkBehaviour {
 
+	[ServerCallback]
 	public void OnTriggerEnter(Collider other) {
 		Player player = other.gameObject.GetComponent<Player>();
 		if (player == null)

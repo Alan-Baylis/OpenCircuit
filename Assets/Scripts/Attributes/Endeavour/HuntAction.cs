@@ -1,20 +1,13 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 
 public class HuntAction : Endeavour {
 
 	private Tag target;
-	private HoverJet jet;
-	private AbstractArms arms;
 
 	public HuntAction(EndeavourFactory factory, RobotController controller, List<Goal> goals, Dictionary<TagEnum, Tag> tags)
 		: base(factory, controller, goals, tags) {
 		target = getTagOfType<Tag>(TagEnum.Player);
-		this.name = "hunt";
-		jet = getController().getRobotComponent<HoverJet>();
-		arms = getController().getRobotComponent<AbstractArms>();
+		name = "hunt";
 	}
 
 	public override bool canExecute() {
@@ -33,15 +26,15 @@ public class HuntAction : Endeavour {
 	}
 
 	public override void onMessage(RobotMessage message) {
-		if(message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
+		if(message.Message.Equals(AbstractArms.TARGET_CAPTURED_MESSAGE)) {
             jet.stop();
-		} else if (message.Type == RobotMessage.MessageType.ACTION && message.Message.Equals(AbstractArms.RELEASED_CAPTURED_MESSAGE)) {
+		} else if (message.Message.Equals(AbstractArms.RELEASED_CAPTURED_MESSAGE)) {
 			jet.setTarget(target.getLabelHandle(), false);
 		}
 	}
 
 	public override System.Type[] getRequiredComponents() {
-		return new System.Type[] { typeof(HoverJet), typeof(AbstractArms) };
+		return new [] { typeof(HoverJet), typeof(AbstractArms) };
 	}
 
 	public override bool singleExecutor() {

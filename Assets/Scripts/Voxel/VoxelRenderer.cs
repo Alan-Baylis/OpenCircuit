@@ -209,7 +209,7 @@ namespace Vox {
 			rend.enabled = false;
 			rend.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.BlendProbesAndSkybox;
 #if UNITY_EDITOR
-			UnityEditor.EditorUtility.SetSelectedWireframeHidden(rend, true);
+			UnityEditor.EditorUtility.SetSelectedRenderState(rend, UnityEditor.EditorSelectedRenderState.Hidden);
 #endif
 			gameObject.AddComponent<MeshFilter>().sharedMesh = new Mesh();
 			gameObject.AddComponent<VoxelMeshObject>().index = index;
@@ -338,7 +338,6 @@ namespace Vox {
 
 			m.SetTriangles(triangleArray, 0);
 			m.RecalculateBounds();
-			;
 			rend.enabled = true;
 
 			// add a collider for the mesh
@@ -355,7 +354,6 @@ namespace Vox {
 					mesh.normals = colNorms;
 					mesh.SetTriangles(triangles, 0);
 					mesh.RecalculateBounds();
-					;
 					collider.sharedMesh = mesh;
 				} else {
 					collider.sharedMesh = m;
@@ -368,7 +366,7 @@ namespace Vox {
 #if UNITY_EDITOR
 			foreach(GameObject ob in obs) {
 				foreach(Renderer rend in ob.GetComponents<Renderer>()) {
-					UnityEditor.EditorUtility.SetSelectedWireframeHidden(rend, true);
+					UnityEditor.EditorUtility.SetSelectedRenderState(rend, UnityEditor.EditorSelectedRenderState.Hidden);
 				}
 			}
 #endif

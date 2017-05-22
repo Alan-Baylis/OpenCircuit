@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class Health : NetworkBehaviour {
 
@@ -12,10 +11,19 @@ public class Health : NetworkBehaviour {
 	public AudioClip hurtSound;
 	public float hurtSoundPitch = 1;
 
+	private GameObject lastAttacker;
+	private Label label;
+
 	[SyncVar]
 	private float suffering = 0;
 
 	void Start() {
+		label = GetComponent<Label>();
+		if (label != null) {
+			label.setTag(new Tag(TagEnum.Health, 0, label.labelHandle));
+			label.addOperation(new DamageOperation(this), new [] { typeof(DamageTrigger) });
+		}
+
 		soundEmitter = gameObject.AddComponent<AudioSource>();
 		soundEmitter.clip = hurtSound;
 	}
@@ -43,15 +51,15 @@ public class Health : NetworkBehaviour {
 
 	[Server]
 	public virtual void destruct() {
-		Label label = GetComponent<Label>();
 		if (label != null)
-			label.sendTrigger(gameObject, new DestructTrigger());
+			label.sendTrigger(lastAttacker, new DestructTrigger());
 	}
 
-	public virtual void hurt(float pain) {
+	public virtual void hurt(float pain, GameObject instigator) {
+		lastAttacker = instigator;
 		suffering += pain;
 		if(soundEmitter.clip != null) {
-			soundEmitter.pitch = UnityEngine.Random.Range(hurtSoundPitch -0.05f, hurtSoundPitch +0.05f);
+			soundEmitter.pitch = Random.Range(hurtSoundPitch -0.05f, hurtSoundPitch +0.05f);
 			soundEmitter.Play();
 		}
 		// play sound or whatever here

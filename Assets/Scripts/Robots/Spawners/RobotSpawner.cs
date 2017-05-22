@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 public class RobotSpawner : AbstractRobotSpawner {
 
@@ -9,12 +8,16 @@ public class RobotSpawner : AbstractRobotSpawner {
 	[ServerCallback]
 	public override void Update() {
         base.Update();
-		if (active && RobotController.controllerCount < getConfig().getMaxRobots()) {
-			if (Time.time -lastSpawnTime > getConfig().getDelay()) {
-				spawnRobot();
-				lastSpawnTime = Time.time;
+		int teamId = GetComponent<TeamId>().id;
+		if (active && Time.time -lastSpawnTime > GlobalConfig.globalConfig.getDelay(teamId)) {
+			if (GetComponent<TeamId>().enabled && GlobalConfig.globalConfig.gamemode is TeamGameMode) {
+				if (GlobalConfig.globalConfig.teamGameMode.teams[teamId].robotCount >= GlobalConfig.globalConfig.teamGameMode.getMaxRobots(teamId))
+					return;
+			} else if (GlobalConfig.globalConfig.getRobotCount() >= GlobalConfig.globalConfig.getMaxRobots()) {
+				return;
 			}
+			spawnRobot();
+			lastSpawnTime = Time.time;
 		}
 	}
-
 }

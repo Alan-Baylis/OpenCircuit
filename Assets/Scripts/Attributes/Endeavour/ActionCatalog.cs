@@ -13,7 +13,7 @@ public class ActionCatalog {
 					if (!type.IsAbstract && type.IsClass && type.IsSubclassOf(typeof(EndeavourFactory))) {
 						List<TagRequirement> requiredTags = (List<TagRequirement>)type.GetMethod("getRequiredTags").Invoke(null, null);
 						foreach (TagRequirement tagType in requiredTags) {
-							addEntry(tagType.getType(), type);
+							addEntry(tagType.type, type);
 						}
 					}
 				}

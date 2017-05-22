@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections;
-using System.Collections.Generic;
 using System;
 
 [CustomEditor(typeof(RobotController), true)]
@@ -169,7 +167,6 @@ public class RobotControllerGUI : Editor {
 		}
         EditorGUILayout.PropertyField(serializedObject.FindProperty("locations"), true);
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("targetSightedSound"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionSound"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("destructionEffect"), true);
 		doEndeavourList(robot);
 		//robot.OnBeforeSerialize();
@@ -194,18 +191,10 @@ public class RobotControllerGUI : Editor {
 				robot.endeavourFactories[i] = EndeavourFactory.constructDefault();
 			}
 		}
-		doArrayGUI(ref robot.endeavourFactories);
+		doArrayGUI(ref robot.endeavourFactories, robot.gameObject);
 	}
 
-	private static void doArrayGUI<T>(ref T[] array) where T : InspectorListElement {
-		//GUILayout.BeginHorizontal();
-		//int newSize = Math.Max(EditorGUILayout.IntField("Count", array.Length), 0);
-		//if (newSize != array.Length) {
-		//	array = resize(array, newSize);
-		//	return;
-		//}
-		//GUILayout.EndHorizontal();
-
+	private static void doArrayGUI<T>(ref T[] array, GameObject parent) where T : InspectorListElement {
 		// draw list
 		for(int i = 0; i < array.Length; ++i) {
 			GUILayout.Box("", GUILayout.Height(1), GUILayout.ExpandWidth(true));
@@ -227,7 +216,7 @@ public class RobotControllerGUI : Editor {
 
 			// draw element
 			GUILayout.BeginVertical();
-			array[i] = (T)array[i].doListElementGUI();
+			array[i] = (T)array[i].doListElementGUI(parent);
 			GUILayout.EndVertical();
 			GUILayout.EndHorizontal();
 		}

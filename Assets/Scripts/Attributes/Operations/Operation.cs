@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 
 [System.Serializable]
@@ -30,9 +28,7 @@ public abstract class Operation: InspectorListElement {
 	[System.NonSerialized]
 	protected Label parent;
 
-	public virtual System.Type[] getTriggers() {
-		return new System.Type[0];
-	}
+	public abstract System.Type[] getTriggers();
 
 	public abstract void perform(GameObject instigator, Trigger trig);
 	
@@ -57,7 +53,7 @@ public abstract class Operation: InspectorListElement {
 	}
 
 #if UNITY_EDITOR
-	InspectorListElement InspectorListElement.doListElementGUI() {
+	InspectorListElement InspectorListElement.doListElementGUI(GameObject parent) {
 		int selectedType = System.Array.FindIndex(types, OP => OP == GetType());
 		int newSelectedType = UnityEditor.EditorGUILayout.Popup(selectedType, getTypeNames());
 		if (newSelectedType != selectedType) {

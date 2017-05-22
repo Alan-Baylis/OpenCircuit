@@ -1,17 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
-using System.Collections.Generic;
 
 [AddComponentMenu("Scripts/Robot/Robo Eyes")]
 public class RoboEyes : AbstractVisualSensor {
 
+    public Light eyeLight;
 	private LaserProjector scanner;
+	[SyncVar(hook = "changeEyeColor")]
+	private Color eyeColor;
 
 	// Use this for initialization
 	[ServerCallback]
 	public override void Start () {
         base.Start();
+	    TeamId teamIdComponent = getController().GetComponent<TeamId>();
+		if (teamIdComponent.enabled) {
+			eyeColor = teamIdComponent.team.config.color;
+		} else {
+			eyeColor = Color.red;
+		}
 		scanner = GetComponent<LaserProjector>();
 	}
 
@@ -41,5 +48,18 @@ public class RoboEyes : AbstractVisualSensor {
 
 	public LaserProjector getScanner() {
 		return scanner;
+	}
+
+	private void changeEyeColor(Color color) {
+		eyeColor = color;
+		Renderer renderer = GetComponent<Renderer>();
+		if (renderer != null) {
+			Material mat = renderer.material;
+
+			mat.SetColor("_EmissionColor", eyeColor);
+			mat.SetColor("_Albedo", eyeColor);
+			eyeLight.color = eyeColor;
+			eyeLight.enabled = true;
+		}
 	}
 }

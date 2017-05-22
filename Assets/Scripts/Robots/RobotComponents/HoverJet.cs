@@ -5,16 +5,17 @@ using System.Collections.Generic;
 [AddComponentMenu("Scripts/Robot/Hover Jet")]
 public class HoverJet : AbstractRobotComponent {
 
-    public const string TARGET_REACHED = "target reached";
+	public const string TARGET_REACHED = "target reached";
 
 	public float distanceCost = 1;
 
 	private LabelHandle target = null;
+	private bool hasSentReachedMessage = false;
 
-	private NavMeshAgent myNav;
-	public NavMeshAgent nav { get {
+	private UnityEngine.AI.NavMeshAgent myNav;
+	public UnityEngine.AI.NavMeshAgent nav { get {
 			if (myNav == null)
-				myNav = getController().GetComponent<NavMeshAgent>();
+				myNav = getController().GetComponent<UnityEngine.AI.NavMeshAgent>();
 			return myNav;
 		}
 	}
@@ -23,7 +24,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public float animSpeedAdjust = 1f;
 
-    public float powerDrawRate = 5f;
+	public float powerDrawRate = 5f;
 
 	public float regularSpeed = 5f;
 	public float pursueSpeed = 7f;
@@ -41,10 +42,10 @@ public class HoverJet : AbstractRobotComponent {
 #endif
 	private float regularHeight;
 	private float regularStrideLength;
-	private ChassisController chassis;
 
 	public void goToPosition(Vector3 ? pos, bool autoBrake) {
 		stop();
+		hasSentReachedMessage = false;
 		nav.autoBraking = autoBrake;
 		if (pos != null) {
 			targetLocation = pos;
@@ -53,23 +54,24 @@ public class HoverJet : AbstractRobotComponent {
 				return;
 			}
 			if (nav.enabled) {
-				nav.Resume();
+				nav.isStopped = false;
 			}
 		}
 	}
 
 	public void setTarget(LabelHandle target, bool autoBrake, bool matchRotation = false) {
 		stop();
+		hasSentReachedMessage = false;
 		matchTargetRotation = matchRotation;
 		nav.autoBraking = autoBrake;
 		if (target != null) {
-            this.target = target;
+			this.target = target;
 			if(hasReachedTargetLocation(this.target) && hasMatchedTargetRotation()) {
 				this.target = null;
 				return;
 			}
 			if(nav.enabled) {
-				nav.Resume();
+				nav.isStopped = false;
 			}
 		}
 	}
@@ -80,16 +82,15 @@ public class HoverJet : AbstractRobotComponent {
 
 	[ServerCallback]
 	public void Start() {
-		chassis = GetComponentInChildren<ChassisController>();
 		regularSpeed += Random.Range(-0.5f, 0.5f);
 		pursueSpeed += Random.Range(-0.5f, 0.5f);
 		nav.speed = regularSpeed;
 		regularHeight = nav.height;
-		regularStrideLength = chassis.strideLength;
 	}
 
 	[ServerCallback]
 	void Update () {
+//		double startTime = Time.realtimeSinceStartup;
 		float actualSpeed = regularSpeed * speedMultipler;
 		if(nav.speed < actualSpeed) {
 			nav.speed += speedRegenRate * Time.deltaTime;
@@ -98,9 +99,8 @@ public class HoverJet : AbstractRobotComponent {
 			}
 		} else if (nav.speed > actualSpeed) {
 			nav.speed = actualSpeed;
-        }
+		}
 
-		chassis.strideLength = regularStrideLength *nav.speed /actualSpeed;
 		if (nav.baseOffset < regularHeight) {
 			nav.baseOffset = nav.baseOffset + heightRegenRate * Time.deltaTime;
 
@@ -114,6 +114,8 @@ public class HoverJet : AbstractRobotComponent {
 		}
 		goToTarget();
 		nav.enabled = powerSource.drawPower(powerDrawRate * Time.deltaTime);
+//		double endTime = Time.realtimeSinceStartup;
+//		getController().getExecutionTimer().addTime(endTime-startTime);
 	}
 
 	public float calculatePathCost(Label label) {
@@ -122,7 +124,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	public float calculatePathCost(Vector3 targetPos) {
 
-		NavMeshPath path = new NavMeshPath ();
+		UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath ();
 		if (nav.enabled) {
 			nav.CalculatePath (targetPos, path);
 		}
@@ -151,14 +153,14 @@ public class HoverJet : AbstractRobotComponent {
 		return hasReachedTargetLocation(target.getPosition()) && hasMatchedTargetRotation(target.label.transform.forward);
 	}
 
-    public void stop() {
-        this.target = null;
-		this.targetLocation = null;
-		this.matchTargetRotation = false;
-        if (nav.enabled) {
-            nav.Stop();
-        }
-    }
+	public void stop() {
+		target = null;
+		targetLocation = null;
+		matchTargetRotation = false;
+		if (nav.enabled) {
+			nav.isStopped = true;
+		}
+	}
 
 	public override void release() {
 		stop();
@@ -172,13 +174,12 @@ public class HoverJet : AbstractRobotComponent {
 				if (hasReachedTargetLocation(goal.Value)) {
 					if (target != null && !hasMatchedTargetRotation()) {
 						getController().transform.rotation = Quaternion.RotateTowards(Quaternion.LookRotation(getController().transform.forward), Quaternion.LookRotation(target.label.transform.forward), nav.angularSpeed * Time.deltaTime);
-					} else {
-						getController().enqueueMessage(new RobotMessage(RobotMessage.MessageType.ACTION, TARGET_REACHED, target, goal.Value, null));
-						target = null;
-						targetLocation = null;
-						nav.Stop();
-						return;
+					} else if (!hasSentReachedMessage) {
+						getController().enqueueMessage(new RobotMessage(TARGET_REACHED, target, goal.Value, null));
+						hasSentReachedMessage = true;
 					}
+				} else {
+					hasSentReachedMessage = false;
 				}
 
 				if (nav.enabled) {
@@ -205,8 +206,8 @@ public class HoverJet : AbstractRobotComponent {
 	}
 
 	private Vector3? getNearestNavPos(Vector3 pos) {
-		NavMeshHit hit;
-		NavMesh.SamplePosition(pos, out hit, 5f, NavMesh.AllAreas);
+		UnityEngine.AI.NavMeshHit hit;
+		UnityEngine.AI.NavMesh.SamplePosition(pos, out hit, 5f, UnityEngine.AI.NavMesh.AllAreas);
 		if (hit.hit) {
 			return hit.position;
 		} 
@@ -219,7 +220,7 @@ public class HoverJet : AbstractRobotComponent {
 
 	private bool hasReachedTargetLocation(Vector3 targetLocation) {
 		float xzDist = Vector2.Distance(new Vector2(getController().transform.position.x, getController().transform.position.z),
-								new Vector2(targetLocation.x, targetLocation.z));
+			new Vector2(targetLocation.x, targetLocation.z));
 		float yDist = Mathf.Abs((getController().transform.position.y - .4f) - targetLocation.y);
 		if(xzDist < .5f && yDist < 2.5f) {
 			return true;

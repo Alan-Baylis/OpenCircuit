@@ -39,7 +39,7 @@ public class MouseLook : NetworkBehaviour {
 
 	public Player player {
 		get {
-			if(myPlayer == null) {
+			if (myPlayer == null) {
 				myPlayer = GetComponent<Player>();
 			}
 			return myPlayer; }
@@ -47,7 +47,7 @@ public class MouseLook : NetworkBehaviour {
 
 	void Start() {
 		// Make the rigid body not change rotation
-		if(GetComponent<Rigidbody>())
+		if (GetComponent<Rigidbody>())
 			GetComponent<Rigidbody>().freezeRotation = true;
 	}
 
@@ -55,24 +55,23 @@ public class MouseLook : NetworkBehaviour {
 		// do zooming
 		player.cam.fieldOfView += (defaultFov /currentZoom -player.cam.fieldOfView) *zoomRate;
 
-		if(isAuto) {
-			player.cam.transform.rotation = Quaternion.Lerp(player.cam.transform.rotation, Quaternion.LookRotation(lookPoint - player.cam.transform.position), Time.deltaTime * autoLookSpeed);
-			if(1 - Mathf.Abs(Vector3.Dot(player.cam.transform.forward, (lookPoint - player.cam.transform.position).normalized)) < .05f) {
+		if (isAuto) {
+			player.head.transform.rotation = Quaternion.Lerp(player.head.transform.rotation, Quaternion.LookRotation(lookPoint - player.cam.transform.position), Time.deltaTime * autoLookSpeed);
+			if (1 - Mathf.Abs(Vector3.Dot(player.cam.transform.forward, (lookPoint - player.cam.transform.position).normalized)) < .05f) {
 				isAuto = false;
 			}
 		}
 	}
 
 	public void rotate(float xRotate, float yRotate) {
-		float rotationX = player.cam.transform.localEulerAngles.y + xRotate * sensitivityX;
+		float rotationX = player.head.transform.localEulerAngles.y + xRotate * sensitivityX;
 
 		rotationY += yRotate *sensitivityY;
 		rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 
 		Vector3 angle = new Vector3(-rotationY, rotationX, 0);
-		player.cam.transform.localEulerAngles = angle;
+		player.head.transform.localEulerAngles = angle;
 		CmdSetRotation(angle);
-
 	}
 
 	public void lookAtPoint(Vector3 point, float lookSpeed) {
@@ -91,7 +90,7 @@ public class MouseLook : NetworkBehaviour {
 
 	[Command]
 	protected void CmdSetRotation(Vector3 eulerAngles) {
-		player.cam.transform.localEulerAngles = eulerAngles;
+		player.head.transform.localEulerAngles = eulerAngles;
 	}
 
 	public bool isAutoMode() {

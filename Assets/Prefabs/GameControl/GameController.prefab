@@ -5,13 +5,19 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 400008}
-  - 114: {fileID: 11460716}
-  - 114: {fileID: 11433604}
-  - 114: {fileID: 11483592}
-  - 114: {fileID: 114000012641137478}
+  - component: {fileID: 400008}
+  - component: {fileID: 11460716}
+  - component: {fileID: 11483592}
+  - component: {fileID: 114000012641137478}
+  - component: {fileID: 114762472885982036}
+  - component: {fileID: 114550412258392786}
+  - component: {fileID: 114685695393273014}
+  - component: {fileID: 114192725487870188}
+  - component: {fileID: 114875189402417868}
+  - component: {fileID: 114343986674943158}
+  - component: {fileID: 114854041120764408}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GlobalConfig
@@ -28,21 +34,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!114 &11433604
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 176396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d99c5dbb87adc1e45a6ac44129675820, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &11460716
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -54,12 +49,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc73575c9d3520046a38ae8378239a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 175040, guid: 7ecf7c856d9af924086760e0e85174a4, type: 2}
   configuration:
-    robotsPerPlayer: 3
-    robotSpawnRatePerSecond: 0.05
-    spawnRateIncreasePerPlayer: 0.03
-  centralRobotController: {fileID: 0}
-  frozenPlayers: 0
+    robotsPerPlayer: 10
+    robotSpawnRatePerSecond: 1
+    spawnRateIncreasePerPlayer: 0.1
+    friendlySpawnRateMultiplierPerPlayer: 0.9
+    gameMode: 1
+  gameStarted: 0
+  gamemode: {fileID: 0}
+  cameraManager: {fileID: 114762472885982036}
+  effectsManager: {fileID: 114685695393273014}
+  leaderboard: {fileID: 114343986674943158}
+  scoreboard: {fileID: 114854041120764408}
 --- !u!114 &11483592
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -117,3 +119,133 @@ MonoBehaviour:
   targetFramerate: 60
   opacity: 0.5
   trackRate: 0.3
+--- !u!114 &114192725487870188
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64bf759bcd566f1469463ae4693c98f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frozenPlayers: 0
+  freezeLockPrefab: {fileID: 185784, guid: 454a09dadc702234187eae57b6f945e6, type: 2}
+--- !u!114 &114343986674943158
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b40372c774123b74f9fad1b64ebce0ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entries: 10
+--- !u!114 &114550412258392786
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 522add28afee545b2a90bea785e1b7d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireflyConfig:
+    fireflySize: 0.02
+    glowSizeMult: 3
+    glowAlphaMult: 0.2
+    fireflyGravity: 400
+    damper: 20
+    randomAcceleration: 0
+    shuffleSpeed: 10
+    fadeSpeed: 5
+    fireflyTexture: {fileID: 2800000, guid: 9bf94422de37f294897e6ef487b09270, type: 3}
+    glowTexture: {fileID: 2800000, guid: 4dbdac1fe2b35954d9029417fd785115, type: 3}
+    fireflyColor: {r: 1, g: 1, b: 0.816, a: 1}
+    spawnPosition:
+      serializedVersion: 2
+      x: -0.1
+      y: -0.5
+      width: 0.2
+      height: 0.1
+    spawnSpeed:
+      serializedVersion: 2
+      x: -10
+      y: 50
+      width: 10
+      height: 50
+    escapeSpeed:
+      serializedVersion: 2
+      x: -20
+      y: -25
+      width: 40
+      height: 50
+--- !u!114 &114685695393273014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f27c9e3fbdc1044fbb19ee3db81cef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxEffects: 500
+--- !u!114 &114762472885982036
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7aabe173522f0f4d99c6320d67a9d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114854041120764408
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39198526347fc974783d9703be0d6f1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateInterval: 1
+--- !u!114 &114875189402417868
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 935f37758805a6b48aa4e2b2dc7259a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localTeamId: 0
+  teamConfig:
+  - color: {r: 0, g: 0, b: 0.49803922, a: 1}
+  - color: {r: 0.49803922, g: 0, b: 0, a: 1}
+  maxTowers: 3
+  playerRobotPenalty: 1.5
+  respawnDelay: 3
+  scoreDisplayPeriod: 3
+  buildPointDisplayPeriod: 6
+  comboDeteriorationRate: 8
+  comboScorePerBuildPoint:
+  - 100
+  - 300
+  - 600
+  centralRobotControllerPrefab: {fileID: 11417628, guid: e62a4f3f58a05da4db91326fb09c6a9b,
+    type: 2}
+  firstTeamLocations: []
+  secondTeamLocations: []

@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections;
 using System;
 
 public class InspectorList {
 	
-	public static void doArrayGUIPolymorphism<T>(ref T[] array) where T:InspectorListElement {
+	public static void doArrayGUIPolymorphism<T>(ref T[] array, GameObject gameObject) where T:InspectorListElement {
 		GUILayout.BeginHorizontal();
 		int newSize = Math.Max(EditorGUILayout.IntField("Count", array.Length), 0);
 		if (newSize != array.Length) {
@@ -24,7 +23,7 @@ public class InspectorList {
 			
 			// draw element
 			GUILayout.BeginVertical();
-			array[i] = (T) array[i].doListElementGUI();
+			array[i] = (T) array[i].doListElementGUI(gameObject);
 			GUILayout.EndVertical();
 			GUILayout.EndHorizontal();
 		}

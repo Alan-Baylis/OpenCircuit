@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 [AddComponentMenu("Scripts/Player/Controls")]
 public class Controls : NetworkBehaviour {
@@ -10,6 +9,7 @@ public class Controls : NetworkBehaviour {
 	private Menu menu;
 
 	public float mouseSensitivity = 1;
+	public float zoomingSensitivity = 0.8f;
 	public bool invertLook = false;
 	public bool enableMousePadHacking = false;
 
@@ -22,12 +22,12 @@ public class Controls : NetworkBehaviour {
 	}
 
 	void Awake () {
-		myPlayer = this.GetComponent<Player> ();
+		myPlayer = GetComponent<Player> ();
 		menu = GameObject.FindGameObjectWithTag("Menu").GetComponent<Menu>();
 	}
 
 	[ClientCallback]
-	void Update () {
+	void Update() {
 		if(!isLocalPlayer) {
 			return;
 		}
@@ -67,6 +67,12 @@ public class Controls : NetworkBehaviour {
 			CmdSetCrouch(status.crouching);
 		}
 
+		if (hasControls() && Input.GetButton("Score")) {
+			GlobalConfig.globalConfig.scoreboard.enabled = true;
+		} else {
+			GlobalConfig.globalConfig.scoreboard.enabled = false;
+		}
+
 		if(hasControls() && Input.GetButtonDown("Reload")) {
 			myPlayer.inventory.reloadEquipped();
 			if (!isServer)
@@ -74,8 +80,9 @@ public class Controls : NetworkBehaviour {
 		}
 
 		if (hasControls()) {
-			float hori = Input.GetAxis("Look Horizontal") * mouseSensitivity;
-			float verti = Input.GetAxis("Look Vertical") * mouseSensitivity;
+			float sensitivityMult = mouseSensitivity * (myPlayer.zooming ? zoomingSensitivity : 1);
+			float hori = Input.GetAxis("Look Horizontal") * sensitivityMult;
+			float verti = Input.GetAxis("Look Vertical") * sensitivityMult;
 			if (invertLook)
 				verti = -verti;
 			myPlayer.looker.rotate(hori, verti);
@@ -98,6 +105,22 @@ public class Controls : NetworkBehaviour {
 
 		if (hasControls() && Input.GetButtonDown("Interact")) {
 			CmdInteract();
+		}
+
+		if (hasControls() && Input.GetButtonDown("Build")) {
+			if (!myPlayer.inventory.inContext()) {
+				if (((Bases)GlobalConfig.globalConfig.gamemode).canBuildTower(myPlayer.clientController)) {
+					myPlayer.inventory.pushContext(typeof(BuildTool));
+				} else {
+					Fireflies.Config config = HUD.hud.fireflyConfig;
+					config.fireflySize *= 0.5f;
+					HUD.hud.setFireflyElementConfig("noBuildToolMessage", config);
+					HUD.hud.setFireflyElement("noBuildToolMessage", 3,
+						FireflyFont.getString("kill robots to\nincrement build_point", 0.05f, new Vector2(0, 0.1f), FireflyFont.HAlign.CENTER), true);
+				}
+			} else {
+				myPlayer.inventory.popContext(typeof(BuildTool));
+			}
 		}
 
 

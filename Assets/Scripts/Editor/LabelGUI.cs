@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
 
 [CustomEditor(typeof(Label), true)]
 public class LabelGUI : Editor {
 
-	private bool tagsExpanded = false;
-	private bool operationsExpanded = false;
+	private bool tagsExpanded;
+	private bool operationsExpanded;
 	
 	public override void OnInspectorGUI() {
 		serializedObject.Update();
@@ -31,15 +29,19 @@ public class LabelGUI : Editor {
 
 	public void doEndeavourInfo(Label label) {
 		EditorGUILayout.LabelField("Used in Actions:");
+		HashSet<Type> actions = new HashSet<Type>();
 		foreach (Tag tag in label.tags) {
 			if (tag != null) {
 				if (ActionCatalog.availableActionsMap.ContainsKey(tag.type)) {
-					List<System.Type> actionList = ActionCatalog.availableActionsMap[tag.type];
-					foreach (System.Type type in actionList) {
-						EditorGUILayout.LabelField("-->" + type.ToString());
+					List<Type> actionList = ActionCatalog.availableActionsMap[tag.type];
+					foreach (Type type in actionList) {
+						actions.Add(type);
 					}
 				}
 			}
+		}
+		foreach (Type type in actions) {
+			EditorGUILayout.LabelField("-->" + type);
 		}
 	}
 
@@ -49,12 +51,12 @@ public class LabelGUI : Editor {
 			return;
 		}
 
-		for (int i = 0; i < label.tags.Length; ++i)
+		for (int i = 0; i < label.tags.Length; ++i) {
 			if (label.tags[i] == null) {
 				label.tags[i] = Tag.constructDefault();
-				label.tags[i].setLabelHandle(label.labelHandle);
 			}
-		doArrayGUI(ref label.tags);
+		}
+		doArrayGUI(ref label.tags, label.gameObject);
 		/*
 		int newSize = UnityEditor.EditorGUILayout.IntField("Size:", label.tags.Length);
 			if(newSize != label.tags.Length) {
@@ -94,10 +96,10 @@ public class LabelGUI : Editor {
 		for(int i=0; i<label.operations.Length; ++i)
 			if (label.operations[i] == null)
 				label.operations[i] = Operation.constructDefault();
-		doArrayGUI(ref label.operations);
+		doArrayGUI(ref label.operations, label.gameObject);
 	}
 
-	private static void doArrayGUI<T>(ref T[] array) where T:InspectorListElement {
+	private static void doArrayGUI<T>(ref T[] array, GameObject parent) where T:InspectorListElement {
 		//GUILayout.BeginHorizontal();
 		//int newSize = Math.Max(EditorGUILayout.IntField("Count", array.Length), 0);
 		//if (newSize != array.Length) {
@@ -127,7 +129,7 @@ public class LabelGUI : Editor {
 
 			// draw element
 			GUILayout.BeginVertical();
-			array[i] = (T) array[i].doListElementGUI();
+			array[i] = (T) array[i].doListElementGUI(parent);
 			GUILayout.EndVertical();
 			GUILayout.EndHorizontal();
 		}

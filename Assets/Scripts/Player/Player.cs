@@ -14,22 +14,20 @@ public class Player : NetworkBehaviour {
 	public AudioClip teleportSound;
 	public float whiteOutDuration;
 	public float blackOutDuration;
+	public EffectSpec destroyEffect;
     [SyncVar]
-    public bool frozen = false;
+    public bool frozen;
 
-	[HideInInspector]
-	public ClientController controller;
 	[HideInInspector]
 	public bool zooming = false;
 
-    public GameObject freezeLock;
-	
 	private Attack myAttacker;
 	private Grab myGrabber;
 	private Interact myInteractor;
 	private Inventory myInventory;
 	private MovementController myMover;
 	private Camera myCam;
+	private CameraSync myHead;
 	private MouseLook myLooker;
 	private Controls myControls;
 	private Health myHealth;
@@ -43,7 +41,12 @@ public class Player : NetworkBehaviour {
 
 	public EffectSpec effectSpec;
 
+	[SyncVar]
+	public NetworkInstanceId clientControllerId = NetworkInstanceId.Invalid;
     private ClientController myClientController;
+
+	[SyncVar(hook = "changeEyeColor")]
+	private Color eyeColor;
 	
 	public Attack attacker { get {
 		if(myAttacker == null) {
@@ -77,7 +80,13 @@ public class Player : NetworkBehaviour {
 			myCam = GetComponentInChildren<Camera>();
 		}
 		return myCam; 
-	} set { myCam = value; } }
+		} set { myCam = value; } }
+	public CameraSync head { get {
+			if(myHead == null) {
+				myHead = GetComponentInChildren<CameraSync>();
+			}
+			return myHead; 
+		}}
 	public MouseLook looker { get {
 		if(myLooker == null) {
 			myLooker = GetComponent<MouseLook>();
@@ -97,10 +106,9 @@ public class Player : NetworkBehaviour {
 
     public ClientController clientController {
         get {
+	        if (myClientController == null && clientControllerId != NetworkInstanceId.Invalid)
+		        myClientController = ClientScene.FindLocalObject(clientControllerId).GetComponent<ClientController>();
             return myClientController;
-        }
-        set {
-            myClientController = value;
         }
     }
 
@@ -113,6 +121,23 @@ public class Player : NetworkBehaviour {
 		whiteOutTexture = new Texture2D (1, 1, TextureFormat.RGB24, false);
 		whiteOutTexture.SetPixel (0, 0, Color.white);
 		fadeIn(); // fade in for dramatic start
+	}
+
+
+	public void Start() {
+		if (isServer) {
+			TeamId team = GetComponent<TeamId>();
+			if (team.enabled) {
+				eyeColor = team.team.config.color;
+			} else {
+				eyeColor = Color.blue;
+			}
+			GetComponent<ScoreAgent>().owner = clientController;
+		}
+		//Allow the player to exist without a client controller
+		if (clientController != null) {
+			clientController.setPlayer(gameObject);
+		}
 	}
 
     [ClientCallback]
@@ -149,31 +174,31 @@ public class Player : NetworkBehaviour {
 		blackOutTime = Mathf.Max(seconds, blackOutTime);
 	}
 
-    [Server]
-    public void freeze() {
-        frozen = true;
-		Label label = GetComponent<Label>();
-        label.setTag(new Tag(TagEnum.Frozen, 0, label.labelHandle));
-        ++GlobalConfig.globalConfig.frozenPlayers;
-    }
-
-    [Server]
-    public void unfreeze() {
-        frozen = false;
-        GetComponent<Label>().clearTag(TagEnum.Frozen);
-        --GlobalConfig.globalConfig.frozenPlayers;
-    }
-
 	[Server]
 	public void die() {
 		if (!alive)
 			return;
-		GameObject newFreezeLock = GameObject.Instantiate(freezeLock) as GameObject;
-		newFreezeLock.GetComponent<NetworkParenter>().setParentId(netId);
-		FreezeLock freezeLockScript = newFreezeLock.AddComponent<FreezeLock>();
-		freezeLockScript.frozenPlayer = this;
-		NetworkServer.Spawn(newFreezeLock);
-		freeze();
+	    GlobalConfig.globalConfig.gamemode.onPlayerDeath(this);
+	}
+
+	[Server]
+	public void dismantle() {
+		enabled = false;
+		RpcDismantle();
+	}
+
+	[ClientRpc]
+	public void RpcDismantle() {
+		enabled = false;
+		dismantleEffect();
+	}
+
+	public void dismantleEffect() {
+		destroyEffect.spawn(transform.position);
+		while (transform.childCount > 0) {
+			DismantleEffect.dismantle(transform.GetChild(0), 30, isServer, GetComponent<Rigidbody>().velocity);
+		}
+		Destroy(gameObject);
 	}
 
 	public void teleport(Vector3 position) {
@@ -181,6 +206,17 @@ public class Player : NetworkBehaviour {
 		breathingSource.PlayOneShot(teleportSound);
 		transform.position = position;
 		whiteOutTime = whiteOutDuration;
+	}
+
+	private void changeEyeColor(Color color) {
+		eyeColor = color;
+		Renderer renderer = head.transform.FindChild("Eye").GetComponent<Renderer>();
+		if (renderer != null) {
+			Material mat = renderer.material;
+
+			mat.SetColor("_EmissionColor", eyeColor);
+			mat.SetColor("_Albedo", eyeColor);
+		}
 	}
 
 	[ClientCallback]

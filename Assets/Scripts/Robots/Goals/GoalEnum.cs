@@ -1,6 +1,3 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public enum GoalEnum {
+﻿public enum GoalEnum {
 	Offense, Protection, SelfPreservation
 }

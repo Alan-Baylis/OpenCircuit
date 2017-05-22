@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections;
 using System.Collections.Generic;
 
 [InitializeOnLoad]
@@ -28,17 +27,8 @@ public class LevelLoad {
 		Transform gameControl = new GameObject("Game Control").transform;
 		Transform environment = new GameObject("Environment").transform;
 
-
-		// create network manager
-		createPrefab("Assets/Prefabs/GameControl/NetworkManager.prefab", gameControl);
-
-		// create game controller
-		CentralRobotController crc = createPrefab("Assets/Prefabs/Robots/CRC.prefab", gameControl)
-			.GetComponent<CentralRobotController>();
-
-		// create game controller
-		createPrefab("Assets/Prefabs/GameControl/GameController.prefab", gameControl)
-			.GetComponent<GlobalConfig>().centralRobotController = crc;
+	    // create scene initializer
+	    createPrefab("Assets/Prefabs/GameControl/SceneInitializer.prefab", gameControl);
 
 		// create start point
 		createPrefab("Assets/Prefabs/GameControl/StartPosition.prefab", gameControl);
@@ -51,9 +41,6 @@ public class LevelLoad {
 
 		// create scene camera
 		createPrefab("Assets/Prefabs/GameControl/SceneCamera.prefab", gameControl);
-
-		// create menu
-		createPrefab("Assets/Prefabs/Main Menu.prefab", gameControl);
 
 		// set lighting mode
 		Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;

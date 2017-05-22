@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [System.Serializable]
 public class Die : Operation {
 
-	private static System.Type[] triggers = new System.Type[] {
-		typeof(ElectricShock),
+	private static System.Type[] triggers = {
+		typeof(ElectricShock)
 	};
 
 	public override System.Type[] getTriggers() {

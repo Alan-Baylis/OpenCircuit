@@ -1,16 +1,17 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 
 public class AssaultRifle : AbstractGun {
+
+    public AudioClip[] fireSounds;
 
 	public float inaccuracy = 0.1f;
 	public float range = 1000;
 	public float damage = 10;
 	public float impulse = 1;
 
-	public EffectSpec hitEffect;
-	public EffectSpec robotHitEffect;
+	public AbstractEffectController hitEffectPrefab;
+	public AbstractEffectController robotHitEffectPrefab;
 
 	public float reloadTime = 1f;
 	public int magazineSize = 20;
@@ -37,7 +38,7 @@ public class AssaultRifle : AbstractGun {
 		}
 	}
 
-	void FixedUpdate() {
+	public override void Update() {
 		base.Update();
 		bulletsRemainingDisplay = bulletsRemaining;
 	}
@@ -60,6 +61,18 @@ public class AssaultRifle : AbstractGun {
 		}
 	}
 
+	[Server]
+	public void clearAmmo() {
+		bulletsRemaining = 0;
+		currentMagazineFill = 0;
+		RpcClearAmmo();
+	}
+
+	[ClientRpc]
+	private void RpcClearAmmo() {
+		currentMagazineFill = 0;
+	}
+
 	public override void reload() {
 		if (currentMagazineFill < magazineSize) {
 			reloading = true;
@@ -80,23 +93,31 @@ public class AssaultRifle : AbstractGun {
 		RaycastHit hitInfo;
 		bool hit = Physics.Raycast(position, direction, out hitInfo, range);
 		if (hit) {
-			Health health = getParentComponent<Health>(hitInfo.collider.transform);
-			if (health != null) {
-				CmdBulletHitHealth(direction, hitInfo.point, hitInfo.normal, health.netId);
 
-				Rigidbody rb = health.GetComponent<Rigidbody>();
-				if (rb != null) {
-					rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+			Label label = getParentComponent<Label>(hitInfo.collider.transform);
+			if (label != null) {
+				NetworkIdentity networkIdentity = label.GetComponent<NetworkIdentity>();
+				if (networkIdentity != null) {
+					CmdBulletHitLabel(direction, hitInfo.point, hitInfo.normal, networkIdentity.netId);
+
+					Rigidbody rb = label.GetComponent<Rigidbody>();
+					if (rb != null) {
+						rb.AddForceAtPosition(direction * impulse, hitInfo.point);
+					}
+
+					// do ricochet
+					//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
+					//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
+					//}
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, hitInfo.point,
+						Vector3.Reflect(direction, hitInfo.normal));
+				} else {
+					CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
+					GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
 				}
-
-				// do ricochet
-				//if (-Vector3.Dot(direction, hitInfo.normal) < 0.5f) {
-				//	doBullet(hitInfo.point, Vector3.Reflect(direction, hitInfo.normal), power -0.25f);
-				//}
-				robotHitEffect.spawn(hitInfo.point, hitInfo.normal);
 			} else {
 				CmdBulletHit(direction, hitInfo.point, hitInfo.normal);
-				hitEffect.spawn(hitInfo.point, hitInfo.normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, hitInfo.point, hitInfo.normal);
 			}
 		} else {
 			CmdBulletMiss(direction);
@@ -117,8 +138,8 @@ public class AssaultRifle : AbstractGun {
 	[Server]
 	protected override void applyDamage(NetworkInstanceId hit, Vector3 direction, Vector3 normal) {
 		GameObject hitObject = ClientScene.FindLocalObject(hit);
-		Health health = hitObject.GetComponent<Health>();
-		NavMeshAgent navAgent = hitObject.GetComponent<NavMeshAgent>();
+		Label label = hitObject.GetComponent<Label>();
+		UnityEngine.AI.NavMeshAgent navAgent = hitObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if(navAgent != null) {
 			navAgent.speed -= 2f;
 			if(navAgent.speed < 1f) {
@@ -129,8 +150,9 @@ public class AssaultRifle : AbstractGun {
 				navAgent.baseOffset = 1.5f;
 			}
 		}
-		if(health != null) {
-			health.hurt(calculateDamage(direction, normal));
+		if(label != null && label.enabled) {
+			label.sendTrigger(gameObject, new DamageTrigger(calculateDamage(direction, normal)));
+			//health.hurt(calculateDamage(direction, normal));
 		}
 	}
 
@@ -151,12 +173,12 @@ public class AssaultRifle : AbstractGun {
 	}
 
 	[ClientRpc]
-	protected override void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 normal) {
+	protected override void RpcCreateShotEffect(HitEffectType type, Vector3 location, Vector3 direction, Vector3 normal) {
 		if (!hasAuthority) {
 			if (type == HitEffectType.DEFAULT) {
-				hitEffect.spawn(location, normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(hitEffectPrefab, location, Vector3.Reflect(direction, normal));
 			} else if (type == HitEffectType.ROBOT) {
-				robotHitEffect.spawn(location, normal);
+				GlobalConfig.globalConfig.effectsManager.spawnEffect(robotHitEffectPrefab, location, Vector3.Reflect(direction, normal));
 			}
 			doFireEffects();
 		}
@@ -169,39 +191,16 @@ public class AssaultRifle : AbstractGun {
 
 	protected override void doFireEffects() {
 		playFireSound();
-
-		// do fire effects
-		Vector3 effectPosition = transform.TransformPoint(fireEffectLocation);
-		fireEffect.spawn(effectPosition, -transform.forward);
-		fireEffectSideways.spawn(effectPosition, -transform.right - transform.forward);
-		fireEffectSideways.spawn(effectPosition, transform.right - transform.forward);
-		fireEffectLight.spawn(effectPosition);
+		effectsController.doEffects();
 	}
 
 	private void playFireSound() {
 		// create sound event
 		//float volume = gunshotSoundEmitter.volume;
-		if (Time.time - lastFiredTime > .5f || audioLabel == null) {
-			audioLabel = new LabelHandle(transform.position, "gunshots");
-			audioLabel.addTag(new Tag(TagEnum.Sound, 0, audioLabel));
-			audioLabel.addTag(new Tag(TagEnum.Threat, 0, audioLabel));
 
-			audioLabel.setPosition(transform.position);
-			Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-			AudioEvent gunshotEvent = new AudioEvent(transform.position, audioLabel, transform.position);
-			gunshotEvent.broadcast(soundTag.severity);
-		} else {
-			audioLabel.setPosition(transform.position);
-			//Tag soundTag = audioLabel.getTag(TagEnum.Sound);
-			//Tag threatTag = audioLabel.getTag(TagEnum.Threat);
-			//soundTag.severity += (volume * 2 - soundTag.severity) * fireSoundThreatRate;
-			//threatTag.severity += (fireSoundThreatLevel - threatTag.severity) * fireSoundThreatRate;
-		}
 		// play sound effect
 		if (gunshotSoundEmitter != null) {
+		    //gunshotSoundEmitter.clip = fireSounds[UnityEngine.Random.Range(0, fireSounds.Length - 1)];
 			gunshotSoundEmitter.pitch = UnityEngine.Random.Range(0.95f, 1.05f);
 		}
 		playSound(gunshotSoundEmitter);
@@ -215,7 +214,7 @@ public class AssaultRifle : AbstractGun {
 			GUI.skin = guiSkin;
 
 			int padding = 10;
-			int boxWidth = 80 + padding * 3;
+			int boxWidth = 80 + padding * 2;
 			int boxHeight = 30 + padding * 2;
 			int boxCornerX = Screen.width - boxWidth - padding;
 			int boxCornerY = Screen.height - boxHeight - padding;
@@ -227,8 +226,8 @@ public class AssaultRifle : AbstractGun {
 			//int imageWidth = 50;
 			//int imageHeight = 50;
 			//GUI.DrawTexture(new Rect(boxCornerX + padding, boxCornerY + padding * 2 + 20, imageWidth, imageHeight), bulletIcon);
-			GUI.TextArea(new Rect(boxCornerX + padding * 2, boxCornerY + padding, 60, 40), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize));
-			GUI.TextArea(new Rect(boxCornerX + padding * 2 + 40, boxCornerY + padding, 60, 40), "" + currentMagazineFill);
+			GUI.Label(new Rect(boxCornerX, boxCornerY, 50, 50), "" + Mathf.Ceil((float)bulletsRemaining / (float)magazineSize), Menu.menu.skin.textArea);
+			GUI.Label(new Rect(boxCornerX + padding + 40, boxCornerY, 50, 50), "" + currentMagazineFill, Menu.menu.skin.textArea);
 		}
 	}
 }

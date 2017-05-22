@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [System.Serializable]
 public class GuardTag : Tag {
@@ -16,13 +15,12 @@ public class GuardTag : Tag {
     }
 
 #if UNITY_EDITOR
-    public override void drawGizmo() {
+    public override void drawGizmo(Label label) {
         float sphereSize = .2f;
-        Label label = getLabelHandle().label;
         for (int i = 0; i < NUM_STRIPES; i++) {
             Gizmos.color = i % 2 == 0 ? COLOR_ONE : COLOR_TWO;
             Vector3 startPos = label.transform.position + (label.transform.forward * (sphereSize - .02f)) + ((i * (LENGTH / NUM_STRIPES)) * label.transform.forward);
-            Vector3 endPos = startPos + (((LENGTH / NUM_STRIPES)) * label.transform.forward);
+            Vector3 endPos = startPos + LENGTH / NUM_STRIPES * label.transform.forward;
             Gizmos.DrawLine(startPos, endPos);
         }
         Gizmos.color = Color.red;
