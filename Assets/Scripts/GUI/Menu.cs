@@ -462,7 +462,7 @@ public class Menu : MonoBehaviour {
 		    globalConfig = globalConfigs[0].gameObject.scene.name == null ? globalConfigs[1] : globalConfigs[0];
 		    globalConfig.gameObject.SetActive(true);
 	    }
-	    GlobalConfig.globalConfig.configuration = serverConfig;
+	    globalConfig.configuration = serverConfig;
 	    NetworkServer.Spawn(globalConfig.gameObject);
         menuHistory.Clear();
         currentMenu = state.ClientLobby;
