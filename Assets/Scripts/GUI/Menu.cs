@@ -38,6 +38,10 @@ public class Menu : MonoBehaviour {
 
 	[System.NonSerialized]
 	public GlobalConfigData serverConfig = GlobalConfigData.getDefault();
+
+	[System.NonSerialized]
+	private EventManager eventManager;
+
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
 	public GUISkin skin;
@@ -85,8 +89,9 @@ public class Menu : MonoBehaviour {
 	// Use this for initialization
 	public void Start() {
 	    DontDestroyOnLoad(gameObject);
-		EventManager.registerForEvent(typeof(WinEvent), win);
-		EventManager.registerForEvent(typeof(LoseEvent), lose);
+		eventManager = EventManager.getGameControlChannel();
+		eventManager.registerForEvent(typeof(WinEvent), win);
+		eventManager.registerForEvent(typeof(LoseEvent), lose);
 	    myMenu = this;
 		username = System.Environment.MachineName.ToLower();
 		if (activeAtStart) {

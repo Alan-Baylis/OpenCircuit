@@ -139,7 +139,6 @@ public class CameraManagerTest {
 		GameObject.Destroy(clientController1.gameObject);
 		GameObject.Destroy(clientController2.gameObject);
 		GameObject.Destroy(globalConfig.gameObject);
-		EventManager.clearInstance();
 	}
 
 	private Camera createCameraForPlayer(Player player) {

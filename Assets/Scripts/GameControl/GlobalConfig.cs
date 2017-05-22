@@ -22,6 +22,7 @@ public class GlobalConfig : NetworkBehaviour {
 	public ClientController localClient;
 
     private int robotControllers;
+	private EventManager eventManager;
 
 	public HashSet<ClientController> clients = new HashSet<ClientController>();
 
@@ -40,7 +41,8 @@ public class GlobalConfig : NetworkBehaviour {
         gamemode.enabled = true;
         gameStarted = true;
 
-	    EventManager.registerForEvent(typeof(RobotDestructionEvent), subtractRobotCount);
+	    eventManager = EventManager.getInGameChannel();
+	    eventManager.registerForEvent(typeof(RobotDestructionEvent), subtractRobotCount);
     }
 
     private static GlobalConfig myGlobalConfig;
@@ -65,13 +67,13 @@ public class GlobalConfig : NetworkBehaviour {
     [ClientRpc]
     private void RpcLoseGame() {
 		clearLocalPlayers();
-	    EventManager.broadcastEvent(new LoseEvent());
+	    EventManager.broadcastEvent(new LoseEvent(), EventManager.GAME_CONTROL_CHANNEL);
     }
 
     [ClientRpc]
     private void RpcWinGame() {
 	    clearLocalPlayers();
-	    EventManager.broadcastEvent(new WinEvent());
+	    EventManager.broadcastEvent(new WinEvent(), EventManager.GAME_CONTROL_CHANNEL);
     }
 
 	[Server]
@@ -124,6 +126,8 @@ public class GlobalConfig : NetworkBehaviour {
 
 	private void OnDestroy() {
 		myGlobalConfig = null;
+		if (eventManager != null)
+			eventManager.unregisterForEvent(typeof(RobotDestructionEvent), subtractRobotCount);
 	}
 
 	private void clearLocalPlayers() {

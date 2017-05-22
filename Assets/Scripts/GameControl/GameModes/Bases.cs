@@ -31,7 +31,7 @@ public class Bases : TeamGameMode {
 
 	private AbstractPlayerSpawner myPlayerSpawner;
 	private int remainingRespawnTime;
-
+	private EventManager eventManager;
 
 	//Fields for client side display
 	private float scoreAdd;
@@ -46,8 +46,9 @@ public class Bases : TeamGameMode {
 	[ServerCallback]
 	public override void Start() {
 		base.Start();
-		EventManager.registerForEvent(typeof(ScoreEvent), addScore);
-		EventManager.registerForEvent(typeof(TeamScoreEvent), addTeamScore);
+		eventManager = EventManager.getInGameChannel();
+		eventManager.registerForEvent(typeof(ScoreEvent), addScore);
+		eventManager.registerForEvent(typeof(TeamScoreEvent), addTeamScore);
 		foreach (Label location in firstTeamLocations) {
 			getCRC(0).sightingFound(location.labelHandle, location.transform.position, null);
 		}
@@ -438,6 +439,13 @@ public class Bases : TeamGameMode {
 			clientInfoMap.Add(clientController, info);
 		}
 		return info;
+	}
+
+	private void OnDestroy() {
+		if (eventManager != null) {
+			eventManager.unregisterForEvent(typeof(TeamScoreEvent), addTeamScore);
+			eventManager.unregisterForEvent(typeof(ScoreEvent), addScore);
+		}
 	}
 
 	private struct RespawnJob {

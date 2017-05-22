@@ -422,7 +422,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	[Server]
 	public void dispose() {
-		EventManager.broadcastEvent(new RobotDestructionEvent(this));
+		EventManager.broadcastEvent(new RobotDestructionEvent(this), EventManager.IN_GAME_CHANNEL);
 		CancelInvoke();
 		foreach(Endeavour e in currentEndeavours) {
 			e.stopExecution();

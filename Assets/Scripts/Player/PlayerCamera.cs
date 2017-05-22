@@ -15,7 +15,7 @@ public class PlayerCamera : MonoBehaviour {
 
 	private void OnDestroy() {
 		GlobalConfig.globalConfig.cameraManager.removeCamera(clientController);
-		if(clientController.isLocalPlayer) {
+		if(clientController != null && clientController.isLocalPlayer) {
 			GlobalConfig.globalConfig.cameraManager.switchCamera();
 		}
 	}

@@ -9,6 +9,6 @@ public class WinZone : MonoBehaviour {
 			return;
 		GetComponent<AudioSource>().Play();
 		FindObjectOfType<RandomMusic>().gameObject.SetActive(false);
-		EventManager.broadcastEvent(new WinEvent());
+		EventManager.broadcastEvent(new WinEvent(), EventManager.GAME_CONTROL_CHANNEL);
 	}
 }

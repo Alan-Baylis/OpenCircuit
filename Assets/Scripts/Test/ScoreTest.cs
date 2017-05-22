@@ -22,7 +22,7 @@ public class ScoreTest {
 		try {
 			globalConfig.gamemode.enabled = false;
 			NetworkServer.Spawn(globalConfig.gameObject);
-			EventManager.registerForEvent(typeof(ScoreEvent), score);
+			EventManager.getInGameChannel().registerForEvent(typeof(ScoreEvent), score);
 
 			ClientController clientController = clientControllerObject.AddComponent<ClientController>();
 			clientController.enabled = false;
@@ -51,8 +51,8 @@ public class ScoreTest {
 	[UnityTest]
 	public IEnumerator testScoreOnDestroy_TeamOwned() {
 		try {
-			EventManager.registerForEvent(typeof(ScoreEvent), score);
-			EventManager.registerForEvent(typeof(TeamScoreEvent), teamScore);
+			EventManager.getInGameChannel().registerForEvent(typeof(ScoreEvent), score);
+			EventManager.getInGameChannel().registerForEvent(typeof(TeamScoreEvent), teamScore);
 
 			scoreComponent = PlayModeTestUtility.createScore();
 			scoreComponent.value = 100f;
@@ -75,7 +75,7 @@ public class ScoreTest {
 	[UnityTest]
 	public IEnumerator testOnScore() {
 		try {
-			EventManager.registerForEvent(typeof(ScoreEvent), score);
+			EventManager.getInGameChannel().registerForEvent(typeof(ScoreEvent), score);
 
 			scoreComponent = PlayModeTestUtility.createScore();
 			scoreComponent.value = 100;
@@ -97,7 +97,7 @@ public class ScoreTest {
 	[UnityTest]
 	public IEnumerator testOnScore_SameTeam() {
 		try {
-			EventManager.registerForEvent(typeof(ScoreEvent), score);
+			EventManager.getInGameChannel().registerForEvent(typeof(ScoreEvent), score);
 
 			scoreComponent = PlayModeTestUtility.createScore();
 			scoreComponent.value = 100;
@@ -117,12 +117,11 @@ public class ScoreTest {
 	}
 
 	private void cleanup() {
-		EventManager.unregisterForEvent(typeof(ScoreEvent), score);
+		EventManager.getInGameChannel().unregisterForEvent(typeof(ScoreEvent), score);
 		recieved = false;
 		recievedTeam = false;
 		if (scoreComponent != null)
 			GameObject.Destroy(scoreComponent.gameObject);
-		EventManager.clearInstance();
 	}
 
 	private void score(AbstractEvent incomingEvent) {

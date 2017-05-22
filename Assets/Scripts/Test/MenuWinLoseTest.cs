@@ -24,7 +24,7 @@ public class MenuWinLoseTest {
 
 			Assert.That(!menu.activeAtStart);
 
-			EventManager.broadcastEvent(new LoseEvent());
+			EventManager.broadcastEvent(new LoseEvent(), EventManager.GAME_CONTROL_CHANNEL);
 
 			Assert.That(menu.activeAtStart);
 		} finally {
@@ -50,7 +50,7 @@ public class MenuWinLoseTest {
 
 			Assert.That(!menu.activeAtStart);
 
-			EventManager.broadcastEvent(new WinEvent());
+			EventManager.broadcastEvent(new WinEvent(), EventManager.GAME_CONTROL_CHANNEL);
 
 			Assert.That(menu.activeAtStart);
 		} finally {

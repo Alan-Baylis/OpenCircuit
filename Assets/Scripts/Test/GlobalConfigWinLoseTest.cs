@@ -16,8 +16,8 @@ public class GlobalConfigWinLoseTest {
 	public IEnumerator testWinLose() {
 		GameObject globalConfigObject = new GameObject();
 		try {
-			EventManager.registerForEvent(typeof(WinEvent), win);
-			EventManager.registerForEvent(typeof(LoseEvent), lose);
+			EventManager.getGameControlChannel().registerForEvent(typeof(WinEvent), win);
+			EventManager.getGameControlChannel().registerForEvent(typeof(LoseEvent), lose);
 			GlobalConfig globalConfig = globalConfigObject.AddComponent<GlobalConfig>();
 			globalConfig.gamemode = globalConfigObject.AddComponent<Bases>();
 			globalConfig.cameraManager = globalConfigObject.AddComponent<CameraManager>();
@@ -36,7 +36,6 @@ public class GlobalConfigWinLoseTest {
 			Assert.That(lost);
 		} finally {
 			GameObject.Destroy(globalConfigObject);
-			EventManager.clearInstance();
 		}
 		yield return null;
 		LogAssert.NoUnexpectedReceived();

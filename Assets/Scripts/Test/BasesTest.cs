@@ -31,7 +31,7 @@ public class BasesTest {
 			yield return null;
 
 			Assert.That(bases.getScore(clientController), Is.EqualTo(0).Within(.00001f));
-			EventManager.broadcastEvent(new ScoreEvent(clientController, 100f));
+			EventManager.broadcastEvent(new ScoreEvent(clientController, 100f), EventManager.IN_GAME_CHANNEL);
 			Assert.That(bases.getScore(clientController), Is.EqualTo(100f).Within(MARGIN));
 		} finally {
 			cleanup();
@@ -60,7 +60,7 @@ public class BasesTest {
 			yield return null;
 
 			Assert.That(bases.getScore(clientController), Is.EqualTo(0).Within(.00001f));
-			EventManager.broadcastEvent(new ScoreEvent(clientController, -100f));
+			EventManager.broadcastEvent(new ScoreEvent(clientController, -100f), EventManager.IN_GAME_CHANNEL);
 			Assert.That(bases.getScore(clientController), Is.EqualTo(-100f).Within(MARGIN));
 
 		} finally {
@@ -90,7 +90,7 @@ public class BasesTest {
 			yield return null;
 
 			Assert.That(bases.getScore(clientController), Is.EqualTo(0).Within(.00001f));
-			EventManager.broadcastEvent(new TeamScoreEvent(0, -100f));
+			EventManager.broadcastEvent(new TeamScoreEvent(0, -100f), EventManager.IN_GAME_CHANNEL);
 			Assert.That(bases.getScore(clientController), Is.EqualTo(-100f).Within(MARGIN));
 
 		} finally {
@@ -106,6 +106,5 @@ public class BasesTest {
 		if (globalConfig!= null)
 			GameObject.Destroy(globalConfig.gameObject);
 
-		EventManager.clearInstance();
 	}
 }

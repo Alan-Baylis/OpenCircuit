@@ -24,7 +24,7 @@ public abstract class GameMode : NetworkBehaviour {
             return;
 	    if (loseConditionMet()) {
 		    onLoseGame();
-	      GlobalConfig.globalConfig.loseGame();
+	      	GlobalConfig.globalConfig.loseGame();
 	        gameOver = true;
 	    } else if (winConditionMet()) {
 		    onWinGame();
