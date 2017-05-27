@@ -254,7 +254,7 @@ public class Bases : TeamGameMode {
 		if (clientController != null) {
 			getInfo(clientController).score = score;
 		}
-		if (GlobalConfig.globalConfig.localClient.netId == client) {
+		if (GlobalConfig.globalConfig.localClient != null && GlobalConfig.globalConfig.localClient.netId == client) {
 			addScore(scoreAdd);
 			addBuildPoint(buildPointAdd);
 			showClientScore(clientController, true);
@@ -265,7 +265,7 @@ public class Bases : TeamGameMode {
 
 	[ClientRpc]
 	private void RpcStartTimerFor(NetworkInstanceId localClient) {
-		if (GlobalConfig.globalConfig.localClient.netId == localClient) {
+		if (GlobalConfig.globalConfig.localClient != null && GlobalConfig.globalConfig.localClient.netId == localClient) {
 			clientRespawnJob = new RespawnJob(GlobalConfig.globalConfig.localClient, respawnDelay);
 		}
 	}
