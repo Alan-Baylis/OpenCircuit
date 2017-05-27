@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Networking;
@@ -42,7 +40,8 @@ public class PlayModeTestUtility {
 	}
 
 	public static RobotController createRobot() {
-		return MonoBehaviour.Instantiate(NetworkSetup.robotControllerPrefab, Vector3.zero, Quaternion.identity);
+		PrefabCatalog catalog = Resources.Load<PrefabCatalog>("Test/PrefabCatalog");
+		return MonoBehaviour.Instantiate(catalog.robotPrefab, Vector3.zero, Quaternion.identity);
 	}
 
 	public static T addRobotComponent<T>(RobotController robot) where T : Component {
@@ -56,7 +55,7 @@ public class PlayModeTestUtility {
 			navMeshObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
 			List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
 			NavMeshBuilder.CollectSources(navMeshObject.transform, NavMesh.AllAreas, NavMeshCollectGeometry.PhysicsColliders,
-				GameObjectUtility.GetNavMeshAreaFromName("Walkable"), new List<NavMeshBuildMarkup>(), sources);
+				0, new List<NavMeshBuildMarkup>(), sources);
 			NavMeshBuildSettings settings = new NavMeshBuildSettings();
 			NavMesh.AddNavMeshData(NavMeshBuilder.BuildNavMeshData(settings, sources,
 				new Bounds(navMeshObject.transform.position, new Vector3(20, 20, 20)), navMeshObject.transform.position,

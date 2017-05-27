@@ -48,7 +48,8 @@ public class RobotDestructionTest {
 		//LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
 		robotController = PlayModeTestUtility.createRobot();
 		PlayModeTestUtility.addRobotComponent<PowerGenerator>(robotController);
-		RoboEyes component = GameObject.Instantiate(NetworkSetup.RoboEyesPrefab, robotController.transform);
+		PrefabCatalog catalog = Resources.Load<PrefabCatalog>("Test/PrefabCatalog");
+		RoboEyes component = GameObject.Instantiate(catalog.roboEyesPrefab, robotController.transform);
 		NetworkServer.Spawn(component.gameObject);
 		NetworkServer.Spawn(robotController.gameObject);
 

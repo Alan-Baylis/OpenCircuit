@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
 
@@ -7,12 +6,9 @@ public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 
 	private bool listening;
 
-	public static RobotController robotControllerPrefab;
-	public static RoboEyes RoboEyesPrefab;
+	public static NetworkSetup instance;
 
 	void Awake() {
-		robotControllerPrefab = AssetDatabase.LoadAssetAtPath<RobotController>("Assets/Prefabs/Robots/robot.prefab");
-		RoboEyesPrefab = AssetDatabase.LoadAssetAtPath<RoboEyes>("Assets/Prefabs/Robots/Eyes.prefab");
 		if (!listening) {
 			listening = GetComponent<NetworkController>().listen();
 		}
@@ -21,6 +17,7 @@ public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 	public virtual void Setup() {
 		setupNetwork();
 		setupSceneCamera();
+
 	}
 
 	private void setupSceneCamera() {
@@ -33,7 +30,7 @@ public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 	private void setupNetwork() {
 		GameObject networkControllerObject = new GameObject("NetworkController");
 		networkControllerObject.AddComponent<NetworkController>();
-		networkControllerObject.AddComponent<NetworkSetup>();
+		instance = networkControllerObject.AddComponent<NetworkSetup>();
 		networkControllerObject.AddComponent<NetworkManager>();
 	}
 }
