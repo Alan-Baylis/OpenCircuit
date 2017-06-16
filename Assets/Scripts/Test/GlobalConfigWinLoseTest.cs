@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
@@ -50,3 +51,4 @@ public class GlobalConfigWinLoseTest {
 		lost = true;
 	}
 }
+#endif

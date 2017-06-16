@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
 
@@ -34,3 +35,4 @@ public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 		networkControllerObject.AddComponent<NetworkManager>();
 	}
 }
+#endif

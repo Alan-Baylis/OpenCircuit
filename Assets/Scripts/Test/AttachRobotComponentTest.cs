@@ -1,4 +1,5 @@
-﻿using UnityEngine.TestTools;
+﻿#if UNITY_EDITOR
+using UnityEngine.TestTools;
 using System.Collections;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -82,3 +83,4 @@ public class AttachRobotComponentTest {
 		GameObject.Destroy(robotController.gameObject);
 	}
 }
+#endif
