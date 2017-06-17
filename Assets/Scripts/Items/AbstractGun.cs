@@ -12,9 +12,11 @@ public abstract class AbstractGun : Item {
 	public float fireDelay = 0.1f;
 
 	public float baseInaccuracy = 0.1f;
+	public float focusInnaccuracy = 0.5f;
 	public float maximumMovementInaccuracy = 0.1f;
 	public float movementInaccuracySoftness = 10f;
 	public Vector3 recoilAnimationDistance = new Vector3(0, 0, 0.2f);
+	public Vector3 focusRecoilAnimationDistance = new Vector3(0, 0, 0.2f);
 	public Vector2 recoilMinRotation = new Vector3(-0.1f, 0.1f);
 	public Vector2 recoilMaxRotation = new Vector3(0.1f, 0.2f);
 	public HoldPosition reloadPosition;
@@ -38,10 +40,7 @@ public abstract class AbstractGun : Item {
 		if (lastFiredTime <= Time.time - fireDelay && shooting && !reloading) {
 			Transform cam = holder.getPlayer().cam.transform;
 			shoot(cam.position, cam.forward);
-			MouseLook looker = holder.getPlayer().looker;
-			looker.rotate(
-				Random.Range(recoilMinRotation.x, recoilMaxRotation.x),
-				Random.Range(recoilMinRotation.y, recoilMaxRotation.y));
+
 		} else if(reloading) {
 			reloadTimeRemaining -= Time.deltaTime;
 			if(reloadTimeRemaining <= 0) {
@@ -90,12 +89,16 @@ public abstract class AbstractGun : Item {
 				consumeAmmo();
 			}
 			direction = inaccurateDirection(direction, getMovementInaccuracy());
-            direction = inaccurateDirection(direction, baseInaccuracy);
+            direction = inaccurateDirection(direction, holder.getPlayer().zooming ? focusInnaccuracy : baseInaccuracy);
             doBullet(position, direction, 1);
 			lastFiredTime = Time.time;
-			transform.position -= transform.TransformVector(recoilAnimationDistance);
+			transform.position -= transform.TransformVector(holder.getPlayer().zooming ? focusRecoilAnimationDistance : recoilAnimationDistance);
 
 			doFireEffects();
+			MouseLook looker = holder.getPlayer().looker;
+			looker.rotate(
+				Random.Range(recoilMinRotation.x, recoilMaxRotation.x),
+				Random.Range(recoilMinRotation.y, recoilMaxRotation.y));
 		} else { 
 			playReloadSound();
 			reload();

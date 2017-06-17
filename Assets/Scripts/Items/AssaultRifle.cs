@@ -5,7 +5,6 @@ public class AssaultRifle : AbstractGun {
 
     public AudioClip[] fireSounds;
 
-	public float inaccuracy = 0.1f;
 	public float range = 1000;
 	public float damage = 10;
 	public float impulse = 1;
@@ -16,7 +15,7 @@ public class AssaultRifle : AbstractGun {
 	public float reloadTime = 1f;
 	public int magazineSize = 20;
 	public int maxMagazines = 5;
-	public int bulletsRemainingDisplay = 0;
+	public int bulletsRemainingDisplay = 0; 
 	public override void onTake(Inventory taker) {
 		base.onTake(taker);
 		taker.equip(this);
