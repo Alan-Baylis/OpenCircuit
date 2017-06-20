@@ -20,10 +20,13 @@ public abstract class Endeavour : Prioritizable {
 
     public bool active;
 
-    protected float priorityCache;
+	protected float priorityCache;
     protected int lastFrameEvaluated = -1;
+	protected int firstFrame = -1;
 	protected Dictionary<TagEnum, Tag> tagMap;
 
+	private const int EVALUATION_DELAY_FRAMES = 2;
+	
     private AbstractArms myArms;
 	private AbstractRobotGun myRifle;
 	private HoverJet myJet;
@@ -36,6 +39,8 @@ public abstract class Endeavour : Prioritizable {
 		this.goals = goals;
 		this.tagMap = tagMap;
 		factory = parentFactory;
+		firstFrame = Time.frameCount;
+		lastFrameEvaluated = Time.frameCount;
 	}
 
 	public virtual void update() {
@@ -72,7 +77,8 @@ public abstract class Endeavour : Prioritizable {
 	}
 
 	public virtual float getPriority() {
-		if (lastFrameEvaluated != Time.frameCount) {
+		int currentFrame = Time.frameCount;
+		if (lastFrameEvaluated != currentFrame && Time.frameCount - firstFrame % EVALUATION_DELAY_FRAMES == 0) {
 			priorityCache = calculateFinalPriority();
 			lastFrameEvaluated = Time.frameCount;
 		}
@@ -138,10 +144,10 @@ public abstract class Endeavour : Prioritizable {
     protected virtual float calculatePriority() {
 		float calculatedPriority = 0;
 		foreach (Goal goal in goals) {
-			Dictionary<GoalEnum, Goal> robotGoals = controller.getGoals();
-			if (robotGoals.ContainsKey(goal.type)) {
+			Goal[] robotGoals = controller.getGoals();
+			if (robotGoals[(int)goal.type] != null) {
 				float priorityCubed = (goal.priority * goal.priority * goal.priority);
-				calculatedPriority += priorityCubed * robotGoals[goal.type].priority;
+				calculatedPriority += priorityCubed * robotGoals[(int)goal.type].priority;
 			}
 		}
 		return calculatedPriority + BENEFIT_CONSTANT_TERM;

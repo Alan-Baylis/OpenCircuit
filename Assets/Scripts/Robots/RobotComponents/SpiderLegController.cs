@@ -24,6 +24,12 @@ public class SpiderLegController : LimbController {
 
 	private float upperLegLength;
 	
+	private float upperMinRotationPlusAngleOffset;
+	private float lowerMinRotationPlusAngleOffset;
+	private Vector2 upperOffsetXZ;
+	private Vector3 negativeUpperOffset;
+	private Vector3 negativeLowerOffset;
+	
 	public void Awake() {
 		leg = GetComponent<Transform>();
 		hip = leg.FindChild("Hip");
@@ -31,6 +37,11 @@ public class SpiderLegController : LimbController {
 		lowerLeg = upperLeg.FindChild("Lower Leg");
 		upperLegLength = (upperOffset - lowerOffset).magnitude;
 		setPosition(getDefaultPos());
+		upperMinRotationPlusAngleOffset = upperMinRotation + upperAngleOffset;
+		lowerMinRotationPlusAngleOffset = lowerMinRotation + lowerAngleOffset;
+		upperOffsetXZ = new Vector2(upperOffset.x, upperOffset.z);
+		negativeUpperOffset = -upperOffset;
+		negativeLowerOffset = -lowerOffset;
 	}
 
 	public override bool setPosition(Vector3 worldPos) {
@@ -84,10 +95,10 @@ public class SpiderLegController : LimbController {
 		upperLeg.localEulerAngles = eulerAngles;
 		upperLeg.localPosition = upperOffset;
 		Vector3 localPos = upperLeg.InverseTransformPoint(worldPos);
-		eulerAngles.y = (getVectorAngle(localPos.z, localPos.x) + 180 -upperMinRotation) % 360 - 180 +upperMinRotation +upperAngleOffset;
+		eulerAngles.y = (getVectorAngle(localPos.z, localPos.x) + 180 -upperMinRotation) % 360 - 180 +upperMinRotationPlusAngleOffset;
 
 		// calculate circle intersection
-		double midPointDistance = circleMidPointDistance(new Vector2(upperOffset.x, upperOffset.z), new Vector2(localPos.x, localPos.z), upperLegLength, lowerLegLength);
+		double midPointDistance = circleMidPointDistance(upperOffsetXZ, new Vector2(localPos.x, localPos.z), upperLegLength, lowerLegLength);
 		if (midPointDistance < upperLegLength) {
 			float angleOffset = (float)System.Math.Acos(midPointDistance / upperLegLength) * Mathf.Rad2Deg;
 			if (float.IsNaN(angleOffset) || angleOffset < 0) {
@@ -102,7 +113,7 @@ public class SpiderLegController : LimbController {
 			eulerAngles.y = clampedAngle;
 			canReach = false;
 		}
-		upperLeg.localPosition += rotate(-upperOffset, new Vector3(0, eulerAngles.y, 0));
+		upperLeg.localPosition += rotate(negativeUpperOffset, new Vector3(0, eulerAngles.y, 0));
 		upperLeg.localEulerAngles = eulerAngles;
 		return canReach;
 	}
@@ -114,7 +125,7 @@ public class SpiderLegController : LimbController {
 		lowerLeg.localEulerAngles = eulerAngles;
 		lowerLeg.localPosition = lowerOffset;
 		Vector3 localPos = lowerLeg.InverseTransformPoint(worldPos);
-		eulerAngles.y = (getVectorAngle(localPos.z, localPos.x) + 180 -lowerMinRotation) % 360 -180 +lowerMinRotation +lowerAngleOffset;
+		eulerAngles.y = (getVectorAngle(localPos.z, localPos.x) + 180 -lowerMinRotation) % 360 -180 +lowerMinRotationPlusAngleOffset;
 
 		eulerAngles.y += 180;
 		float clampedAngle = clampAngle(eulerAngles.y, lowerMinRotation, lowerMaxRotation);
@@ -122,7 +133,7 @@ public class SpiderLegController : LimbController {
 			eulerAngles.y = clampedAngle;
 			canReach = false;
 		}
-		lowerLeg.localPosition += rotate(-lowerOffset, new Vector3(0, eulerAngles.y, 0));
+		lowerLeg.localPosition += rotate(negativeLowerOffset, new Vector3(0, eulerAngles.y, 0));
 		lowerLeg.localEulerAngles = eulerAngles;
 		return canReach;
 	}

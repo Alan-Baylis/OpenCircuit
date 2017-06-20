@@ -51,18 +51,20 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 		bool result = false;
 		Vector3 rayStart = transform.position;
 		Vector3 dir = objPos - rayStart;
-		dir.Normalize();
-		RaycastHit[] hits = Physics.RaycastAll(rayStart, dir, (Vector3.Distance(rayStart, objPos)));
-		foreach (RaycastHit hit in hits) {
-			if (hit.transform == handle.label.transform || hit.transform.root == handle.label.transform) {
-				continue;
-			}
-			if (hit.transform.root != transform.root) {
-				result = true;
-				break;
-			}
-		}
-		return result;
+		RaycastHit hit;
+		Physics.Raycast(rayStart, dir, out hit, Vector3.Distance(rayStart, objPos));
+//		RaycastHit[] hits = Physics.RaycastAll(rayStart, dir, (Vector3.Distance(rayStart, objPos)));
+//		foreach (RaycastHit hit in hits) {
+			Transform hitTransform = hit.transform;
+//			if (hitTransform == handle.label.transform || hitTransform.root == handle.label.transform) {
+//				continue;
+//			}
+//			if (hitTransform.root != transform.root) {
+//				result = true;
+//				break;
+//			}
+//		}
+		return !(hitTransform.root == handle.label.transform || hitTransform == handle.label.transform);
 	}
 
 	public override System.Type getComponentArchetype() {
