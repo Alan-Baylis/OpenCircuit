@@ -12,10 +12,14 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 	private bool lookingEnabled = false;
 	protected Dictionary<Label, SensoryInfo> targetMap = new Dictionary<Label, SensoryInfo>();
 	private int visibleTargetCount = 0;
+	private float sightDistanceSquared;
+	private float halfFOVAngle;
 
 	[ServerCallback]
 	public virtual void Start() {
 		enableLooking();
+		sightDistanceSquared = sightDistance * sightDistance;
+		halfFOVAngle = fieldOfViewAngle * .5f;
 	}
 
 	public int getSightingCount() {
@@ -37,15 +41,15 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 		Transform eyeTrans = eye.transform;
 		Vector3 eyePos = eyeTrans.position;
 		Vector3 diff = objPos - eyePos;
-		if (diff.sqrMagnitude < sightDistance *sightDistance) {
+		if (diff.sqrMagnitude < sightDistanceSquared) {
 			float angle = Vector3.Angle(diff, eyeTrans.forward);
 //			print (getController().gameObject.name);
 //			print (angle);
-			if (angle < fieldOfViewAngle * 0.5f) {
+			if (angle < halfFOVAngle) {
 				RaycastHit hit;
 				Physics.Raycast(eyePos, diff, out hit, sightDistance);
 				Transform hitTrans = hit.transform;
-				if (hitTrans == obj || hitTrans.root == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
+				if (hitTrans.root == obj || hitTrans == obj) {//&& Vector3.Dot (transform.forward.normalized, (objPos - eye.transform.position).normalized) > 0) {
 #if UNITY_EDITOR
 					if (getController().debug)
 						drawLine(eyePos, hit.point, Color.green);
@@ -70,27 +74,29 @@ public abstract class AbstractVisualSensor : AbstractRobotComponent {
 #if UNITY_EDITOR
 		clearLines();
 #endif
+		int teamId = getController().GetComponent<TeamId>().id;
 		bool hasPower = (powerSource != null) && powerSource.hasPower(Time.deltaTime);
+		bool isTeamGameMode = GlobalConfig.globalConfig.teamGameMode != null;
+
 		foreach (Label label in Label.visibleLabels) {
-			if (label == null) {
-				//TODO find a way to clean up this list
-				//Label.visibleLabels.Remove(label);
+			if (isTeamGameMode && teamId == label.GetComponent<TeamId>().id) {
 				continue;
 			}
 			bool targetInView = hasPower && canSee(label.transform);
 			if (targetInView) {
 				if (!targetMap.ContainsKey(label)) {
-					Rigidbody labelRB = label.GetComponent<Rigidbody>();
-					if (labelRB != null) {
-						targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, label.getTags(), 0);
-					} else {
+					//Rigidbody labelRB = label.GetComponent<Rigidbody>();
+					//if (labelRB != null) {
+					//	targetMap[label] = new SensoryInfo(label.transform.position, labelRB.velocity, System.DateTime.Now, label.getTags(), 0);
+					//} else {
 						targetMap[label] = new SensoryInfo(label.transform.position, null, System.DateTime.Now, label.getTags(), 0);
-					}
+					//}
 				}
-				if (targetMap[label].getSightings() == 0) {
+				SensoryInfo targetInfo = targetMap[label];
+				if (targetInfo.getSightings() == 0) {
 					registerSightingFound(label);
 				}
-				targetMap[label].updateInfo(label.labelHandle);
+				targetInfo.updateInfo(label.labelHandle);
 			} else {
 				clearSighting(label);
 			}

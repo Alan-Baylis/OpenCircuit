@@ -50,7 +50,7 @@ public class LocomotionController : MonoBehaviour {
 	}
 
 	public void Update() {
-		double startTime = Time.realtimeSinceStartup;
+		//double startTime = Time.realtimeSinceStartup;
 		if (plantedGroup == null) {
 			plantedGroup = legGroup1;
 			steppingGroup = legGroup2;
@@ -62,7 +62,7 @@ public class LocomotionController : MonoBehaviour {
 			// plant feet
 			if (!stopped) {
 				updateSteppingGroup(steppingGroup, stoppingPercent);
-				if (getMaxDisplacement(steppingGroup) == 0 && stoppingPercent == 1) {
+				if (stoppingPercent == 1 && getMaxDisplacement(steppingGroup) == 0) {
 					if (getMaxDisplacement(plantedGroup) == 0) {
 						stopped = true;
 					} else {
@@ -96,7 +96,7 @@ public class LocomotionController : MonoBehaviour {
 			updateLegs(plantedGroup, true);
 			updateLegs(steppingGroup, stopped);
 		}
-		double endTime = Time.realtimeSinceStartup;
+		//double endTime = Time.realtimeSinceStartup;
 //		controller.getExecutionTimer().addTime(endTime-startTime);
 	}
 
@@ -149,6 +149,9 @@ public class LocomotionController : MonoBehaviour {
 
 	protected bool updateSteppingGroup(LimbController[] steppingGroup, float stepPercent) {
 		bool airborne = true;
+		float halfStepHeight = stepHeight * 0.5f;
+		float quadrupleNormalMoveSpeed = 4 * normalMoveSpeed;
+		float doubleStepHeight = 2 * stepHeight;
 		foreach (LimbController leg in steppingGroup) {
 			LegInfo info = getLegInfo(leg);
 			Vector3 velocity = info.getVelocity();
@@ -158,15 +161,15 @@ public class LocomotionController : MonoBehaviour {
 
 			float altitudeAdjustment = calculateAltitudeAdjustment(stepOffset, leg);
 			if (altitudeAdjustment == float.MinValue) {
-				stepOffset.y -= stepHeight *0.5f;
+				stepOffset.y -= halfStepHeight;
 			} else {
 				airborne = false;
 				stepOffset.y += altitudeAdjustment;
-				stepOffset.y += Mathf.Min((1 - Mathf.Abs(stepPercent - 0.5f) * 2) * stepHeight, maxStepHeight);
+				stepOffset.y += Mathf.Min(stepHeight - Mathf.Abs(stepPercent - 0.5f) *doubleStepHeight, maxStepHeight);
 			}
 			Vector3 target = Vector3.Lerp(info.getLastPlanted(), stepOffset, stepPercent);
 			Vector3 diff = (target - info.foot);
-			float maxDistance = Mathf.Max(normalMoveSpeed *4, diff.magnitude * 20) * deltaTime;
+			float maxDistance = Mathf.Max(quadrupleNormalMoveSpeed, diff.magnitude * 20) * deltaTime;
 			info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
 
 			drawPoint(info.foot, Color.blue, leg + "three");
@@ -198,8 +201,9 @@ public class LocomotionController : MonoBehaviour {
 				info.foot = leg.deducePosition();
 			info.setPlanted(planted);
 			info.setLastDefault();
-
+#if UNITY_EDITOR
 			drawPoint(leg.getDefaultPos (), Color.cyan, "default pos - " + leg);
+#endif
 		}
 	}
 
@@ -216,12 +220,13 @@ public class LocomotionController : MonoBehaviour {
 		return info;
 	}
 
-	private void drawPoint(Vector3 point, Color color, string id) {
 #if UNITY_EDITOR
+	private void drawPoint(Vector3 point, Color color, string id) {
 		if (debug)
 			debugPoints[id] = new DebugPoint() {point=point, color=color};
-#endif
 	}
+#endif
+
 
 #if UNITY_EDITOR
 	private Dictionary<string, DebugPoint> debugPoints = new Dictionary<string, DebugPoint>();
