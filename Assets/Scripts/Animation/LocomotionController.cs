@@ -171,8 +171,9 @@ public class LocomotionController : MonoBehaviour {
 			Vector3 diff = (target - info.foot);
 			float maxDistance = Mathf.Max(quadrupleNormalMoveSpeed, diff.magnitude * 20) * deltaTime;
 			info.foot += diff.normalized * Mathf.Min(maxDistance, diff.magnitude);
-
+#if UNITY_EDITOR
 			drawPoint(info.foot, Color.blue, leg + "three");
+#endif
 		}
 		return airborne;
 	}
@@ -184,8 +185,10 @@ public class LocomotionController : MonoBehaviour {
 		if (Physics.Raycast(new Ray(maxStepPos, new Vector3(0, -1, 0)), out hitInfo, stepHeightRange)) {
 			yOffset = hitInfo.point.y - stepOffset.y;
 
+#if UNITY_EDITOR
 			drawPoint(hitInfo.point, Color.green, leg + "one");
 			drawPoint(stepOffset, Color.red, leg + "two");
+#endif
 		} else {
 			return float.MinValue;
 		}

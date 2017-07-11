@@ -49,7 +49,7 @@ public abstract class AbstractRobotGun : AbstractRobotComponent {
 	public bool targetObstructed(LabelHandle handle) {
 		Vector3 objPos = handle.getPosition();
 		bool result = false;
-		Vector3 rayStart = transform.position;
+		Vector3 rayStart = rifle.effectsController.transform.position;
 		Vector3 dir = objPos - rayStart;
 		RaycastHit hit;
 		Physics.Raycast(rayStart, dir, out hit, Vector3.Distance(rayStart, objPos));
