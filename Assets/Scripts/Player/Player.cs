@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.Networking;
 
 [AddComponentMenu("Scripts/Player/Player")]
@@ -9,7 +12,8 @@ public class Player : NetworkBehaviour {
 	public float maxOxygen = 60;
 	public float oxygenRecoveryRate = 2;
 	public float oxygen = 60;
-	public Texture2D sufferingOverlay;
+//	public Texture2D sufferingOverlay;
+	public SufferingErrorConfig sufferingErrorConfig;
 	public AudioClip heavyBreathingSound;
 	public AudioClip teleportSound;
 	public float whiteOutDuration;
@@ -19,7 +23,7 @@ public class Player : NetworkBehaviour {
     public bool frozen;
 
 	[HideInInspector]
-	public bool zooming = false;
+	public bool zooming;
 
 	private Attack myAttacker;
 	private Grab myGrabber;
@@ -36,6 +40,15 @@ public class Player : NetworkBehaviour {
 	private float whiteOutTime;
 	private float blackOutTime = 0;
 	private Texture2D whiteOutTexture;
+
+	private HashSet<SufferingError> sufferingErrors = new HashSet<SufferingError>();
+	private readonly string[] sufferingErrorMessages = {
+		"Connection Lost",
+		"Component Disabled",
+		"Rebooting Component",
+		"Response Out of Range",
+		"Power Surge"
+	};
 
 	private bool alive = true;
 
@@ -210,7 +223,7 @@ public class Player : NetworkBehaviour {
 
 	private void changeEyeColor(Color color) {
 		eyeColor = color;
-		Renderer renderer = head.transform.FindChild("Eye").GetComponent<Renderer>();
+		Renderer renderer = head.transform.Find("Eye").GetComponent<Renderer>();
 		if (renderer != null) {
 			Material mat = renderer.material;
 
@@ -241,11 +254,11 @@ public class Player : NetworkBehaviour {
 				whiteOutTime = 0;
 		}
 
-		if (health.getDamage() > 0) {
-			GUI.color = new Color(1, 0.2f, 0.2f, myHealth.getDamagePercent() * 0.5f);
-			GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), sufferingOverlay);
-			GUI.color = Color.white;
-		}
+//		if (health.getDamage() > 0) {
+//			GUI.color = new Color(1, 0.2f, 0.2f, myHealth.getDamagePercent() * 0.5f);
+//			GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), sufferingOverlay);
+//			GUI.color = Color.white;
+//		}
 
 		if (blackOutTime > 0) {
 			GUI.color = new Color(0, 0, 0, blackOutTime / blackOutDuration);
@@ -266,7 +279,59 @@ public class Player : NetworkBehaviour {
 			GUI.color = Color.white;
 		}
 
+		// show suffering error messages
+		if (sufferingErrors.Count < sufferingErrorConfig.maxErrorCount *health.getDamagePercent()) {
+			Vector2 position = UnityEngine.Random.insideUnitCircle *0.5f;
+			Vector2 positionSign = new Vector2(Mathf.Sign(position.x), Mathf.Sign(position.y)) *0.5f;
+			position = new Vector2((positionSign.x *0.9f - position.x *0.5f *health.getDamagePercent()) *Screen.width /Screen.height,
+				position.y *(health.getDamagePercent() +0.2f) + positionSign.y *(0.8f - health.getDamagePercent()));
+			sufferingErrors.Add(new SufferingError {
+				message = sufferingErrorMessages[UnityEngine.Random.Range(0, sufferingErrorMessages.Length)],
+				position = position,
+				fadeTimestamp = Time.time + sufferingErrorConfig.lingerTime
+			});
+		}
+		GUIStyle errorStyle = new GUIStyle(GUI.skin.label);
+		errorStyle.font = sufferingErrorConfig.font;
+		errorStyle.fontSize = GUIUtil.adjustFontSize(sufferingErrorConfig.fontSize);
+		errorStyle.alignment = TextAnchor.MiddleCenter;
+		foreach(SufferingError error in sufferingErrors.ToList()) {
+			if (error.resolved) {
+				error.opacity -= sufferingErrorConfig.fadeOutRate *sufferingErrorConfig.opacity *Time.deltaTime;
+				if (error.opacity <= 0)
+					sufferingErrors.Remove(error);
+			} else if (error.opacity < sufferingErrorConfig.opacity) {
+				error.opacity = Mathf.Min(sufferingErrorConfig.opacity,
+					error.opacity + sufferingErrorConfig.fadeInRate *sufferingErrorConfig.opacity *Time.deltaTime);
+			} else if (error.fadeTimestamp <= Time.time) {
+				error.resolved = true;
+			}
+
+			GUI.color = new Color(1, 0, 0, error.opacity);
+			GUI.Label(GUIUtil.convertRect(centeredRect(error.position + new Vector2(Screen.width /2f / Screen.height, 0.5f), Vector2.one)), error.message, errorStyle);
+		}
+		GUI.color = Color.white;
+
 		//// draw the player's oxygen level
 		//GUI.Label(new Rect(10, 30, 100, 20), oxygen.ToString());
 	}
+	
+	private Rect centeredRect(Vector2 position, Vector2 size) {
+		return new Rect(position - size / 2, size);
+	}
+
+	private class SufferingError {
+		public String message;
+		public Vector2 position;
+		public float opacity;
+		public float fadeTimestamp;
+		public bool resolved;
+	}
+
+    [Serializable]
+	public struct SufferingErrorConfig {
+		public Font font;
+		public float fontSize, opacity, fadeInRate, fadeOutRate, lingerTime;
+	    public int maxErrorCount;
+    }
 }
