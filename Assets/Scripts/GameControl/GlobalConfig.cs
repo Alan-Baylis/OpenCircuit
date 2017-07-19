@@ -52,29 +52,15 @@ public class GlobalConfig : NetworkBehaviour {
         }
     }
 
-    [Server]
-    public void winGame() {
-	    //NetworkController.networkController.serverClearPlayers();
-        RpcWinGame();
-    }
+	[Server]
+	public void endGame() {
+		RpcEndGame();
+	}
 
-    [Server]
-    public void loseGame() {
-        //NetworkController.networkController.serverClearPlayers();
-        RpcLoseGame();
-    }
-
-    [ClientRpc]
-    private void RpcLoseGame() {
+	[ClientRpc]
+	private void RpcEndGame() {
 		clearLocalPlayers();
-	    EventManager.broadcastEvent(new LoseEvent(), EventManager.GAME_CONTROL_CHANNEL);
-    }
-
-    [ClientRpc]
-    private void RpcWinGame() {
-	    clearLocalPlayers();
-	    EventManager.broadcastEvent(new WinEvent(), EventManager.GAME_CONTROL_CHANNEL);
-    }
+	}
 
 	[Server]
 	public int getMaxRobots() {
@@ -91,10 +77,10 @@ public class GlobalConfig : NetworkBehaviour {
 	}
 
     [Server]
-    public void spawnPlayerForConnection(NetworkConnection connection, string username, NetworkController.ClientType clientType) {
+    public void spawnPlayerForConnection(NetworkConnection connection, string username, int team, NetworkController.ClientType clientType) {
         Transform startPos = NetworkManager.singleton.GetStartPosition();
         NetworkController.networkController.serverAddPlayer(playerPrefab, startPos.position, startPos.rotation,
-            connection, username, clientType);
+            connection, username, team, clientType);
     }
 
 	public int getPlayerCount() {

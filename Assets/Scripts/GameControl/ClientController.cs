@@ -20,6 +20,9 @@ public class ClientController : NetworkBehaviour {
 	[SyncVar]
 	public string playerName;
 
+	[SyncVar]
+	public int team;
+
 	public float startTime;
 
 	void Start() {
@@ -91,9 +94,9 @@ public class ClientController : NetworkBehaviour {
 		newPlayer.name = "player-" + playerName;
 	    TeamGameMode mode = GlobalConfig.globalConfig.gamemode as TeamGameMode;
 	    if (mode != null) {
-	        TeamId team = newPlayer.GetComponent<TeamId>();
-	        team.id = mode.localTeamId;
-	        team.enabled = true;
+	        TeamId teamId = newPlayer.GetComponent<TeamId>();
+		    teamId.id = team;
+		    teamId.enabled = true;
 	    }
 
 	    NetworkServer.Spawn(newPlayer);

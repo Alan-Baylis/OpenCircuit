@@ -15,20 +15,18 @@ public class SpawnerHunt : GameMode {
 	}
 
 	[Server]
-	public override bool winConditionMet() {
+	public override bool endConditionMet() {
 		if (spawners.Length < 1)
 			return true;
+		if (frozenPlayers > 0 && frozenPlayers >= GlobalConfig.globalConfig.getPlayerCount())
+			return true;
+		
 		foreach (RobotSpawner spawner in spawners) {
 			if (spawner != null)
 				return false;
 		}
 		return true;
 	}
-
-    [Server]
-    public override bool loseConditionMet() {
-        return frozenPlayers > 0 && frozenPlayers >= GlobalConfig.globalConfig.getPlayerCount();
-    }
 
     [Server]
     public override void onPlayerDeath(Player player) {
@@ -48,6 +46,16 @@ public class SpawnerHunt : GameMode {
         player.GetComponent<Label>().clearTag(TagEnum.Frozen);
         --frozenPlayers;
     }
+
+	[Server]
+	public override void onGameOver() {
+		RpcOnGameOver();
+	}
+
+	[ClientRpc]
+	private void RpcOnGameOver() {
+		EventManager.getInGameChannel().broadcastEvent(new LoseEvent());
+	}
 
 	public override AbstractPlayerSpawner getPlayerSpawner(ClientController controller) {
 		return FindObjectOfType<AbstractPlayerSpawner>();

@@ -16,7 +16,7 @@ public class Bases : TeamGameMode {
 
 	public CentralRobotController centralRobotControllerPrefab;
 
-	public AbstractPlayerSpawner primarySpawner;
+	public AbstractPlayerSpawner[] primarySpawners;
 	public AbstractPlayerSpawner tutorialSpawner;
 
 	public List<Label> firstTeamLocations = new List<Label>();
@@ -42,6 +42,7 @@ public class Bases : TeamGameMode {
 	private float lastBuildPointAdd;
 	private RespawnJob ? clientRespawnJob;
 	private float nextScoreUpdate;
+	private int winningTeam;
 
 	[ServerCallback]
 	public override void Start() {
@@ -66,7 +67,8 @@ public class Bases : TeamGameMode {
 	}
 
 	[Server]
-	public override void onWinGame() {
+	public override void onGameOver() {
+		RpcOnGameOver(winningTeam);
 		HashSet<ClientController> clients = GlobalConfig.globalConfig.clients;
 		foreach (ClientController client in clients) {
 			GlobalConfig.globalConfig.leaderboard.addScore(new Leaderboard.LeaderboardEntry(
@@ -76,14 +78,23 @@ public class Bases : TeamGameMode {
 		}
 	}
 
+	[ClientRpc]
+	private void RpcOnGameOver(int winningTeam) {
+		if (GlobalConfig.globalConfig.localClient.team == winningTeam) {
+			EventManager.getGameControlChannel().broadcastEvent(new WinEvent());
+		} else {
+			EventManager.getGameControlChannel().broadcastEvent(new LoseEvent());
+		}
+	}
+
 	public override AbstractPlayerSpawner getPlayerSpawner(ClientController controller) {
 		switch (controller.clientType) {
 			case NetworkController.ClientType.PLAYER:
-				return primarySpawner;
+				return primarySpawners[controller.team];
 			case NetworkController.ClientType.TUTORIAL:
 				return tutorialSpawner;
 			default:
-				return primarySpawner;
+				return primarySpawners[0];
 		}
 	}
 
@@ -92,7 +103,7 @@ public class Bases : TeamGameMode {
 			base.Update();
 			for (int i = respawnJobs.Count - 1; i >= 0; --i) {
 				if (respawnJobs[i].respawnTime <= Time.time) {
-					primarySpawner.respawnPlayer(respawnJobs[i].controller);
+					primarySpawners[respawnJobs[i].controller.team].respawnPlayer(respawnJobs[i].controller);
 					respawnJobs.RemoveAt(i);
 				}
 			}
@@ -142,29 +153,19 @@ public class Bases : TeamGameMode {
 	}
 
 	[Server]
-	public override bool winConditionMet() {
+	public override bool endConditionMet() {
+		HashSet<int> teamSpawners = new HashSet<int>();
 		foreach (RobotSpawner spawner in spawners) {
 			if (spawner == null) {
 				continue;
 			}
-			if (spawner.teamId.id != localTeamId) {
-				return false;
-			}
+			teamSpawners.Add(spawner.teamId.id);
 		}
-		return true;
-	}
-
-	[Server]
-	public override bool loseConditionMet() {
-		foreach (RobotSpawner spawner in spawners) {
-			if (spawner == null) {
-				continue;
-			}
-			if (spawner.teamId.id == localTeamId) {
-				return false;
-			}
+		if (teamSpawners.Count == 1) {
+			winningTeam = teamSpawners.Contains(0) ? 0 : 1;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	[Server]

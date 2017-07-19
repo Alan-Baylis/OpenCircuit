@@ -28,11 +28,11 @@ public class GlobalConfigWinLoseTest {
 			Assert.That(!won);
 			Assert.That(!lost);
 
-			globalConfig.winGame();
+//			globalConfig.winGame();
 			yield return null;
 			Assert.That(won);
 
-			globalConfig.loseGame();
+			//globalConfig.loseGame();
 			yield return null;
 			Assert.That(lost);
 		} finally {

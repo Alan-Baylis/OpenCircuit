@@ -15,6 +15,8 @@ public class Menu : MonoBehaviour {
 	private Rect adminRect = new Rect(0.05f, 0.45f, 0.5f, 0.07f);
 	private Rect spectateRect = new Rect(0.05f, 0.55f, 0.5f, 0.07f);
 	private Rect exitRect = new Rect(0.05f, 0.65f, 0.5f, 0.07f);
+	private Rect teamOne = new Rect(0.05f, 0.65f, 0.25f, 0.07f);
+	private Rect teamTwo = new Rect(0.3f, 0.65f, 0.25f, 0.07f);
 	private Rect backRect = new Rect(0.05f, 0.8f, 0.5f, 0.07f);
 	private Rect titleRect = new Rect(0.05f, 0.05f, 0.75f, 0.1f);
 	private state currentMenu = state.MainMenu;
@@ -355,13 +357,16 @@ public class Menu : MonoBehaviour {
 //		        dropIn(NetworkController.ClientType.ADMIN);
 //	        }
 		    if (GUIUtil.button("Tutorial", adminRect, skin.button)) {
-			    dropIn(NetworkController.ClientType.TUTORIAL);
+			    dropIn(NetworkController.ClientType.TUTORIAL, -1);
 		    }
 	    if(GUIUtil.button("Spectate", spectateRect, skin.button)) {
-		        dropIn(NetworkController.ClientType.SPECTATOR);
+		        dropIn(NetworkController.ClientType.SPECTATOR, -1);
 	        }
-			if (GUIUtil.button("Drop In", exitRect, skin.button)) {
-				dropIn(NetworkController.ClientType.PLAYER);
+			if (GUIUtil.button("Team 1", teamOne, skin.button)) {
+				dropIn(NetworkController.ClientType.PLAYER, 0);
+            }
+		    if (GUIUtil.button("Team 2", teamTwo, skin.button)) {
+				dropIn(NetworkController.ClientType.PLAYER, 1);
             }
         } else {
 			GUIUtil.adjustFontSize(skin.label, 0.07f);
@@ -393,9 +398,9 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	private void dropIn(NetworkController.ClientType type) {
+	private void dropIn(NetworkController.ClientType type, int team) {
 		string roleCode = ((int)type).ToString();
-		StringMessage message = new StringMessage(roleCode + username);
+		StringMessage message = new StringMessage(roleCode +team+ username);
 
 		ClientScene.AddPlayer(null, 0, message);
 		activeAtStart = false;

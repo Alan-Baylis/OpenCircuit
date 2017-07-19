@@ -22,14 +22,10 @@ public abstract class GameMode : NetworkBehaviour {
 	protected virtual void Update() {
         if (gameOver)
             return;
-	    if (loseConditionMet()) {
-		    onLoseGame();
-	      	GlobalConfig.globalConfig.loseGame();
-	        gameOver = true;
-	    } else if (winConditionMet()) {
-		    onWinGame();
-			GlobalConfig.globalConfig.winGame();
-	        gameOver = true;
+	    if (endConditionMet()) {
+		    onGameOver();
+		    GlobalConfig.globalConfig.endGame();
+		    gameOver = true;
 	    }
 	}
 
@@ -37,10 +33,7 @@ public abstract class GameMode : NetworkBehaviour {
     public virtual void initialize() { }
 
     [Server]
-	public abstract bool winConditionMet();
-
-    [Server]
-    public abstract bool loseConditionMet();
+	public abstract bool endConditionMet();
 
 	[Server]
     public abstract void onPlayerDeath(Player player);
@@ -49,12 +42,7 @@ public abstract class GameMode : NetworkBehaviour {
     public abstract void onPlayerRevive(Player player);
 
 	[Server]
-	public virtual void onWinGame() {
-	}
-
-	[Server]
-	public virtual void onLoseGame() {
-	}
+	public abstract void onGameOver();
 
 	public abstract AbstractPlayerSpawner getPlayerSpawner(ClientController controller);
 }

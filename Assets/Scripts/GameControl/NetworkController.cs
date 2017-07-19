@@ -109,12 +109,13 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
         //return client;
     }
 
-    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, string username,  ClientType clientType, short playerControllerId = 0) {
+    public void serverAddPlayer(GameObject playerPrefab, Vector3 pos, Quaternion rotation, NetworkConnection conn, string username, int team,  ClientType clientType, short playerControllerId = 0) {
         GameObject player = Instantiate(playerPrefab, pos, rotation);
 	    ClientController controller = player.GetComponent<ClientController>();
 	    controller.clientType = clientType;
 	    controller.playerName = username;
 	    controller.name = username;
+        controller.team = team;
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
     }
 
@@ -189,9 +190,10 @@ public class NetworkController : MonoBehaviour, SceneLoadListener {
 
 	    string message = netMsg.reader.ReadString();
 	    ClientType type = (ClientType)Enum.Parse(typeof(ClientType), message.Substring(0, 1));
-	    string username = message.Remove(0, 1);
+        int team = Int32.Parse(message.Substring(1, 1));
+	    string username = message.Remove(0, 2);
 
-        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, username, type);
+        GlobalConfig.globalConfig.spawnPlayerForConnection(netMsg.conn, username, team, type);
     }
 
 	private void serverRemovePlayer(NetworkMessage netMsg) {

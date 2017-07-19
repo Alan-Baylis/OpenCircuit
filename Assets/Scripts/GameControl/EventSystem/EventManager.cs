@@ -61,7 +61,6 @@ public class EventManager : MonoBehaviour {
 		if (eventDictionary.TryGetValue (eventObject.GetType(), out eventDelegates)) {
 			foreach(EventDelegate eventDelegate in eventDelegates)
 				eventDelegate(eventObject); //.Invoke ();
-			print("sent event "+eventObject);
 		}
 	}
 

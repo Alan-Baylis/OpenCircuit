@@ -16,7 +16,7 @@ public class Score : MonoBehaviour {
 	}
 
 	public void recordScore(ClientController destroyer) {
-			if (GetComponent<TeamId>().id == 0) {
+			if (GetComponent<TeamId>().id == destroyer.team) {
 				EventManager.broadcastEvent(new ScoreEvent(destroyer, -value), EventManager.IN_GAME_CHANNEL);
 			} else {
 				EventManager.broadcastEvent(new ScoreEvent(destroyer, value), EventManager.IN_GAME_CHANNEL);
