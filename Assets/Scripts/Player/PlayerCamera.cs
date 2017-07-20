@@ -1,14 +1,22 @@
 ﻿using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour {
+	private Camera cam;
+	private ClientController clientController;
 
 	void Start() {
-		Camera camera = GetComponentInChildren<Camera>();
-		Player player = GetComponentInParent<Player>();
-		GlobalConfig.globalConfig.cameraManager.addCamera(player.clientController, camera);
-		if (player.isLocalPlayer) {
-			GlobalConfig.globalConfig.cameraManager.usePlayerCam(camera);
+		cam = GetComponentInChildren<Camera>();
+		clientController = GetComponentInParent<Player>().clientController;
+		GlobalConfig.globalConfig.cameraManager.addCamera(clientController, cam);
+		if (clientController.isLocalPlayer) {
+			GlobalConfig.globalConfig.cameraManager.usePlayerCam(cam);
 		}
 	}
 
+	private void OnDestroy() {
+		GlobalConfig.globalConfig.cameraManager.removeCamera(clientController);
+		if(clientController != null && clientController.isLocalPlayer) {
+			GlobalConfig.globalConfig.cameraManager.switchCamera();
+		}
+	}
 }

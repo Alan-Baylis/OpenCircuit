@@ -16,24 +16,18 @@ public class Score : MonoBehaviour {
 	}
 
 	public void recordScore(ClientController destroyer) {
-		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
-		if (bases != null) {
 			if (GetComponent<TeamId>().id == 0) {
-				bases.addScore(destroyer, -value);
+				EventManager.broadcastEvent(new ScoreEvent(destroyer, -value), EventManager.IN_GAME_CHANNEL);
 			} else {
-				bases.addScore(destroyer, value);
+				EventManager.broadcastEvent(new ScoreEvent(destroyer, value), EventManager.IN_GAME_CHANNEL);
 			}
-		}
 	}
 
 	void OnDestroy() {
-		Bases bases = GlobalConfig.globalConfig.gamemode as Bases;
-		if (bases != null) {
-			if (teamOwned) {
-				bases.addTeamScore(GetComponent<TeamId>().id, -value);
-			} else if (owner != null) {
-				bases.addScore(owner, -value);
-			}
+		if (teamOwned) {
+			EventManager.broadcastEvent(new TeamScoreEvent(GetComponent<TeamId>().id, -value), EventManager.IN_GAME_CHANNEL);
+		} else if (owner != null) {
+			EventManager.broadcastEvent(new ScoreEvent(owner, -value), EventManager.IN_GAME_CHANNEL);
 		}
 	}
 }

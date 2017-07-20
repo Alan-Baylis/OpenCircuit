@@ -22,6 +22,7 @@ public class GlobalConfig : NetworkBehaviour {
 	public ClientController localClient;
 
     private int robotControllers;
+	private EventManager eventManager;
 
 	public HashSet<ClientController> clients = new HashSet<ClientController>();
 
@@ -35,12 +36,13 @@ public class GlobalConfig : NetworkBehaviour {
 
     void Start() {
         myGlobalConfig = this;
-        configuration = Menu.menu.serverConfig;
         gamemode = getGameMode(configuration.gameMode);
         gamemode.initialize();
         gamemode.enabled = true;
-
         gameStarted = true;
+
+	    eventManager = EventManager.getInGameChannel();
+	    eventManager.registerForEvent(typeof(RobotDestructionEvent), subtractRobotCount);
     }
 
     private static GlobalConfig myGlobalConfig;
@@ -65,13 +67,13 @@ public class GlobalConfig : NetworkBehaviour {
     [ClientRpc]
     private void RpcLoseGame() {
 		clearLocalPlayers();
-	    Menu.menu.lose();
+	    EventManager.broadcastEvent(new LoseEvent(), EventManager.GAME_CONTROL_CHANNEL);
     }
 
     [ClientRpc]
     private void RpcWinGame() {
 	    clearLocalPlayers();
-        Menu.menu.win();
+	    EventManager.broadcastEvent(new WinEvent(), EventManager.GAME_CONTROL_CHANNEL);
     }
 
 	[Server]
@@ -114,11 +116,18 @@ public class GlobalConfig : NetworkBehaviour {
 		}
 	}
 
-	public void subtractRobotCount(RobotController robotController) {
+	public void subtractRobotCount(AbstractEvent eventMessage) {
 		--robotControllers;
 		if (gamemode is TeamGameMode) {
+			RobotController robotController = ((RobotDestructionEvent) eventMessage).robotController;
 			--teamGameMode.teams[robotController.GetComponent<TeamId>().id].robotCount;
 		}
+	}
+
+	private void OnDestroy() {
+		myGlobalConfig = null;
+		if (eventManager != null)
+			eventManager.unregisterForEvent(typeof(RobotDestructionEvent), subtractRobotCount);
 	}
 
 	private void clearLocalPlayers() {

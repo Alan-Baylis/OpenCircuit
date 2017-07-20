@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 
 public class DismantleEffect {
@@ -54,8 +52,8 @@ public class DismantleEffect {
 
 	protected static Vector3 randomRange(Vector3 min, Vector3 max) {
 		return new Vector3(
-			UnityEngine.Random.Range(min.x, max.x),
-			UnityEngine.Random.Range(min.y, max.y),
-			UnityEngine.Random.Range(min.z, max.z));
+			Random.Range(min.x, max.x),
+			Random.Range(min.y, max.y),
+			Random.Range(min.z, max.z));
 	}
 }

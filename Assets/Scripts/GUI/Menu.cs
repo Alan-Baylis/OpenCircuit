@@ -38,6 +38,10 @@ public class Menu : MonoBehaviour {
 
 	[System.NonSerialized]
 	public GlobalConfigData serverConfig = GlobalConfigData.getDefault();
+
+	[System.NonSerialized]
+	private EventManager eventManager;
+
 	public float defaultScreenHeight = 1080;
 	public bool activeAtStart = true;
 	public GUISkin skin;
@@ -85,6 +89,9 @@ public class Menu : MonoBehaviour {
 	// Use this for initialization
 	public void Start() {
 	    DontDestroyOnLoad(gameObject);
+		eventManager = EventManager.getGameControlChannel();
+		eventManager.registerForEvent(typeof(WinEvent), win);
+		eventManager.registerForEvent(typeof(LoseEvent), lose);
 	    myMenu = this;
 		username = System.Environment.MachineName.ToLower();
 		if (activeAtStart) {
@@ -128,12 +135,12 @@ public class Menu : MonoBehaviour {
 	    }
 	}
 
-	public void win() {
+	private void win(AbstractEvent winEvent) {
 		pause();
 		currentMenu = state.Win;
 	}
 
-	public void lose() {
+	private void lose(AbstractEvent loseEvent) {
 		pause();
         currentMenu = state.Lose;
     }
@@ -460,7 +467,7 @@ public class Menu : MonoBehaviour {
 		    globalConfig = globalConfigs[0].gameObject.scene.name == null ? globalConfigs[1] : globalConfigs[0];
 		    globalConfig.gameObject.SetActive(true);
 	    }
-
+	    globalConfig.configuration = serverConfig;
 	    NetworkServer.Spawn(globalConfig.gameObject);
         menuHistory.Clear();
         currentMenu = state.ClientLobby;

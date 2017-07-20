@@ -9,7 +9,7 @@ public class FPSMeter : NetworkBehaviour {
 	public double trackRate = 0.3;
 
 	private double deltaTime;
-//	private double msec;
+	private double msec;
 	private double fps;
 	private double barLevel;
 //	private double aiTime;
@@ -30,7 +30,8 @@ public class FPSMeter : NetworkBehaviour {
 
 	public void OnGUI() {
 //		string text = string.Format("{0:0.0} ms ({1:0.} fps) {2:0.}ms/sec / {3:0.0}% AI ", msec, fps, aiTime, ((aiTime / fps)/msec) *100.0);
-//		GUI.Label(new Rect(0, 0, 250, 20), text);
+		string text = string.Format("{0:0.0} ms ({1:0.} fps) ", msec, fps);
+		GUI.Label(new Rect(0, 0, 250, 20), text);
 
 		drawFPSMeter(fps, 20);
 	}

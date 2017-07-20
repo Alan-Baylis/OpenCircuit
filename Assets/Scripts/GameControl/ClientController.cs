@@ -14,7 +14,7 @@ public class ClientController : NetworkBehaviour {
 
 	private GameObject player;
 
-	[SyncVar(hook="setPlayerDead")]
+	[SyncVar]
 	private bool isDead;
 
 	[SyncVar]
@@ -49,9 +49,6 @@ public class ClientController : NetworkBehaviour {
 
 	[ClientCallback]
 	public void OnDestroy() {
-		if (!isDead && !isSpectator()) {
-			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
-		}
 		if (isLocalPlayer) {
 			GlobalConfig.globalConfig.cameraManager.useSceneCamera();
 		}
@@ -123,17 +120,6 @@ public class ClientController : NetworkBehaviour {
 	[Client]
 	public void setPlayer(GameObject player) {
 		this.player = player;
-	}
-
-	[Client]
-	private void setPlayerDead(bool dead) {
-		isDead = dead;
-		if (isDead) {
-			GlobalConfig.globalConfig.cameraManager.removeCamera(this);
-			if(isLocalPlayer) {
-				GlobalConfig.globalConfig.cameraManager.switchCamera();
-			}
-		}
 	}
 
 	[Server]

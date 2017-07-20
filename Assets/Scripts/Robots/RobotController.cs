@@ -29,12 +29,12 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	//public List<GameObject> trackedObjects = new List<GameObject>();
 #endif
 
-	public Label[] locations;
-    public Goal[] goals;
+	public Label[] locations = new Label[0];
+    public Goal[] goals = new Goal[0];
 	[System.NonSerialized]
 	public EndeavourFactory[] endeavourFactories = new EndeavourFactory[0];
 	[System.NonSerialized]
-	public Dictionary<GoalEnum, Goal> goalMap = new Dictionary<GoalEnum, Goal>();
+	public Goal[] robotGoals;
 
     public float reliability = 5f;
 	public AudioClip targetSightedSound;
@@ -54,10 +54,9 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 	void Start() {
         mentalModel.addUpdateListener(this);
 		myHealth = GetComponent<Health>();
+		robotGoals = new Goal[Enum.GetValues(typeof(GoalEnum)).Length];
 	    foreach(Goal goal in goals) {
-            if(!goalMap.ContainsKey(goal.type)) {
-                goalMap.Add(goal.type, goal);
-            }
+			robotGoals[(int)goal.type] = goal;
         }
 
 	    Label[] labels = FindObjectsOfType<Label>();
@@ -151,8 +150,8 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 		}
 	}
 
-	public Dictionary<GoalEnum, Goal> getGoals() {
-		return goalMap;
+	public Goal[] getGoals() {
+		return robotGoals;
 	}
 
     public void attachRobotComponent(AbstractRobotComponent component) {
@@ -422,7 +421,7 @@ public class RobotController : NetworkBehaviour, ISerializationCallbackReceiver,
 
 	[Server]
 	public void dispose() {
-		GlobalConfig.globalConfig.subtractRobotCount(this);
+		EventManager.broadcastEvent(new RobotDestructionEvent(this), EventManager.IN_GAME_CHANNEL);
 		CancelInvoke();
 		foreach(Endeavour e in currentEndeavours) {
 			e.stopExecution();

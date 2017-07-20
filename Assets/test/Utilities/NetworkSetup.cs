@@ -1,17 +1,38 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
 
 public class NetworkSetup : MonoBehaviour, IPrebuildSetup {
 
+	private bool listening;
+
+	public static NetworkSetup instance;
+
 	void Awake() {
-		GetComponent<NetworkController>().listen();
+		if (!listening) {
+			listening = GetComponent<NetworkController>().listen();
+		}
 	}
 
-	public void Setup() {
-		GameObject networkControllerObject = new GameObject();
+	public virtual void Setup() {
+		setupNetwork();
+		setupSceneCamera();
+
+	}
+
+	private void setupSceneCamera() {
+		GameObject gameObject = new GameObject("SceneCamera");
+		gameObject.AddComponent<AudioListener>();
+		gameObject.AddComponent<Camera>();
+		gameObject.tag = "SceneCamera";
+	}
+
+	private void setupNetwork() {
+		GameObject networkControllerObject = new GameObject("NetworkController");
 		networkControllerObject.AddComponent<NetworkController>();
-		networkControllerObject.AddComponent<NetworkSetup>();
+		instance = networkControllerObject.AddComponent<NetworkSetup>();
 		networkControllerObject.AddComponent<NetworkManager>();
 	}
 }
+#endif

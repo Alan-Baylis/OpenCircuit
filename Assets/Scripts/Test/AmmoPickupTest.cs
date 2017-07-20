@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
@@ -10,14 +11,14 @@ public class AmmoPickupTest {
 	// and allows you to yield null to skip a frame in EditMode
 	[UnityTest]
 	[PrebuildSetup(typeof(NetworkSetup))]
-	public IEnumerator AmmoPickupTestWithEnumeratorPasses() {
+	public IEnumerator testAmmoPickup() {
 		LogAssert.Expect(LogType.Log, "EMPTY EFFECT");
 		// Use the Assert class to test conditions.
 		// yield to skip a frame
 
 		var gameObject = new GameObject();
 		AmmoPickup ammo = gameObject.AddComponent<AmmoPickup>();
-		AssaultRifle rifle = addRifleToPlayer(createPlayer());
+		AssaultRifle rifle = addRifleToPlayer(PlayModeTestUtility.createPlayer());
 		NetworkServer.Spawn(rifle.gameObject);
 		yield return null;
 		rifle.clearAmmo();
@@ -28,11 +29,20 @@ public class AmmoPickupTest {
 		Assert.True(ammo == null);
 	}
 
-	private Player createPlayer() {
-		GameObject playerObject = new GameObject();
-		playerObject.AddComponent<NetworkIdentity>();
-		playerObject.AddComponent<BoxCollider>();
-		return playerObject.AddComponent<Player>();
+	[UnityTest]
+	[PrebuildSetup(typeof(NetworkSetup))]
+	public IEnumerator testAmmoPickup_NoRifle() {
+		// Use the Assert class to test conditions.
+		// yield to skip a frame
+
+		var gameObject = new GameObject();
+		AmmoPickup ammo = gameObject.AddComponent<AmmoPickup>();
+		Player player = PlayModeTestUtility.createPlayer();
+		yield return null;
+		ammo.OnTriggerEnter(player.GetComponent<Collider>());
+		yield return null;
+		LogAssert.NoUnexpectedReceived();
+		Assert.True(ammo != null);
 	}
 
 	private AssaultRifle addRifleToPlayer(Player player) {
@@ -42,3 +52,4 @@ public class AmmoPickupTest {
 	}
 
 }
+#endif

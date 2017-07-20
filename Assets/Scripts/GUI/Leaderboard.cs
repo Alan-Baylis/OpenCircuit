@@ -27,7 +27,7 @@ public class Leaderboard : NetworkBehaviour {
 
 	[ClientCallback]
 	void Update() {
-		if (GlobalConfig.globalConfig.localClient == null)
+		if (GlobalConfig.globalConfig == null || GlobalConfig.globalConfig.localClient == null)
 			return;
 		if (GlobalConfig.globalConfig.localClient.isSpectator() && GlobalConfig.globalConfig.cameraManager.getSceneCamera().enabled) {
 
