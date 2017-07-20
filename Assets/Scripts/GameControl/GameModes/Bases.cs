@@ -199,10 +199,13 @@ public class Bases : TeamGameMode {
 	}
 
 	public override int getJoinedPlayerCount(int teamIndex) {
-		if (teamIndex == 0) {
-			return GlobalConfig.globalConfig.getPlayerCount();
+		int count = 0;
+		foreach (ClientController client in GlobalConfig.globalConfig.clients) {
+			if (client.team == teamIndex && !client.isSpectator() && client.clientType != NetworkController.ClientType.TUTORIAL) {
+				++count;
+			}
 		}
-		return 0;
+		return count;
 	}
 
 	[Server]
