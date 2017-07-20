@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GUIUtil {
@@ -31,7 +30,11 @@ public class GUIUtil {
 	}
 
 	public static void adjustFontSize(GUIStyle style, float height) {
-		style.fontSize = (int)(height *Screen.height);
+		style.fontSize = adjustFontSize(height);
+	}
+
+	public static int adjustFontSize(float height) {
+		return (int)(height *Screen.height);
 	}
 
 	public static Rect convertRect(Rect r, bool fixedHeight=false) {
