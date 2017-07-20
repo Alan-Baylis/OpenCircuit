@@ -339,6 +339,7 @@ MonoBehaviour:
   sufferingDisplay: 0
   hurtSound: {fileID: 0}
   hurtSoundPitch: 1
+  lastAttackPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &11467974
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -355,15 +356,13 @@ MonoBehaviour:
   maxOxygen: 60
   oxygenRecoveryRate: 10
   oxygen: 60
-  sufferingOverlay: {fileID: 2800000, guid: fbd0cf77b9eb98f4aab7231dd4effd24, type: 3}
   sufferingErrorConfig:
     font: {fileID: 12800000, guid: b700180551883b247818306554f22709, type: 3}
     fontSize: 0.025
     opacity: 0.8
     fadeInRate: 5
     fadeOutRate: 0.5
-    lingerTime: 1
-    maxErrorCount: 500
+    maxErrorCount: 250
   heavyBreathingSound: {fileID: 8300000, guid: 93cc1f44eb856894187e8d711f429b62, type: 3}
   teleportSound: {fileID: 0}
   whiteOutDuration: 0

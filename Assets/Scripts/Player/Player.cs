@@ -41,7 +41,7 @@ public class Player : NetworkBehaviour {
 	private float blackOutTime = 0;
 	private Texture2D whiteOutTexture;
 
-	private HashSet<SufferingError> sufferingErrors = new HashSet<SufferingError>();
+	private List<SufferingError> sufferingErrors = new List<SufferingError>();
 	private readonly string[] sufferingErrorMessages = {
 		"Connection Lost",
 		"Component Disabled",
@@ -280,35 +280,53 @@ public class Player : NetworkBehaviour {
 		}
 
 		// show suffering error messages
-		if (sufferingErrors.Count < sufferingErrorConfig.maxErrorCount *health.getDamagePercent()) {
-			Vector2 position = UnityEngine.Random.insideUnitCircle *0.5f;
-			Vector2 positionSign = new Vector2(Mathf.Sign(position.x), Mathf.Sign(position.y)) *0.5f;
-			position = new Vector2((positionSign.x *0.9f - position.x *0.5f *health.getDamagePercent()) *Screen.width /Screen.height,
-				position.y *(health.getDamagePercent() +0.2f) + positionSign.y *(0.8f - health.getDamagePercent()));
+		int errorsDesired = (int)(sufferingErrorConfig.maxErrorCount * health.getDamagePercent());
+		
+		if (sufferingErrors.Count < errorsDesired) {
+			Vector3 localAttackPos = cam.transform.InverseTransformDirection(new Vector3(health.lastAttackPosition.x, 0f, health.lastAttackPosition.z)).normalized; 
+			
+			Vector2 position = UnityEngine.Random.insideUnitCircle *0.1f;
+			
+			position += new Vector2(-localAttackPos.x, localAttackPos.z).normalized;
+			position *= 1 - UnityEngine.Random.value * health.getDamagePercent()*.75f;
+			position += new Vector2(1f, 1f);
+			position *= .5f;
+			
 			sufferingErrors.Add(new SufferingError {
 				message = sufferingErrorMessages[UnityEngine.Random.Range(0, sufferingErrorMessages.Length)],
-				position = position,
-				fadeTimestamp = Time.time + sufferingErrorConfig.lingerTime
+				position = position
 			});
+		} else if (sufferingErrors.Count > errorsDesired) {
+			int diff = sufferingErrors.Count - errorsDesired;
+
+
+			int count = 0;
+			foreach (SufferingError error in sufferingErrors) {
+				if (count >= diff)
+					break;
+				++count;
+				error.resolved = true;
+			}
 		}
 		GUIStyle errorStyle = new GUIStyle(GUI.skin.label);
 		errorStyle.font = sufferingErrorConfig.font;
 		errorStyle.fontSize = GUIUtil.adjustFontSize(sufferingErrorConfig.fontSize);
 		errorStyle.alignment = TextAnchor.MiddleCenter;
-		foreach(SufferingError error in sufferingErrors.ToList()) {
+		for( int i = 0; i < sufferingErrors.Count; ++i) {
+			SufferingError error = sufferingErrors[i];
 			if (error.resolved) {
-				error.opacity -= sufferingErrorConfig.fadeOutRate *sufferingErrorConfig.opacity *Time.deltaTime;
-				if (error.opacity <= 0)
-					sufferingErrors.Remove(error);
+				error.opacity -= sufferingErrorConfig.fadeOutRate *Time.deltaTime;
+				if (error.opacity <= 0) {
+					sufferingErrors.RemoveAt(i);
+					--i;
+					continue;
+				}
 			} else if (error.opacity < sufferingErrorConfig.opacity) {
 				error.opacity = Mathf.Min(sufferingErrorConfig.opacity,
-					error.opacity + sufferingErrorConfig.fadeInRate *sufferingErrorConfig.opacity *Time.deltaTime);
-			} else if (error.fadeTimestamp <= Time.time) {
-				error.resolved = true;
-			}
-
+					error.opacity + sufferingErrorConfig.fadeInRate *Time.deltaTime);
+			} 
 			GUI.color = new Color(1, 0, 0, error.opacity);
-			GUI.Label(GUIUtil.convertRect(centeredRect(error.position + new Vector2(Screen.width /2f / Screen.height, 0.5f), Vector2.one)), error.message, errorStyle);
+			GUI.Label(convertRect(centeredRect(error.position, new Vector2(.1f, .1f))), error.message, errorStyle);
 		}
 		GUI.color = Color.white;
 
@@ -316,22 +334,25 @@ public class Player : NetworkBehaviour {
 		//GUI.Label(new Rect(10, 30, 100, 20), oxygen.ToString());
 	}
 	
+	private Rect convertRect(Rect r) {
+		return new Rect(r.x * Screen.width, r.y * Screen.height, r.width * Screen.width, r.height * Screen.height);
+	}
+	
 	private Rect centeredRect(Vector2 position, Vector2 size) {
 		return new Rect(position - size / 2, size);
 	}
-
-	private class SufferingError {
+	
+	public class SufferingError {
 		public String message;
 		public Vector2 position;
 		public float opacity;
-		public float fadeTimestamp;
 		public bool resolved;
 	}
 
     [Serializable]
 	public struct SufferingErrorConfig {
 		public Font font;
-		public float fontSize, opacity, fadeInRate, fadeOutRate, lingerTime;
+	    public float fontSize, opacity, fadeInRate, fadeOutRate;
 	    public int maxErrorCount;
     }
 }

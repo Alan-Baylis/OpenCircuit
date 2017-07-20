@@ -11,6 +11,7 @@ public class Health : NetworkBehaviour {
 	public AudioClip hurtSound;
 	public float hurtSoundPitch = 1;
 
+	public Vector3 lastAttackPosition;
 	private GameObject lastAttacker;
 	private Label label;
 
@@ -57,6 +58,7 @@ public class Health : NetworkBehaviour {
 
 	public virtual void hurt(float pain, GameObject instigator) {
 		lastAttacker = instigator;
+		lastAttackPosition = (transform.position - instigator.transform.position).normalized;
 		suffering += pain;
 		if(soundEmitter.clip != null) {
 			soundEmitter.pitch = Random.Range(hurtSoundPitch -0.05f, hurtSoundPitch +0.05f);
